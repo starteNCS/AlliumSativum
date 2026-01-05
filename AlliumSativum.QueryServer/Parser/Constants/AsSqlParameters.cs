@@ -1,6 +1,6 @@
-namespace AlliumSativum.Constants;
+namespace AlliumSativum.Parser.Constants;
 
-public sealed class AsSQLParameters
+public static class AsSqlParameters
 {
     public static class Attribute
     {

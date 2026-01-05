@@ -1,4 +1,7 @@
-namespace AlliumSativum.IntermediateModels;
+using AlliumSativum.Parser.IntermediateModels.Expressions;
+using AlliumSativum.Parser.IntermediateModels.Specifiers;
+
+namespace AlliumSativum.Parser.IntermediateModels;
 
 public sealed class SelectBaseModel
 {

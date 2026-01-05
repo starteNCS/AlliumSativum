@@ -1,4 +1,4 @@
-using AlliumSativum.IntermediateModels;
+using AlliumSativum.Parser.IntermediateModels.Specifiers;
 using FluentAssertions;
 
 namespace ParserTests.Helpers;

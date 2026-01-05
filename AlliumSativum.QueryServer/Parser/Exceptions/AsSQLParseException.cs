@@ -1,6 +1,4 @@
-using AlliumSativum.Constants;
-
-namespace AlliumSativum.Exceptions;
+namespace AlliumSativum.Parser.Exceptions;
 
 public sealed class AsSqlParseException : AsSqlException
 {

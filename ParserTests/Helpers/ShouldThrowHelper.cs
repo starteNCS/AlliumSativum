@@ -1,4 +1,4 @@
-using AlliumSativum.Exceptions;
+using AlliumSativum.Parser.Exceptions;
 using FluentAssertions;
 
 namespace ParserTests.Helpers;

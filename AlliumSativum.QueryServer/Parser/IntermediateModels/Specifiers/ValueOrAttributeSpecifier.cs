@@ -1,4 +1,4 @@
-namespace AlliumSativum.IntermediateModels;
+namespace AlliumSativum.Parser.IntermediateModels.Specifiers;
 
 public sealed class ValueOrAttributeSpecifier
 {

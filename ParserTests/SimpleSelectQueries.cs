@@ -1,6 +1,6 @@
 using AlliumSativum;
-using AlliumSativum.Constants;
-using AlliumSativum.Exceptions;
+using AlliumSativum.Parser;
+using AlliumSativum.Parser.Constants;
 using FluentAssertions;
 using ParserTests.Helpers;
 
@@ -15,6 +15,7 @@ public sealed class SimpleSelectQueries
     public void ShouldParse_SingleAttribute()
     {
         var result = _parser.Parse("SELECT erp->customers.name FROM erp->customers");
+        result.Should().NotBeNull();
 
         result.From.ShouldBeTable("erp", "customers");
         result.Select.ShouldContainAttribute("erp", "customers", "name");
@@ -24,6 +25,7 @@ public sealed class SimpleSelectQueries
     public void ShouldParse_MultipleAttributes()
     {
         var result = _parser.Parse("SELECT erp->customers.name, erp->customers.customer_number FROM erp->customers");
+        result.Should().NotBeNull();
 
         result.From.ShouldBeTable("erp", "customers");
         result.Select.ShouldContainAttribute("erp", "customers", "name");
@@ -36,7 +38,7 @@ public sealed class SimpleSelectQueries
     public void ShouldNotParse_Select_InvalidDataSourceSeparator()
     {
         Action action = () => _parser.Parse("SELECT erp.customers.name FROM erp->customers");
-        action.ShouldThrowParseException("erp.customers.name", $"Could not find datasource separator ({AsSQLParameters.Attribute.DataSourceSeparator})");
+        action.ShouldThrowParseException("erp.customers.name", $"Could not find datasource separator ({AsSqlParameters.Attribute.DataSourceSeparator})");
     }
     
     [Test]
@@ -50,7 +52,7 @@ public sealed class SimpleSelectQueries
     public void ShouldNotParse_From_InvalidDataSourceSeparator()
     {
         Action action = () => _parser.Parse("SELECT erp->customers.name FROM erp.customers");
-        action.ShouldThrowParseException("erp.customers", $"Could not find datasource separator ({AsSQLParameters.Attribute.DataSourceSeparator})");
+        action.ShouldThrowParseException("erp.customers", $"Could not find datasource separator ({AsSqlParameters.Attribute.DataSourceSeparator})");
     }
     #endregion
 }

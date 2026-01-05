@@ -1,6 +1,6 @@
-using AlliumSativum.IntermediateModels.Expressions;
+using AlliumSativum.Parser.IntermediateModels.Specifiers;
 
-namespace AlliumSativum.IntermediateModels;
+namespace AlliumSativum.Parser.IntermediateModels.Expressions;
 
 public sealed class Expression
 {
