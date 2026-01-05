@@ -33,17 +33,24 @@ public sealed class SimpleSelectQueries
 
     #region NegativeTests
     [Test]
-    public void ShouldNotParse_InvalidDataSourceSeparator()
+    public void ShouldNotParse_Select_InvalidDataSourceSeparator()
     {
-        Action action = () => _parser.Parse("SELECT erp.customers.name FROM erp.customers");
+        Action action = () => _parser.Parse("SELECT erp.customers.name FROM erp->customers");
         action.ShouldThrowParseException("erp.customers.name", $"Could not find datasource separator ({AsSQLParameters.Attribute.DataSourceSeparator})");
     }
     
     [Test]
-    public void ShouldNotParse_InvalidTableNameSeparator()
+    public void ShouldNotParse_Select_InvalidTableNameSeparator()
     {
-        Action action = () => _parser.Parse("SELECT erp->customersname FROM erp.customers");
+        Action action = () => _parser.Parse("SELECT erp->customersname FROM erp->customers");
         action.ShouldThrowParseException("erp->customersname", $"Invalid number of attribute separators (expected 2, found 1)");
+    }
+    
+    [Test]
+    public void ShouldNotParse_From_InvalidDataSourceSeparator()
+    {
+        Action action = () => _parser.Parse("SELECT erp->customers.name FROM erp.customers");
+        action.ShouldThrowParseException("erp.customers", $"Could not find datasource separator ({AsSQLParameters.Attribute.DataSourceSeparator})");
     }
     #endregion
 }
