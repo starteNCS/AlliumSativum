@@ -5,11 +5,8 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>AlliumSativum</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-      <PackageReference Include="SqlParserCS" Version="0.6.5" />
-    </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\AlliumSativum.STAR\AlliumSativum.STAR.csproj" />

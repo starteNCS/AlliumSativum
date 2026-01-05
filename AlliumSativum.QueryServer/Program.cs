@@ -1,4 +1,4 @@
 ﻿using AlliumSativum;
 using AlliumSativum.STAR.NonTerminals.Access;
 
-new AccessRoot(1).Produce();
+new QueryParser().Parse("SELECT * FROM Users");
