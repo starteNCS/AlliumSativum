@@ -35,9 +35,22 @@ public class QueryParser
         };
     }
 
-    private static IExpressionNode? HandleWhere(string? whereQuery)
+    private static List<JoinBaseModel> HandleJoin(string? join)
     {
-        return whereQuery == null ? null : BooleanExpressionParser.Parse(whereQuery);
+        return [];
+    }
+    
+    private static IExpressionNode? HandleWhere(List<string> whereQuery)
+    {
+        if (whereQuery.Count == 0)
+        {
+            return null;
+        }
+        
+        // every WHERE block is AND concatenated
+        var concatQuery = string.Join(" AND ", whereQuery);
+        
+        return  BooleanExpressionParser.Parse(concatQuery);
     }
 
     private static TableSpecifier HandleFrom(string fromQueryPart)

@@ -6,8 +6,8 @@ public sealed class RawSelectModel
 {
     public string? Select { get; set; }
     public string? From { get; set; }
-    public string? Where { get; set; }
-    public string? Join { get; set; }
+    public List<string> Where { get; set; } = [];
+    public List<string> Join { get; set; } = [];
 
     public bool Validate()
     {
@@ -23,7 +23,7 @@ public sealed class RawSelectModel
     {
         if (type.Contains(AsSqlKeywords.JOIN))
         {
-            Join = $"{type} {Join}"; // with every operator except join we can infer the type of operator from the field
+            Join.Add($"{type} {Join}"); // with every operator except join we can infer the type of operator from the field
             return;
         }
         
@@ -36,7 +36,7 @@ public sealed class RawSelectModel
                 From = value;
                 break;
             case AsSqlKeywords.WHERE:
-                Where = value;
+                Where.Add(value);
                 break;
             default:
                 throw new NotImplementedException($"{type} not implemented");
