@@ -1,5 +1,7 @@
+using System.Linq.Expressions;
 using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
+using AlliumSativum.Parser.Algorithms;
 using AlliumSativum.Parser.Constants;
 using AlliumSativum.Parser.Exceptions;
 using AlliumSativum.Parser.IntermediateModels;
@@ -33,39 +35,9 @@ public class QueryParser
         };
     }
 
-    private static List<Expression> HandleWhere(string? whereQuery)
+    private static IExpressionNode? HandleWhere(string? whereQuery)
     {
-        if (whereQuery == null)
-        {
-            return [];
-        }
-        const string pattern = $@"(?i)\b({AsSqlKeywords.BooleanOperators.AND}|{AsSqlKeywords.BooleanOperators.OR})\b";
-
-        // TODO morgen: Shunting yard algorithm implementieren!
-        
-        var m = new List<string>();
-        var matches = Regex.Matches(whereQuery, pattern);
-        Match? lastKeywordMatch = null;
-        foreach (Match match in matches)
-        {
-            // everything in group 0 is within quotes (or brackets)
-            if (!match.Groups[1].Success)
-            {
-                continue;
-            }
-            if (lastKeywordMatch != null)
-            {
-                m.Add(GetMatchContent(lastKeywordMatch, whereQuery, match.Index));
-            }
-            
-            lastKeywordMatch = match;
-        }
-        
-        if (lastKeywordMatch != null)
-        {
-            m.Add(GetMatchContent(lastKeywordMatch, whereQuery, whereQuery.Length));
-        }
-        return [];
+        return whereQuery == null ? null : BooleanExpressionParser.Parse(whereQuery);
     }
 
     private static TableSpecifier HandleFrom(string fromQueryPart)

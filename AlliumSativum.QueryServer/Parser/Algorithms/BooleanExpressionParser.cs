@@ -19,11 +19,11 @@ public static partial class BooleanExpressionParser
         { "=", 3 }, { "!=", 3 }, { "<", 3 }, { ">", 3 }, { "<=", 3 }, { ">=", 3 }, { "LIKE", 3 }
     };
 
-    public static IWhereNode Parse(string sqlWhere)
+    public static IExpressionNode? Parse(string sqlWhere)
     {
         var tokens = Tokenize(sqlWhere);
         var operatorStack = new Stack<string>();
-        var operandStack = new Stack<IWhereNode>();
+        var operandStack = new Stack<IExpressionNode>();
 
         foreach (var token in tokens)
         {
@@ -77,26 +77,26 @@ public static partial class BooleanExpressionParser
     }
 
     // Helper to combine top operator with top 2 operands
-    private static void BuildNode(Stack<string> operators, Stack<IWhereNode> operands)
+    private static void BuildNode(Stack<string> operators, Stack<IExpressionNode> operands)
     {
         var op = operators.Pop();
         var right = GetFullTopMostNode(operands);
         var left = GetFullTopMostNode(operands);
 
-        operands.Push(new BinaryOperatorWhereNode { Operation = op, Left = left, Right = right });
+        operands.Push(new BinaryOperatorExpressionNode { Operation = op, Left = left, Right = right });
     }
 
-    private static IWhereNode GetFullTopMostNode(Stack<IWhereNode> operands)
+    private static IExpressionNode GetFullTopMostNode(Stack<IExpressionNode> operands)
     {
-        if (operands.Peek() is ValueWhereNode || operands.Peek() is BinaryOperatorWhereNode)
+        if (operands.Peek() is ValueExpressionNode || operands.Peek() is BinaryOperatorExpressionNode)
         {
             return operands.Pop();
         }
         
-        IList<PartialColumnWhereNode> items = [];
-        while (operands.Count > 0 && items.Count != 3 && operands.Peek() is PartialColumnWhereNode)
+        IList<PartialColumnExpressionNode> items = [];
+        while (operands.Count > 0 && items.Count != 3 && operands.Peek() is PartialColumnExpressionNode)
         {
-            var topmostItem = (PartialColumnWhereNode)operands.Pop();
+            var topmostItem = (PartialColumnExpressionNode)operands.Pop();
             if (topmostItem.Name == AsSqlParameters.Attribute.DataSourceSeparator ||
                 topmostItem.Name == AsSqlParameters.Attribute.TableSeparator.ToString())
             {
@@ -105,21 +105,21 @@ public static partial class BooleanExpressionParser
             items.Add(topmostItem);
         }
 
-        return new FullySpecifiedColumnWhereNode
+        return new FullySpecifiedColumnExpressionNode
         {
             Attribute = new AttributeSpecifier(items[2].Name, items[1].Name, items[0].Name),
         };
     }
 
-    private static IWhereNode CreateOperandNode(string token)
+    private static IExpressionNode CreateOperandNode(string token)
     {
         // Simple heuristic: if it starts with single quote or is a number, it's a value.
         // Otherwise, treat as column.
         if (token.StartsWith('\'') || decimal.TryParse(token, out _))
         {
-            return new ValueWhereNode { Value = token.Trim('\'') };
+            return new ValueExpressionNode { Value = token.Trim('\'') };
         }
-        return new PartialColumnWhereNode { Name = token };
+        return new PartialColumnExpressionNode { Name = token };
     }
 
     /// <summary>

@@ -7,13 +7,15 @@ using ParserTests.Helpers;
 
 namespace ParserTests.Algorithms;
 
-public sealed class ShuntingYardAlgorithmTest
+public sealed class BooleanExpressionParserTest
 {
+    #region PostiveTests
     [Test]
     public void ShouldHandle_SingleWhere_Value()
     {
         var result = BooleanExpressionParser.Parse("erp->customers.name = 'test'");
 
+        result.Should().NotBeNull();
         result.ShouldBeBinaryOperator("=", new AttributeSpecifier("erp", "customers", "name"), "test");
     }
     
@@ -22,6 +24,7 @@ public sealed class ShuntingYardAlgorithmTest
     {
         var result = BooleanExpressionParser.Parse("erp->customers.name = erp->orders.ordered_by");
 
+        result.Should().NotBeNull();
         result.ShouldBeBinaryOperator("=", 
             new AttributeSpecifier("erp", "customers", "name"),
             new AttributeSpecifier("erp", "orders", "ordered_by"));
@@ -32,8 +35,9 @@ public sealed class ShuntingYardAlgorithmTest
     {
         var result = BooleanExpressionParser.Parse("erp->customers.name = 'test' AND erp->customers.number = 1234");
         
+        result.Should().NotBeNull();
         result.ShouldBeBinaryOperator("AND");
-        var op = (BinaryOperatorWhereNode)result;
+        var op = (BinaryOperatorExpressionNode)result;
         op.Left.ShouldBeBinaryOperator("=", new AttributeSpecifier("erp", "customers", "name"), "test");
         op.Right.ShouldBeBinaryOperator("=", new AttributeSpecifier("erp", "customers", "number"), "1234");
     }
@@ -43,8 +47,9 @@ public sealed class ShuntingYardAlgorithmTest
     {
         var result = BooleanExpressionParser.Parse("erp->customers.name = 'test' OR erp->customers.number = 1234");
         
+        result.Should().NotBeNull();
         result.ShouldBeBinaryOperator("OR");
-        var op = (BinaryOperatorWhereNode)result;
+        var op = (BinaryOperatorExpressionNode)result;
         op.Left.ShouldBeBinaryOperator("=", new AttributeSpecifier("erp", "customers", "name"), "test");
         op.Right.ShouldBeBinaryOperator("=", new AttributeSpecifier("erp", "customers", "number"), "1234");
     }
@@ -54,10 +59,11 @@ public sealed class ShuntingYardAlgorithmTest
     {
         var result = BooleanExpressionParser.Parse("erp->customers.name = erp->orders.ordered_by AND erp->customers.name = 'test' OR erp->customers.number = 1234");
         
+        result.Should().NotBeNull();
         result.ShouldBeBinaryOperator("OR");
-        var op = (BinaryOperatorWhereNode)result;
+        var op = (BinaryOperatorExpressionNode)result;
         op.Left.ShouldBeBinaryOperator("AND");
-        var leftOp = (BinaryOperatorWhereNode)op.Left;
+        var leftOp = (BinaryOperatorExpressionNode)op.Left;
         leftOp.Left.ShouldBeBinaryOperator("=", 
             new AttributeSpecifier("erp", "customers", "name"), 
             new AttributeSpecifier("erp", "orders", "ordered_by"));
@@ -70,17 +76,29 @@ public sealed class ShuntingYardAlgorithmTest
     public void ShouldHandle_AndOrParenthesesWhere()
     {
         var result = BooleanExpressionParser.Parse("erp->customers.name = erp->orders.ordered_by AND (erp->customers.name = 'test' OR erp->customers.number = 1234)");
-        
+
+        result.Should().NotBeNull();
         result.ShouldBeBinaryOperator("AND");
-        var op = (BinaryOperatorWhereNode)result;
+        var op = (BinaryOperatorExpressionNode)result;
         op.Left.ShouldBeBinaryOperator("=", 
             new AttributeSpecifier("erp", "customers", "name"), 
             new AttributeSpecifier("erp", "orders", "ordered_by"));
         
         op.Right.ShouldBeBinaryOperator("OR");
-        var rightOp = (BinaryOperatorWhereNode)op.Right;
+        var rightOp = (BinaryOperatorExpressionNode)op.Right;
         rightOp.Left.ShouldBeBinaryOperator("=", new AttributeSpecifier("erp", "customers", "name"), "test");
         
         rightOp.Right.ShouldBeBinaryOperator("=", new AttributeSpecifier("erp", "customers", "number"), "1234");
     }
+    #endregion
+    
+    #region NegativeTests
+    [Test]
+    public void ShouldHandle_ParenthesesMismatch()
+    {
+        var expression = "(erp->customers.name = 'test'";
+        Action action = () => BooleanExpressionParser.Parse(expression);
+        action.ShouldThrowParseException(expression, "Mismatched parentheses.");
+    }
+    #endregion
 }

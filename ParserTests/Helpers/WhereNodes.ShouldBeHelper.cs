@@ -6,50 +6,50 @@ namespace ParserTests.Helpers;
 
 public static partial class ShouldBeHelper
 {
-    extension(IWhereNode node)
+    extension(IExpressionNode node)
     {
         public void ShouldBeBinaryOperator(string @operator,
             AttributeSpecifier left, string right)
         {
-            node.Should().BeOfType<BinaryOperatorWhereNode>();
-            var binaryOperator = (BinaryOperatorWhereNode)node;
+            node.Should().BeOfType<BinaryOperatorExpressionNode>();
+            var binaryOperator = (BinaryOperatorExpressionNode)node;
         
             binaryOperator.Operation.Should().Be(@operator);
         
-            binaryOperator.Left.Should().BeOfType<FullySpecifiedColumnWhereNode>();
-            var leftAnd = (FullySpecifiedColumnWhereNode)binaryOperator.Left;
+            binaryOperator.Left.Should().BeOfType<FullySpecifiedColumnExpressionNode>();
+            var leftAnd = (FullySpecifiedColumnExpressionNode)binaryOperator.Left;
             leftAnd.Attribute.ShouldBeAttribute(left.DataSourceName, left.TableName, left.AttributeName);
         
-            binaryOperator.Right.Should().BeOfType<ValueWhereNode>();
-            var rightAnd = (ValueWhereNode)binaryOperator.Right;
+            binaryOperator.Right.Should().BeOfType<ValueExpressionNode>();
+            var rightAnd = (ValueExpressionNode)binaryOperator.Right;
             rightAnd.Value.Should().Be(right);
         }
 
         public void ShouldBeBinaryOperator(string @operator,
             AttributeSpecifier left, AttributeSpecifier right)
         {
-            node.Should().BeOfType<BinaryOperatorWhereNode>();
-            var binaryOperator = (BinaryOperatorWhereNode)node;
+            node.Should().BeOfType<BinaryOperatorExpressionNode>();
+            var binaryOperator = (BinaryOperatorExpressionNode)node;
         
             binaryOperator.Operation.Should().Be(@operator);
         
-            binaryOperator.Left.Should().BeOfType<FullySpecifiedColumnWhereNode>();
-            var leftAnd = (FullySpecifiedColumnWhereNode)binaryOperator.Left;
+            binaryOperator.Left.Should().BeOfType<FullySpecifiedColumnExpressionNode>();
+            var leftAnd = (FullySpecifiedColumnExpressionNode)binaryOperator.Left;
             leftAnd.Attribute.ShouldBeAttribute(left.DataSourceName, left.TableName, left.AttributeName);
         
-            binaryOperator.Right.Should().BeOfType<FullySpecifiedColumnWhereNode>();
-            var rightAnd = (FullySpecifiedColumnWhereNode)binaryOperator.Right;
+            binaryOperator.Right.Should().BeOfType<FullySpecifiedColumnExpressionNode>();
+            var rightAnd = (FullySpecifiedColumnExpressionNode)binaryOperator.Right;
             rightAnd.Attribute.ShouldBeAttribute(right.DataSourceName, right.TableName, right.AttributeName);
         }
         
         public void ShouldBeBinaryOperator(string @operator)
         {
-            node.Should().BeOfType<BinaryOperatorWhereNode>();
-            var binaryOperator = (BinaryOperatorWhereNode)node;
+            node.Should().BeOfType<BinaryOperatorExpressionNode>();
+            var binaryOperator = (BinaryOperatorExpressionNode)node;
         
             binaryOperator.Operation.Should().Be(@operator);
-            binaryOperator.Left.Should().BeOfType<BinaryOperatorWhereNode>();
-            binaryOperator.Right.Should().BeOfType<BinaryOperatorWhereNode>();
+            binaryOperator.Left.Should().BeOfType<BinaryOperatorExpressionNode>();
+            binaryOperator.Right.Should().BeOfType<BinaryOperatorExpressionNode>();
         }
     }
 }
