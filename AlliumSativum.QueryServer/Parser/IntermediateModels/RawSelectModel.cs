@@ -21,7 +21,7 @@ public sealed class RawSelectModel
     
     public void Add(string type, string value)
     {
-        if (type.Contains(SqlKeywords.JOIN))
+        if (type.Contains(AsSqlKeywords.JOIN))
         {
             Join = $"{type} {Join}"; // with every operator except join we can infer the type of operator from the field
             return;
@@ -29,13 +29,13 @@ public sealed class RawSelectModel
         
         switch (type)
         {
-            case SqlKeywords.SELECT:
+            case AsSqlKeywords.SELECT:
                 Select = value;
                 break;
-            case SqlKeywords.FROM:
+            case AsSqlKeywords.FROM:
                 From = value;
                 break;
-            case SqlKeywords.WHERE:
+            case AsSqlKeywords.WHERE:
                 Where = value;
                 break;
             default:

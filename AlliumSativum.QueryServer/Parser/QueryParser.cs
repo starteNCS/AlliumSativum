@@ -1,7 +1,9 @@
+using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 using AlliumSativum.Parser.Constants;
 using AlliumSativum.Parser.Exceptions;
 using AlliumSativum.Parser.IntermediateModels;
+using AlliumSativum.Parser.IntermediateModels.Expressions;
 using AlliumSativum.Parser.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Parser;
@@ -11,7 +13,7 @@ public class QueryParser
     public SelectBaseModel? Parse(string query)
     {
         query = query.Trim();
-        if (!query.StartsWith(SqlKeywords.SELECT))
+        if (!query.StartsWith(AsSqlKeywords.SELECT))
         {
             throw new ArgumentException("Query must start with 'SELECT'", nameof(query));
         }
@@ -27,8 +29,43 @@ public class QueryParser
             Select = HandleSelect(rawQuery.Select!),
             From = HandleFrom(rawQuery.From!),
             Join = [],
-            Where = []
+            Where = HandleWhere(rawQuery.Where)
         };
+    }
+
+    private static List<Expression> HandleWhere(string? whereQuery)
+    {
+        if (whereQuery == null)
+        {
+            return [];
+        }
+        const string pattern = $@"(?i)\b({AsSqlKeywords.BooleanOperators.AND}|{AsSqlKeywords.BooleanOperators.OR})\b";
+
+        // TODO morgen: Shunting yard algorithm implementieren!
+        
+        var m = new List<string>();
+        var matches = Regex.Matches(whereQuery, pattern);
+        Match? lastKeywordMatch = null;
+        foreach (Match match in matches)
+        {
+            // everything in group 0 is within quotes (or brackets)
+            if (!match.Groups[1].Success)
+            {
+                continue;
+            }
+            if (lastKeywordMatch != null)
+            {
+                m.Add(GetMatchContent(lastKeywordMatch, whereQuery, match.Index));
+            }
+            
+            lastKeywordMatch = match;
+        }
+        
+        if (lastKeywordMatch != null)
+        {
+            m.Add(GetMatchContent(lastKeywordMatch, whereQuery, whereQuery.Length));
+        }
+        return [];
     }
 
     private static TableSpecifier HandleFrom(string fromQueryPart)
@@ -36,7 +73,7 @@ public class QueryParser
         return HandleTableSpecifier(fromQueryPart);
     }
     
-    private static IList<AttributeSpecifier> HandleSelect(string selectQueryPart)
+    private static List<AttributeSpecifier> HandleSelect(string selectQueryPart)
     {
         var attributes = selectQueryPart.Split(AsSqlParameters.Attribute.FieldDelimiter);
 
@@ -75,22 +112,22 @@ public class QueryParser
     
     private static RawSelectModel SplitQuery(string query)
     {
-        string robustPattern = $@"'[^']*'|\[[^\]]*\]|\([^\)]*\)|(?i)\b({SqlKeywords.SELECT}|{SqlKeywords.FROM}|{SqlKeywords.WHERE}|(LEFT|RIGHT|INNER|FULL\s+OUTER)\s+{SqlKeywords.JOIN})\b";
+        const string pattern = $@"'[^']*'|\[[^\]]*\]|\([^\)]*\)|(?i)\b({AsSqlKeywords.SELECT}|{AsSqlKeywords.FROM}|{AsSqlKeywords.WHERE}|(LEFT|RIGHT|INNER|FULL\s+OUTER)\s+{AsSqlKeywords.JOIN})\b";
 
         var rawSplitQuery = new RawSelectModel();
-        var matches = Regex.Matches(query, robustPattern);
+        var matches = Regex.Matches(query, pattern);
 
         Match? lastKeywordMatch = null;
         foreach (Match match in matches)
         {
-            // if Group 1 is success, it means we hit a keyword, not a string/bracket
+            // everything in group 0 is within quotes (or brackets)
             if (!match.Groups[1].Success)
             {
                 continue;
             }
             if (lastKeywordMatch != null)
             {
-                AddPart(lastKeywordMatch, match.Index);
+                rawSplitQuery.Add(lastKeywordMatch.Value.ToUpper(), GetMatchContent(lastKeywordMatch, query, match.Index));
             }
             
             lastKeywordMatch = match;
@@ -98,16 +135,15 @@ public class QueryParser
         
         if (lastKeywordMatch != null)
         {
-            AddPart(lastKeywordMatch, query.Length);
+            rawSplitQuery.Add(lastKeywordMatch.Value.ToUpper(), GetMatchContent(lastKeywordMatch, query, query.Length));
         }
 
         return rawSplitQuery;
+    }
 
-        void AddPart(Match match, int nextIndex)
-        {
-            var key = match.Value.ToUpper();
-            var start = match.Index + match.Length;
-            rawSplitQuery.Add(key, query.Substring(start, nextIndex - start).Trim());
-        }
+    private static string GetMatchContent(Match match, string fulltext, int nextIndex)
+    {
+        var start = match.Index + match.Length;
+        return fulltext.Substring(start, nextIndex - start).Trim();
     }
 }
