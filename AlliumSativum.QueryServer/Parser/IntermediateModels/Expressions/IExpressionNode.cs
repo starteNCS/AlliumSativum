@@ -11,6 +11,12 @@ public class PartialColumnExpressionNode : IExpressionNode
     public override string ToString() => $"[{Name}]";
 }
 
+public class VariableMappingExpressionNode : IExpressionNode
+{
+    public required VariableMappingSpecifier VariableMapping { get; set; }
+    public override string ToString() => $"[{VariableMapping.VariableName}{AsSqlParameters.Attribute.TableSeparator}{VariableMapping.AttributeName}]";
+}
+
 public class FullySpecifiedColumnExpressionNode : IExpressionNode
 {
     public required AttributeSpecifier Attribute { get; set; }

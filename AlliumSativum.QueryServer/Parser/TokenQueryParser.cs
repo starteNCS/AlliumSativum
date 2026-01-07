@@ -28,6 +28,9 @@ public static partial class TokenQueryParser
             case AsSqlKeywords.FROM:
                 HandleFromStatement(tokens, model);
                 break;
+            case AsSqlKeywords.WHERE:
+                HandleWhereStatement(tokens, model);
+                break;
             default:
                 tokens.Pop();
                 break;

@@ -24,6 +24,23 @@ public static partial class ShouldBeHelper
             var rightAnd = (ValueExpressionNode)binaryOperator.Right;
             rightAnd.Value.Should().Be(right);
         }
+        
+        public void ShouldBeBinaryOperator(string @operator,
+            VariableMappingSpecifier left, string right)
+        {
+            node.Should().BeOfType<BinaryOperatorExpressionNode>();
+            var binaryOperator = (BinaryOperatorExpressionNode)node;
+        
+            binaryOperator.Operation.Should().Be(@operator);
+        
+            binaryOperator.Left.Should().BeOfType<VariableMappingExpressionNode>();
+            var leftAnd = (VariableMappingExpressionNode)binaryOperator.Left;
+            leftAnd.VariableMapping.ShouldBeVariableMapping(left.VariableName, left.AttributeName);
+        
+            binaryOperator.Right.Should().BeOfType<ValueExpressionNode>();
+            var rightAnd = (ValueExpressionNode)binaryOperator.Right;
+            rightAnd.Value.Should().Be(right);
+        }
 
         public void ShouldBeBinaryOperator(string @operator,
             AttributeSpecifier left, AttributeSpecifier right)

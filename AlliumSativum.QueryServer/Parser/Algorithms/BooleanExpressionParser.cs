@@ -19,9 +19,8 @@ public static partial class BooleanExpressionParser
         { "=", 3 }, { "!=", 3 }, { "<", 3 }, { ">", 3 }, { "<=", 3 }, { ">=", 3 }, { "LIKE", 3 }
     };
 
-    public static IExpressionNode? Parse(string sqlWhere)
+    public static IExpressionNode? Parse(Stack<string> tokens)
     {
-        var tokens = Tokenize(sqlWhere);
         var operatorStack = new Stack<string>();
         var operandStack = new Stack<IExpressionNode>();
 
@@ -51,7 +50,7 @@ public static partial class BooleanExpressionParser
                 
                     if(operatorStack.Count == 0)
                     {
-                        throw new AsSqlParseException(sqlWhere, "Mismatched parentheses.");
+                        throw new AsSqlParseException("", "Mismatched parentheses.");
                     }
                     operatorStack.Pop(); // Pop the '('
                     break;
@@ -68,7 +67,7 @@ public static partial class BooleanExpressionParser
         {
             if (operatorStack.Peek() == "(")
             {
-                throw new AsSqlParseException(sqlWhere, "Mismatched parentheses.");
+                throw new AsSqlParseException("", "Mismatched parentheses.");
             }
             BuildNode(operatorStack, operandStack);
         }
@@ -92,22 +91,47 @@ public static partial class BooleanExpressionParser
         {
             return operands.Pop();
         }
-        
-        IList<PartialColumnExpressionNode> items = [];
-        while (operands.Count > 0 && items.Count != 3 && operands.Peek() is PartialColumnExpressionNode)
+
+        if (!operands.TryPop(out var attributeName) || attributeName is not PartialColumnExpressionNode attributeNameNode)
         {
-            var topmostItem = (PartialColumnExpressionNode)operands.Pop();
-            if (topmostItem.Name == AsSqlParameters.Attribute.DataSourceSeparator ||
-                topmostItem.Name == AsSqlParameters.Attribute.TableSeparator.ToString())
-            {
-                continue;
-            }
-            items.Add(topmostItem);
+            throw new AsSqlParseException("", "Expected PartialColumnExpressionNode for attribute name");
         }
 
-        return new FullySpecifiedColumnExpressionNode
+        if (!operands.TryPop(out var tableSeparator) || tableSeparator is not PartialColumnExpressionNode  tableSeparatorNode || tableSeparatorNode.Name != AsSqlParameters.Attribute.TableSeparator.ToString())
         {
-            Attribute = new AttributeSpecifier(items[2].Name, items[1].Name, items[0].Name),
+            throw new AsSqlParseException("", $"Expected PartialColumnExpressionNode containing the table separator ({AsSqlParameters.Attribute.TableSeparator})");
+        }
+
+        if (!operands.TryPop(out var tableName) || tableName is not PartialColumnExpressionNode tableNameNode)
+        {
+            throw new AsSqlParseException("", "Expected PartialColumnExpressionNode for table name");
+        }
+
+        if (operands.Count == 0 || (operands.TryPeek(out var nextToken) && nextToken is PartialColumnExpressionNode nextTokenNode && nextTokenNode.Name != AsSqlParameters.Attribute.DataSourceSeparator))
+        {
+            // we've got some other item, therefore, this was an VariableMappingExpressionNode
+            return new VariableMappingExpressionNode
+            {
+                VariableMapping = new VariableMappingSpecifier(tableNameNode.Name, attributeNameNode.Name)
+            };
+        }
+        
+        if (!operands.TryPop(out var dataSourceSeparator) || dataSourceSeparator is not PartialColumnExpressionNode
+            {
+                Name: AsSqlParameters.Attribute.DataSourceSeparator
+            })
+        {
+            throw new AsSqlParseException("", $"Expected PartialColumnExpressionNode  containing the data source separator ({AsSqlParameters.Attribute.DataSourceSeparator})");
+        }
+        
+        if (!operands.TryPop(out var dataSource) || dataSource is not PartialColumnExpressionNode dataSourceNode)
+        {
+            throw new AsSqlParseException("", "Expected PartialColumnExpressionNode for data source");
+        }
+
+        return new FullySpecifiedColumnExpressionNode()
+        {
+            Attribute = new AttributeSpecifier(dataSourceNode.Name, tableNameNode.Name, attributeNameNode.Name),
         };
     }
 
@@ -121,22 +145,4 @@ public static partial class BooleanExpressionParser
         }
         return new PartialColumnExpressionNode { Name = token };
     }
-
-    /// <summary>
-    /// Basic Tokenizer using Regex
-    /// Pattern handles:
-    /// 1. Strings ('value')
-    /// 2. Operators (<=, >=, !=, =, <, >)
-    /// 3. Parentheses
-    /// 4. Words/Numbers
-    /// </summary>
-    private static List<string> Tokenize(string input)
-    {
-        return TokenizeRegex().Matches(input)
-            .Select(match => match.Value)
-            .ToList();
-    }
-
-    [GeneratedRegex(@"('[^']*')|(\.|->|!=|>=|<=|=|<|>)|(\(|\))|(\w+)")]
-    private static partial Regex TokenizeRegex();
 }

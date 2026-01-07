@@ -1,5 +1,5 @@
 using AlliumSativum.Parser;
-using AlliumSativum.Parser.IntermediateModels.Expressions;
+using AlliumSativum.Parser.Constants;
 using AlliumSativum.Parser.IntermediateModels.Specifiers;
 using AlliumSativum.Token;
 using FluentAssertions;
@@ -10,7 +10,7 @@ namespace ParserTests;
 // more tests are run in BooleanExpressionParserTest
 public sealed class WhereSelectQueries
 {
-    
+    #region PositiveTests
     [Test]
     public void ShouldParse_SingleWhere()
     {
@@ -19,28 +19,39 @@ public sealed class WhereSelectQueries
         var result = TokenQueryParser.Parse(tokens);
         result.Should().NotBeNull();
 
+        result.From.Should().NotBeNull();
         result.From.ShouldBeTable("erp", "customers");
         result.Select.ShouldContainAttributeSpecifier("erp", "customers", "name");
         result.Where.Should().NotBeNull();
         result.Where.ShouldBeBinaryOperator("=", new AttributeSpecifier("erp", "customers", "name"), "John Doe");
-    }
+    }    
     
     [Test]
-    public void ShouldParse_MultipleWhereBlocks()
+    public void ShouldParse_SingleWhere_VariableMapping()
     {
-        var query =
-            "SELECT erp->customers.name FROM erp->customers WHERE erp->customers.name='John Doe' WHERE erp->customers.age>25";
+        var query = "SELECT erp->customers.name FROM erp->customers c WHERE c.name='John Doe'";
         var tokens = Tokenizer.Tokenize(query);
         var result = TokenQueryParser.Parse(tokens);
         result.Should().NotBeNull();
 
+        result.From.Should().NotBeNull();
         result.From.ShouldBeTable("erp", "customers");
         result.Select.ShouldContainAttributeSpecifier("erp", "customers", "name");
         result.Where.Should().NotBeNull();
-        result.Where.ShouldBeBinaryOperator("AND");
-
-        var whereQuery = (BinaryOperatorExpressionNode)result.Where;
-        whereQuery.Left.ShouldBeBinaryOperator("=", new AttributeSpecifier("erp", "customers", "name"), "John Doe");
-        whereQuery.Right.ShouldBeBinaryOperator(">", new AttributeSpecifier("erp", "customers", "age"), "25");
+        result.Where.ShouldBeBinaryOperator("=", new VariableMappingSpecifier("c", "name"), "John Doe");
     }
+    #endregion
+
+    #region NegativeTests
+    [Test]
+    public void ShouldNotParse_MultipleWhereBlocks()
+    {
+        var query =
+            "SELECT erp->customers.name FROM erp->customers WHERE erp->customers.name='John Doe' WHERE erp->customers.age>25";
+        var tokens = Tokenizer.Tokenize(query);
+        Action action = () => TokenQueryParser.Parse(tokens);
+        
+        action.ShouldThrowParseException("", $"Only one {AsSqlKeywords.WHERE} statement is allowed. Please combine them using AND");
+    }
+    #endregion
 }

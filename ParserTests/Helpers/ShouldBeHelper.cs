@@ -19,6 +19,12 @@ public static partial class ShouldBeHelper
         attributeSpecifier.AttributeName.Should().Be(attributeName);
     }
     
+    public static void ShouldBeVariableMapping(this VariableMappingSpecifier variableMappingSpecifier, string variableName, string attributeName)
+    {
+        variableMappingSpecifier.VariableName.Should().Be(variableName);
+        variableMappingSpecifier.AttributeName.Should().Be(attributeName);
+    }
+    
     public static void ShouldContainAttributeSpecifier(this IList<ISpecifier> attributeSpecifiers, string dataSourceName, string tableName, string attributeName)
     {
         attributeSpecifiers.Should().Contain(attr => 
