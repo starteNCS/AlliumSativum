@@ -132,7 +132,6 @@ public static partial class BooleanExpressionParser
     /// </summary>
     private static List<string> Tokenize(string input)
     {
-        
         return TokenizeRegex().Matches(input)
             .Select(match => match.Value)
             .ToList();

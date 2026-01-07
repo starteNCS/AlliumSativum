@@ -23,7 +23,7 @@ public sealed class RawSelectModel
     {
         if (type.Contains(AsSqlKeywords.JOIN))
         {
-            Join.Add($"{type} {Join}"); // with every operator except join we can infer the type of operator from the field
+            Join.Add($"{type} {value}"); // with every operator except join we can infer the type of operator from the field
             return;
         }
         

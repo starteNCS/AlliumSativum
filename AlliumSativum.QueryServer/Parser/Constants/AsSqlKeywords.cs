@@ -8,6 +8,8 @@ public static class AsSqlKeywords
     public const string WHERE = "WHERE";
     public const string JOIN = "JOIN";
 
+    public static readonly List<string> Keywords = [SELECT, FROM, WHERE, JOIN];
+
     public static class BooleanOperators
     {
         public const string AND = "AND";

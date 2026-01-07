@@ -1,6 +1,7 @@
 using AlliumSativum;
 using AlliumSativum.Parser;
 using AlliumSativum.Parser.Constants;
+using AlliumSativum.Token;
 using FluentAssertions;
 using ParserTests.Helpers;
 
@@ -8,13 +9,12 @@ namespace ParserTests;
 
 public sealed class SimpleSelectQueries
 {
-    private static QueryParser _parser = new QueryParser();
-
     #region PositiveTests
     [Test]
     public void ShouldParse_SingleAttribute()
     {
-        var result = _parser.Parse("SELECT erp->customers.name FROM erp->customers");
+        var tokens = Tokenizer.Tokenize("SELECT erp->customers.name FROM erp->customers");
+        var result = TokenQueryParser.Parse(tokens);
         result.Should().NotBeNull();
 
         result.From.ShouldBeTable("erp", "customers");
@@ -24,7 +24,8 @@ public sealed class SimpleSelectQueries
     [Test]
     public void ShouldParse_MultipleAttributes()
     {
-        var result = _parser.Parse("SELECT erp->customers.name, erp->customers.customer_number FROM erp->customers");
+        var tokens = Tokenizer.Tokenize("SELECT erp->customers.name, erp->customers.customer_number FROM erp->customers");
+        var result = TokenQueryParser.Parse(tokens);
         result.Should().NotBeNull();
 
         result.From.ShouldBeTable("erp", "customers");
@@ -37,22 +38,25 @@ public sealed class SimpleSelectQueries
     [Test]
     public void ShouldNotParse_Select_InvalidDataSourceSeparator()
     {
-        Action action = () => _parser.Parse("SELECT erp.customers.name FROM erp->customers");
-        action.ShouldThrowParseException("erp.customers.name", $"Could not find datasource separator ({AsSqlParameters.Attribute.DataSourceSeparator})");
+        var tokens = Tokenizer.Tokenize("SELECT erp.customers.name FROM erp->customers");
+        Action action = () => TokenQueryParser.Parse(tokens);
+        action.ShouldThrowParseException("erp.", $"expected datasource separator, got '.'");
     }
     
     [Test]
     public void ShouldNotParse_Select_InvalidTableNameSeparator()
     {
-        Action action = () => _parser.Parse("SELECT erp->customersname FROM erp->customers");
-        action.ShouldThrowParseException("erp->customersname", $"Invalid number of attribute separators (expected 2, found 1)");
+        var tokens = Tokenizer.Tokenize("SELECT erp->customersname FROM erp->customers");
+        Action action = () => TokenQueryParser.Parse(tokens);
+        action.ShouldThrowParseException("erp->customersnameFROM", $"expected table name separator, got 'FROM'");
     }
     
     [Test]
     public void ShouldNotParse_From_InvalidDataSourceSeparator()
     {
-        Action action = () => _parser.Parse("SELECT erp->customers.name FROM erp.customers");
-        action.ShouldThrowParseException("erp.customers", $"Could not find datasource separator ({AsSqlParameters.Attribute.DataSourceSeparator})");
+        var tokens = Tokenizer.Tokenize("SELECT erp->customers.name FROM erp.customers");
+        Action action = () => TokenQueryParser.Parse(tokens);
+        action.ShouldThrowParseException("erp.", $"expected datasource separator, got '.'");
     }
     #endregion
 }

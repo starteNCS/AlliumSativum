@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq.Expressions;
 using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
@@ -7,6 +8,7 @@ using AlliumSativum.Parser.Exceptions;
 using AlliumSativum.Parser.IntermediateModels;
 using AlliumSativum.Parser.IntermediateModels.Expressions;
 using AlliumSativum.Parser.IntermediateModels.Specifiers;
+using AlliumSativum.Token;
 
 namespace AlliumSativum.Parser;
 
@@ -26,17 +28,26 @@ public class QueryParser
             return null;
         }
         
+        
+        
         return new SelectBaseModel()
         {
+            VariableMappings = [],
             Select = HandleSelect(rawQuery.Select!),
             From = HandleFrom(rawQuery.From!),
-            Join = [],
+            Join = HandleJoin(rawQuery.Join),
             Where = HandleWhere(rawQuery.Where)
         };
     }
 
-    private static List<JoinBaseModel> HandleJoin(string? join)
+    private static List<JoinBaseModel> HandleJoin(List<string> join)
     {
+        if (join.Count == 0)
+        {
+            return [];
+        }
+        
+
         return [];
     }
     

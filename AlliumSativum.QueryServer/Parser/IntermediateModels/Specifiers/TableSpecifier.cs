@@ -8,4 +8,9 @@ public class TableSpecifier : DataSourceSpecifier
     {
         TableName = tableName;
     }
+
+    public AttributeSpecifier ToAttributeSpecifier(string attributeName)
+    {
+        return new AttributeSpecifier(DataSourceName, TableName, attributeName);
+    }
 }
