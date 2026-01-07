@@ -8,17 +8,17 @@ public static partial class TokenQueryParser
 {
     private static void HandleSelectStatement(Stack<string> tokens, SelectBaseModel model)
     {
-        List<AttributeSpecifier> specifiers = [];
+        List<ISpecifier> specifiers = [];
         do
         {
             var token = tokens.Peek();
-            if (token == AsSqlKeywords.SELECT || token == ",")
+            if (token is AsSqlKeywords.SELECT or ",")
             {
                 tokens.Pop();
                 continue;
             }
 
-            specifiers.Add(HandleAttributeSpecifier(tokens));
+            specifiers.Add(GetVariableOrAttributeSpecifier(tokens));
         } while (!AsSqlKeywords.Keywords.Contains(tokens.Peek()));
 
         model.Select = specifiers;

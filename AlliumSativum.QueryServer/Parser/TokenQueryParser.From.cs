@@ -20,7 +20,7 @@ public static partial class TokenQueryParser
             throw new AsSqlParseException(token, $"Could not parse FROM, as it starts with the wrong keyword (found '{token}')");
         }
         
-        var fromSpecifier = HandleTableSpecifier(tokens);
+        var fromSpecifier = GetTableSpecifier(tokens);
 
         if (tokens.TryPeek(out var nextToken) && !AsSqlKeywords.Keywords.Contains(nextToken))
         {

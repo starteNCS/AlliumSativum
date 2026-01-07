@@ -17,8 +17,9 @@ public sealed class SimpleSelectQueries
         var result = TokenQueryParser.Parse(tokens);
         result.Should().NotBeNull();
 
+        result.From.Should().NotBeNull();
         result.From.ShouldBeTable("erp", "customers");
-        result.Select.ShouldContainAttribute("erp", "customers", "name");
+        result.Select.ShouldContainAttributeSpecifier("erp", "customers", "name");
     }
 
     [Test]
@@ -28,9 +29,10 @@ public sealed class SimpleSelectQueries
         var result = TokenQueryParser.Parse(tokens);
         result.Should().NotBeNull();
 
+        result.From.Should().NotBeNull();
         result.From.ShouldBeTable("erp", "customers");
-        result.Select.ShouldContainAttribute("erp", "customers", "name");
-        result.Select.ShouldContainAttribute("erp", "customers", "customer_number");
+        result.Select.ShouldContainAttributeSpecifier("erp", "customers", "name");
+        result.Select.ShouldContainAttributeSpecifier("erp", "customers", "customer_number");
     }
     #endregion
 
@@ -40,7 +42,7 @@ public sealed class SimpleSelectQueries
     {
         var tokens = Tokenizer.Tokenize("SELECT erp.customers.name FROM erp->customers");
         Action action = () => TokenQueryParser.Parse(tokens);
-        action.ShouldThrowParseException("erp.", $"expected datasource separator, got '.'");
+        action.ShouldThrowParseException("erp.customers.", $"invalid table name separator ({AsSqlParameters.Attribute.TableSeparator}), are you sure you didn't mean 'erp{AsSqlParameters.Attribute.DataSourceSeparator}customers{AsSqlParameters.Attribute.TableSeparator}name'?");
     }
     
     [Test]

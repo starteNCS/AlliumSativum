@@ -1,6 +1,6 @@
 namespace AlliumSativum.Parser.IntermediateModels.Specifiers;
 
-public class DataSourceSpecifier
+public class DataSourceSpecifier : ISpecifier
 {
     public string DataSourceName { get; set; }
 

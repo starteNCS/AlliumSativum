@@ -19,8 +19,12 @@ public static partial class ShouldBeHelper
         attributeSpecifier.AttributeName.Should().Be(attributeName);
     }
     
-    public static void ShouldContainAttribute(this IList<AttributeSpecifier> attributeSpecifiers, string dataSourceName, string tableName, string attributeName)
+    public static void ShouldContainAttributeSpecifier(this IList<ISpecifier> attributeSpecifiers, string dataSourceName, string tableName, string attributeName)
     {
-        attributeSpecifiers.Should().Contain(attr => attr.DataSourceName == dataSourceName && attr.TableName == tableName && attr.AttributeName == attributeName);
+        attributeSpecifiers.Should().Contain(attr => 
+            attr is AttributeSpecifier &&
+            ((AttributeSpecifier)attr).DataSourceName == dataSourceName &&
+            ((AttributeSpecifier)attr).TableName == tableName &&
+            ((AttributeSpecifier)attr).AttributeName == attributeName);
     }
 }
