@@ -33,4 +33,12 @@ public static partial class ShouldBeHelper
             ((AttributeSpecifier)attr).TableName == tableName &&
             ((AttributeSpecifier)attr).AttributeName == attributeName);
     }
+    
+    public static void ShouldContainVariableMappingSpecifier(this IList<ISpecifier> attributeSpecifiers, string alias, string attributeName)
+    {
+        attributeSpecifiers.Should().Contain(attr => 
+            attr is VariableMappingSpecifier &&
+            ((VariableMappingSpecifier)attr).VariableName == alias &&
+            ((VariableMappingSpecifier)attr).AttributeName == attributeName);
+    }
 }

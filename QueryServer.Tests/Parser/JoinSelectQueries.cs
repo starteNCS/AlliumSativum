@@ -1,13 +1,11 @@
-using System.Text.Json.Serialization;
 using AlliumSativum.Parser;
 using AlliumSativum.Parser.IntermediateModels;
-using AlliumSativum.Parser.IntermediateModels.Expressions;
 using AlliumSativum.Parser.IntermediateModels.Specifiers;
 using AlliumSativum.Token;
 using FluentAssertions;
 using ParserTests.Helpers;
 
-namespace ParserTests;
+namespace ParserTests.Parser;
 
 // more tests on the join expressions are run in BooleanExpressionParserTest
 public sealed class JoinSelectQueries

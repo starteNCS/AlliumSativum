@@ -16,8 +16,8 @@ public static class QueryCompiler
         {
             throw new AsSqlException();
         }
-        var semanticCheckedModel = SemanticTransformer.Transform(selectModel);
+        SemanticTransformer.Transform(selectModel);
         
-        return semanticCheckedModel;
+        return selectModel;
     }
 }

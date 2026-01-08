@@ -1,11 +1,10 @@
-using AlliumSativum;
 using AlliumSativum.Parser;
 using AlliumSativum.Parser.Constants;
 using AlliumSativum.Token;
 using FluentAssertions;
 using ParserTests.Helpers;
 
-namespace ParserTests;
+namespace ParserTests.Parser;
 
 public sealed class SimpleSelectQueries
 {

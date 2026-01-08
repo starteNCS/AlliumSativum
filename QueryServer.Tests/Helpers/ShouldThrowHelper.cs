@@ -11,4 +11,10 @@ public static class ShouldThrowHelper
             .Where(e => e.ParseContent == parseContent)
             .Where(e => e.AsMessage == message);
     }
+    
+    public static void ShouldThrowSemanticException(this Action action, string message)
+    {
+        action.Should().Throw<AsSqlSemanticException>()
+            .Where(e => e.AsMessage == message);
+    }
 }

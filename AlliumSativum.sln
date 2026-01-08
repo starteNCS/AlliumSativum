@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.STAR", "Alliu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{A36F6308-248D-46B9-BE2A-91F9FA3314BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserTests", "ParserTests\ParserTests.csproj", "{70DC5659-FED1-4412-BF99-006D7F974B30}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryServer.Tests", "QueryServer.Tests\QueryServer.Tests.csproj", "{70DC5659-FED1-4412-BF99-006D7F974B30}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

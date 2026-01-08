@@ -11,7 +11,11 @@ namespace AlliumSativum.Semantic;
 /// </summary>
 public static class SemanticTransformer
 {
-    public static SelectBaseModel Transform(SelectBaseModel model)
+    /// <summary>
+    /// Transforms in place
+    /// </summary>
+    /// <param name="model"></param>
+    public static void Transform(SelectBaseModel model)
     {
         model.Where = CollapseVariableMappingsOfExpression(model.VariableMappings, model.Where);
         
@@ -21,8 +25,6 @@ public static class SemanticTransformer
         }
         
         model.Select = CollapseVariableMappingsOfSpecifiers(model.VariableMappings, model.Select);
-
-        return model;
     }
 
     private static List<ISpecifier> CollapseVariableMappingsOfSpecifiers(List<VariableMapping> variableMappings, List<ISpecifier> specifiers)
@@ -37,7 +39,7 @@ public static class SemanticTransformer
             var mapping = variableMappings.Find(m => m.Alias == mappingSpecifier.VariableName);
             if (mapping == null)
             {
-                throw new AsSqlSemanticException($"Variable mapping not found: '{mappingSpecifier.VariableName}'.");
+                throw new AsSqlSemanticException($"variable mapping not found: '{mappingSpecifier.VariableName}'");
             }
 
             specifiers[index] = new AttributeSpecifier(
@@ -78,7 +80,7 @@ public static class SemanticTransformer
             var foundMapping = variableMappings.Find(m => m.Alias == variableMapping.VariableMapping.VariableName);
             if (foundMapping == null)
             {
-                throw new AsSqlSemanticException($"Variable mapping not found: '{variableMapping.VariableMapping.VariableName}'.");
+                throw new AsSqlSemanticException($"variable mapping not found: '{variableMapping.VariableMapping.VariableName}'");
             }
 
             expression = new FullySpecifiedColumnExpressionNode()

@@ -5,7 +5,7 @@ using AlliumSativum.Token;
 using FluentAssertions;
 using ParserTests.Helpers;
 
-namespace ParserTests;
+namespace ParserTests.Parser;
 
 // more tests are run in BooleanExpressionParserTest
 public sealed class WhereSelectQueries
