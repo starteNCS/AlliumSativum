@@ -31,6 +31,12 @@ public static partial class TokenQueryParser
             case AsSqlKeywords.WHERE:
                 HandleWhereStatement(tokens, model);
                 break;
+            case AsSqlKeywords.JoinType.INNER:
+            case AsSqlKeywords.JoinType.OUTER:
+            case AsSqlKeywords.JoinType.LEFT:
+            case AsSqlKeywords.JoinType.RIGHT:
+                HandleJoinStatement(tokens, model);
+                break;
             default:
                 tokens.Pop();
                 break;

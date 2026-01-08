@@ -1,4 +1,4 @@
-namespace AlliumSativum.Parser.Exceptions;
+namespace AlliumSativum.Exceptions;
 
 public class AsSqlException : Exception
 {

@@ -1,5 +1,5 @@
+using AlliumSativum.Exceptions;
 using AlliumSativum.Parser.Constants;
-using AlliumSativum.Parser.Exceptions;
 using AlliumSativum.Parser.IntermediateModels;
 
 namespace AlliumSativum.Parser;
@@ -10,7 +10,7 @@ public static partial class TokenQueryParser
     {
         if (model.From is not null)
         {
-            throw new AsSqlParseException(ReadStringUntilNextKeyword(tokens),
+            throw new AsSqlParseException(ReadStringToNextKeyword(tokens),
                 "Only one FROM keyword is allowed in AsSQL");
         }
         

@@ -7,14 +7,13 @@ namespace AlliumSativum.Parser.IntermediateModels;
 public sealed class JoinBaseModel
 {
     public JoinType JoinType { get; init; }
-    public TableSpecifier Outer { get; init; }
     public TableSpecifier Inner { get; init; }
-    public IExpressionNode Expression { get; init; }
+    public IExpressionNode Expression { get; set; }
 }
 
 public enum JoinType
 {
-    FullOuter,
+    Outer,
     Left,
     Right,
     Inner
@@ -29,7 +28,7 @@ public static class JoinTypeExtensions
             AsSqlKeywords.JoinType.INNER => JoinType.Inner,
             AsSqlKeywords.JoinType.LEFT => JoinType.Left,
             AsSqlKeywords.JoinType.RIGHT => JoinType.Right,
-            AsSqlKeywords.JoinType.OUTER => JoinType.FullOuter,
+            AsSqlKeywords.JoinType.OUTER => JoinType.Outer,
             _ => throw new ArgumentOutOfRangeException(nameof(typeString), typeString, null)
         };
     }

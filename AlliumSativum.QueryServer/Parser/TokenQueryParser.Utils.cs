@@ -5,7 +5,7 @@ namespace AlliumSativum.Parser;
 
 public static partial class TokenQueryParser
 {
-    private static string ReadStringUntilNextKeyword(Stack<string> tokens)
+    private static string ReadStringToNextKeyword(Stack<string> tokens)
     {
         var builder = new StringBuilder();
         while (tokens.TryPeek(out var token) && !AsSqlKeywords.Keywords.Contains(token))
@@ -27,7 +27,6 @@ public static partial class TokenQueryParser
             intermediateStack.Add(tokens.Pop());
         }
         
-        // return new Stack<string>(intermediateStack.Reverse());
         intermediateStack.Reverse();
         return new  Stack<string>(intermediateStack);
     }

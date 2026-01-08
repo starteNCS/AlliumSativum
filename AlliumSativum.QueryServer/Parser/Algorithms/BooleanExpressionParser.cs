@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
+using AlliumSativum.Exceptions;
 using AlliumSativum.Parser.Constants;
-using AlliumSativum.Parser.Exceptions;
 using AlliumSativum.Parser.IntermediateModels.Expressions;
 using AlliumSativum.Parser.IntermediateModels.Specifiers;
 

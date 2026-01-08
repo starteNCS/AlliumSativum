@@ -1,6 +1,6 @@
+using AlliumSativum.Exceptions;
 using AlliumSativum.Parser.Algorithms;
 using AlliumSativum.Parser.Constants;
-using AlliumSativum.Parser.Exceptions;
 using AlliumSativum.Parser.IntermediateModels;
 
 namespace AlliumSativum.Parser;
