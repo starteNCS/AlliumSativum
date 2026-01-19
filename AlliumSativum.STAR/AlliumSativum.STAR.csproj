@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj" />
+    </ItemGroup>
+
 </Project>

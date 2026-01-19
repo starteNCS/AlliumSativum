@@ -1,15 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFramework>net10.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>AlliumSativum</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AlliumSativum.STAR\AlliumSativum.STAR.csproj" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AlliumSativum.QueryPlanner\AlliumSativum.QueryPlanner.csproj" />
     </ItemGroup>
 
 </Project>

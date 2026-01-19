@@ -1,0 +1,19 @@
+version: '3.4'
+
+volumes:
+  db-data:
+
+services:
+  db:
+    image: postgres:17.5
+    restart: always
+    container_name: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - PGDATA=/data
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=database
+    volumes:
+      - db-data:/data

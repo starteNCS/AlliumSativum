@@ -1,6 +1,6 @@
 using AlliumSativum.Parser.Algorithms;
-using AlliumSativum.Parser.IntermediateModels.Expressions;
-using AlliumSativum.Parser.IntermediateModels.Specifiers;
+using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
+using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Token;
 using FluentAssertions;
 using NUnit.Framework.Constraints;

@@ -1,6 +1,6 @@
 using AlliumSativum.Parser;
-using AlliumSativum.Parser.IntermediateModels.Specifiers;
 using AlliumSativum.Semantic;
+using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Token;
 using FluentAssertions;
 using ParserTests.Helpers;

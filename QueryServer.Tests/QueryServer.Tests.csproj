@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AlliumSativum.QueryServer\AlliumSativum.QueryServer.csproj" />
+      <ProjectReference Include="..\AlliumSativum.QueryPlanner\AlliumSativum.QueryPlanner.csproj" />
     </ItemGroup>
 
 </Project>

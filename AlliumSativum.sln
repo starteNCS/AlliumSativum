@@ -1,18 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.QueryServer", "AlliumSativum.QueryServer\AlliumSativum.QueryServer.csproj", "{0EA5C158-9F77-4DC2-866E-B9976BE249E0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.Wrapper.SQL", "AlliumSativum.Wrapper.SQL\AlliumSativum.Wrapper.SQL.csproj", "{4E1AE90A-E034-491C-B21F-FE662157CA65}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.Wrapper.REST", "AlliumSativum.Wrapper.REST\AlliumSativum.Wrapper.REST.csproj", "{E099D510-0FCD-486C-AEAE-A3255467A2A2}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Wrapper", "Wrapper", "{D1EF233B-C402-4574-8D1B-640F5ABA26BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.QueryPlanner", "AlliumSativum.QueryPlanner\AlliumSativum.QueryPlanner.csproj", "{0EA5C158-9F77-4DC2-866E-B9976BE249E0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.STAR", "AlliumSativum.STAR\AlliumSativum.STAR.csproj", "{090F4E5A-1FEC-47F7-9781-22113F8BA32B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{A36F6308-248D-46B9-BE2A-91F9FA3314BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryServer.Tests", "QueryServer.Tests\QueryServer.Tests.csproj", "{70DC5659-FED1-4412-BF99-006D7F974B30}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectors", "Connectors", "{512A5D2C-D936-47A5-97D5-059F96E7C46E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.Connectors.PostgreSQL", "AlliumSativum.Connectors.PostgreSQL\AlliumSativum.Connectors.PostgreSQL.csproj", "{CD700CF0-3FA2-4CFD-AB30-A9747134522F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.Connectors.Shared", "AlliumSativum.Connectors.Shared\AlliumSativum.Connectors.Shared.csproj", "{AD5E35D4-A196-4613-9257-E6D9352FE277}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.Shared", "AlliumSativum.Shared\AlliumSativum.Shared.csproj", "{E3CAB11B-6FA3-4978-9EA0-EEDA388CA682}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.QueryServer", "AlliumSativum.QueryServer\AlliumSativum.QueryServer.csproj", "{8CEE7349-3D7A-40B1-AF30-BCA18A61AFD4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,14 +28,6 @@ Global
 		{0EA5C158-9F77-4DC2-866E-B9976BE249E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EA5C158-9F77-4DC2-866E-B9976BE249E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EA5C158-9F77-4DC2-866E-B9976BE249E0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4E1AE90A-E034-491C-B21F-FE662157CA65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4E1AE90A-E034-491C-B21F-FE662157CA65}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4E1AE90A-E034-491C-B21F-FE662157CA65}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4E1AE90A-E034-491C-B21F-FE662157CA65}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E099D510-0FCD-486C-AEAE-A3255467A2A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E099D510-0FCD-486C-AEAE-A3255467A2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E099D510-0FCD-486C-AEAE-A3255467A2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E099D510-0FCD-486C-AEAE-A3255467A2A2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{090F4E5A-1FEC-47F7-9781-22113F8BA32B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{090F4E5A-1FEC-47F7-9781-22113F8BA32B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{090F4E5A-1FEC-47F7-9781-22113F8BA32B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -40,10 +36,26 @@ Global
 		{70DC5659-FED1-4412-BF99-006D7F974B30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70DC5659-FED1-4412-BF99-006D7F974B30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70DC5659-FED1-4412-BF99-006D7F974B30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD700CF0-3FA2-4CFD-AB30-A9747134522F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD700CF0-3FA2-4CFD-AB30-A9747134522F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD700CF0-3FA2-4CFD-AB30-A9747134522F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD700CF0-3FA2-4CFD-AB30-A9747134522F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD5E35D4-A196-4613-9257-E6D9352FE277}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD5E35D4-A196-4613-9257-E6D9352FE277}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD5E35D4-A196-4613-9257-E6D9352FE277}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD5E35D4-A196-4613-9257-E6D9352FE277}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3CAB11B-6FA3-4978-9EA0-EEDA388CA682}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3CAB11B-6FA3-4978-9EA0-EEDA388CA682}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3CAB11B-6FA3-4978-9EA0-EEDA388CA682}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3CAB11B-6FA3-4978-9EA0-EEDA388CA682}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CEE7349-3D7A-40B1-AF30-BCA18A61AFD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CEE7349-3D7A-40B1-AF30-BCA18A61AFD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CEE7349-3D7A-40B1-AF30-BCA18A61AFD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CEE7349-3D7A-40B1-AF30-BCA18A61AFD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E099D510-0FCD-486C-AEAE-A3255467A2A2} = {D1EF233B-C402-4574-8D1B-640F5ABA26BC}
-		{4E1AE90A-E034-491C-B21F-FE662157CA65} = {D1EF233B-C402-4574-8D1B-640F5ABA26BC}
 		{70DC5659-FED1-4412-BF99-006D7F974B30} = {A36F6308-248D-46B9-BE2A-91F9FA3314BA}
+		{CD700CF0-3FA2-4CFD-AB30-A9747134522F} = {512A5D2C-D936-47A5-97D5-059F96E7C46E}
+		{AD5E35D4-A196-4613-9257-E6D9352FE277} = {512A5D2C-D936-47A5-97D5-059F96E7C46E}
 	EndGlobalSection
 EndGlobal

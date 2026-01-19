@@ -1,6 +1,6 @@
-namespace AlliumSativum.STAR.Terminals;
-
-public class PushDown : IPop
-{
-    
-}
+// namespace AlliumSativum.STAR.Terminals;
+//
+// public class PushDown : PlanOperator
+// {
+//     
+// }

@@ -1,0 +1,6 @@
+@AlliumSativum.QueryServer_HostAddress = 
+
+GET http://localhost:5238/compile/
+Accept: application/json
+
+###

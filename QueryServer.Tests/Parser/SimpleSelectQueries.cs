@@ -1,5 +1,5 @@
 using AlliumSativum.Parser;
-using AlliumSativum.Parser.Constants;
+using AlliumSativum.Shared.Constants;
 using AlliumSativum.Token;
 using FluentAssertions;
 using ParserTests.Helpers;
