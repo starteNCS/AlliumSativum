@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\AlliumSativum.QueryPlanner\AlliumSativum.QueryPlanner.csproj" />
+      <ProjectReference Include="..\AlliumSativum.Worker.Sdk\AlliumSativum.Worker.Sdk.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,8 +1,16 @@
+using System.Text.Json.Serialization;
 using AlliumSativum.Shared.Constants;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
+// fix empty output for ASP.NET endpoints
+[JsonPolymorphic(IgnoreUnrecognizedTypeDiscriminators = true)]
+[JsonDerivedType(typeof(PartialColumnExpressionNode), typeDiscriminator: "partial")]
+[JsonDerivedType(typeof(VariableMappingExpressionNode), typeDiscriminator: "variable")]
+[JsonDerivedType(typeof(FullySpecifiedColumnExpressionNode), typeDiscriminator: "fullySpecified")]
+[JsonDerivedType(typeof(ValueExpressionNode), typeDiscriminator: "value")]
+[JsonDerivedType(typeof(BinaryOperatorExpressionNode), typeDiscriminator: "binary")]
 public interface IExpressionNode { }
 
 public class PartialColumnExpressionNode : IExpressionNode

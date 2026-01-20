@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <PackageReference Include="Dapper" Version="2.1.66" />
+      <PackageReference Include="Dapper.Extensions.PostgreSQL" Version="5.4.2" />
       <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
     </ItemGroup>
 

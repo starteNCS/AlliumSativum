@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option csharp_namespace = "AlliumSativum.Worker";
+
+service Metrics {
+  rpc ScrapeMetrics (DataSourceSelector) returns (Void);
+}
+
+message Void {}
+
+message DataSourceSelector{
+  int32 dataSourceId = 1;
+}
