@@ -7,6 +7,8 @@ using AlliumSativum.Worker.Sdk;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddAlliumSativumWorkerGrpcSdk(builder.Configuration["WorkerUrl"] ?? throw new ArgumentException("Worker Url is required!"));
 
 builder.Services
@@ -17,6 +19,8 @@ builder.Services
     .AddScoped<Optimizer>();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

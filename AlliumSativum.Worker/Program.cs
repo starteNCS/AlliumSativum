@@ -4,6 +4,8 @@ using Dapper.Extensions.PostgreSql;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddGrpc();
 
 builder.Services.AddDapperForPostgreSQL();
@@ -11,6 +13,8 @@ builder.Services
     .AddScoped<PostgreSqlStatistics>();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.MapGrpcService<MetricsService>();
 app.MapGet("/",
