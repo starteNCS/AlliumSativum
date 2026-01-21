@@ -9,6 +9,10 @@ namespace ParserTests.Transformer;
 
 public sealed class VariableMappingCollapsing
 {
+    private static readonly Tokenizer Tokenizer = new Tokenizer();
+    private static readonly TokenQueryParser TokenQueryParser = new TokenQueryParser();
+    private static readonly SemanticTransformer SemanticTransformer = new SemanticTransformer();
+    
     #region Select
     [Test]
     public void ShouldCollapse_Select()

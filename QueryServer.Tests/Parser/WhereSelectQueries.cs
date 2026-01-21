@@ -10,6 +10,9 @@ namespace ParserTests.Parser;
 // more tests are run in BooleanExpressionParserTest
 public sealed class WhereSelectQueries
 {
+    private static readonly Tokenizer Tokenizer = new Tokenizer();
+    private static readonly TokenQueryParser TokenQueryParser = new TokenQueryParser();
+    
     #region PositiveTests
     [Test]
     public void ShouldParse_SingleWhere()

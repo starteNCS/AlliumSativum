@@ -10,6 +10,8 @@ namespace ParserTests.Algorithms;
 
 public sealed class BooleanExpressionParserTest
 {
+    private static readonly Tokenizer Tokenizer = new Tokenizer();
+    
     #region PostiveTests
     [Test]
     public void ShouldHandle_SingleWhere_Value()

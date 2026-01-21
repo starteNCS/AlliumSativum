@@ -8,6 +8,9 @@ namespace ParserTests.Parser;
 
 public sealed class SimpleSelectQueries
 {
+    private static readonly Tokenizer Tokenizer = new Tokenizer();
+    private static readonly TokenQueryParser TokenQueryParser = new TokenQueryParser();
+    
     #region PositiveTests
     [Test]
     public void ShouldParse_SingleAttribute()

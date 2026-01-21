@@ -10,6 +10,8 @@ namespace ParserTests.Parser;
 // more tests on the join expressions are run in BooleanExpressionParserTest
 public sealed class JoinSelectQueries
 {
+    private static readonly Tokenizer Tokenizer = new Tokenizer();
+    private static readonly TokenQueryParser TokenQueryParser = new TokenQueryParser();
     
     [Test]
     public void ShouldParse_SingleJoin()
