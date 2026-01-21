@@ -1,9 +1,12 @@
+using System.Text;
 using AlliumSativum.Connectors.PostgreSQL.Models.ORM;
 using AlliumSavitum.Connectors.Shared.Interfaces;
 using Dapper;
 using Dapper.Extensions;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 
 namespace AlliumSativum.Connectors.PostgreSQL.Statistics;
 
@@ -11,13 +14,16 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
 {
     private readonly IDapper _dapper;
     private readonly ILogger<PostgreSqlStatistics> _logger;
+    private readonly IDistributedCache _redis;
 
     public PostgreSqlStatistics(
         IDapper dapper,
-        ILogger<PostgreSqlStatistics> logger)
+        ILogger<PostgreSqlStatistics> logger,
+        IDistributedCache redis)
     {
         _dapper = dapper;
         _logger = logger;
+        _redis = redis;
     }
     
     public async Task ScrapeStatistics(string dataSource)
@@ -46,6 +52,8 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         {
             Console.WriteLine($"{column.TableName}.{column.ColumnName}, {column.DataType}, {column.MaximumOctetLength}");
         }
+        
+        await _redis.SetAsync("tables", Encoding.UTF8.GetBytes("hallo ja wie geht es euch"));
     }
 
     public double GetCardinalityOfTable(string dataSource, string table)

@@ -7,6 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 builder.Services.AddGrpc();
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Catalog");
+    options.InstanceName = "Worker_";
+});
 
 builder.Services.AddDapperForPostgreSQL();
 builder.Services

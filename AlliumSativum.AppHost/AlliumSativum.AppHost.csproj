@@ -13,4 +13,8 @@
       <ProjectReference Include="..\AlliumSativum.Worker\AlliumSativum.Worker.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Aspire.Hosting.Redis" Version="13.1.0" />
+    </ItemGroup>
+
 </Project>
