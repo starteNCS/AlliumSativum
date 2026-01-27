@@ -9,5 +9,5 @@ service Metrics {
 message Void {}
 
 message DataSourceSelector{
-  int32 dataSourceId = 1;
+  string dataSourceId = 1;
 }

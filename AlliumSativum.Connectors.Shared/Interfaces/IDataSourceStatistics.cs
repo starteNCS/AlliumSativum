@@ -2,9 +2,9 @@ namespace AlliumSavitum.Connectors.Shared.Interfaces;
 
 public interface IDataSourceStatistics
 {
-    Task ScrapeStatistics(string dataSource);
+    Task ScrapeStatistics(Guid dataSource);
     
-    double GetCardinalityOfTable(string dataSource, string table);
-    double GetUpperBoundSizeOfTable(string dataSource, string table);
-    double GetUpperBoundSizeOfTable(string dataSource, string table, List<string> columns);
+    double GetCardinalityOfTable(Guid dataSource, string table);
+    double GetUpperBoundSizeOfTable(Guid dataSource, string table);
+    double GetUpperBoundSizeOfTable(Guid dataSource, string table, List<string> columns);
 }

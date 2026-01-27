@@ -37,7 +37,7 @@ app.MapGet("/compile", (QueryCompiler compiler) =>
 });
 app.MapGet("/metrics", async (MetricsApi metrics) =>
 {
-    await metrics.TriggerMetricsScrapeAsync(1);
+    await metrics.TriggerMetricsScrapeAsync(Guid.Parse("6e69646b-47be-4e80-aa02-06b48b8c7253"));
 });
 
 app.Run();

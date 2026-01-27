@@ -7,9 +7,9 @@ services:
   db:
     image: postgres:17.5
     restart: always
-    container_name: postgres
+    container_name: postgres_test
     ports:
-      - 5432:5432
+      - 54321:5432
     environment:
       - PGDATA=/data
       - POSTGRES_USER=admin

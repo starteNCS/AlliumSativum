@@ -8,13 +8,13 @@
 
     <ItemGroup>
       <ProjectReference Include="..\AlliumSativum.Connectors.Shared\AlliumSativum.Connectors.Shared.csproj" />
+      <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Dapper" Version="2.1.66" />
       <PackageReference Include="Dapper.Extensions.PostgreSQL" Version="5.4.2" />
       <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
-      <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
     </ItemGroup>
 
 </Project>

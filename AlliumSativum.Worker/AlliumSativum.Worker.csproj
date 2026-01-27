@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="Dapper.Extensions.PostgreSQL" Version="5.4.2" />
+        <PackageReference Include="dbup-postgresql" Version="6.1.5" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.64.0"/>
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
     </ItemGroup>
@@ -15,6 +16,7 @@
     <ItemGroup>
       <ProjectReference Include="..\AlliumSativum.Connectors.PostgreSQL\AlliumSativum.Connectors.PostgreSQL.csproj" />
       <ProjectReference Include="..\AlliumSativum.ServiceDefaults\AlliumSativum.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj" />
       <ProjectReference Include="..\AlliumSativum.Worker.Proto\AlliumSativum.Worker.Proto.csproj" />
     </ItemGroup>
 

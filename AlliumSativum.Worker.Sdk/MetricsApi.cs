@@ -9,11 +9,11 @@ public sealed class MetricsApi
         _metricsClient = metricsClient;
     }
     
-    public async Task TriggerMetricsScrapeAsync(int dataSource)
+    public async Task TriggerMetricsScrapeAsync(Guid dataSource)
     {
         await _metricsClient.ScrapeMetricsAsync(new DataSourceSelector
         {
-            DataSourceId = dataSource
+            DataSourceId = dataSource.ToString()
         });
     }
 }
