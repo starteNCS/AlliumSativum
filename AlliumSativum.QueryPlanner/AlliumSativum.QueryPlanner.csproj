@@ -10,6 +10,7 @@
     <ItemGroup>
       <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj" />
       <ProjectReference Include="..\AlliumSativum.STAR\AlliumSativum.STAR.csproj" />
+      <ProjectReference Include="..\AlliumSativum.Worker.Sdk\AlliumSativum.Worker.Sdk.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,12 +1,11 @@
 syntax = "proto3";
+import "models.proto";
 
 option csharp_namespace = "AlliumSativum.Worker";
 
 service Metrics {
   rpc ScrapeMetrics (DataSourceSelector) returns (Void);
 }
-
-message Void {}
 
 message DataSourceSelector{
   string dataSourceId = 1;

@@ -8,4 +8,9 @@ public sealed class AttributeSpecifier : TableSpecifier
     {
         AttributeName = attributeName;
     }
+
+    public bool IsInTable(TableSpecifier table)
+    {
+        return DataSourceName == table.DataSourceName && TableName == table.TableName;
+    }
 }

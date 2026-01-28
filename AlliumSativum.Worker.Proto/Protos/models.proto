@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "AlliumSativum.Worker";
+
+message Void {}
+
+// Prefix all models with G to distinct between those and the c# models
+
+message GSelectBaseModel {
+  GTableSpecifier from = 1;
+  repeated GAttributeSpecifier select = 2;
+}
+
+message GTableSpecifier {
+  string dataSource = 1;
+  string tableName = 2;
+}
+
+message GAttributeSpecifier {
+  GTableSpecifier table = 1;
+  string attributeName = 2;
+}

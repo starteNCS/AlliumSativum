@@ -9,5 +9,9 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj" />
+    </ItemGroup>
     
 </Project>

@@ -1,0 +1,8 @@
+syntax = "proto3";
+import "models.proto";
+
+option csharp_namespace = "AlliumSativum.Worker";
+
+service Planner {
+  rpc Plan (GSelectBaseModel) returns (Void);
+}
