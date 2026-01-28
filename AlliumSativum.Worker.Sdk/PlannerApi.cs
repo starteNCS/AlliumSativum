@@ -1,5 +1,6 @@
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
+using AlliumSativum.Worker.Sdk.Extensions;
 
 namespace AlliumSativum.Worker.Sdk;
 
@@ -14,29 +15,8 @@ public sealed class PlannerApi
 
     public async Task<object> PlanQueryAsync(SelectBaseModel model)
     {
-        var payload = new GSelectBaseModel
-        {
-            From = new GTableSpecifier
-            {
-                TableName = model.From!.TableName,
-                DataSource = model.From!.DataSourceName,
-            }
-        };
-        payload.Select.AddRange(model.Select.Select(s =>
-        {
-            var aSpec = s as AttributeSpecifier;
-            return new GAttributeSpecifier
-            {
-                Table = new GTableSpecifier
-                {
-                    TableName = aSpec.TableName,
-                    DataSource = aSpec.DataSourceName
-                },
-                AttributeName = aSpec.AttributeName
-            };
-        }));
         
-        await _client.PlanAsync(payload);
+        await _client.PlanAsync(model.ToGrpcModel());
         return null!;
     }
 }

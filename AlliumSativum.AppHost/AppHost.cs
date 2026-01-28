@@ -11,11 +11,14 @@ var database = postgres
 var redis = builder.AddRedis("catalog-cache")
     .WithRedisInsight();
 
-builder.AddProject<Projects.AlliumSativum_QueryServer>("Query-Service");
-builder.AddProject<Projects.AlliumSativum_Worker>("Worker")
+var worker = builder.AddProject<Projects.AlliumSativum_Worker>("Worker")
     .WithReference(redis)
     .WithReference(database)
     .WaitFor(redis)
     .WaitFor(database);
+
+builder.AddProject<Projects.AlliumSativum_QueryServer>("Query-Service")
+    .WithReference(worker)
+    .WaitFor(worker);
 
 builder.Build().Run();

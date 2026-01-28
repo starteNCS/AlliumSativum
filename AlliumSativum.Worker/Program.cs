@@ -1,11 +1,13 @@
 using System.Reflection;
 using AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
+using AlliumSativum.Connectors.PostgreSQL.Extensions;
 using AlliumSativum.Connectors.PostgreSQL.Planners;
 using AlliumSativum.Connectors.PostgreSQL.Statistics;
 using AlliumSativum.Connectors.Shared.Interfaces;
 using AlliumSativum.Shared.Migrations;
 using AlliumSativum.Worker;
 using AlliumSativum.Worker.Services;
+using AlliumSativum.Worker.Strategies;
 using Dapper.Extensions.PostgreSql;
 using DbUp;
 
@@ -24,9 +26,12 @@ builder.AddCatalogDatabase(builder.Configuration.GetConnectionString("catalog-da
                            throw new ArgumentException("Catalog connection must be provided"));
 
 builder.Services
-    .AddScoped<DatasourceDatabase>()
-    .AddScoped<PostgreSqlStatistics>()
-    .AddScoped<IPlanner, PostgreSqlPlanner>();
+    .AddScoped<DatasourceDatabase>();
+
+builder.Services.AddPostgreSqlConnector();
+
+builder.Services
+    .AddScoped<PlannerStrategy>();
 
 var app = builder.Build();
 

@@ -7,6 +7,7 @@ public sealed class PostgreSqlPlanner : IPlanner
 {
     public async Task<List<object>> PlanAsync(SelectBaseModel selectModel)
     {
+        Console.WriteLine("Hallo i bims");
         return [];
     }
 }
