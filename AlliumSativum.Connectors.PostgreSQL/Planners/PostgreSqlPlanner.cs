@@ -1,20 +1,43 @@
 using AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 using AlliumSativum.Connectors.Shared.Interfaces;
+using AlliumSativum.Shared.Database;
+using AlliumSativum.Shared.Database.Entities;
+using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.IntermediateModels;
 
 namespace AlliumSativum.Connectors.PostgreSQL.Planners;
 
 public sealed class PostgreSqlPlanner : IPlanner
 {
-    private readonly DatasourceDatabase _datasource;
+    private readonly CatalogDatabase _catalogDatabase;
 
-    public PostgreSqlPlanner(DatasourceDatabase datasource)
+    public PostgreSqlPlanner( CatalogDatabase catalogDatabase)
     {
-        _datasource = datasource;
+        _catalogDatabase = catalogDatabase;
     }
     
-    public async Task<List<object>> PlanAsync(SelectBaseModel selectModel)
+    public async Task<List<QueryExecutionPlan>> PlanAsync(Guid dataSource, SelectBaseModel selectModel)
     {
-        return [];
+        var relation = await _catalogDatabase.GetRelationAsync(dataSource, selectModel.From!.TableName);
+        if (relation is null)
+        {
+            return [];
+        }
+        
+        // TODO: improve here, currently only supporting sequential scan
+
+        var cost = relation.ConnectionOpenMs 
+                   + Math.Max(1, relation.Transfer100Ms - relation.ConnectionOpenMs) * (relation.Cardinality / 100);
+        
+        return [
+            new QueryExecutionPlan
+            {
+                Cost =  cost,
+                RootOperator = new PushdownSqlPlanOperator
+                {
+                    SqlStatement = selectModel.ToPostgreSqlString()
+                }
+            }
+        ];
     }
 }

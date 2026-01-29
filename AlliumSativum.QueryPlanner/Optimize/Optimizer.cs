@@ -1,3 +1,4 @@
+using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Worker.Sdk;
@@ -18,9 +19,11 @@ public sealed class Optimizer
     {
         var (onPremise, dataSources) = SplitIntoTables(model);
 
+        var plans = new List<QueryExecutionPlan>();
         foreach (var table in dataSources)
         {
-            await _planner.PlanQueryAsync(table);
+            var plan = await _planner.PlanQueryAsync(table);
+            plans.AddRange(plan);
         }
 
         return null!;

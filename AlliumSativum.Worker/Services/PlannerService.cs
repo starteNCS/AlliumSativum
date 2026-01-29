@@ -1,6 +1,7 @@
 using AlliumSativum.Connectors.Shared.Interfaces;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
+using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Worker.Sdk.Extensions;
 using AlliumSativum.Worker.Strategies;
 using Grpc.Core;
@@ -23,11 +24,11 @@ public sealed class PlannerService : Planner.PlannerBase
         _plannerStrategy = plannerStrategy;
     }
     
-    public override async Task<Void> Plan(GSelectBaseModel request, ServerCallContext context)
+    public override async Task<PlanResponse> Plan(GSelectBaseModel request, ServerCallContext context)
     {
         _logger.LogDebug("Begin query planning for: {FromTable}", request.From.TableName);
 
-        var datasources = await _catalogDatabase.QueryAsync<DataSourceEntity>("SELECT Connector FROM Catalog.Datasources WHERE Name = @Name LIMIT 1", new
+        var datasources = await _catalogDatabase.QueryAsync<DataSourceEntity>("SELECT Id, Connector FROM Catalog.Datasources WHERE Name = @Name LIMIT 1", new
         {
             Name = request.From.DataSource
         });
@@ -35,12 +36,25 @@ public sealed class PlannerService : Planner.PlannerBase
         var datasource = datasources.SingleOrDefault();
         if (datasource == null)
         {
-            return new Void();
+            return new PlanResponse();
         }
         
         var planner = _plannerStrategy.GetPlannerOfConnector(datasource.Connector);
-        await planner.PlanAsync(request.FromGrpcModel());
+        var plans = await planner.PlanAsync(datasource.Id, request.FromGrpcModel());
 
-        return new Void();
+        var response = new PlanResponse();
+        response.Plans.AddRange(plans.Select(p => new GQueryExecutionPlan
+        {
+            Cost = p.Cost,
+            RootOperator = new GPlanOperator
+            {
+                PushdownSql = new GPushdownSqlPlanOperator
+                {
+                    SqlStatement = ((PushdownSqlPlanOperator)p.RootOperator).SqlStatement
+                }
+            }
+        }));
+        
+        return response;
     }
 }

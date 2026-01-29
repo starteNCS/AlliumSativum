@@ -1,5 +1,5 @@
+using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.IntermediateModels;
-using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Worker.Sdk.Extensions;
 
 namespace AlliumSativum.Worker.Sdk;
@@ -13,10 +13,25 @@ public sealed class PlannerApi
         _client = client;
     }
 
-    public async Task<object> PlanQueryAsync(SelectBaseModel model)
+    public async Task<List<QueryExecutionPlan>> PlanQueryAsync(SelectBaseModel model)
     {
+        var plans = await _client.PlanAsync(model.ToGrpcModel());
+        if (plans == null)
+        {
+            return [];
+        }
         
-        await _client.PlanAsync(model.ToGrpcModel());
-        return null!;
+        return plans.Plans.Select(p => new QueryExecutionPlan
+        {
+            Cost = p.Cost,
+            RootOperator = p.RootOperator.OperatorTypeCase switch
+            {
+                GPlanOperator.OperatorTypeOneofCase.PushdownSql => new PushdownSqlPlanOperator
+                {
+                    SqlStatement = p.RootOperator.PushdownSql.SqlStatement
+                },
+                GPlanOperator.OperatorTypeOneofCase.None => throw new ArgumentException("Expected some plan operator")
+            }
+        }).ToList();
     }
 }

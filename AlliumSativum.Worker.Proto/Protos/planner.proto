@@ -4,5 +4,9 @@ import "models.proto";
 option csharp_namespace = "AlliumSativum.Worker";
 
 service Planner {
-  rpc Plan (GSelectBaseModel) returns (Void);
+  rpc Plan (GSelectBaseModel) returns (PlanResponse);
+}
+
+message PlanResponse {
+  repeated GQueryExecutionPlan plans = 1;
 }

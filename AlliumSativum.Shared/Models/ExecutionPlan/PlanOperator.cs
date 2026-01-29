@@ -1,6 +1,11 @@
 namespace AlliumSativum.Shared.Models.ExecutionPlan;
 
-public sealed class PlanOperator
+public abstract class PlanOperator
 {
     
+}
+
+public class PushdownSqlPlanOperator : PlanOperator
+{
+    public string SqlStatement {get; set; }
 }

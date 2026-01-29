@@ -2,6 +2,6 @@ namespace AlliumSativum.Shared.Models.ExecutionPlan;
 
 public sealed class QueryExecutionPlan
 {
-    public double Cost { get; set; }
-    public PlanOperator RootOperator { get; set; }
+    public required double Cost { get; set; }
+    public required PlanOperator RootOperator { get; set; }
 }
