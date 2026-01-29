@@ -13,6 +13,8 @@ CREATE TABLE Catalog.Relations (
     DataSourceId uuid REFERENCES Catalog.DataSources(Id),
     Name varchar(125) NOT NULL,
     Cardinality bigint NOT NULL,
+    ConnectionOpenMs bigint NOT NULL,
+    Transfer100Ms bigint NOT NULL,
     MetricsDate timestamp NOT NULL
 );  
 

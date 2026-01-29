@@ -56,53 +56,20 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         
         foreach (var table in tables)
         {
-            // SQL Injection?
-            var tableStatsStringBuilder = new StringBuilder();
-            tableStatsStringBuilder.Append("SELECT COUNT(*) AS Total");
-            foreach (var column in columns.Where(c =>
-                         c.TableName == table.TableName && c.TableSchema == table.TableSchema).Select(t => t.ColumnName))
-            {
-                tableStatsStringBuilder.Append($", COUNT(DISTINCT {column}) AS {column}");
-            }
-            tableStatsStringBuilder.Append($" FROM {table.TableSchema}.{table.TableName}");
-            
-            var tableStats = await _dataSource.QueryAsync<dynamic>(dataSource, tableStatsStringBuilder.ToString());
-            foreach (var row in tableStats)
-            {
-                var rowDict = (IDictionary<string, object>)row;
-                var relationId = existingRelations.Find(x => x.Name == $"{table.TableSchema}.{table.TableName}")?.Id ?? Guid.NewGuid();
-                
-                relationMetrics.Add(new RelationEntity
-                {
-                    Id = relationId,
-                    DataSourceId = dataSource,
-                    Name = $"{table.TableSchema}.{table.TableName}",
-                    MetricsDate = DateTime.Now,
-                    Cardinality = (long)rowDict["total"]
-                });
-
-                foreach (var column in rowDict.Keys.Where(r => r != "total"))
-                {
-                    var attributeId = existingAttributes.Find(x => x.RelationId == relationId && x.Name == column)?.Id ?? Guid.NewGuid();
-                    attributeMetrics.Add(new AttributeEntity
-                    {
-                        Id = attributeId,
-                        RelationId = relationId, 
-                        Name = column,
-                        MetricsDate = DateTime.Now,
-                        DistinctCardinality = (long) rowDict[column] 
-                    });
-                }
-            }
+            var (relMetrics, attrMetrics) = await GetTableMetricsAsync(dataSource, columns, table, existingRelations, existingAttributes);
+            relationMetrics.AddRange(relMetrics);
+            attributeMetrics.AddRange(attrMetrics);
         }
         
         await _catalogDatabase.ExecuteAsync("""
-                                            INSERT INTO Catalog.Relations (Id, DataSourceId, Name, Cardinality, MetricsDate)
-                                            VALUES (@Id, @DataSourceId, @Name, @Cardinality, @MetricsDate)
+                                            INSERT INTO Catalog.Relations (Id, DataSourceId, Name, Cardinality, MetricsDate, ConnectionOpenMs, Transfer100Ms)
+                                            VALUES (@Id, @DataSourceId, @Name, @Cardinality, @MetricsDate, @ConnectionOpenMs, @Transfer100Ms)
                                             ON CONFLICT (Id)
                                             DO UPDATE SET 
                                                           Cardinality = EXCLUDED.Cardinality,
-                                                          MetricsDate = EXCLUDED.MetricsDate
+                                                          MetricsDate = EXCLUDED.MetricsDate,
+                                                          ConnectionOpenMs = EXCLUDED.ConnectionOpenMs,
+                                                          Transfer100Ms = EXCLUDED.Transfer100Ms
                                             """,  relationMetrics);
         
         await _catalogDatabase.ExecuteAsync("""
@@ -116,6 +83,65 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         
         stopwatch.Stop();
         _logger.LogInformation("Scrape statistics for {DataSource} took {StopwatchElapsedMilliseconds}ms", dataSource, stopwatch.ElapsedMilliseconds);
+    }
+
+    private async Task<(List<RelationEntity> relationEntities, List<AttributeEntity> attributeEntities)> GetTableMetricsAsync(
+        Guid dataSource, 
+        IList<PostgresColumnsModel> columns, 
+        PostgresTablesModel table,
+        List<RelationEntity> existingRelations, 
+        List<AttributeEntity> existingAttributes)
+    {
+        var relationMetrics = new List<RelationEntity>();
+        var attributeMetrics = new List<AttributeEntity>();
+
+        var warumUp = await _dataSource.TimeQueryAsync(dataSource, $"SELECT 1");
+        
+        var accessTime = await _dataSource.TimeQueryAsync(dataSource, $"SELECT * FROM {table.TableSchema}.{table.TableName} LIMIT 1");
+        var transfer100 = await _dataSource.TimeQueryAsync(dataSource, $"SELECT * FROM {table.TableSchema}.{table.TableName} LIMIT 100");
+        
+        // SQL Injection?
+        var tableStatsStringBuilder = new StringBuilder();
+        tableStatsStringBuilder.Append("SELECT COUNT(*) AS Total");
+        foreach (var column in columns.Where(c =>
+                     c.TableName == table.TableName && c.TableSchema == table.TableSchema).Select(t => t.ColumnName))
+        {
+            tableStatsStringBuilder.Append($", COUNT(DISTINCT {column}) AS {column}");
+        }
+        tableStatsStringBuilder.Append($" FROM {table.TableSchema}.{table.TableName}");
+            
+        var tableStats = await _dataSource.QueryAsync<dynamic>(dataSource, tableStatsStringBuilder.ToString());
+        foreach (var row in tableStats)
+        {
+            var rowDict = (IDictionary<string, object>)row;
+            var relationId = existingRelations.Find(x => x.Name == $"{table.TableSchema}.{table.TableName}")?.Id ?? Guid.NewGuid();
+                
+            relationMetrics.Add(new RelationEntity
+            {
+                Id = relationId,
+                DataSourceId = dataSource,
+                Name = $"{table.TableSchema}.{table.TableName}",
+                MetricsDate = DateTime.Now,
+                Cardinality = (long)rowDict["total"],
+                ConnectionOpenMs = accessTime,
+                Transfer100Ms = transfer100
+            });
+
+            foreach (var column in rowDict.Keys.Where(r => r != "total"))
+            {
+                var attributeId = existingAttributes.Find(x => x.RelationId == relationId && x.Name == column)?.Id ?? Guid.NewGuid();
+                attributeMetrics.Add(new AttributeEntity
+                {
+                    Id = attributeId,
+                    RelationId = relationId, 
+                    Name = column,
+                    MetricsDate = DateTime.Now,
+                    DistinctCardinality = (long) rowDict[column] 
+                });
+            }
+        }
+        
+        return (relationMetrics, attributeMetrics);
     }
 
     public double GetCardinalityOfTable(Guid dataSource, string table)

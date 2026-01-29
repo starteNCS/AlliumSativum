@@ -8,5 +8,7 @@ public sealed class RelationEntity
     public Guid DataSourceId { get; set; }
     public string Name { get; set; } = string.Empty;
     public long Cardinality { get; set; }
+    public long ConnectionOpenMs { get; set; }
+    public long Transfer100Ms { get; set; }
     public DateTime MetricsDate { get; set; }
 }

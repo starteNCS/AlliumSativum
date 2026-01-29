@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Enums;
 using Dapper;
@@ -19,21 +20,20 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
         _catalogDatabase = catalogDatabase;
         _logger = logger;
     }
-
+    
     public async Task<IList<T>> QueryAsync<T>(Guid dataSource, string query, object? parameters = null)
         where T : new()
     {
-        var connectionString = await GetConnectionStringForDataSource(dataSource);
-        if (string.IsNullOrWhiteSpace(connectionString))
+        var connection = await GetConnectionStringForDataSource(dataSource);
+        if (connection is null)
         {
             throw new ArgumentException("Connection string may not be null");
         }
 
         _logger.LogDebug("Executing query against {DataSource}: {Query}", dataSource, query);
-        try 
+        try
         {
-            await using var connection = new NpgsqlConnection(connectionString);
-            await connection.OpenAsync(); 
+            await connection.OpenAsync();
             var result = await connection.QueryAsync<T>(query, parameters);
             await connection.CloseAsync();
             return result.ToList();
@@ -43,12 +43,45 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
             _logger.LogError(ex, "Failed to query datasource {DataSource}", dataSource);
             return [];
         }
+        finally
+        {
+            await connection.DisposeAsync();
+        }
+    }
+    
+    public async Task<long> TimeQueryAsync(Guid dataSource, string query, object? parameters = null)
+    {
+        var connection = await GetConnectionStringForDataSource(dataSource);
+        if (connection is null)
+        {
+            throw new ArgumentException("Connection string may not be null");
+        }
+
+        _logger.LogDebug("Executing timed query against {DataSource}", dataSource, query);
+        try
+        {
+            var stopwatch = Stopwatch.StartNew();
+            await connection.OpenAsync();
+            var _ = await connection.QueryAsync<dynamic>(query, parameters);
+            await connection.CloseAsync();
+            stopwatch.Stop();
+            return stopwatch.ElapsedMilliseconds;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to query against datasource {DataSource}", dataSource);
+            return -1;
+        }
+        finally
+        {
+            await connection.DisposeAsync();
+        }
     }
 
     public async Task<int> ExecuteAsync(Guid dataSource, string query, object? parameters = null)
     {
-        var connectionString = await GetConnectionStringForDataSource(dataSource);
-        if (string.IsNullOrWhiteSpace(connectionString))
+        var connection = await GetConnectionStringForDataSource(dataSource);
+        if (connection is null)
         {
             throw new ArgumentException("Connection string may not be null");
         }
@@ -56,7 +89,6 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
         _logger.LogDebug("Executing query against {DataSource}: {Query}", dataSource, query);
         try 
         {
-            await using var connection = new NpgsqlConnection(connectionString);
             await connection.OpenAsync(); 
             var result = await connection.ExecuteAsync(query, parameters);
             await connection.CloseAsync();
@@ -67,9 +99,13 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
             _logger.LogError(ex, "Failed to query datasource {DataSource}", dataSource);
             return -1;
         }
+        finally
+        {
+            await connection.DisposeAsync();
+        }
     }
 
-    private async Task<string?> GetConnectionStringForDataSource(Guid dataSource) 
+    private async Task<NpgsqlConnection?> GetConnectionStringForDataSource(Guid dataSource) 
     {
         if (!_sConnections.TryGetValue(dataSource, out var connectionString))
         {
@@ -88,7 +124,7 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
             connectionString = c.ConnectionString;
         }
 
-        return connectionString;
+        return new NpgsqlConnection(connectionString);
     }
 }
 
