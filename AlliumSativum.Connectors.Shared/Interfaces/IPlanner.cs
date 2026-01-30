@@ -10,5 +10,5 @@ public interface IPlanner
     /// </summary>
     /// <param name="selectModel"></param>
     /// <returns></returns>
-    Task<List<QueryExecutionPlan>> PlanAsync(Guid dataSource, SelectBaseModel selectModel);
+    Task<QueryExecutionPlan?> PlanAsync(Guid dataSource, SelectBaseModel selectModel);
 }

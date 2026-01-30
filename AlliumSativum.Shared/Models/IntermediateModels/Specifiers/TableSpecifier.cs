@@ -13,4 +13,14 @@ public class TableSpecifier : DataSourceSpecifier
     {
         return new AttributeSpecifier(DataSourceName, TableName, attributeName);
     }
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj is not TableSpecifier other)
+        {
+            return false;
+        }
+        
+        return DataSourceName == other.DataSourceName &&  TableName == other.TableName;
+    }
 }

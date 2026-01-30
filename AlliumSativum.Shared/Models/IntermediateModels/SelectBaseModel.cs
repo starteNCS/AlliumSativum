@@ -28,7 +28,7 @@ public sealed class SelectBaseModel
             stringBuilder.Append($", {select.TableName}.{select.AttributeName}");
         }
 
-        stringBuilder.Append($"FROM {From?.TableName}");
+        stringBuilder.Append($" FROM {From?.TableName}");
         return stringBuilder.ToString();
     }
 }

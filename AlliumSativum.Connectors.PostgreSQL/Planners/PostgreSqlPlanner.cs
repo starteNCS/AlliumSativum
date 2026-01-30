@@ -16,28 +16,23 @@ public sealed class PostgreSqlPlanner : IPlanner
         _catalogDatabase = catalogDatabase;
     }
     
-    public async Task<List<QueryExecutionPlan>> PlanAsync(Guid dataSource, SelectBaseModel selectModel)
+    public async Task<QueryExecutionPlan?> PlanAsync(Guid dataSource, SelectBaseModel selectModel)
     {
         var relation = await _catalogDatabase.GetRelationAsync(dataSource, selectModel.From!.TableName);
         if (relation is null)
         {
-            return [];
+            return null;
         }
         
         // TODO: improve here, currently only supporting sequential scan
 
         var cost = relation.ConnectionOpenMs 
                    + Math.Max(1, relation.Transfer100Ms - relation.ConnectionOpenMs) * (relation.Cardinality / 100);
-        
-        return [
-            new QueryExecutionPlan
-            {
-                Cost =  cost,
-                RootOperator = new PushdownSqlPlanOperator
-                {
-                    SqlStatement = selectModel.ToPostgreSqlString()
-                }
-            }
-        ];
+
+        return new QueryExecutionPlan
+        {
+            Cost = cost,
+            RootOperator = new PushdownSqlPlanOperator(relation.DataSourceId, selectModel.ToPostgreSqlString())
+        };
     }
 }

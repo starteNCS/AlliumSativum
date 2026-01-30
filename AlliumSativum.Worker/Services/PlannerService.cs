@@ -36,24 +36,31 @@ public sealed class PlannerService : Planner.PlannerBase
         var datasource = datasources.SingleOrDefault();
         if (datasource == null)
         {
-            return new PlanResponse();
+            return new PlanResponse()
+            {
+                Success = false
+            };
         }
         
         var planner = _plannerStrategy.GetPlannerOfConnector(datasource.Connector);
-        var plans = await planner.PlanAsync(datasource.Id, request.FromGrpcModel());
+        var plan = await planner.PlanAsync(datasource.Id, request.FromGrpcModel());
 
-        var response = new PlanResponse();
-        response.Plans.AddRange(plans.Select(p => new GQueryExecutionPlan
+        var response = new PlanResponse
         {
-            Cost = p.Cost,
-            RootOperator = new GPlanOperator
+            Success = true,
+            Plan = new GQueryExecutionPlan
             {
-                PushdownSql = new GPushdownSqlPlanOperator
+                Cost = plan.Cost,
+                RootOperator = new GPlanOperator
                 {
-                    SqlStatement = ((PushdownSqlPlanOperator)p.RootOperator).SqlStatement
+                    PushdownSql = new GPushdownSqlPlanOperator
+                    {
+                        SqlStatement = ((PushdownSqlPlanOperator)plan.RootOperator).SqlStatement,
+                        DatasourceId = ((PushdownSqlPlanOperator)plan.RootOperator).DataSource.ToString()
+                    }
                 }
             }
-        }));
+        };
         
         return response;
     }

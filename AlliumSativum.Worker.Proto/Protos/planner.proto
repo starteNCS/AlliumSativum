@@ -8,5 +8,6 @@ service Planner {
 }
 
 message PlanResponse {
-  repeated GQueryExecutionPlan plans = 1;
+  bool success = 1;
+  GQueryExecutionPlan plan = 2;
 }

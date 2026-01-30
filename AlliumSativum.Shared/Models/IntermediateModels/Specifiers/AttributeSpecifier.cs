@@ -13,4 +13,14 @@ public sealed class AttributeSpecifier : TableSpecifier
     {
         return DataSourceName == table.DataSourceName && TableName == table.TableName;
     }
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj is not AttributeSpecifier other)
+        {
+            return false;
+        }
+        
+        return DataSourceName == other.DataSourceName &&  TableName == other.TableName && AttributeName == other.AttributeName;
+    }
 }

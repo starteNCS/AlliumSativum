@@ -60,9 +60,9 @@ public partial class TokenQueryParser
             JoinType = joinType switch
             {
                 AsSqlKeywords.JoinType.INNER => JoinType.Inner,
-                AsSqlKeywords.JoinType.OUTER => JoinType.Outer,
-                AsSqlKeywords.JoinType.LEFT => JoinType.Left,
-                AsSqlKeywords.JoinType.RIGHT => JoinType.Right,
+                // AsSqlKeywords.JoinType.OUTER => JoinType.Outer,
+                // AsSqlKeywords.JoinType.LEFT => JoinType.Left,
+                // AsSqlKeywords.JoinType.RIGHT => JoinType.Right,
                 _ => throw new AsSqlParseException($"{joinType}", $"Unknown join type {joinType}")
             },
         });

@@ -74,6 +74,39 @@ public static partial class BooleanExpressionParser
 
         return operandStack.Count > 0 ? operandStack.Pop() : null;
     }
+    
+    public static IExpressionNode AsConjunctiveNormalForm(IExpressionNode node)
+    {
+        if (node is not BinaryOperatorExpressionNode binary) return node;
+
+        var left = AsConjunctiveNormalForm(binary.Left);
+        var right = AsConjunctiveNormalForm(binary.Right);
+
+        if (!binary.Operation.Equals("OR", StringComparison.CurrentCultureIgnoreCase))
+        {
+            return new BinaryOperatorExpressionNode { Operation = binary.Operation, Left = left, Right = right };
+        }
+            
+        if (left is BinaryOperatorExpressionNode lBin && lBin.Operation.ToUpper() == "AND")
+        {
+            return new BinaryOperatorExpressionNode {
+                Operation = "AND",
+                Left = AsConjunctiveNormalForm(new BinaryOperatorExpressionNode { Operation = "OR", Left = lBin.Left, Right = right }),
+                Right = AsConjunctiveNormalForm(new BinaryOperatorExpressionNode { Operation = "OR", Left = lBin.Right, Right = right })
+            };
+        }
+        
+        if (right is BinaryOperatorExpressionNode rBin && rBin.Operation.ToUpper() == "AND")
+        {
+            return new BinaryOperatorExpressionNode {
+                Operation = "AND",
+                Left = AsConjunctiveNormalForm(new BinaryOperatorExpressionNode { Operation = "OR", Left = left, Right = rBin.Left }),
+                Right = AsConjunctiveNormalForm(new BinaryOperatorExpressionNode { Operation = "OR", Left = left, Right = rBin.Right })
+            };
+        }
+
+        return new BinaryOperatorExpressionNode { Operation = binary.Operation, Left = left, Right = right };
+    }
 
     // Helper to combine top operator with top 2 operands
     private static void BuildNode(Stack<string> operators, Stack<IExpressionNode> operands)
@@ -107,7 +140,10 @@ public static partial class BooleanExpressionParser
             throw new AsSqlParseException("", "Expected PartialColumnExpressionNode for table name");
         }
 
-        if (operands.Count == 0 || (operands.TryPeek(out var nextToken) && nextToken is PartialColumnExpressionNode nextTokenNode && nextTokenNode.Name != AsSqlParameters.Attribute.DataSourceSeparator))
+        if (operands.Count == 0 || (operands.TryPeek(out var nextToken) &&
+                                    (nextToken is PartialColumnExpressionNode nextTokenNode && 
+                                     nextTokenNode.Name != AsSqlParameters.Attribute.DataSourceSeparator)
+                                    || nextToken is not PartialColumnExpressionNode))
         {
             // we've got some other item, therefore, this was an VariableMappingExpressionNode
             return new VariableMappingExpressionNode
@@ -121,7 +157,7 @@ public static partial class BooleanExpressionParser
                 Name: AsSqlParameters.Attribute.DataSourceSeparator
             })
         {
-            throw new AsSqlParseException("", $"Expected PartialColumnExpressionNode  containing the data source separator ({AsSqlParameters.Attribute.DataSourceSeparator})");
+            throw new AsSqlParseException("", $"Expected PartialColumnExpressionNode containing the data source separator ({AsSqlParameters.Attribute.DataSourceSeparator})");
         }
         
         if (!operands.TryPop(out var dataSource) || dataSource is not PartialColumnExpressionNode dataSourceNode)

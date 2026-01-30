@@ -13,9 +13,9 @@ public sealed class JoinBaseModel
 
 public enum JoinType
 {
-    Outer,
-    Left,
-    Right,
+    // Outer,
+    // Left,
+    // Right,
     Inner
 }
 
@@ -26,9 +26,9 @@ public static class JoinTypeExtensions
         return typeString.ToUpper() switch
         {
             AsSqlKeywords.JoinType.INNER => JoinType.Inner,
-            AsSqlKeywords.JoinType.LEFT => JoinType.Left,
-            AsSqlKeywords.JoinType.RIGHT => JoinType.Right,
-            AsSqlKeywords.JoinType.OUTER => JoinType.Outer,
+            // AsSqlKeywords.JoinType.LEFT => JoinType.Left,
+            // AsSqlKeywords.JoinType.RIGHT => JoinType.Right,
+            // AsSqlKeywords.JoinType.OUTER => JoinType.Outer,
             _ => throw new ArgumentOutOfRangeException(nameof(typeString), typeString, null)
         };
     }

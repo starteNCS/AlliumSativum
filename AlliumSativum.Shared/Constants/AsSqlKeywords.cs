@@ -9,7 +9,7 @@ public static class AsSqlKeywords
     public const string JOIN = "JOIN";
     public const string ON = "ON";
 
-    public static readonly List<string> Keywords = [SELECT, FROM, WHERE, JOIN, JoinType.LEFT, JoinType.RIGHT, JoinType.INNER, JoinType.OUTER];
+    public static readonly List<string> Keywords = [SELECT, FROM, WHERE, JOIN, JoinType.INNER,];
 
     public static class BooleanOperators
     {
@@ -19,11 +19,13 @@ public static class AsSqlKeywords
     
     public static class JoinType
     {
-        public const string LEFT = "LEFT";
-        public const string RIGHT = "RIGHT";
         public const string INNER = "INNER";
-        public const string OUTER = "OUTER";
         
-        public static readonly List<string> Types = [LEFT, RIGHT, INNER, OUTER];
+        // Only inner for now, as it is easier in combination with WHERE filters
+        //public const string LEFT = "LEFT";
+        //public const string RIGHT = "RIGHT";
+        //public const string OUTER = "OUTER";
+        
+        public static readonly List<string> Types = [INNER];
     }
 }

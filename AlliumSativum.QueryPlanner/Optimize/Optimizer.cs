@@ -1,11 +1,33 @@
+using AlliumSativum.Parser.Algorithms;
+using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.IntermediateModels;
+using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Worker.Sdk;
 
 namespace AlliumSativum.Optimize;
+public class ListComparer<T> : IEqualityComparer<List<T>>
+{
+    public bool Equals(List<T>? x, List<T>? y)
+    {
+        if (ReferenceEquals(x, y)) return true;
+        if (x == null || y == null) return false;
+        return x.SequenceEqual(y);
+    }
 
-public sealed class Optimizer
+    public int GetHashCode(List<T> obj)
+    {
+        // HashCode.Combine (C# 8.0+) is great for building hashes from sequences
+        var hash = new HashCode();
+        foreach (var item in obj)
+        {
+            hash.Add(item);
+        }
+        return hash.ToHashCode();
+    }
+}
+public sealed partial class Optimizer
 {
     private readonly PlannerApi _planner;
 
@@ -15,18 +37,102 @@ public sealed class Optimizer
     }
     
     // return qexp
-    public async Task<object> Optimize(SelectBaseModel model)
+    public async Task<QueryExecutionPlan> Optimize(SelectBaseModel model)
     {
-        var (onPremise, dataSources) = SplitIntoTables(model);
+        var (onPremise, tables) = SplitIntoTables(model);
 
-        var plans = new List<QueryExecutionPlan>();
-        foreach (var table in dataSources)
+        var plans = new Dictionary<List<TableSpecifier>, PlanOperator>(new ListComparer<TableSpecifier>());
+        foreach (var select in tables)
         {
-            var plan = await _planner.PlanQueryAsync(table);
-            plans.AddRange(plan);
+            var plan = await _planner.PlanQueryAsync(select);
+            if (plan is null)
+            {
+                throw new AsSqlOptimizeException("Expected pushdown plan, but got none");
+            }
+            
+            plans.Add([select.From!], plan.RootOperator);
         }
 
-        return null!;
+        IExpressionNode? whereCnf = null;
+        if (onPremise.Where is not null)
+        {
+            whereCnf = BooleanExpressionParser.AsConjunctiveNormalForm(onPremise.Where);
+            
+            foreach (var table in tables)
+            {
+                (whereCnf, var expr) = ExtractExpression(whereCnf, table.From!);
+
+                var scanPlanOperator = plans
+                    .FirstOrDefault(p => p.Key.Contains(table.From!))
+                    .Value;
+                if (expr is null || scanPlanOperator is null)
+                {
+                    continue;
+                }
+
+                var whereOperator = new WherePlanOperator(expr)
+                {
+                    Children = [scanPlanOperator]
+                };
+                
+                plans[[table.From!]] = whereOperator;
+
+                // if there are no items left in the tree, we do not need to check here further
+                if (whereCnf is null)
+                {
+                    break;
+                }
+            }
+        }
+
+        if (onPremise.Join.Count == 0 && plans.Count == 1)
+        {
+            return new QueryExecutionPlan()
+            {
+                Cost = 1,
+                RootOperator = plans.Single().Value
+            };
+        } 
+        
+        if (plans.Count - 1 != onPremise.Join.Count)
+        {
+            throw new AsSqlOptimizeException("Cannot execute join, as the number of plans and joins missmatch");
+        }
+
+        foreach (var join in model.Join)
+        {
+            var left = plans
+                .FirstOrDefault(p => p.Key.Contains(model.From!))
+                .Value;
+            var right = plans
+                .FirstOrDefault(p => p.Key.Contains(join.Inner))
+                .Value;
+
+            var joinOperator = new JoinPlanOperator(left, right);
+            plans.Remove([model.From!]);
+            plans.Remove([join.Inner]);
+            plans.Add([model.From!, join.Inner], joinOperator);
+        }
+
+        if (plans.Count != 1)
+        {
+            throw new AsSqlOptimizeException("Added all joins, but still multiple plans exist");
+        }
+
+        var finalPlan = plans.Single().Value;
+        if (whereCnf is not null)
+        {
+            finalPlan = new WherePlanOperator(whereCnf)
+            {
+                Children = [finalPlan]
+            };
+        }
+
+        return new QueryExecutionPlan()
+        {
+            Cost = 1,
+            RootOperator = finalPlan
+        };
     }
 
     /// <summary>
@@ -84,4 +190,5 @@ public sealed class Optimizer
         
         return (selectModel, split);
     }
+    
 }

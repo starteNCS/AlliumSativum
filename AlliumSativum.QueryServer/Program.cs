@@ -4,6 +4,7 @@ using AlliumSativum.Parser;
 using AlliumSativum.Semantic;
 using AlliumSativum.Token;
 using AlliumSativum.Worker.Sdk;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,10 +31,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/compile", (QueryCompiler compiler) =>
+app.MapPost("/compile", async (QueryCompiler compiler, [FromBody] CompileInput query) =>
 {
-    var parsedQuery = compiler.Compile("SELECT c.name, o.gross FROM erp->customers c WHERE c.orders_count > 10 INNER JOIN erp->orders o ON o.customer_id = c.id");
-    return parsedQuery;
+    var parsedQuery = await compiler.CompileAsync(query.Query);
+    return parsedQuery.RootOperator.ToString();
 });
 app.MapGet("/metrics", async (MetricsApi metrics) =>
 {
@@ -41,3 +42,10 @@ app.MapGet("/metrics", async (MetricsApi metrics) =>
 });
 
 app.Run();
+
+return;
+
+class CompileInput
+{
+    public string Query { get; set; }
+}

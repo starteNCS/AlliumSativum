@@ -2,6 +2,7 @@ using AlliumSativum.Optimize;
 using AlliumSativum.Parser;
 using AlliumSativum.Semantic;
 using AlliumSativum.Shared.Exceptions;
+using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Token;
 
@@ -22,7 +23,7 @@ public class QueryCompiler
         _optimizer = optimizer;
     }
     
-    public SelectBaseModel Compile(string query)
+    public async Task<QueryExecutionPlan> CompileAsync(string query)
     {
         var tokens = _tokenizer.Tokenize(query);
         var selectModel = _parser.Parse(tokens);
@@ -31,8 +32,8 @@ public class QueryCompiler
             throw new AsSqlException();
         }
         _semanticTransformer.Transform(selectModel);
-        var _ = _optimizer.Optimize(selectModel);
+        var executionPlan = await _optimizer.Optimize(selectModel);
         
-        return selectModel;
+        return executionPlan;
     }
 }

@@ -36,4 +36,5 @@ message GPlanOperator {
 
 message GPushdownSqlPlanOperator {
   string sql_statement = 1;
+  string datasourceId = 2;
 }

@@ -37,7 +37,7 @@ public sealed class JoinSelectQueries
                     SELECT erp->customers.name 
                     FROM erp->customers 
                     INNER JOIN erp->customers c ON c.name='John Doe'
-                    LEFT JOIN erp->orders o ON o.number = c.number
+                    INNER JOIN erp->orders o ON o.number = c.number
                     """;
         var tokens = Tokenizer.Tokenize(query);
         var result = TokenQueryParser.Parse(tokens);
@@ -54,7 +54,7 @@ public sealed class JoinSelectQueries
         
         var secondJoin = result.Join[1];
         secondJoin.Inner.ShouldBeTable("erp", "orders");
-        secondJoin.JoinType.Should().Be(JoinType.Left);
+        secondJoin.JoinType.Should().Be(JoinType.Inner);
         secondJoin.Expression.ShouldBeBinaryOperator("=", new VariableMappingSpecifier("o", "number"), new VariableMappingSpecifier("c", "number"));
     }
 }
