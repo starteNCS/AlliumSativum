@@ -48,16 +48,12 @@ public sealed class PlannerService : Planner.PlannerBase
         var response = new PlanResponse
         {
             Success = true,
-            Plan = new GQueryExecutionPlan
+            Plan = new GPlanOperator
             {
-                Cost = plan.Cost,
-                RootOperator = new GPlanOperator
+                PushdownSql = new GPushdownSqlPlanOperator
                 {
-                    PushdownSql = new GPushdownSqlPlanOperator
-                    {
-                        SqlStatement = ((PushdownSqlPlanOperator)plan.RootOperator).SqlStatement,
-                        DatasourceId = ((PushdownSqlPlanOperator)plan.RootOperator).DataSource.ToString()
-                    }
+                    SqlStatement = ((PushdownSqlPlanOperator)plan.RootOperator).SqlStatement,
+                    DatasourceId = ((PushdownSqlPlanOperator)plan.RootOperator).DataSource.ToString()
                 }
             }
         };

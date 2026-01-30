@@ -9,5 +9,5 @@ service Planner {
 
 message PlanResponse {
   bool success = 1;
-  GQueryExecutionPlan plan = 2;
+  GPlanOperator plan = 2;
 }

@@ -4,29 +4,11 @@ using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
+using AlliumSativum.Shared.Utils;
 using AlliumSativum.Worker.Sdk;
 
 namespace AlliumSativum.Optimize;
-public class ListComparer<T> : IEqualityComparer<List<T>>
-{
-    public bool Equals(List<T>? x, List<T>? y)
-    {
-        if (ReferenceEquals(x, y)) return true;
-        if (x == null || y == null) return false;
-        return x.SequenceEqual(y);
-    }
 
-    public int GetHashCode(List<T> obj)
-    {
-        // HashCode.Combine (C# 8.0+) is great for building hashes from sequences
-        var hash = new HashCode();
-        foreach (var item in obj)
-        {
-            hash.Add(item);
-        }
-        return hash.ToHashCode();
-    }
-}
 public sealed partial class Optimizer
 {
     private readonly PlannerApi _planner;
@@ -50,7 +32,7 @@ public sealed partial class Optimizer
                 throw new AsSqlOptimizeException("Expected pushdown plan, but got none");
             }
             
-            plans.Add([select.From!], plan.RootOperator);
+            plans.Add([select.From!], plan);
         }
 
         IExpressionNode? whereCnf = null;
@@ -96,7 +78,7 @@ public sealed partial class Optimizer
         
         if (plans.Count - 1 != onPremise.Join.Count)
         {
-            throw new AsSqlOptimizeException("Cannot execute join, as the number of plans and joins missmatch");
+            throw new AsSqlOptimizeException("Cannot execute join, as the number of plans and joins mismatch");
         }
 
         foreach (var join in model.Join)

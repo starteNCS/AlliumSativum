@@ -5,6 +5,7 @@ namespace AlliumSativum.Shared.Models.ExecutionPlan;
 public abstract class PlanOperator
 {
     public List<PlanOperator> Children { get; init; } = [];
+    public double Cost { get; set; }
     
     protected string ToChildrenString() => string.Join(", ", Children.Select(x => x.ToString()));
 }

@@ -29,8 +29,9 @@ message GQueryExecutionPlan {
 }
 
 message GPlanOperator {
+  double cost = 1;
   oneof operator_type {
-    GPushdownSqlPlanOperator pushdown_sql = 1;
+    GPushdownSqlPlanOperator pushdown_sql = 2;
   }
 }
 

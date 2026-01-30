@@ -13,24 +13,23 @@ public sealed class PlannerApi
         _client = client;
     }
 
-    public async Task<QueryExecutionPlan?> PlanQueryAsync(SelectBaseModel model)
+    public async Task<PlanOperator?> PlanQueryAsync(SelectBaseModel model)
     {
-        var plan = await _client.PlanAsync(model.ToGrpcModel());
-        if (plan == null)
+        var response = await _client.PlanAsync(model.ToGrpcModel());
+        if (response == null)
         {
             return null;
         }
 
-        return new QueryExecutionPlan
+        return response.Plan.OperatorTypeCase switch
         {
-            Cost = plan.Plan.Cost,
-            RootOperator = plan.Plan.RootOperator.OperatorTypeCase switch
+            GPlanOperator.OperatorTypeOneofCase.PushdownSql => new PushdownSqlPlanOperator(
+                Guid.Parse(response.Plan.PushdownSql.DatasourceId),
+                response.Plan.PushdownSql.SqlStatement)
             {
-                GPlanOperator.OperatorTypeOneofCase.PushdownSql => new PushdownSqlPlanOperator(
-                    Guid.Parse(plan.Plan.RootOperator.PushdownSql.DatasourceId), 
-                    plan.Plan.RootOperator.PushdownSql.SqlStatement),
-                _ => throw new ArgumentException("Expected some plan operator")
-            }
+                Cost = response.Plan.Cost
+            },
+            _ => throw new ArgumentException("Expected some plan operator")
         };
     }
 }
