@@ -16,7 +16,7 @@ public sealed class PostgreSqlPlanner : IPlanner
         _catalogDatabase = catalogDatabase;
     }
     
-    public async Task<QueryExecutionPlan?> PlanAsync(Guid dataSource, SelectBaseModel selectModel)
+    public async Task<PlanOperator?> PlanAsync(Guid dataSource, SelectBaseModel selectModel)
     {
         var relation = await _catalogDatabase.GetRelationAsync(dataSource, selectModel.From!.TableName);
         if (relation is null)
@@ -29,10 +29,9 @@ public sealed class PostgreSqlPlanner : IPlanner
         var cost = relation.ConnectionOpenMs 
                    + Math.Max(1, relation.Transfer100Ms - relation.ConnectionOpenMs) * (relation.Cardinality / 100);
 
-        return new QueryExecutionPlan
+        return new PushdownSqlPlanOperator(relation.DataSourceId, selectModel.ToPostgreSqlString())
         {
-            Cost = cost,
-            RootOperator = new PushdownSqlPlanOperator(relation.DataSourceId, selectModel.ToPostgreSqlString())
+            Cost = cost
         };
     }
 }

@@ -52,9 +52,10 @@ public sealed class PlannerService : Planner.PlannerBase
             {
                 PushdownSql = new GPushdownSqlPlanOperator
                 {
-                    SqlStatement = ((PushdownSqlPlanOperator)plan.RootOperator).SqlStatement,
-                    DatasourceId = ((PushdownSqlPlanOperator)plan.RootOperator).DataSource.ToString()
-                }
+                    SqlStatement = ((PushdownSqlPlanOperator)plan).SqlStatement,
+                    DatasourceId = ((PushdownSqlPlanOperator)plan).DataSource.ToString()
+                },
+                Cost = plan.Cost
             }
         };
         

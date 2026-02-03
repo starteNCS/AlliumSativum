@@ -1,3 +1,4 @@
+using System.Text;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 namespace AlliumSativum.Shared.Models.ExecutionPlan;
@@ -7,7 +8,31 @@ public abstract class PlanOperator
     public List<PlanOperator> Children { get; init; } = [];
     public double Cost { get; set; }
     
-    protected string ToChildrenString() => string.Join(", ", Children.Select(x => x.ToString()));
+    public string ToPrettyString()
+    {
+        var sb = new StringBuilder();
+        BuildString(sb, "", true);
+        return sb.ToString();
+    }
+
+    protected virtual void BuildString(StringBuilder sb, string prefix, bool isLast)
+    {
+        sb.Append(prefix);
+        sb.Append(isLast ? "└── " : "├── ");
+        sb.AppendLine(GetNodeInfo());
+
+        // 2. Prepare prefix for children
+        string childPrefix = prefix + (isLast ? "    " : "│   ");
+
+        // 3. Recurse
+        for (int i = 0; i < Children.Count; i++)
+        {
+            bool childIsLast = (i == Children.Count - 1);
+            Children[i].BuildString(sb, childPrefix, childIsLast);
+        }
+    }
+
+    protected abstract string GetNodeInfo();
 }
 
 public class PushdownSqlPlanOperator : PlanOperator
@@ -21,7 +46,7 @@ public class PushdownSqlPlanOperator : PlanOperator
         SqlStatement = sqlStatement;
     }
 
-    public override string ToString() => $"pushdown({DataSource}, '{SqlStatement}')";
+    protected override string GetNodeInfo() => $"({Cost}) PUSH-DOWN [{DataSource}]: '{SqlStatement}'";
 }
 
 public class WherePlanOperator : PlanOperator
@@ -33,7 +58,7 @@ public class WherePlanOperator : PlanOperator
         Expression = expression;
     }
     
-    public override string ToString() => $"where({Expression}, {ToChildrenString()})";
+    protected override string GetNodeInfo() => $"({Cost}) FILTER: {Expression}";
 }
 
 public class JoinPlanOperator : PlanOperator
@@ -52,5 +77,5 @@ public class JoinPlanOperator : PlanOperator
     // override to avoid some outer class to add more children
     public new IReadOnlyList<PlanOperator> Children => base.Children;
     
-    public override string ToString() => $"join({Left}, {Right})";
+    protected override string GetNodeInfo() => $"({Cost}) INNER JOIN";
 }

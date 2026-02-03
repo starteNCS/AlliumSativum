@@ -33,8 +33,8 @@ app.UseHttpsRedirection();
 
 app.MapPost("/compile", async (QueryCompiler compiler, [FromBody] CompileInput query) =>
 {
-    var parsedQuery = await compiler.CompileAsync(query.Query);
-    return parsedQuery.RootOperator.ToString();
+    var executionPlan = await compiler.CompileAsync(query.Query);
+    return executionPlan.RootOperator.ToPrettyString();
 });
 app.MapGet("/metrics", async (MetricsApi metrics) =>
 {
