@@ -15,9 +15,14 @@ public partial class Optimizer
     ///     - base: the tree with the items left, that were not extracted
     ///     - split: a tree for only the provided table
     /// </returns>
-    private (IExpressionNode? @base, IExpressionNode? split) ExtractExpression(IExpressionNode node,
+    private (IExpressionNode? @base, IExpressionNode? split) ExtractExpression(IExpressionNode? node,
         TableSpecifier table)
     {
+        if (node is null)
+        {
+            return (null, null);
+        }
+        
         // Case 1: The current node is an AND operator.
         // We try to split both sides recursively.
         if (node is BinaryOperatorExpressionNode binary &&

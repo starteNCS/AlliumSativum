@@ -29,6 +29,15 @@ public sealed class SelectBaseModel
         }
 
         stringBuilder.Append($" FROM {From?.TableName}");
+        
+        // TODO: join
+
+        if (Where is not null)
+        {
+            stringBuilder.Append(" WHERE ");
+            stringBuilder.Append(Where.ToSqlQueryString());
+        }
+        
         return stringBuilder.ToString();
     }
 }

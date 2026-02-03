@@ -10,6 +10,7 @@ message Void {}
 message GSelectBaseModel {
   GTableSpecifier from = 1;
   repeated GAttributeSpecifier select = 2;
+  GExpressionNode where = 3;
 }
 
 message GTableSpecifier {
@@ -20,6 +21,36 @@ message GTableSpecifier {
 message GAttributeSpecifier {
   GTableSpecifier table = 1;
   string attributeName = 2;
+}
+
+message GExpressionNode {
+  oneof node_type {
+    GVariableMappingNode variable_mapping = 1;
+    GFullySpecifiedColumnNode fully_specified = 2;
+    GValueNode value = 3;
+    GBinaryOperatorNode binary_operator = 4;
+  }
+}
+
+message GVariableMappingNode {
+  string alias_name = 1;
+  string attribute_name = 4;
+}
+
+message GFullySpecifiedColumnNode {
+  string data_source_name = 1;
+  string table_name = 2;
+  string attribute_name = 3;
+}
+
+message GValueNode {
+  string value = 1;
+}
+
+message GBinaryOperatorNode {
+  string operation = 1;
+  GExpressionNode left = 2;
+  GExpressionNode right = 3;
 }
 
 // QueryExecutionPlan

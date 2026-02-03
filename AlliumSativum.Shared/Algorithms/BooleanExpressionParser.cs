@@ -75,9 +75,12 @@ public static partial class BooleanExpressionParser
         return operandStack.Count > 0 ? operandStack.Pop() : null;
     }
     
-    public static IExpressionNode AsConjunctiveNormalForm(IExpressionNode node)
+    public static IExpressionNode AsConjunctiveNormalForm(IExpressionNode? node)
     {
-        if (node is not BinaryOperatorExpressionNode binary) return node;
+        if (node is not BinaryOperatorExpressionNode binary)
+        {
+            return node;
+        }
 
         var left = AsConjunctiveNormalForm(binary.Left);
         var right = AsConjunctiveNormalForm(binary.Right);
