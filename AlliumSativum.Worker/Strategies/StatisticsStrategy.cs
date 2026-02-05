@@ -24,7 +24,7 @@ public sealed class StatisticsStrategy
         {
             ConnectorType.Postgres => _postgreSqlStatistics,
             ConnectorType.TicketSystem => _ticketSystemStatistics,
-            _ => throw new ArgumentException("Invalid connector type", nameof(connectorType))
+            _ => throw new ArgumentException("Invalid connector type. Did you forget to add it to the strategy?", nameof(connectorType))
         };
     }
 }

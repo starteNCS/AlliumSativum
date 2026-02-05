@@ -69,10 +69,17 @@ message GPlanOperator {
   double cost = 1;
   oneof operator_type {
     GPushdownSqlPlanOperator pushdown_sql = 2;
+    GPushdownRestCallPlanOperator pushdown_rest_call = 3;
   }
 }
 
 message GPushdownSqlPlanOperator {
-  string sql_statement = 1;
-  string datasourceId = 2;
+  string datasourceId = 1;
+  string sql_statement = 2;
+}
+
+message GPushdownRestCallPlanOperator {
+  string datasourceId = 1;
+  string httpMethod = 2;
+  string url = 3;
 }

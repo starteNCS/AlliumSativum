@@ -11,14 +11,14 @@ public sealed class PostgreSqlPlanner : IPlanner
 {
     private readonly CatalogDatabase _catalogDatabase;
 
-    public PostgreSqlPlanner( CatalogDatabase catalogDatabase)
+    public PostgreSqlPlanner(CatalogDatabase catalogDatabase)
     {
         _catalogDatabase = catalogDatabase;
     }
     
-    public async Task<PlanOperator?> PlanAsync(Guid dataSource, SelectBaseModel selectModel)
+    public async Task<PlanOperator?> PlanAsync(Guid dataSourceId, SelectBaseModel selectModel)
     {
-        var relation = await _catalogDatabase.GetRelationAsync(dataSource, selectModel.From!.TableName);
+        var relation = await _catalogDatabase.GetRelationAsync(dataSourceId, selectModel.From!.TableName);
         if (relation is null)
         {
             return null;

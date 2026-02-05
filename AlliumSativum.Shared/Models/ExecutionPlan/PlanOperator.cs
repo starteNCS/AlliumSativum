@@ -46,7 +46,25 @@ public class PushdownSqlPlanOperator : PlanOperator
         SqlStatement = sqlStatement;
     }
 
-    protected override string GetNodeInfo() => $"({Cost}) PUSH-DOWN [{DataSource}]: '{SqlStatement}'";
+    protected override string GetNodeInfo() => $"({Cost}) PUSH-DOWN SQL [{DataSource}]: '{SqlStatement}'";
+}
+
+public class PushdownRestCallPlanOperator : PlanOperator
+{
+    public Guid DataSource { get;  }
+    public string HttpMethod { get; }
+    public string Url { get; set; }
+    public object? Body { get; set; }
+
+    public PushdownRestCallPlanOperator(Guid dataSource, string httpMethod, string url, object? body)
+    {
+        DataSource = dataSource;
+        HttpMethod = httpMethod;
+        Url = url;
+        Body = body;
+    }
+
+    protected override string GetNodeInfo() => $"({Cost}) PUSH-DOWN REST [{DataSource}]: '{HttpMethod} {Url}'";
 }
 
 public class WherePlanOperator : PlanOperator

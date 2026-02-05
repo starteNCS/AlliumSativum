@@ -48,14 +48,28 @@ public sealed class PlannerService : Planner.PlannerBase
         var response = new PlanResponse
         {
             Success = true,
-            Plan = new GPlanOperator
+            Plan = plan switch
             {
-                PushdownSql = new GPushdownSqlPlanOperator
+                PushdownSqlPlanOperator psql => new GPlanOperator
                 {
-                    SqlStatement = ((PushdownSqlPlanOperator)plan).SqlStatement,
-                    DatasourceId = ((PushdownSqlPlanOperator)plan).DataSource.ToString()
+                    PushdownSql = new GPushdownSqlPlanOperator
+                    {
+                        SqlStatement = psql.SqlStatement,
+                        DatasourceId = psql.DataSource.ToString()
+                    },
+                    Cost = plan.Cost
                 },
-                Cost = plan.Cost
+                PushdownRestCallPlanOperator prest => new GPlanOperator
+                {
+                    PushdownRestCall = new GPushdownRestCallPlanOperator
+                    {
+                        DatasourceId =  prest.DataSource.ToString(),
+                        HttpMethod = prest.HttpMethod,
+                        Url = prest.Url
+                    },
+                    Cost = plan.Cost
+                },
+                _ => new GPlanOperator()
             }
         };
         

@@ -29,6 +29,11 @@ public sealed class PlannerApi
             {
                 Cost = response.Plan.Cost
             },
+            GPlanOperator.OperatorTypeOneofCase.PushdownRestCall => new PushdownRestCallPlanOperator(
+                Guid.Parse(response.Plan.PushdownRestCall.DatasourceId),
+                response.Plan.PushdownRestCall.HttpMethod,
+                response.Plan.PushdownRestCall.Url,
+                null),
             _ => throw new ArgumentException("Expected some plan operator")
         };
     }

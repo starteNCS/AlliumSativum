@@ -70,7 +70,7 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
         var relations = await QueryAsync<RelationEntity>($"SELECT * FROM Catalog.Relations WHERE Name LIKE @TableName AND DataSourceId = @DataSourceId",
             new
             {
-                TableName = $"%.{tableName}",
+                TableName = $"%{tableName}",
                 DataSourceId = dataSource,
             });
         if (relations.Count > 1)
