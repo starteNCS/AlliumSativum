@@ -32,6 +32,7 @@ public class QueryCompiler
             throw new AsSqlException();
         }
         _semanticTransformer.Transform(selectModel);
+        // TODO: semantic checker (check attributes etc.)
         var executionPlan = await _optimizer.Optimize(selectModel);
         
         return executionPlan;

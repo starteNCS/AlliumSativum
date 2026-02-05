@@ -25,8 +25,7 @@ public sealed class PostgreSqlPlanner : IPlanner
         }
         
         // TODO: adjust cost for filters and joins
-        var cost = relation.ConnectionOpenMs 
-                   + Math.Max(1, relation.Transfer100Ms - relation.ConnectionOpenMs) * (relation.Cardinality / 100);
+        var cost = relation.ConnectionOpenMs + relation.Transfer100Ms * (relation.Cardinality / 100);
 
         return new PushdownSqlPlanOperator(relation.DataSourceId, selectModel.ToPostgreSqlString())
         {

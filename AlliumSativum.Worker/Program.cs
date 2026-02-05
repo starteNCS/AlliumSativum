@@ -1,15 +1,10 @@
 using System.Reflection;
 using AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 using AlliumSativum.Connectors.PostgreSQL.Extensions;
-using AlliumSativum.Connectors.PostgreSQL.Planners;
-using AlliumSativum.Connectors.PostgreSQL.Statistics;
-using AlliumSativum.Connectors.Shared.Interfaces;
+using AlliumSativum.Connectors.TicketSystem.Extensions;
 using AlliumSativum.Shared.Migrations;
-using AlliumSativum.Worker;
 using AlliumSativum.Worker.Services;
 using AlliumSativum.Worker.Strategies;
-using Dapper.Extensions.PostgreSql;
-using DbUp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,10 +23,13 @@ builder.AddCatalogDatabase(builder.Configuration.GetConnectionString("catalog-da
 builder.Services
     .AddScoped<DatasourceDatabase>();
 
-builder.Services.AddPostgreSqlConnector();
+builder.Services
+    .AddPostgreSqlConnector()
+    .AddTicketSystemConnector();
 
 builder.Services
-    .AddScoped<PlannerStrategy>();
+    .AddScoped<PlannerStrategy>()
+    .AddScoped<StatisticsStrategy>();
 
 var app = builder.Build();
 

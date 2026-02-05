@@ -27,7 +27,6 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
     
     public async Task ScrapeStatistics(Guid dataSource)
     {
-        var stopwatch = Stopwatch.StartNew();
         var tables = await _dataSource.QueryAsync<PostgresTablesModel>(dataSource, "SELECT table_schema AS TableSchema, table_name AS TableName FROM information_schema.tables WHERE table_schema != 'pg_catalog' AND table_schema != 'information_schema' AND table_type = 'BASE TABLE'");
 
         if (tables.Count == 0)
@@ -80,9 +79,6 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                                           DistinctCardinality = EXCLUDED.DistinctCardinality,
                                                           MetricsDate = EXCLUDED.MetricsDate
                                             """,  attributeMetrics);
-        
-        stopwatch.Stop();
-        _logger.LogInformation("Scrape statistics for {DataSource} took {StopwatchElapsedMilliseconds}ms", dataSource, stopwatch.ElapsedMilliseconds);
     }
 
     private async Task<(List<RelationEntity> relationEntities, List<AttributeEntity> attributeEntities)> GetTableMetricsAsync(
@@ -124,7 +120,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                 MetricsDate = DateTime.Now,
                 Cardinality = (long)rowDict["total"],
                 ConnectionOpenMs = accessTime,
-                Transfer100Ms = transfer100
+                Transfer100Ms = Math.Max(transfer100 - accessTime, 1), // max 1, as 0 would make no sense in multiplication
             });
 
             foreach (var column in rowDict.Keys.Where(r => r != "total"))

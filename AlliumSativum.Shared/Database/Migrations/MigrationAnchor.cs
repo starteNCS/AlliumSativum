@@ -34,6 +34,10 @@ public static class MigrationExtensions
         Console.WriteLine("Success! Database is up to date.");
         Console.ResetColor();
 
-        webApplicationBuilder.Services.AddSingleton(new CatalogDatabase(connectionString));
+        webApplicationBuilder.Services.AddSingleton(new CatalogDatabaseSettings
+        {
+            ConnectionString = connectionString
+        });
+        webApplicationBuilder.Services.AddScoped<CatalogDatabase>();
     }
 }

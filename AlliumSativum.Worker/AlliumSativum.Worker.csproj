@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\AlliumSativum.Connectors.PostgreSQL\AlliumSativum.Connectors.PostgreSQL.csproj" />
+      <ProjectReference Include="..\AlliumSativum.Connectors.TicketSystem\AlliumSativum.Connectors.TicketSystem.csproj" />
       <ProjectReference Include="..\AlliumSativum.ServiceDefaults\AlliumSativum.ServiceDefaults.csproj" />
       <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj" />
       <ProjectReference Include="..\AlliumSativum.Worker.Proto\AlliumSativum.Worker.Proto.csproj" />

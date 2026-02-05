@@ -11,4 +11,5 @@ public sealed class RelationEntity
     public long ConnectionOpenMs { get; set; }
     public long Transfer100Ms { get; set; }
     public DateTime MetricsDate { get; set; }
+    public string AccessPath { get; set; } = string.Empty;
 }

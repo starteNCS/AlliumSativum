@@ -7,8 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Database\Migrations\0000_Init.sql"/>
-        <EmbeddedResource Include="Migrations\*.sql"/>
+        <EmbeddedResource Include="Database\Migrations\*.sql"/>
     </ItemGroup>
 
     <ItemGroup>

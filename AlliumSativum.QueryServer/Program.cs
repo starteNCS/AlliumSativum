@@ -36,9 +36,9 @@ app.MapPost("/compile", async (QueryCompiler compiler, [FromBody] CompileInput q
     var executionPlan = await compiler.CompileAsync(query.Query);
     return executionPlan.RootOperator.ToPrettyString();
 });
-app.MapGet("/metrics", async (MetricsApi metrics) =>
+app.MapGet("/metrics/{datasourceId:guid}", async (MetricsApi metrics, [FromRoute] Guid datasourceId) =>
 {
-    await metrics.TriggerMetricsScrapeAsync(Guid.Parse("6e69646b-47be-4e80-aa02-06b48b8c7253"));
+    await metrics.TriggerMetricsScrapeAsync(datasourceId);
 });
 
 app.Run();
