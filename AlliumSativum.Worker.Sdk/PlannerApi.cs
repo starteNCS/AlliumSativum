@@ -13,15 +13,15 @@ public sealed class PlannerApi
         _client = client;
     }
 
-    public async Task<PlanOperator?> PlanQueryAsync(SelectBaseModel model)
+    public async Task<(PlanOperator? proposal, SelectBaseModel? unplanned)> PlanQueryAsync(SelectBaseModel model)
     {
         var response = await _client.PlanAsync(model.ToGrpcModel());
         if (response == null)
         {
-            return null;
+            return (null, null);
         }
 
-        return response.Plan.OperatorTypeCase switch
+        return (response.Plan.OperatorTypeCase switch
         {
             GPlanOperator.OperatorTypeOneofCase.PushdownSql => new PushdownSqlPlanOperator(
                 Guid.Parse(response.Plan.PushdownSql.DatasourceId),
@@ -33,8 +33,11 @@ public sealed class PlannerApi
                 Guid.Parse(response.Plan.PushdownRestCall.DatasourceId),
                 response.Plan.PushdownRestCall.HttpMethod,
                 response.Plan.PushdownRestCall.Url,
-                null),
+                null)
+            {
+                Cost = response.Plan.Cost
+            },
             _ => throw new ArgumentException("Expected some plan operator")
-        };
+        }, response.Unplanned?.FromGrpcModel());
     }
 }

@@ -24,9 +24,10 @@ public sealed partial class Optimizer
     /// - split the given model into TABLES ✅
     /// - check which WHERE expressions can be 100% assigned to one table ✅
     /// - check joins, merge multiple tables into one sub plan if possible ✅
-    /// - check WHERE again, if any more can be pushed down
+    /// - check WHERE again, if any more can be pushed down ✅
     /// - propose to the worker ✅
     /// - check what it did not accept and add POP's to the plan accordingly
+    /// - rule/cost-based check what POP's can be accumulated for cost reduction (if any) 
     /// - accumulate cost
     /// - return plan with cost
     /// </summary>
@@ -35,17 +36,22 @@ public sealed partial class Optimizer
     /// <exception cref="AsSqlOptimizeException"></exception>
     public async Task<QueryExecutionPlan> Optimize(SelectBaseModel model)
     {
+        // split the given model into TABLES
+        // check which WHERE expressions can be 100% assigned to one table
         var (onPremise, tables) = SplitIntoTables(model);
 
+        // check joins, merge multiple tables into one sub plan if possible
         var (joinsLeftOnPremise, joinedTableSelect) = CombineTablesByJoinPushDown(onPremise.Join, tables);
         onPremise.Join = joinsLeftOnPremise;
         
+        // check WHERE again, if any more can be pushed down
         AssignWhereToJoinedProposals(onPremise, joinedTableSelect);
-
+        
         var plans = new Dictionary<List<TableSpecifier>, PlanOperator>(new ListComparer<TableSpecifier>());
+        // propose to the worker
         foreach (var select in joinedTableSelect)
         {
-            var plan = await _planner.PlanQueryAsync(select);
+            var (plan, unplanned) = await _planner.PlanQueryAsync(select);
             if (plan is null)
             {
                 throw new AsSqlOptimizeException("Expected pushdown plan, but got none");

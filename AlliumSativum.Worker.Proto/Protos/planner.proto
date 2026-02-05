@@ -10,4 +10,5 @@ service Planner {
 message PlanResponse {
   bool success = 1;
   GPlanOperator plan = 2;
+  optional GSelectBaseModel unplanned = 3;
 }

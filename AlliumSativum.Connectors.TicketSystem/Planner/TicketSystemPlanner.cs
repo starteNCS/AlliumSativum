@@ -15,18 +15,18 @@ public sealed class TicketSystemPlanner : IPlanner
         _catalogDatabase = catalogDatabase;
     }
     
-    public async Task<PlanOperator?> PlanAsync(Guid dataSourceId, SelectBaseModel selectModel)
+    public async Task<(PlanOperator? proposal, SelectBaseModel? unplanned)> PlanAsync(Guid dataSourceId, SelectBaseModel selectModel)
     {
         var dataSource = await _catalogDatabase.GetDataSourceAsync(dataSourceId);
         if (dataSource is null)
         {
-            return null;
+            return (null, null);
         }
         
         var relation = await _catalogDatabase.GetRelationAsync(dataSourceId, selectModel.From!.TableName);
         if (relation is null)
         {
-            return null;
+            return (null, null);
         }
         
         var cost = relation.ConnectionOpenMs + relation.Transfer100Ms * (relation.Cardinality / 100);
@@ -37,9 +37,9 @@ public sealed class TicketSystemPlanner : IPlanner
         urlBuilder.Append(relation.AccessPath);
         
         
-        return new PushdownRestCallPlanOperator(dataSource.Id, "GET", urlBuilder.ToString(), null)
+        return (new PushdownRestCallPlanOperator(dataSource.Id, "GET", urlBuilder.ToString(), null)
         {
             Cost = cost
-        };
+        }, selectModel);
     }
 }

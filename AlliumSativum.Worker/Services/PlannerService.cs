@@ -43,12 +43,12 @@ public sealed class PlannerService : Planner.PlannerBase
         }
         
         var planner = _plannerStrategy.GetPlannerOfConnector(datasource.Connector);
-        var plan = await planner.PlanAsync(datasource.Id, request.FromGrpcModel());
+        var (proposal, unplanned) = await planner.PlanAsync(datasource.Id, request.FromGrpcModel());
 
         var response = new PlanResponse
         {
             Success = true,
-            Plan = plan switch
+            Plan = proposal switch
             {
                 PushdownSqlPlanOperator psql => new GPlanOperator
                 {
@@ -57,7 +57,7 @@ public sealed class PlannerService : Planner.PlannerBase
                         SqlStatement = psql.SqlStatement,
                         DatasourceId = psql.DataSource.ToString()
                     },
-                    Cost = plan.Cost
+                    Cost = proposal.Cost
                 },
                 PushdownRestCallPlanOperator prest => new GPlanOperator
                 {
@@ -67,10 +67,11 @@ public sealed class PlannerService : Planner.PlannerBase
                         HttpMethod = prest.HttpMethod,
                         Url = prest.Url
                     },
-                    Cost = plan.Cost
+                    Cost = proposal.Cost
                 },
                 _ => new GPlanOperator()
-            }
+            },
+            Unplanned = unplanned?.ToGrpcModel(),
         };
         
         return response;

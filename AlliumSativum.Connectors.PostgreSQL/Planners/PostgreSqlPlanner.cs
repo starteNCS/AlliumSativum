@@ -16,20 +16,20 @@ public sealed class PostgreSqlPlanner : IPlanner
         _catalogDatabase = catalogDatabase;
     }
     
-    public async Task<PlanOperator?> PlanAsync(Guid dataSourceId, SelectBaseModel selectModel)
+    public async Task<(PlanOperator? proposal, SelectBaseModel? unplanned)> PlanAsync(Guid dataSourceId, SelectBaseModel selectModel)
     {
         var relation = await _catalogDatabase.GetRelationAsync(dataSourceId, selectModel.From!.TableName);
         if (relation is null)
         {
-            return null;
+            return (null, null);
         }
         
         // TODO: adjust cost for filters and joins
         var cost = relation.ConnectionOpenMs + relation.Transfer100Ms * (relation.Cardinality / 100);
 
-        return new PushdownSqlPlanOperator(relation.DataSourceId, selectModel.ToPostgreSqlString())
+        return (new PushdownSqlPlanOperator(relation.DataSourceId, selectModel.ToPostgreSqlString())
         {
             Cost = cost
-        };
+        }, null);
     }
 }
