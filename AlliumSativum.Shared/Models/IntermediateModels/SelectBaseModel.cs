@@ -8,9 +8,11 @@ public sealed class SelectBaseModel
 {
     public List<VariableMapping> VariableMappings { get; set; } = [];
     public List<ISpecifier> Select { get; set; } = [];
-    public TableSpecifier? From { get; set; }
+    public TableSpecifier From { get; set; } = null!;
     public IExpressionNode? Where { get; set; } 
     public List<JoinBaseModel> Join { get; set; } = [];
+
+    public List<TableSpecifier> AffectedTables => [From, ..Join.Select(x => x.Inner)];
 
     public string ToPostgreSqlString()
     {
@@ -29,8 +31,14 @@ public sealed class SelectBaseModel
         }
 
         stringBuilder.Append($" FROM {From?.TableName}");
-        
-        // TODO: join
+
+        foreach (var join in Join)
+        {
+            stringBuilder.Append(" INNER JOIN ");
+            stringBuilder.Append(join.Inner.TableName);
+            stringBuilder.Append(" ON ");
+            stringBuilder.Append(join.Expression.ToSqlQueryString());
+        }
 
         if (Where is not null)
         {

@@ -30,6 +30,15 @@ public static class ModelExtensions
                 AttributeName = aSpec.AttributeName
             };
         }));
+        payload.Joins.AddRange(model.Join.Select(j => new GJoinBaseModel()
+        {
+            Inner = new GTableSpecifier()
+            {
+                TableName = j.Inner.TableName,
+                DataSource = j.Inner.DataSourceName,
+            },
+            Expression = j.Expression.ToGrpcModel()
+        }));
 
         return payload;
     }
@@ -94,7 +103,13 @@ public static class ModelExtensions
             From = new TableSpecifier(model.From.DataSource, model.From.TableName),
             Select = model.Select.Select(ISpecifier (spec) =>
                 new AttributeSpecifier(spec.Table.DataSource, spec.Table.TableName, spec.AttributeName)).ToList(),
-            Where = model.Where.FromGrpcModel()
+            Where = model.Where.FromGrpcModel(),
+            Join = model.Joins.Select(j => new JoinBaseModel
+            {
+                Expression = j.Expression.FromGrpcModel(),
+                Inner = new TableSpecifier(j.Inner.DataSource, j.Inner.TableName),
+                JoinType = JoinType.Inner
+            }).ToList()
         };
     }
 

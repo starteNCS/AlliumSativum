@@ -21,14 +21,33 @@ public class PartialColumnExpressionNode : IExpressionNode
     public string Name { get; set; } = string.Empty;
     public override string ToString() => $"[{Name}]";
     public string ToSqlQueryString() => "invalid";
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not PartialColumnExpressionNode other)
+        {
+            return false;
+        }
+        
+        return other.Name == Name;
+    }
 }
 
 public class VariableMappingExpressionNode : IExpressionNode
 {
     public required VariableMappingSpecifier VariableMapping { get; set; }
     public override string ToString() => $"[{VariableMapping.VariableName}{AsSqlParameters.Attribute.TableSeparator}{VariableMapping.AttributeName}]";
-
     public string ToSqlQueryString() => $"{VariableMapping.VariableName}.{VariableMapping.AttributeName}";
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj is not VariableMappingExpressionNode other)
+        {
+            return false;
+        }
+        
+        return other.VariableMapping == VariableMapping;
+    }
 }
 
 public class FullySpecifiedColumnExpressionNode : IExpressionNode
@@ -38,6 +57,16 @@ public class FullySpecifiedColumnExpressionNode : IExpressionNode
     
     // currently discards the data source attribute
     public string ToSqlQueryString() => $"{Attribute.TableName}.{Attribute.AttributeName}";
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj is not FullySpecifiedColumnExpressionNode other)
+        {
+            return false;
+        }
+        
+        return other.Attribute == Attribute;
+    }
 }
 
 public class ValueExpressionNode : IExpressionNode
@@ -45,8 +74,17 @@ public class ValueExpressionNode : IExpressionNode
     // TODO: add type annotation
     public string Value { get; set; } = string.Empty;
     public override string ToString() => $"'{Value}'";
-    
     public string ToSqlQueryString() => ToString();
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj is not ValueExpressionNode other)
+        {
+            return false;
+        }
+        
+        return other.Value == Value;
+    }
 }
 
 public class BinaryOperatorExpressionNode : IExpressionNode
@@ -54,8 +92,16 @@ public class BinaryOperatorExpressionNode : IExpressionNode
     public string Operation { get; set; } = string.Empty;
     public required IExpressionNode Left { get; set; }
     public required IExpressionNode Right { get; set; }
-
     public override string ToString() => $"({Left} {Operation} {Right})";
-
     public string ToSqlQueryString() => $"({Left.ToSqlQueryString()} {Operation} {Right.ToSqlQueryString()})";
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj is not BinaryOperatorExpressionNode other)
+        {
+            return false;
+        }
+        
+        return other.Operation == Operation && other.Left == Left && other.Right == Right;
+    }
 }

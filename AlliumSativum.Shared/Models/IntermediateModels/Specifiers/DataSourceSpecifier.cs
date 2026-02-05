@@ -1,26 +1,28 @@
 namespace AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
-public class DataSourceSpecifier : ISpecifier
+public class DataSourceSpecifier : ISpecifier, IEquatable<DataSourceSpecifier>
 {
-    public string DataSourceName { get; set; }
+    public string DataSourceName { get; }
 
     public DataSourceSpecifier(string dataSourceNameName)
     {
         DataSourceName = dataSourceNameName;
     }
 
+    public override string ToString() => DataSourceName;
+
     public TableSpecifier ToTableSpecifier(string tableName)
     {
         return new TableSpecifier(DataSourceName, tableName);
     }
+    
+    public bool Equals(DataSourceSpecifier? other) =>
+        other != null &&
+        DataSourceName == other.DataSourceName;
 
-    public override bool Equals(object? obj)
+
+    public override int GetHashCode()
     {
-        if (obj is not DataSourceSpecifier other)
-        {
-            return false;
-        }
-        
-        return DataSourceName == other.DataSourceName;
+        return DataSourceName.GetHashCode();
     }
 }

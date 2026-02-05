@@ -1,26 +1,31 @@
+using AlliumSativum.Shared.Constants;
+
 namespace AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
-public sealed class AttributeSpecifier : TableSpecifier
+public sealed class AttributeSpecifier : TableSpecifier, IEquatable<AttributeSpecifier>
 {
-    public string AttributeName { get; set; }
+    public string AttributeName { get; }
 
     public AttributeSpecifier(string dataSourceName, string tableName, string attributeName) : base(dataSourceName, tableName)
     {
         AttributeName = attributeName;
     }
+    
+    public override string ToString() => $"{base.ToString()}{AsSqlParameters.Attribute.TableSeparator}{AttributeName}";
 
     public bool IsInTable(TableSpecifier table)
     {
         return DataSourceName == table.DataSourceName && TableName == table.TableName;
     }
     
-    public override bool Equals(object? obj)
+    public override int GetHashCode()
     {
-        if (obj is not AttributeSpecifier other)
-        {
-            return false;
-        }
-        
-        return DataSourceName == other.DataSourceName &&  TableName == other.TableName && AttributeName == other.AttributeName;
+        return HashCode.Combine(DataSourceName, TableName, AttributeName);
     }
+
+    public bool Equals(AttributeSpecifier? other) =>
+        other != null &&
+        DataSourceName == other.DataSourceName &&
+        TableName == other.TableName &&
+        AttributeName == other.AttributeName;
 }

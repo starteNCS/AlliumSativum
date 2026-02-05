@@ -18,13 +18,32 @@ public sealed partial class Optimizer
         _planner = planner;
     }
     
-    // return qexp
+    /// <summary>
+    /// Optimizes the given SelectBaseModel into a QueryExecutionPlan
+    /// Operates in multiple steps:
+    /// - split the given model into TABLES ✅
+    /// - check which WHERE expressions can be 100% assigned to one table ✅
+    /// - check joins, merge multiple tables into one sub plan if possible ✅
+    /// - check WHERE again, if any more can be pushed down
+    /// - propose to the worker ✅
+    /// - check what it did not accept and add POP's to the plan accordingly
+    /// - accumulate cost
+    /// - return plan with cost
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    /// <exception cref="AsSqlOptimizeException"></exception>
     public async Task<QueryExecutionPlan> Optimize(SelectBaseModel model)
     {
         var (onPremise, tables) = SplitIntoTables(model);
 
+        var (joinsLeftOnPremise, joinedTableSelect) = CombineTablesByJoinPushDown(onPremise.Join, tables);
+        onPremise.Join = joinsLeftOnPremise;
+        
+        AssignWhereToJoinedProposals(onPremise, joinedTableSelect);
+
         var plans = new Dictionary<List<TableSpecifier>, PlanOperator>(new ListComparer<TableSpecifier>());
-        foreach (var select in tables)
+        foreach (var select in joinedTableSelect)
         {
             var plan = await _planner.PlanQueryAsync(select);
             if (plan is null)
@@ -32,68 +51,29 @@ public sealed partial class Optimizer
                 throw new AsSqlOptimizeException("Expected pushdown plan, but got none");
             }
             
-            plans.Add([select.From!], plan);
+            plans.Add([select.From!, ..select.Join.Select(x => x.Inner)], plan);
         }
-
-        IExpressionNode? whereCnf = null;
-        if (onPremise.Where is not null)
-        {
-            whereCnf = BooleanExpressionParser.AsConjunctiveNormalForm(onPremise.Where);
-            
-            foreach (var table in tables)
-            {
-                (whereCnf, var expr) = ExtractExpression(whereCnf, table.From!);
-
-                var scanPlanOperator = plans
-                    .FirstOrDefault(p => p.Key.Contains(table.From!))
-                    .Value;
-                if (expr is null || scanPlanOperator is null)
-                {
-                    continue;
-                }
-
-                var whereOperator = new WherePlanOperator(expr)
-                {
-                    Children = [scanPlanOperator]
-                };
-                
-                plans[[table.From!]] = whereOperator;
-
-                // if there are no items left in the tree, we do not need to check here further
-                if (whereCnf is null)
-                {
-                    break;
-                }
-            }
-        }
-
-        if (onPremise.Join.Count == 0 && plans.Count == 1)
-        {
-            return new QueryExecutionPlan()
-            {
-                Cost = 1,
-                RootOperator = plans.Single().Value
-            };
-        } 
+        
+        DistributeOnPremiseWhereToPlans(onPremise, joinedTableSelect, plans);
         
         if (plans.Count - 1 != onPremise.Join.Count)
         {
             throw new AsSqlOptimizeException("Cannot execute join, as the number of plans and joins mismatch");
         }
 
-        foreach (var join in model.Join)
+        foreach (var join in onPremise.Join)
         {
             var left = plans
-                .FirstOrDefault(p => p.Key.Contains(model.From!))
+                .FirstOrDefault(p => p.Key.Contains(onPremise.From!))
                 .Value;
             var right = plans
                 .FirstOrDefault(p => p.Key.Contains(join.Inner))
                 .Value;
 
             var joinOperator = new JoinPlanOperator(left, right);
-            plans.Remove([model.From!]);
+            plans.Remove([onPremise.From!]);
             plans.Remove([join.Inner]);
-            plans.Add([model.From!, join.Inner], joinOperator);
+            plans.Add([onPremise.From!, join.Inner], joinOperator);
         }
 
         if (plans.Count != 1)
@@ -102,9 +82,9 @@ public sealed partial class Optimizer
         }
 
         var finalPlan = plans.Single().Value;
-        if (whereCnf is not null)
+        if (onPremise.Where is not null)
         {
-            finalPlan = new WherePlanOperator(whereCnf)
+            finalPlan = new WherePlanOperator(onPremise.Where)
             {
                 Children = [finalPlan]
             };

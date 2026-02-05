@@ -1,3 +1,5 @@
+using AlliumSativum.Shared.Exceptions;
+using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
@@ -18,20 +20,33 @@ public partial class Optimizer
     private (IExpressionNode? @base, IExpressionNode? split) ExtractExpression(IExpressionNode? node,
         TableSpecifier table)
     {
+        return ExtractExpression(node, [table]);
+    }
+    
+    /// <summary>
+    /// Extracts the tree for a specific table
+    /// </summary>
+    /// <remarks>Tree must be in conjunctive normal form</remarks>
+    /// <param name="node">The root node</param>
+    /// <param name="table">The table to split for</param>
+    /// <returns>
+    ///     - base: the tree with the items left, that were not extracted
+    ///     - split: a tree for only the provided table
+    /// </returns>
+    private (IExpressionNode? @base, IExpressionNode? split) ExtractExpression(IExpressionNode? node,
+        List<TableSpecifier> table)
+    {
         if (node is null)
         {
             return (null, null);
         }
         
-        // Case 1: The current node is an AND operator.
-        // We try to split both sides recursively.
         if (node is BinaryOperatorExpressionNode binary &&
             binary.Operation.Equals("AND", StringComparison.OrdinalIgnoreCase))
         {
             var (leftBase, leftSplit) = ExtractExpression(binary.Left, table);
             var (rightBase, rightSplit) = ExtractExpression(binary.Right, table);
 
-            // Combine the splits (the parts that only reference our table)
             IExpressionNode? finalSplit;
             if (leftSplit is not null && rightSplit is not null)
             {
@@ -43,7 +58,6 @@ public partial class Optimizer
                 finalSplit = leftSplit ?? rightSplit;
             }
 
-            // Combine the remaining base (the parts that reference other tables or mixed tables)
             IExpressionNode? finalBase;
             if (leftBase is not null && rightBase is not null)
             {
@@ -54,36 +68,158 @@ public partial class Optimizer
                 finalBase = leftBase ?? rightBase;
             }
                 
-
-            // Note: finalBase should theoretically never be null if the input wasn't empty,
-            // but we return it as the @base of the tuple.
             return (finalBase, finalSplit);
         }
 
-        // Case 2: The node is not an AND (it's either a literal comparison like OR, >, <, etc.)
-        // Check if the entire subtree belongs to the table.
-        if (IsPurelyTable(node, table))
+        if (IsPurelyTables(node, table))
         {
-            return (null, node); // Entirely the target table's, so move it to 'split'
+            return (null, node); 
         }
 
-        return (node, null); // Contains other tables, keep it in '@base'
+        return (node, null); 
     }
-
-    private bool IsPurelyTable(IExpressionNode node, TableSpecifier table)
+    
+    private bool IsPurelyTables(IExpressionNode node, List<TableSpecifier> table)
     {
         return node switch
         {
             ValueExpressionNode => true,
-
-            FullySpecifiedColumnExpressionNode fully =>
-                fully.Attribute.TableName == table.TableName &&
-                fully.Attribute.DataSourceName == table.DataSourceName,
-
+            FullySpecifiedColumnExpressionNode fully => table.Exists(x => x.TableName == fully.Attribute.TableName &&  x.DataSourceName == fully.Attribute.DataSourceName),
             BinaryOperatorExpressionNode binary =>
-                IsPurelyTable(binary.Left, table) && IsPurelyTable(binary.Right, table),
-
+                IsPurelyTables(binary.Left, table) && IsPurelyTables(binary.Right, table),
             _ => false
         };
+    }
+    
+    private static List<AttributeSpecifier> GetAttributesOfExpression(IExpressionNode root)
+    {
+        var results = new HashSet<AttributeSpecifier>();
+        var stack = new Stack<IExpressionNode>();
+    
+        stack.Push(root);
+
+        while (stack.Count > 0)
+        {
+            var current = stack.Pop();
+
+            switch (current)
+            {
+                case FullySpecifiedColumnExpressionNode fully:
+                    results.Add(fully.Attribute);
+                    break;
+
+                case BinaryOperatorExpressionNode binary:
+                    stack.Push(binary.Right);
+                    stack.Push(binary.Left);
+                    break;
+
+                case VariableMappingExpressionNode varMap:
+                    throw new AsSqlOptimizeException($"Variable mapping is not expected at this point. Should have been expanded by the semantic transformer. Did not expect alias {varMap.VariableMapping.VariableName}");
+            }
+        }
+
+        return results.ToList();
+    }
+
+    private static List<TableSpecifier> GetTablesOfExpression(IExpressionNode root)
+    {
+        return GetAttributesOfExpression(root)
+            .Select(x => new TableSpecifier(x.DataSourceName, x.TableName))
+            .Distinct()
+            .ToList();
+    } 
+
+    /// <summary>
+    /// Merges two expressions (which need to already be in CNF!) into a new singular expression (which also is in CNF)
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
+    private static IExpressionNode? MergeCnfExpressions(IExpressionNode? left, IExpressionNode? right)
+    {
+        if (left is null && right is null)
+        {
+            return null;
+        }
+
+        if (left is null)
+        {
+            return right;
+        }
+
+        if (right is null)
+        {
+            return left;
+        }
+
+        return new BinaryOperatorExpressionNode()
+        {
+            Left = left,
+            Operation = "AND",
+            Right = right,
+        };
+    }
+    
+    /// <summary>
+    /// Get the sub-trees (all AND combined clauses) of an expression that already is in CNF
+    /// </summary>
+    /// <param name="root"></param>
+    /// <returns></returns>
+    public static List<IExpressionNode> GetCnfSubTrees(IExpressionNode? root)
+    {
+        var clauses = new List<IExpressionNode>();
+        if (root == null)
+        {
+            return clauses;
+        }
+
+        var stack = new Stack<IExpressionNode>();
+        stack.Push(root);
+
+        while (stack.Count > 0)
+        {
+            var current = stack.Pop();
+
+            if (current is BinaryOperatorExpressionNode binary && 
+                binary.Operation.Equals("AND", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.Push(binary.Right);
+                stack.Push(binary.Left);
+            }
+            else
+            {
+                clauses.Add(current);
+            }
+        }
+
+        return clauses;
+    }
+
+    private IExpressionNode RemoveCnfExpression(IExpressionNode? fromNode, IExpressionNode remove)
+    {
+        var from = GetCnfSubTrees(fromNode);
+        from.Remove(remove);
+        return RebuildAndTree(from);
+    }
+
+    private IExpressionNode? RebuildAndTree(List<IExpressionNode> clauses)
+    {
+        if (clauses.Count == 0)
+        {
+            return null;
+        }
+
+        var root = clauses[0];
+        foreach (var clause in clauses)
+        {
+            root = new BinaryOperatorExpressionNode
+            {
+                Operation = "AND",
+                Left = root,
+                Right = clause
+            };
+        }
+
+        return root;
     }
 }
