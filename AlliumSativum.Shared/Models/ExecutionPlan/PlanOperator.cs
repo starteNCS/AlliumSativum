@@ -1,5 +1,6 @@
 using System.Text;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
+using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.ExecutionPlan;
 
@@ -96,4 +97,24 @@ public class JoinPlanOperator : PlanOperator
     public new IReadOnlyList<PlanOperator> Children => base.Children;
     
     protected override string GetNodeInfo() => $"({Cost}) INNER JOIN";
+}
+
+public class ProjectPlanOperator : PlanOperator
+{
+    public List<string> Attributes { get; }
+    
+    public ProjectPlanOperator(params List<string> attributes)
+    {
+        Attributes = attributes;
+    }
+    
+    public ProjectPlanOperator(params List<ISpecifier> attributes)
+    {
+        Attributes = attributes
+            .Where(x => x is AttributeSpecifier)
+            .Select(x => ((AttributeSpecifier)x).AttributeName)
+            .ToList();
+    }
+    
+    protected override string GetNodeInfo() => $"({Cost}) PROJECT: {string.Join(", ", Attributes)}";
 }

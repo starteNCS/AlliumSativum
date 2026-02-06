@@ -35,39 +35,29 @@ public partial class Optimizer
             onPremise.Where = RemoveCnfExpression(onPremise.Where, clause);
         }
     }
-    
-    private void DistributeOnPremiseWhereToPlans(SelectBaseModel onPremise, List<SelectBaseModel> joinedTableProposals, Dictionary<List<TableSpecifier>, PlanOperator> plans)
+
+    /// <summary>
+    /// Distributes both all possible where sub-trees from onPremise, and also all non-accepted where from proposal
+    /// </summary>
+    /// <param name="scan"></param>
+    /// <param name="onPremise"></param>
+    /// <param name="proposalAffectedTables"></param>
+    /// <param name="unplanned"></param>
+    /// <returns></returns>
+    private PlanOperator DistributeWhereToProposals(PlanOperator scan, SelectBaseModel onPremise, List<TableSpecifier> proposalAffectedTables, SelectBaseModel? unplanned)
     {
-        if (onPremise.Where is null)
-        {
-            return;
-        }
+        (onPremise.Where, var onPremiseExpr) = ExtractExpression(onPremise.Where, proposalAffectedTables);
         
-        foreach (var planProposal in joinedTableProposals)
+        // could be wrapped as WherePOP(WherePOP()), but reduce the nesting by "AND" combining them
+        var mergedExpr = MergeCnfExpressions(onPremiseExpr, unplanned?.Where);
+        if (mergedExpr is null)
         {
-            (onPremise.Where, var expr) = ExtractExpression(onPremise.Where, planProposal.AffectedTables);
-
-            var scanPlanOperator = plans
-                .FirstOrDefault(p => p.Key.Contains(planProposal.From!))
-                .Value;
-            if (expr is null || scanPlanOperator is null)
-            {
-                continue;
-            }
-
-            var whereOperator = new WherePlanOperator(expr)
-            {
-                Children = [scanPlanOperator]
-            };
-
-            plans.Remove(planProposal.AffectedTables);
-            plans[[planProposal.From!]] = whereOperator;
-
-            // if there are no items left in the tree, we do not need to check here further
-            if (onPremise.Where is null)
-            {
-                break;
-            }
+            return scan;
         }
+
+        return new WherePlanOperator(mergedExpr)
+        {
+            Children = [scan]
+        };
     }
 }

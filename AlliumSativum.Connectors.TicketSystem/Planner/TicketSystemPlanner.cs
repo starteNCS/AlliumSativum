@@ -40,6 +40,9 @@ public sealed class TicketSystemPlanner : IPlanner
         return (new PushdownRestCallPlanOperator(dataSource.Id, "GET", urlBuilder.ToString(), null)
         {
             Cost = cost
-        }, selectModel);
+        }, 
+            // technically, the "FROM" has been proposed. But that is always the case as a pushdown is proposed, we
+            // keep it in this model to better map between proposed and unplanned
+            selectModel);
     }
 }

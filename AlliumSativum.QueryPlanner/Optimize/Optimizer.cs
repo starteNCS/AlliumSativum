@@ -58,9 +58,11 @@ public sealed partial class Optimizer
             }
             
             plans.Add([select.From!, ..select.Join.Select(x => x.Inner)], plan);
+            
+            var popTree = WrapPlanProposalWithMissingPops(plan, onPremise, select, unplanned);
+            plans.Remove(select.AffectedTables);
+            plans[[select.From!]] = popTree;
         }
-        
-        DistributeOnPremiseWhereToPlans(onPremise, joinedTableSelect, plans);
         
         if (plans.Count - 1 != onPremise.Join.Count)
         {
@@ -101,6 +103,15 @@ public sealed partial class Optimizer
             Cost = 1,
             RootOperator = finalPlan
         };
+    }
+
+    private PlanOperator WrapPlanProposalWithMissingPops(PlanOperator pop, SelectBaseModel onPremise, SelectBaseModel proposalBase, SelectBaseModel? unplanned)
+    {
+        // check if there are any pops, that are now exclusive to this proposal (TODO: PUSH DOWN AGAIN?)
+        pop = DistributeWhereToProposals(pop, onPremise, proposalBase.AffectedTables, unplanned);
+        pop = HandleProjection(pop, unplanned);
+
+        return pop;
     }
 
     /// <summary>
