@@ -5,6 +5,12 @@ namespace AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 public sealed class AttributeSpecifier : TableSpecifier, IEquatable<AttributeSpecifier>
 {
     public string AttributeName { get; }
+    
+    /// <summary>
+    /// This flag controls whether the attribute is used only for calculations (i.e. joins)
+    /// or if the attribute should be output
+    /// </summary>
+    public bool IsHidden { get; set; }
 
     public AttributeSpecifier(string dataSourceName, string tableName, string attributeName) : base(dataSourceName, tableName)
     {

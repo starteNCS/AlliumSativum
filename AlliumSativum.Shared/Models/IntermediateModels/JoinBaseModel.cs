@@ -9,6 +9,18 @@ public sealed class JoinBaseModel
     public JoinType JoinType { get; init; }
     public TableSpecifier Inner { get; init; }
     public IExpressionNode Expression { get; set; }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not JoinBaseModel join)
+        {
+            return false;
+        }
+
+        return JoinType == join.JoinType
+               && Inner == join.Inner
+               && Expression == join.Expression;
+    }
 }
 
 public enum JoinType

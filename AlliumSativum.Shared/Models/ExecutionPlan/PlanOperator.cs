@@ -83,11 +83,13 @@ public class WherePlanOperator : PlanOperator
 public class JoinPlanOperator : PlanOperator
 {
     public PlanOperator Left { get; }
+    public IExpressionNode Expression { get; }
     public PlanOperator Right { get;  }
 
-    public JoinPlanOperator(PlanOperator left, PlanOperator right)
+    public JoinPlanOperator(PlanOperator left, IExpressionNode expression, PlanOperator right)
     {
         Left = left;
+        Expression = expression;
         Right = right;
         
         base.Children.AddRange(left, right);
@@ -96,7 +98,7 @@ public class JoinPlanOperator : PlanOperator
     // override to avoid some outer class to add more children
     public new IReadOnlyList<PlanOperator> Children => base.Children;
     
-    protected override string GetNodeInfo() => $"({Cost}) INNER JOIN";
+    protected override string GetNodeInfo() => $"({Cost}) INNER JOIN: {Expression}";
 }
 
 public class ProjectPlanOperator : PlanOperator

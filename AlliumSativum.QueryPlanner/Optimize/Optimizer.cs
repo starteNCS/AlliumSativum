@@ -21,25 +21,34 @@ public sealed partial class Optimizer
     /// <summary>
     /// Optimizes the given SelectBaseModel into a QueryExecutionPlan
     /// Operates in multiple steps:
+    ///
+    /// - create on-premise only join tree✅
     /// - split the given model into TABLES ✅
     /// - check which WHERE expressions can be 100% assigned to one table ✅
+    /// - append hidden selects ✅
     /// - check joins, merge multiple tables into one sub plan if possible ✅
     /// - check WHERE again, if any more can be pushed down ✅
     /// - propose to the worker ✅
     /// - check what it did not accept and add POP's to the plan accordingly
+    /// - Join Order Optimization of on-premise joins
     /// - rule/cost-based check what POP's can be accumulated for cost reduction (if any) 
     /// - accumulate cost
     /// - return plan with cost
+    /// - 
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
     /// <exception cref="AsSqlOptimizeException"></exception>
     public async Task<QueryExecutionPlan> Optimize(SelectBaseModel model)
     {
+        // create on-premise only join tree
+        var (onPremiseJoinTree, additionalSelectAttributesNeeded) = ConstructOnPremiseJoin(model);
+        
         // split the given model into TABLES
         // check which WHERE expressions can be 100% assigned to one table
         var (onPremise, tables) = SplitIntoTables(model);
-
+        tables = AppendComputationalSelects(tables, additionalSelectAttributesNeeded);
+        
         // check joins, merge multiple tables into one sub plan if possible
         var (joinsLeftOnPremise, joinedTableSelect) = CombineTablesByJoinPushDown(onPremise.Join, tables);
         onPremise.Join = joinsLeftOnPremise;
@@ -78,7 +87,7 @@ public sealed partial class Optimizer
                 .FirstOrDefault(p => p.Key.Contains(join.Inner))
                 .Value;
 
-            var joinOperator = new JoinPlanOperator(left, right);
+            var joinOperator = new JoinPlanOperator(left, join.Expression, right);
             plans.Remove([onPremise.From!]);
             plans.Remove([join.Inner]);
             plans.Add([onPremise.From!, join.Inner], joinOperator);

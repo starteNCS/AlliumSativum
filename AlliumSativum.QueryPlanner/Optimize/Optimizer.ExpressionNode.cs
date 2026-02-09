@@ -127,7 +127,7 @@ public partial class Optimizer
             .Select(x => new TableSpecifier(x.DataSourceName, x.TableName))
             .Distinct()
             .ToList();
-    } 
+    }
 
     /// <summary>
     /// Merges two expressions (which need to already be in CNF!) into a new singular expression (which also is in CNF)
