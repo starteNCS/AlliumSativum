@@ -58,7 +58,8 @@ public sealed class PlannerService : Planner.PlannerBase
                         SqlStatement = psql.SqlStatement,
                         DatasourceId = psql.DataSource.ToString()
                     },
-                    Cost = proposal.Cost
+                    Cost = proposal.Cost,
+                    ExpectedCardinality = proposal.ExpectedCardinality,
                 },
                 PushdownRestCallPlanOperator prest => new GPlanOperator
                 {
@@ -68,7 +69,8 @@ public sealed class PlannerService : Planner.PlannerBase
                         HttpMethod = prest.HttpMethod,
                         Url = prest.Url
                     },
-                    Cost = proposal.Cost
+                    Cost = proposal.Cost,
+                    ExpectedCardinality = proposal.ExpectedCardinality
                 },
                 _ => new GPlanOperator()
             },

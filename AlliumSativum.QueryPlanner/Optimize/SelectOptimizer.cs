@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
@@ -7,9 +6,8 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Optimize;
 
-public partial class Optimizer
+public sealed class SelectOptimizer
 {
-
     /// <summary>
     /// Appends the select projections needed for computational purposes (i.e. join) to all push down proposals
     /// </summary>
@@ -39,7 +37,7 @@ public partial class Optimizer
         return splitSelects;
     } 
         
-    private PlanOperator HandleProjection(PlanOperator pop, SelectBaseModel? unplanned)
+    public PlanOperator HandleProjection(PlanOperator pop, SelectBaseModel? unplanned)
     {
         if (unplanned is null || unplanned.Select.Count == 0)
         {

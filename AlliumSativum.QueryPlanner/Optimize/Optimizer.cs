@@ -7,16 +7,30 @@ using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Shared.Utils;
 using AlliumSativum.Worker.Sdk;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AlliumSativum.Optimize;
 
-public sealed partial class Optimizer
+public sealed class Optimizer
 {
     private readonly PlannerApi _planner;
+    private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
+    private readonly JoinOptimizer _joinOptimizer;
+    private readonly SelectOptimizer _selectOptimizer;
+    private readonly WhereOptimizer _whereOptimizer;
 
-    public Optimizer(PlannerApi planner)
+    public Optimizer(
+        PlannerApi planner,
+        ExpressionNodeOptimizer expressionNodeOptimizer,
+        JoinOptimizer joinOptimizer,
+        SelectOptimizer selectOptimizer,
+        WhereOptimizer whereOptimizer)
     {
         _planner = planner;
+        _expressionNodeOptimizer = expressionNodeOptimizer;
+        _joinOptimizer = joinOptimizer;
+        _selectOptimizer = selectOptimizer;
+        _whereOptimizer = whereOptimizer;
     }
     
     /// <summary>
@@ -43,19 +57,19 @@ public sealed partial class Optimizer
     public async Task<QueryExecutionPlan> Optimize(SelectBaseModel model)
     {
         // create on-premise only join tree
-        var (onPremiseJoinTree, additionalSelectAttributesNeeded) = ConstructOnPremiseJoin(model);
+        var (onPremiseJoinTree, additionalSelectAttributesNeeded) = _joinOptimizer.ConstructOnPremiseJoin(model);
         
         // split the given model into TABLES
         // check which WHERE expressions can be 100% assigned to one table
         var (onPremise, tables) = SplitIntoTables(model);
-        tables = AppendComputationalSelects(tables, additionalSelectAttributesNeeded);
+        tables = _selectOptimizer.AppendComputationalSelects(tables, additionalSelectAttributesNeeded);
         
         // check joins, merge multiple tables into one sub plan if possible
-        var (joinsLeftOnPremise, joinedTableSelect) = CombineTablesByJoinPushDown(onPremise.Join, tables);
+        var (joinsLeftOnPremise, joinedTableSelect) = _joinOptimizer.CombineTablesByJoinPushDown(onPremise.Join, tables);
         onPremise.Join = joinsLeftOnPremise;
         
         // check WHERE again, if any more can be pushed down
-        AssignWhereToJoinedProposals(onPremise, joinedTableSelect);
+        _whereOptimizer.AssignWhereToJoinedProposals(onPremise, joinedTableSelect);
 
         var plans = new PopLookupTable();
         // propose to the worker
@@ -71,7 +85,7 @@ public sealed partial class Optimizer
             plans.Add(select.AffectedTables, popTree);
         }
         
-        var planRoot = ConstructJoinPopTreeFromIntermediateJoinTree(onPremiseJoinTree, plans);
+        var planRoot = _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTree(onPremiseJoinTree, plans);
 
         if (onPremise.Where is not null)
         {
@@ -91,8 +105,8 @@ public sealed partial class Optimizer
     private PlanOperator WrapPlanProposalWithMissingPops(PlanOperator pop, SelectBaseModel onPremise, SelectBaseModel proposalBase, SelectBaseModel? unplanned)
     {
         // check if there are any pops, that are now exclusive to this proposal (TODO: PUSH DOWN AGAIN?)
-        pop = DistributeWhereToProposals(pop, onPremise, proposalBase.AffectedTables, unplanned);
-        pop = HandleProjection(pop, unplanned);
+        pop = _whereOptimizer.DistributeWhereToProposals(pop, onPremise, proposalBase.AffectedTables, unplanned);
+        pop = _selectOptimizer.HandleProjection(pop, unplanned);
 
         return pop;
     }
@@ -141,7 +155,7 @@ public sealed partial class Optimizer
     private (SelectBaseModel @base, SelectBaseModel split) ExtractTable(SelectBaseModel model, TableSpecifier table)
     {
         
-        var extractedWhere = ExtractExpression(model.Where, table);
+        var extractedWhere = _expressionNodeOptimizer.ExtractExpression(model.Where, table);
         
         var selectModel = new SelectBaseModel
         {
@@ -161,5 +175,18 @@ public sealed partial class Optimizer
         
         return (selectModel, split);
     }
-    
+}
+
+public static class OptimizerExtensions
+{
+    public static IServiceCollection AddOptimizer(this IServiceCollection services)
+    {
+        services.AddScoped<Optimizer>();
+        services.AddScoped<ExpressionNodeOptimizer>();
+        services.AddScoped<JoinOptimizer>();
+        services.AddScoped<SelectOptimizer>();
+        services.AddScoped<WhereOptimizer>();
+        
+        return services;
+    }
 }

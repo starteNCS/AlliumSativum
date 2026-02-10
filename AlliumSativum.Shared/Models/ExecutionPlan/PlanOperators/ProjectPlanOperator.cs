@@ -19,7 +19,7 @@ public class ProjectPlanOperator : PlanOperator
             .ToList();
     }
     
-    protected override string GetNodeInfo() => $"({Cost}ms) PROJECT: {string.Join(", ", Attributes)}";
+    protected override string GetNodeInfo() => $"{GetBaseNodeInto()} PROJECT: {string.Join(", ", Attributes)}";
     
     public override int GetHashCode()
     {

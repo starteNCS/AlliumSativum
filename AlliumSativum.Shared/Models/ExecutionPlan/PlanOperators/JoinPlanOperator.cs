@@ -20,7 +20,7 @@ public class JoinPlanOperator : PlanOperator
     // override to avoid some outer class to add more children
     public new IReadOnlyList<PlanOperator> Children => base.Children;
     
-    protected override string GetNodeInfo() => $"({Cost}ms) INNER JOIN: {Expression}";
+    protected override string GetNodeInfo() => $"{GetBaseNodeInto()} INNER JOIN: {Expression}";
     
     public override int GetHashCode()
     {

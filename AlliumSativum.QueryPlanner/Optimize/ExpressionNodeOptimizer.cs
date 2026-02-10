@@ -1,11 +1,10 @@
 using AlliumSativum.Shared.Exceptions;
-using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Optimize;
 
-public partial class Optimizer
+public sealed class ExpressionNodeOptimizer
 {
     /// <summary>
     /// Extracts the tree for a specific table
@@ -17,7 +16,7 @@ public partial class Optimizer
     ///     - base: the tree with the items left, that were not extracted
     ///     - split: a tree for only the provided table
     /// </returns>
-    private (IExpressionNode? @base, IExpressionNode? split) ExtractExpression(IExpressionNode? node,
+    public (IExpressionNode? @base, IExpressionNode? split) ExtractExpression(IExpressionNode? node,
         TableSpecifier table)
     {
         return ExtractExpression(node, [table]);
@@ -33,7 +32,7 @@ public partial class Optimizer
     ///     - base: the tree with the items left, that were not extracted
     ///     - split: a tree for only the provided table
     /// </returns>
-    private (IExpressionNode? @base, IExpressionNode? split) ExtractExpression(IExpressionNode? node,
+    public (IExpressionNode? @base, IExpressionNode? split) ExtractExpression(IExpressionNode? node,
         List<TableSpecifier> table)
     {
         if (node is null)
@@ -79,7 +78,7 @@ public partial class Optimizer
         return (node, null); 
     }
     
-    private bool IsPurelyTables(IExpressionNode node, List<TableSpecifier> table)
+    public bool IsPurelyTables(IExpressionNode node, List<TableSpecifier> table)
     {
         return node switch
         {
@@ -91,7 +90,7 @@ public partial class Optimizer
         };
     }
     
-    private static List<AttributeSpecifier> GetAttributesOfExpression(IExpressionNode root)
+    public List<AttributeSpecifier> GetAttributesOfExpression(IExpressionNode root)
     {
         var results = new HashSet<AttributeSpecifier>();
         var stack = new Stack<IExpressionNode>();
@@ -121,7 +120,7 @@ public partial class Optimizer
         return results.ToList();
     }
 
-    private static List<TableSpecifier> GetTablesOfExpression(IExpressionNode root)
+    public List<TableSpecifier> GetTablesOfExpression(IExpressionNode root)
     {
         return GetAttributesOfExpression(root)
             .Select(x => new TableSpecifier(x.DataSourceName, x.TableName))
@@ -135,7 +134,7 @@ public partial class Optimizer
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns></returns>
-    private static IExpressionNode? MergeCnfExpressions(IExpressionNode? left, IExpressionNode? right)
+    public IExpressionNode? MergeCnfExpressions(IExpressionNode? left, IExpressionNode? right)
     {
         if (left is null && right is null)
         {
@@ -165,7 +164,7 @@ public partial class Optimizer
     /// </summary>
     /// <param name="root"></param>
     /// <returns></returns>
-    public static List<IExpressionNode> GetCnfSubTrees(IExpressionNode? root)
+    public List<IExpressionNode> GetCnfSubTrees(IExpressionNode? root)
     {
         var clauses = new List<IExpressionNode>();
         if (root == null)
@@ -195,14 +194,14 @@ public partial class Optimizer
         return clauses;
     }
 
-    private IExpressionNode RemoveCnfExpression(IExpressionNode? fromNode, IExpressionNode remove)
+    public IExpressionNode RemoveCnfExpression(IExpressionNode? fromNode, IExpressionNode remove)
     {
         var from = GetCnfSubTrees(fromNode);
         from.Remove(remove);
         return RebuildAndTree(from);
     }
 
-    private IExpressionNode? RebuildAndTree(List<IExpressionNode> clauses)
+    public IExpressionNode? RebuildAndTree(List<IExpressionNode> clauses)
     {
         if (clauses.Count == 0)
         {

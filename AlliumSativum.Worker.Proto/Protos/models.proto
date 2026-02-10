@@ -67,9 +67,10 @@ message GQueryExecutionPlan {
 
 message GPlanOperator {
   double cost = 1;
+  int64 expectedCardinality = 2;
   oneof operator_type {
-    GPushdownSqlPlanOperator pushdown_sql = 2;
-    GPushdownRestCallPlanOperator pushdown_rest_call = 3;
+    GPushdownSqlPlanOperator pushdown_sql = 3;
+    GPushdownRestCallPlanOperator pushdown_rest_call = 4;
   }
 }
 

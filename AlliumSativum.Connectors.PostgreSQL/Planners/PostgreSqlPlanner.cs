@@ -27,10 +27,14 @@ public sealed class PostgreSqlPlanner : IPlanner
         
         // TODO: adjust cost for filters and joins
         var cost = relation.ConnectionOpenMs + relation.Transfer100Ms * (relation.Cardinality / 100);
+        
+        // TODO: Calculate adjusted cardinality
+        var cardinality = relation.Cardinality;
 
         return (new PushdownSqlPlanOperator(relation.DataSourceId, selectModel.ToPostgreSqlString())
         {
-            Cost = cost
+            Cost = cost,
+            ExpectedCardinality = cardinality,
         }, null);
     }
 }

@@ -28,7 +28,8 @@ public sealed class PlannerApi
                 Guid.Parse(response.Plan.PushdownSql.DatasourceId),
                 response.Plan.PushdownSql.SqlStatement)
             {
-                Cost = response.Plan.Cost
+                Cost = response.Plan.Cost,
+                ExpectedCardinality = response.Plan.ExpectedCardinality,
             },
             GPlanOperator.OperatorTypeOneofCase.PushdownRestCall => new PushdownRestCallPlanOperator(
                 Guid.Parse(response.Plan.PushdownRestCall.DatasourceId),
@@ -36,7 +37,8 @@ public sealed class PlannerApi
                 response.Plan.PushdownRestCall.Url,
                 null)
             {
-                Cost = response.Plan.Cost
+                Cost = response.Plan.Cost,
+                ExpectedCardinality = response.Plan.ExpectedCardinality,
             },
             _ => throw new ArgumentException("Expected some plan operator")
         }, response.Unplanned?.FromGrpcModel());

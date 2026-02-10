@@ -17,7 +17,7 @@ builder.Services
     .AddScoped<TokenQueryParser>()
     .AddScoped<SemanticTransformer>()
     .AddScoped<Tokenizer>()
-    .AddScoped<Optimizer>();
+    .AddOptimizer();
 
 var app = builder.Build();
 

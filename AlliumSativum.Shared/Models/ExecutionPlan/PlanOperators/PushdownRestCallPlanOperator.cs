@@ -15,7 +15,7 @@ public class PushdownRestCallPlanOperator : PlanOperator
         Body = body;
     }
 
-    protected override string GetNodeInfo() => $"({Cost}ms) PUSH-DOWN REST [{DataSource}]: '{HttpMethod} {Url}'";
+    protected override string GetNodeInfo() => $"{GetBaseNodeInto()} PUSH-DOWN REST [{DataSource}]: '{HttpMethod} {Url}'";
     
     public override int GetHashCode()
     {

@@ -1,23 +1,27 @@
-using System.Collections;
-using System.Linq.Expressions;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
-using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Shared.Utils;
 
 namespace AlliumSativum.Optimize;
 
-public partial class Optimizer
+public sealed class JoinOptimizer
 {
+    private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
+
+    public JoinOptimizer(ExpressionNodeOptimizer expressionNodeOptimizer)
+    {
+        _expressionNodeOptimizer = expressionNodeOptimizer;
+    }
+    
     /// <summary>
     /// Constructs the "real" Join-POP tree from the intermediate model 
     /// </summary>
     /// <param name="intermediateJoinTree"></param>
     /// <param name="popLookupTable"></param>
-    private PlanOperator ConstructJoinPopTreeFromIntermediateJoinTree(IIntermediateJoinNode? intermediateJoinTree,
+    public PlanOperator ConstructJoinPopTreeFromIntermediateJoinTree(IIntermediateJoinNode? intermediateJoinTree,
         PopLookupTable popLookupTable)
     {
         if (intermediateJoinTree is null && popLookupTable.Count == 1)
@@ -33,7 +37,7 @@ public partial class Optimizer
         return CloneTransformJoinTree(intermediateJoinTree, null, ref popLookupTable);
     }
 
-    private PlanOperator CloneTransformJoinTree(IIntermediateJoinNode? node, PlanOperator? pop, ref PopLookupTable popLookupTable)
+    public PlanOperator CloneTransformJoinTree(IIntermediateJoinNode? node, PlanOperator? pop, ref PopLookupTable popLookupTable)
     {
         if (pop is not null && node is null)
         {
@@ -58,7 +62,7 @@ public partial class Optimizer
         throw new InvalidOperationException("Unknown node type.");
     }
     
-    private (List<JoinBaseModel> joinsLeft, List<SelectBaseModel> joinedTablePlans) CombineTablesByJoinPushDown(List<JoinBaseModel> joins, List<SelectBaseModel> tablePlans)
+    public (List<JoinBaseModel> joinsLeft, List<SelectBaseModel> joinedTablePlans) CombineTablesByJoinPushDown(List<JoinBaseModel> joins, List<SelectBaseModel> tablePlans)
     {
         var joinsLeft = new List<JoinBaseModel>();
         var joinedTablePlans = new List<SelectBaseModel>();
@@ -66,7 +70,7 @@ public partial class Optimizer
         // TODO: support multi way join (with 3 or more targets in expression)
         foreach (var join in joins)
         {
-            var joinTables = GetTablesOfExpression(join.Expression);
+            var joinTables = _expressionNodeOptimizer.GetTablesOfExpression(join.Expression);
 
             if (joinTables.Count != 2)
             {
@@ -92,7 +96,7 @@ public partial class Optimizer
             joinedTablePlans.Add(new SelectBaseModel()
             {
                 From = GetFromForJoin(join, joinSelects),
-                Where = MergeCnfExpressions(joinSelects[0].Where, joinSelects[1].Where), 
+                Where = _expressionNodeOptimizer.MergeCnfExpressions(joinSelects[0].Where, joinSelects[1].Where), 
                 Select = [..joinSelects[0].Select, ..joinSelects[1].Select],
                 Join = [join]
             });
@@ -103,7 +107,7 @@ public partial class Optimizer
         return (joinsLeft, [..joinedTablePlans, ..tablePlans]);
     }
 
-    private TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectBaseModel> joinSelects)
+    public TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectBaseModel> joinSelects)
     {
         if (join.Inner == joinSelects[0].From)
         {
@@ -122,7 +126,7 @@ public partial class Optimizer
     /// </summary>
     /// <param name="select"></param>
     /// <returns></returns>
-    private (IIntermediateJoinNode? mixedJoinTree, List<AttributeSpecifier> selectNeeded) ConstructOnPremiseJoin(SelectBaseModel select)
+    public (IIntermediateJoinNode? mixedJoinTree, List<AttributeSpecifier> selectNeeded) ConstructOnPremiseJoin(SelectBaseModel select)
     {
         // TODO: JOIN ORDER OPTIMIZATION???? kann durch constaint auf nur inner join auch später noch gemischt werden
         var mixedJoins = GetOnlyMixedJoins(select);
@@ -185,7 +189,7 @@ public partial class Optimizer
         }
 
         
-        return (root, mixedJoins.SelectMany(x => GetAttributesOfExpression(x.Expression)).ToList());
+        return (root, mixedJoins.SelectMany(x => _expressionNodeOptimizer.GetAttributesOfExpression(x.Expression)).ToList());
     }
     
     /// <summary>
@@ -193,9 +197,9 @@ public partial class Optimizer
     /// </summary>
     /// <param name="join"></param>
     /// <returns></returns>
-    private static TableSpecifier GetJoinExpressionTable(JoinBaseModel join)
+    public TableSpecifier GetJoinExpressionTable(JoinBaseModel join)
     {
-        return GetAttributesOfExpression(join.Expression)
+        return _expressionNodeOptimizer.GetAttributesOfExpression(join.Expression)
             .Select(x => new TableSpecifier(x.DataSourceName, x.TableName))
             .Where(x => !x.Equals(join.Inner))
             .Distinct()
@@ -207,7 +211,7 @@ public partial class Optimizer
     /// </summary>
     /// <param name="select"></param>
     /// <returns></returns>
-    private static List<JoinBaseModel> GetOnlyMixedJoins(SelectBaseModel select) =>
+    public List<JoinBaseModel> GetOnlyMixedJoins(SelectBaseModel select) =>
         select.Join
             .Where(join => GetJoinExpressionTable(join).DataSourceName != join.Inner.DataSourceName)
             .ToList();

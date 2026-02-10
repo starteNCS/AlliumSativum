@@ -1,29 +1,35 @@
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
-using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Optimize;
 
-public partial class Optimizer
+public sealed class WhereOptimizer
 {
+    private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
+
+    public WhereOptimizer(ExpressionNodeOptimizer expressionNodeOptimizer)
+    {
+        _expressionNodeOptimizer = expressionNodeOptimizer;
+    }
+    
     /// <summary>
     /// Iterates through the WHERE expression tree to check if they could be pushed down to a proposal
     /// </summary>
     /// <param name="onPremise"></param>
     /// <param name="joinedTableProposals"></param>
-    private void AssignWhereToJoinedProposals(SelectBaseModel onPremise, List<SelectBaseModel> joinedTableProposals)
+    public void AssignWhereToJoinedProposals(SelectBaseModel onPremise, List<SelectBaseModel> joinedTableProposals)
     {
         if (onPremise.Where is null)
         {
             return;
         }
         
-        var clauses = GetCnfSubTrees(onPremise.Where);
+        var clauses = _expressionNodeOptimizer.GetCnfSubTrees(onPremise.Where);
         foreach (var clause in clauses)
         {
-            var tables = GetTablesOfExpression(clause);
+            var tables = _expressionNodeOptimizer.GetTablesOfExpression(clause);
             
             var potentialProposal = joinedTableProposals.Find(p => tables.TrueForAll(t  => p.AffectedTables.Contains(t)));
             if (potentialProposal is null)
@@ -32,8 +38,8 @@ public partial class Optimizer
                 continue;
             }
             
-            MergeCnfExpressions(potentialProposal.Where, clause);
-            onPremise.Where = RemoveCnfExpression(onPremise.Where, clause);
+            _expressionNodeOptimizer.MergeCnfExpressions(potentialProposal.Where, clause);
+            onPremise.Where = _expressionNodeOptimizer.RemoveCnfExpression(onPremise.Where, clause);
         }
     }
 
@@ -45,12 +51,12 @@ public partial class Optimizer
     /// <param name="proposalAffectedTables"></param>
     /// <param name="unplanned"></param>
     /// <returns></returns>
-    private PlanOperator DistributeWhereToProposals(PlanOperator scan, SelectBaseModel onPremise, List<TableSpecifier> proposalAffectedTables, SelectBaseModel? unplanned)
+    public PlanOperator DistributeWhereToProposals(PlanOperator scan, SelectBaseModel onPremise, List<TableSpecifier> proposalAffectedTables, SelectBaseModel? unplanned)
     {
-        (onPremise.Where, var onPremiseExpr) = ExtractExpression(onPremise.Where, proposalAffectedTables);
+        (onPremise.Where, var onPremiseExpr) = _expressionNodeOptimizer.ExtractExpression(onPremise.Where, proposalAffectedTables);
         
         // could be wrapped as WherePOP(WherePOP()), but reduce the nesting by "AND" combining them
-        var mergedExpr = MergeCnfExpressions(onPremiseExpr, unplanned?.Where);
+        var mergedExpr = _expressionNodeOptimizer.MergeCnfExpressions(onPremiseExpr, unplanned?.Where);
         if (mergedExpr is null)
         {
             return scan;
