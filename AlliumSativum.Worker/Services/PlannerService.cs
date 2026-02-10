@@ -2,6 +2,7 @@ using AlliumSativum.Connectors.Shared.Interfaces;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Models.ExecutionPlan;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Worker.Sdk.Extensions;
 using AlliumSativum.Worker.Strategies;
 using Grpc.Core;

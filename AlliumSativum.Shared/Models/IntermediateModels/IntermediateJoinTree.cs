@@ -18,6 +18,11 @@ public class IntermediateJoinTreeTableSpecifier : TableSpecifier, IIntermediateJ
     {
         return new IntermediateJoinTreeTableSpecifier(tableSpecifier.DataSourceName, tableSpecifier.TableName);
     }
+
+    public TableSpecifier ToTableSpecifier()
+    {
+        return new TableSpecifier(DataSourceName, TableName);
+    }
 }
 
 public class IntermediateJoinNode : IIntermediateJoinNode

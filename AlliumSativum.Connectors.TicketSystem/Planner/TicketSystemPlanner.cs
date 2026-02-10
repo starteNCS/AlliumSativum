@@ -2,6 +2,7 @@ using System.Text;
 using AlliumSativum.Connectors.Shared.Interfaces;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Models.ExecutionPlan;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
 
 namespace AlliumSativum.Connectors.TicketSystem.Planner;

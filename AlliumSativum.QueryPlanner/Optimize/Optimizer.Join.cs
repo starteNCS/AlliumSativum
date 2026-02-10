@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq.Expressions;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
@@ -11,6 +12,52 @@ namespace AlliumSativum.Optimize;
 
 public partial class Optimizer
 {
+    /// <summary>
+    /// Constructs the "real" Join-POP tree from the intermediate model 
+    /// </summary>
+    /// <param name="intermediateJoinTree"></param>
+    /// <param name="popLookupTable"></param>
+    private PlanOperator ConstructJoinPopTreeFromIntermediateJoinTree(IIntermediateJoinNode? intermediateJoinTree,
+        PopLookupTable popLookupTable)
+    {
+        if (intermediateJoinTree is null && popLookupTable.Count == 1)
+        {
+            return popLookupTable.Single();
+        }
+
+        if (intermediateJoinTree is null)
+        {
+            throw new AsSqlOptimizeException("Expected a intermediate join tree, as there are more than one plans");
+        }
+
+        return CloneTransformJoinTree(intermediateJoinTree, null, ref popLookupTable);
+    }
+
+    private PlanOperator CloneTransformJoinTree(IIntermediateJoinNode? node, PlanOperator? pop, ref PopLookupTable popLookupTable)
+    {
+        if (pop is not null && node is null)
+        {
+            return pop;
+        }
+
+        // 2. "Process" the current node (The "Pre" in Pre-Order)
+        if (node is IntermediateJoinNode joinNode)
+        {
+            var left = CloneTransformJoinTree(joinNode.Left, pop, ref popLookupTable);
+            var right = CloneTransformJoinTree(joinNode.Right, pop, ref popLookupTable);
+            
+            return new JoinPlanOperator(left, joinNode.Expression, right);
+        }
+    
+        if (node is IntermediateJoinTreeTableSpecifier tableNode)
+        {
+            var planOperator = popLookupTable.GetAndRemove(tableNode.ToTableSpecifier());
+            return planOperator ?? throw new AsSqlOptimizeException("Expected to find plan for table specifier, but found null");
+        }
+
+        throw new InvalidOperationException("Unknown node type.");
+    }
+    
     private (List<JoinBaseModel> joinsLeft, List<SelectBaseModel> joinedTablePlans) CombineTablesByJoinPushDown(List<JoinBaseModel> joins, List<SelectBaseModel> tablePlans)
     {
         var joinsLeft = new List<JoinBaseModel>();

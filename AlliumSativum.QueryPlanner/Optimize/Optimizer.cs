@@ -1,6 +1,7 @@
 using AlliumSativum.Parser.Algorithms;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
@@ -55,8 +56,8 @@ public sealed partial class Optimizer
         
         // check WHERE again, if any more can be pushed down
         AssignWhereToJoinedProposals(onPremise, joinedTableSelect);
-        
-        var plans = new Dictionary<List<TableSpecifier>, PlanOperator>(new ListComparer<TableSpecifier>());
+
+        var plans = new PopLookupTable();
         // propose to the worker
         foreach (var select in joinedTableSelect)
         {
@@ -66,51 +67,24 @@ public sealed partial class Optimizer
                 throw new AsSqlOptimizeException("Expected pushdown plan, but got none");
             }
             
-            plans.Add([select.From!, ..select.Join.Select(x => x.Inner)], plan);
-            
             var popTree = WrapPlanProposalWithMissingPops(plan, onPremise, select, unplanned);
-            plans.Remove(select.AffectedTables);
-            plans[[select.From!]] = popTree;
+            plans.Add(select.AffectedTables, popTree);
         }
         
-        if (plans.Count - 1 != onPremise.Join.Count)
-        {
-            throw new AsSqlOptimizeException("Cannot execute join, as the number of plans and joins mismatch");
-        }
+        var planRoot = ConstructJoinPopTreeFromIntermediateJoinTree(onPremiseJoinTree, plans);
 
-        foreach (var join in onPremise.Join)
-        {
-            var left = plans
-                .FirstOrDefault(p => p.Key.Contains(onPremise.From!))
-                .Value;
-            var right = plans
-                .FirstOrDefault(p => p.Key.Contains(join.Inner))
-                .Value;
-
-            var joinOperator = new JoinPlanOperator(left, join.Expression, right);
-            plans.Remove([onPremise.From!]);
-            plans.Remove([join.Inner]);
-            plans.Add([onPremise.From!, join.Inner], joinOperator);
-        }
-
-        if (plans.Count != 1)
-        {
-            throw new AsSqlOptimizeException("Added all joins, but still multiple plans exist");
-        }
-
-        var finalPlan = plans.Single().Value;
         if (onPremise.Where is not null)
         {
-            finalPlan = new WherePlanOperator(onPremise.Where)
+            planRoot = new WherePlanOperator(onPremise.Where)
             {
-                Children = [finalPlan]
+                Children = [planRoot]
             };
         }
 
         return new QueryExecutionPlan()
         {
             Cost = 1,
-            RootOperator = finalPlan
+            RootOperator = planRoot
         };
     }
 

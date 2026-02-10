@@ -1,6 +1,4 @@
 using System.Text;
-using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
-using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.ExecutionPlan;
 
@@ -16,7 +14,7 @@ public abstract class PlanOperator
         return sb.ToString();
     }
 
-    protected virtual void BuildString(StringBuilder sb, string prefix, bool isLast)
+    protected void BuildString(StringBuilder sb, string prefix, bool isLast)
     {
         sb.Append(prefix);
         sb.Append(isLast ? "└── " : "├── ");
@@ -34,89 +32,4 @@ public abstract class PlanOperator
     }
 
     protected abstract string GetNodeInfo();
-}
-
-public class PushdownSqlPlanOperator : PlanOperator
-{
-    public Guid DataSource { get;  }
-    public string SqlStatement { get; }
-
-    public PushdownSqlPlanOperator(Guid dataSource, string sqlStatement)
-    {
-        DataSource = dataSource;
-        SqlStatement = sqlStatement;
-    }
-
-    protected override string GetNodeInfo() => $"({Cost}) PUSH-DOWN SQL [{DataSource}]: '{SqlStatement}'";
-}
-
-public class PushdownRestCallPlanOperator : PlanOperator
-{
-    public Guid DataSource { get;  }
-    public string HttpMethod { get; }
-    public string Url { get; set; }
-    public object? Body { get; set; }
-
-    public PushdownRestCallPlanOperator(Guid dataSource, string httpMethod, string url, object? body)
-    {
-        DataSource = dataSource;
-        HttpMethod = httpMethod;
-        Url = url;
-        Body = body;
-    }
-
-    protected override string GetNodeInfo() => $"({Cost}) PUSH-DOWN REST [{DataSource}]: '{HttpMethod} {Url}'";
-}
-
-public class WherePlanOperator : PlanOperator
-{
-    public IExpressionNode Expression { get; }
-
-    public WherePlanOperator(IExpressionNode expression)
-    {
-        Expression = expression;
-    }
-    
-    protected override string GetNodeInfo() => $"({Cost}) FILTER: {Expression}";
-}
-
-public class JoinPlanOperator : PlanOperator
-{
-    public PlanOperator Left { get; }
-    public IExpressionNode Expression { get; }
-    public PlanOperator Right { get;  }
-
-    public JoinPlanOperator(PlanOperator left, IExpressionNode expression, PlanOperator right)
-    {
-        Left = left;
-        Expression = expression;
-        Right = right;
-        
-        base.Children.AddRange(left, right);
-    }
-    
-    // override to avoid some outer class to add more children
-    public new IReadOnlyList<PlanOperator> Children => base.Children;
-    
-    protected override string GetNodeInfo() => $"({Cost}) INNER JOIN: {Expression}";
-}
-
-public class ProjectPlanOperator : PlanOperator
-{
-    public List<string> Attributes { get; }
-    
-    public ProjectPlanOperator(params List<string> attributes)
-    {
-        Attributes = attributes;
-    }
-    
-    public ProjectPlanOperator(params List<ISpecifier> attributes)
-    {
-        Attributes = attributes
-            .Where(x => x is AttributeSpecifier)
-            .Select(x => ((AttributeSpecifier)x).AttributeName)
-            .ToList();
-    }
-    
-    protected override string GetNodeInfo() => $"({Cost}) PROJECT: {string.Join(", ", Attributes)}";
 }
