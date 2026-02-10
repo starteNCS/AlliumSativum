@@ -71,9 +71,14 @@ public class FullySpecifiedColumnExpressionNode : IExpressionNode
 
 public class ValueExpressionNode : IExpressionNode
 {
-    // TODO: add type annotation
-    public string Value { get; set; } = string.Empty;
-    public override string ToString() => $"'{Value}'";
+    public ValueExpressionType Type { get; init; }
+    public string Value { get; init; } = string.Empty;
+    public override string ToString() => Type switch
+    {
+        ValueExpressionType.String => $"'{Value}'",
+        ValueExpressionType.Decimal => Value,
+        _ => "false"
+    };
     public string ToSqlQueryString() => ToString();
     
     public override bool Equals(object? obj)
@@ -84,6 +89,12 @@ public class ValueExpressionNode : IExpressionNode
         }
         
         return other.Value == Value;
+    }
+
+    public enum ValueExpressionType
+    {
+        String = 0,
+        Decimal = 1
     }
 }
 

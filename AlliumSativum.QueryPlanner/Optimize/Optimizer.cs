@@ -155,8 +155,8 @@ public sealed partial class Optimizer
         {
             From = table,
             Select = model.Select.Where(spec => spec is AttributeSpecifier aSpec && aSpec.IsInTable(table)).ToList(),
-            Join = [], // TODO: we load each table by itself, so there are no joins for now
-            Where = extractedWhere.split // TODO: first make this tree to conjunctional normal form and then only load the targetted table
+            Join = [], 
+            Where = extractedWhere.split 
         };
         
         return (selectModel, split);

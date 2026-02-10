@@ -178,9 +178,15 @@ public static partial class BooleanExpressionParser
     {
         // Simple heuristic: if it starts with single quote or is a number, it's a value.
         // Otherwise, treat as column.
-        if (token.StartsWith('\'') || decimal.TryParse(token, out _))
+        var isTokenString = token.StartsWith('\'');
+        var isTokenDecimal = decimal.TryParse(token, out var d); 
+        if (isTokenString || isTokenDecimal)
         {
-            return new ValueExpressionNode { Value = token.Trim('\'') };
+            return new ValueExpressionNode
+            {
+                Value = token.Trim('\''),
+                Type = isTokenString ? ValueExpressionNode.ValueExpressionType.String : ValueExpressionNode.ValueExpressionType.Decimal
+            };
         }
         return new PartialColumnExpressionNode { Name = token };
     }
