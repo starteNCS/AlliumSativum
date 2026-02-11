@@ -69,7 +69,14 @@ public static class SelectBaseModelHelper
 
         if (expectedJoin is not null)
         {
-            selectBaseModels = selectBaseModels.Where(x => expectedJoin.TrueForAll(j => x.Join.Contains(j))).ToList();
+            selectBaseModels = selectBaseModels.Where(x =>
+                expectedJoin.TrueForAll(j =>
+                    x.Join.Exists(actual =>
+                        actual.Inner.Equals(j.Inner) &&
+                        actual.Expression.Equals(j.Expression)
+                    )
+                )
+            ).ToList();
             selectBaseModels.Should().NotBeEmpty("could not match JOIN");
         }
 

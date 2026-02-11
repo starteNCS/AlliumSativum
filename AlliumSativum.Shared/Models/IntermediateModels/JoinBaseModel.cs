@@ -17,9 +17,9 @@ public sealed class JoinBaseModel
             return false;
         }
 
-        return JoinType == join.JoinType
-               && Inner == join.Inner
-               && Expression == join.Expression;
+        return JoinType.Equals(join.JoinType)
+               && Inner.Equals(join.Inner)
+               && Expression.Equals(join.Expression);
     }
 }
 

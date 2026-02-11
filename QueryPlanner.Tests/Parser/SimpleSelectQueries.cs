@@ -2,6 +2,7 @@ using AlliumSativum.Parser;
 using AlliumSativum.Shared.Constants;
 using AlliumSativum.Token;
 using FluentAssertions;
+using QueryPlanner.Tests.Helpers;
 
 namespace QueryPlanner.Tests.Parser;
 

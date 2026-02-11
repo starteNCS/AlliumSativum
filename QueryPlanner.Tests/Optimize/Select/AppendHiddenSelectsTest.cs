@@ -2,6 +2,7 @@ using AlliumSativum.Optimize;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using FluentAssertions;
+using QueryPlanner.Tests.Helpers;
 
 namespace QueryPlanner.Tests.Optimize.Select;
 
