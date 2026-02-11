@@ -5,10 +5,19 @@ namespace ParserTests.Helpers;
 
 public static partial class ShouldBeHelper
 {
-    public static void ShouldBeTable(this TableSpecifier tableSpecifier, string dataSourceName, string tableName)
+    extension(TableSpecifier tableSpecifier)
     {
-        tableSpecifier.DataSourceName.Should().Be(dataSourceName);
-        tableSpecifier.TableName.Should().Be(tableName);
+        public void ShouldBeTable(string dataSourceName, string tableName)
+        {
+            tableSpecifier.DataSourceName.Should().Be(dataSourceName);
+            tableSpecifier.TableName.Should().Be(tableName);
+        }
+
+        public void ShouldBeTable(TableSpecifier other)
+        {
+            tableSpecifier.DataSourceName.Should().Be(other.DataSourceName);
+            tableSpecifier.TableName.Should().Be(other.TableName);
+        }
     }
 
     public static void ShouldBeAttribute(this AttributeSpecifier attributeSpecifier, string dataSourceName, string tableName, string attributeName)
@@ -24,15 +33,38 @@ public static partial class ShouldBeHelper
         variableMappingSpecifier.AttributeName.Should().Be(attributeName);
     }
     
-    public static void ShouldContainAttributeSpecifier(this IList<ISpecifier> attributeSpecifiers, string dataSourceName, string tableName, string attributeName)
+    extension(IList<ISpecifier> attributeSpecifiers)
     {
-        attributeSpecifiers.Should().Contain(attr => 
-            attr is AttributeSpecifier &&
-            ((AttributeSpecifier)attr).DataSourceName == dataSourceName &&
-            ((AttributeSpecifier)attr).TableName == tableName &&
-            ((AttributeSpecifier)attr).AttributeName == attributeName);
+        public void ShouldContainAttributeSpecifier(string dataSourceName, string tableName, string attributeName)
+        {
+            attributeSpecifiers.All(attr => attr is AttributeSpecifier).Should().BeTrue();
+            var attrs = attributeSpecifiers.Select(attr => (AttributeSpecifier)attr).ToList();
+            attrs.ShouldContainAttributeSpecifier(dataSourceName, tableName, attributeName);
+        }
+
+        public void ShouldContainAttributeSpecifier(AttributeSpecifier attributeSpecifier)
+        {
+            attributeSpecifiers.ShouldContainAttributeSpecifier(attributeSpecifier.DataSourceName, attributeSpecifier.TableName, attributeSpecifier.AttributeName);
+        }
     }
-    
+
+    extension(IList<AttributeSpecifier> attributeSpecifiers)
+    {
+        public void ShouldContainAttributeSpecifier(string dataSourceName, string tableName, string attributeName)
+        {
+            attributeSpecifiers.Should().Contain(attr => 
+                attr.DataSourceName == dataSourceName &&
+                attr.TableName == tableName &&
+                attr.AttributeName == attributeName);
+        }
+
+        public void ShouldContainAttributeSpecifier(AttributeSpecifier attributeSpecifier)
+        {
+            attributeSpecifiers.ShouldContainAttributeSpecifier(attributeSpecifier.DataSourceName, attributeSpecifier.TableName, attributeSpecifier.AttributeName);
+        }
+    }
+
+
     public static void ShouldContainVariableMappingSpecifier(this IList<ISpecifier> attributeSpecifiers, string alias, string attributeName)
     {
         attributeSpecifiers.Should().Contain(attr => 

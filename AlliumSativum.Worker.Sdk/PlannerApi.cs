@@ -5,7 +5,12 @@ using AlliumSativum.Worker.Sdk.Extensions;
 
 namespace AlliumSativum.Worker.Sdk;
 
-public sealed class PlannerApi
+public interface IPlannerApi
+{
+    Task<(PlanOperator? proposal, SelectBaseModel? unplanned)> PlanQueryAsync(SelectBaseModel model);
+}
+
+public class PlannerApi : IPlannerApi
 {
     private readonly Planner.PlannerClient _client;
 

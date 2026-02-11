@@ -13,7 +13,7 @@ public static class ServiceCollectionExtension
         services.AddSingleton(new Planner.PlannerClient(channel));
         
         services.AddScoped<MetricsApi>();
-        services.AddScoped<PlannerApi>();
+        services.AddScoped<IPlannerApi, PlannerApi>();
         
         return services;
     }

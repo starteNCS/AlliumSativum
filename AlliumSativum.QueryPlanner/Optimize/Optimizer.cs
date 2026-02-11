@@ -13,14 +13,14 @@ namespace AlliumSativum.Optimize;
 
 public sealed class Optimizer
 {
-    private readonly PlannerApi _planner;
+    private readonly IPlannerApi _planner;
     private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
     private readonly JoinOptimizer _joinOptimizer;
     private readonly SelectOptimizer _selectOptimizer;
     private readonly WhereOptimizer _whereOptimizer;
 
     public Optimizer(
-        PlannerApi planner,
+        IPlannerApi planner,
         ExpressionNodeOptimizer expressionNodeOptimizer,
         JoinOptimizer joinOptimizer,
         SelectOptimizer selectOptimizer,
@@ -36,8 +36,8 @@ public sealed class Optimizer
     /// <summary>
     /// Optimizes the given SelectBaseModel into a QueryExecutionPlan
     /// Operates in multiple steps:
-    ///
-    /// - create on-premise only join tree✅
+    /// (✅ implementation, ☑️ test)
+    /// - create on-premise only join tree ✅ ☑️
     /// - split the given model into TABLES ✅
     /// - check which WHERE expressions can be 100% assigned to one table ✅
     /// - append hidden selects ✅
@@ -119,7 +119,7 @@ public sealed class Optimizer
     ///     - onPremise: whatever was not able to be split for data sources
     ///     - dataSources: the parts which should be checked for push down
     /// </returns>
-    private (SelectBaseModel onPremise, List<SelectBaseModel> dataSources) SplitIntoTables(SelectBaseModel model)
+    public (SelectBaseModel onPremise, List<SelectBaseModel> dataSources) SplitIntoTables(SelectBaseModel model)
     {
         // new data sources may only be introduced in either JOIN or FROM
         var tables = model.Join

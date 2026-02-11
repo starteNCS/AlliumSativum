@@ -67,7 +67,6 @@ public sealed class JoinOptimizer
         var joinsLeft = new List<JoinBaseModel>();
         var joinedTablePlans = new List<SelectBaseModel>();
         
-        // TODO: support multi way join (with 3 or more targets in expression)
         foreach (var join in joins)
         {
             var joinTables = _expressionNodeOptimizer.GetTablesOfExpression(join.Expression);

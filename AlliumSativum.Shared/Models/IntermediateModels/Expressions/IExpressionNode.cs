@@ -14,6 +14,7 @@ namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 public interface IExpressionNode
 {
     public string ToSqlQueryString();
+    public bool Equals(object? obj);
 }
 
 public class PartialColumnExpressionNode : IExpressionNode
@@ -29,7 +30,7 @@ public class PartialColumnExpressionNode : IExpressionNode
             return false;
         }
         
-        return other.Name == Name;
+        return other.Name.Equals(Name);
     }
 }
 
@@ -46,7 +47,7 @@ public class VariableMappingExpressionNode : IExpressionNode
             return false;
         }
         
-        return other.VariableMapping == VariableMapping;
+        return other.VariableMapping.Equals(VariableMapping);
     }
 }
 
@@ -65,7 +66,7 @@ public class FullySpecifiedColumnExpressionNode : IExpressionNode
             return false;
         }
         
-        return other.Attribute == Attribute;
+        return other.Attribute.Equals(Attribute);
     }
 }
 
@@ -88,7 +89,7 @@ public class ValueExpressionNode : IExpressionNode
             return false;
         }
         
-        return other.Value == Value;
+        return other.Value.Equals(Value) &&  other.Type.Equals(Type);
     }
 
     public enum ValueExpressionType
@@ -113,6 +114,6 @@ public class BinaryOperatorExpressionNode : IExpressionNode
             return false;
         }
         
-        return other.Operation == Operation && other.Left == Left && other.Right == Right;
+        return other.Operation == Operation && other.Left.Equals(Left) && other.Right.Equals(Right);
     }
 }
