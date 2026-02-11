@@ -2,9 +2,8 @@ using AlliumSativum.Parser;
 using AlliumSativum.Shared.Constants;
 using AlliumSativum.Token;
 using FluentAssertions;
-using ParserTests.Helpers;
 
-namespace ParserTests.Parser;
+namespace QueryPlanner.Tests.Parser;
 
 public sealed class SimpleSelectQueries
 {

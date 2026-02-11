@@ -3,9 +3,8 @@ using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Token;
 using FluentAssertions;
-using ParserTests.Helpers;
 
-namespace ParserTests.Parser;
+namespace QueryPlanner.Tests.Parser;
 
 // more tests on the join expressions are run in BooleanExpressionParserTest
 public sealed class JoinSelectQueries

@@ -2,7 +2,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using FluentAssertions;
 
-namespace ParserTests.Helpers;
+namespace QueryPlanner.Tests.Helpers;
 
 public static partial class ShouldBeHelper
 {

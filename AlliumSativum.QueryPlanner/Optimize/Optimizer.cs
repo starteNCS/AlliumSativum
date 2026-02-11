@@ -38,10 +38,10 @@ public sealed class Optimizer
     /// Operates in multiple steps:
     /// (✅ implementation, ☑️ test)
     /// - create on-premise only join tree ✅ ☑️
-    /// - split the given model into TABLES ✅
-    /// - check which WHERE expressions can be 100% assigned to one table ✅
-    /// - append hidden selects ✅
-    /// - check joins, merge multiple tables into one sub plan if possible ✅
+    /// - split the given model into TABLES ✅ ☑️
+    /// - check which WHERE expressions can be 100% assigned to one table ✅ ☑️ 
+    /// - append hidden selects ✅ ☑️
+    /// - check joins, merge multiple tables into one sub plan if possible ✅ ☑️
     /// - check WHERE again, if any more can be pushed down ✅
     /// - propose to the worker ✅
     /// - check what it did not accept and add POP's to the plan accordingly

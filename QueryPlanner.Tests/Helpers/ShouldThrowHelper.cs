@@ -1,20 +1,29 @@
 using AlliumSativum.Shared.Exceptions;
 using FluentAssertions;
 
-namespace ParserTests.Helpers;
+namespace QueryPlanner.Tests.Helpers;
 
 public static class ShouldThrowHelper
 {
-    public static void ShouldThrowParseException(this Action action, string parseContent, string message)
+    extension(Action action)
     {
-        action.Should().Throw<AsSqlParseException>()
-            .Where(e => e.ParseContent == parseContent)
-            .Where(e => e.AsMessage == message);
-    }
-    
-    public static void ShouldThrowSemanticException(this Action action, string message)
-    {
-        action.Should().Throw<AsSqlSemanticException>()
-            .Where(e => e.AsMessage == message);
+        public void ShouldThrowParseException(string parseContent, string message)
+        {
+            action.Should().Throw<AsSqlParseException>()
+                .Where(e => e.ParseContent == parseContent)
+                .Where(e => e.AsMessage == message);
+        }
+
+        public void ShouldThrowSemanticException(string message)
+        {
+            action.Should().Throw<AsSqlSemanticException>()
+                .Where(e => e.AsMessage == message);
+        }
+
+        public void ShouldThrowOptimizeException(string message)
+        {
+            action.Should().Throw<AsSqlOptimizeException>()
+                .Where(e => e.AsMessage == message);
+        }
     }
 }

@@ -1,7 +1,7 @@
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using FluentAssertions;
 
-namespace ParserTests.Helpers;
+namespace QueryPlanner.Tests.Helpers;
 
 public static partial class ShouldBeHelper
 {
@@ -20,14 +20,14 @@ public static partial class ShouldBeHelper
         }
     }
 
-    public static void ShouldBeAttribute(this AttributeSpecifier attributeSpecifier, string dataSourceName, string tableName, string attributeName)
+    public static void ShouldBeAttribute(this AttributeSpecifier attributeSpecifier, string dataSourceName, string tableName, string attributeName, bool isHidden = false)
     {
         attributeSpecifier.DataSourceName.Should().Be(dataSourceName);
         attributeSpecifier.TableName.Should().Be(tableName);
         attributeSpecifier.AttributeName.Should().Be(attributeName);
     }
     
-    public static void ShouldBeVariableMapping(this VariableMappingSpecifier variableMappingSpecifier, string variableName, string attributeName)
+    public static void ShouldBeVariableMapping(this VariableMappingSpecifier variableMappingSpecifier, string variableName, string attributeName, bool isHidden = false)
     {
         variableMappingSpecifier.VariableName.Should().Be(variableName);
         variableMappingSpecifier.AttributeName.Should().Be(attributeName);
@@ -35,14 +35,14 @@ public static partial class ShouldBeHelper
     
     extension(IList<ISpecifier> attributeSpecifiers)
     {
-        public void ShouldContainAttributeSpecifier(string dataSourceName, string tableName, string attributeName)
+        public void ShouldContainAttributeSpecifier(string dataSourceName, string tableName, string attributeName, bool isHidden = false)
         {
             attributeSpecifiers.All(attr => attr is AttributeSpecifier).Should().BeTrue();
             var attrs = attributeSpecifiers.Select(attr => (AttributeSpecifier)attr).ToList();
             attrs.ShouldContainAttributeSpecifier(dataSourceName, tableName, attributeName);
         }
 
-        public void ShouldContainAttributeSpecifier(AttributeSpecifier attributeSpecifier)
+        public void ShouldContainAttributeSpecifier(AttributeSpecifier attributeSpecifier, bool isHidden = false)
         {
             attributeSpecifiers.ShouldContainAttributeSpecifier(attributeSpecifier.DataSourceName, attributeSpecifier.TableName, attributeSpecifier.AttributeName);
         }

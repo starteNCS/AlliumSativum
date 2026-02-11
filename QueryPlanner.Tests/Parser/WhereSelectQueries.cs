@@ -3,9 +3,8 @@ using AlliumSativum.Shared.Constants;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Token;
 using FluentAssertions;
-using ParserTests.Helpers;
 
-namespace ParserTests.Parser;
+namespace QueryPlanner.Tests.Parser;
 
 // more tests are run in BooleanExpressionParserTest
 public sealed class WhereSelectQueries

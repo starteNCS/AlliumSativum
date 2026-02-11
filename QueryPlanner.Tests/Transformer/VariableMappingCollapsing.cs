@@ -3,9 +3,9 @@ using AlliumSativum.Semantic;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Token;
 using FluentAssertions;
-using ParserTests.Helpers;
+using QueryPlanner.Tests.Helpers;
 
-namespace ParserTests.Transformer;
+namespace QueryPlanner.Tests.Transformer;
 
 public sealed class VariableMappingCollapsing
 {

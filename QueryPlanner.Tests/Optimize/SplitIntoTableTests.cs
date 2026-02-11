@@ -1,13 +1,12 @@
 using AlliumSativum.Optimize;
-using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Worker.Sdk;
 using FluentAssertions;
 using NSubstitute;
-using ParserTests.Helpers;
+using QueryPlanner.Tests.Helpers;
 
-namespace ParserTests.Optimize;
+namespace QueryPlanner.Tests.Optimize;
 
 public sealed class SplitIntoTableTests
 {
@@ -116,6 +115,72 @@ public sealed class SplitIntoTableTests
         var (onPremise, dataSources) = Optimizer.SplitIntoTables(select);
 
         onPremise.ShouldBeSelect(join: select.Join);
+        
+        dataSources.Should().NotBeEmpty();
+        dataSources.Count.Should().Be(2);
+
+        dataSources.ShouldContainSelect(
+            expectedFrom: new TableSpecifier("ticket", "tickets"),
+            expectedSelect: [new AttributeSpecifier("ticket", "tickets", "subject")],
+            expectedWhere: new BinaryOperatorExpressionNode
+            {
+                Left = new FullySpecifiedColumnExpressionNode
+                {
+                    Attribute = new AttributeSpecifier("ticket", "tickets", "customer_id"),
+                },
+                Operation = "=",
+                Right = new ValueExpressionNode()
+                {
+                    Value = "1234",
+                    Type = ValueExpressionNode.ValueExpressionType.String
+                }
+            }); 
+        
+        dataSources.ShouldContainSelect(
+            expectedFrom: new TableSpecifier("erp", "employee"),
+            expectedSelect: [new AttributeSpecifier("erp", "employee", "name")],
+            expectedWhere: new BinaryOperatorExpressionNode
+            {
+                Left = new FullySpecifiedColumnExpressionNode
+                {
+                    Attribute = new AttributeSpecifier("erp", "employee", "name"),
+                },
+                Operation = "=",
+                Right = new ValueExpressionNode()
+                {
+                    Value = "Philipp",
+                    Type = ValueExpressionNode.ValueExpressionType.String
+                }
+            }); 
+    }
+    
+    [Test]
+    public void Should_Split_Tables_Two_Tables_Split_Where_And_Keep_Mixed_On_Premise()
+    {
+        var select = SelectBaseModelHelper.FromAsSql("""
+                                                     SELECT t.subject, e.name
+                                                     FROM ticket->tickets t 
+                                                     INNER JOIN erp->employee e ON e.id = t.assigned_employee_id
+                                                     WHERE t.customer_id = '1234' 
+                                                         AND e.name = 'Philipp'
+                                                         AND t.assigned_employee_id = e.id
+                                                     """);
+        var (onPremise, dataSources) = Optimizer.SplitIntoTables(select);
+
+        onPremise.ShouldBeSelect(
+            join: select.Join,
+            where: new BinaryOperatorExpressionNode
+            {
+                Left = new FullySpecifiedColumnExpressionNode
+                {
+                    Attribute = new AttributeSpecifier("ticket", "tickets", "assigned_employee_id"),
+                },
+                Operation = "=",
+                Right = new FullySpecifiedColumnExpressionNode
+                {
+                    Attribute = new AttributeSpecifier("erp", "employee", "id"),
+                },
+            });
         
         dataSources.Should().NotBeEmpty();
         dataSources.Count.Should().Be(2);

@@ -3,10 +3,8 @@ using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Token;
 using FluentAssertions;
-using NUnit.Framework.Constraints;
-using ParserTests.Helpers;
 
-namespace ParserTests.Algorithms;
+namespace QueryPlanner.Tests.Algorithms;
 
 public sealed class BooleanExpressionParserTest
 {

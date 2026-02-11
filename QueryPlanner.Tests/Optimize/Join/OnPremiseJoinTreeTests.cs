@@ -1,9 +1,9 @@
 using AlliumSativum.Optimize;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using FluentAssertions;
-using ParserTests.Helpers;
+using QueryPlanner.Tests.Helpers;
 
-namespace ParserTests.Optimize.Join;
+namespace QueryPlanner.Tests.Optimize.Join;
 
 public sealed class OnPremiseJoinTreeTests
 {

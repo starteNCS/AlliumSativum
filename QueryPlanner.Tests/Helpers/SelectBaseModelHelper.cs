@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using AlliumSativum.Parser;
 using AlliumSativum.Semantic;
 using AlliumSativum.Shared.Models.IntermediateModels;
@@ -7,7 +6,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Token;
 using FluentAssertions;
 
-namespace ParserTests.Helpers;
+namespace QueryPlanner.Tests.Helpers;
 
 public static class SelectBaseModelHelper
 {
