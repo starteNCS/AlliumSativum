@@ -117,4 +117,95 @@ public sealed class OptimizerTests
         var act = async () => await optimizer.Optimize(select);
         await act.Should().ThrowAsync<AsSqlOptimizeException>();
     }
+
+    #region TestDriven_Failed_Queries
+
+    [Test]
+    public async Task Should_Optimize_Two_Joins_With_Same_Table_Same_Source()
+    {
+        var select = SelectBaseModelHelper.FromAsSql("""
+                                                     SELECT t.subject, tc.body, tb.first_name, tb.last_name 
+                                                     FROM ticket->tickets t 
+                                                     INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id 
+                                                     INNER JOIN ticket->time_bookings tb ON tb.ticket_id = t.id 
+                                                     WHERE t.status = 'In Progress'
+                                                     """);
+        var planner = CreatePlannerMock();
+        var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
+
+        var plan = await optimizer.Optimize(select);
+
+        // Root may be a join of pushdowns, or a single pushdown depending on planner behavior.
+        if (plan.RootOperator is JoinPlanOperator join)
+        {
+            join.Left.Should().BeAssignableTo<PlanOperator>();
+            join.Right.Should().BeAssignableTo<PlanOperator>();
+            join.Left.Should().BeOfType<PushdownSqlPlanOperator>();
+            join.Right.Should().BeOfType<PushdownSqlPlanOperator>();
+        }
+        else
+        {
+            plan.RootOperator.Should().BeOfType<PushdownSqlPlanOperator>();
+        }
+    }
+    
+    [Test]
+    public async Task Should_Optimize_Two_Joins_With_Same_Table_Diff_Source()
+    {
+        var select = SelectBaseModelHelper.FromAsSql("""
+            SELECT t.subject, tc.body, e.first_name, e.last_name 
+            FROM ticket->tickets t 
+            INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id 
+            INNER JOIN erp->employees e ON e.id = t.assigned_employee_id 
+            WHERE t.status = 'In Progress'
+            """);
+        var planner = CreatePlannerMock();
+        var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
+
+        var plan = await optimizer.Optimize(select);
+
+        // Root may be a join of pushdowns, or a single pushdown depending on planner behavior.
+        if (plan.RootOperator is JoinPlanOperator join)
+        {
+            join.Left.Should().BeAssignableTo<PlanOperator>();
+            join.Right.Should().BeAssignableTo<PlanOperator>();
+            join.Left.Should().BeOfType<PushdownSqlPlanOperator>();
+            join.Right.Should().BeOfType<PushdownSqlPlanOperator>();
+        }
+        else
+        {
+            plan.RootOperator.Should().BeOfType<PushdownSqlPlanOperator>();
+        }
+    }
+    
+    [Test]
+    public async Task Should_Optimize_Two_Deep_Joins()
+    {
+        var select = SelectBaseModelHelper.FromAsSql("""
+            SELECT t.subject, tc.body, e.first_name, e.last_name, c.name 
+            FROM ticket->tickets t 
+            INNER JOIN erp->employees e ON e.id = t.assigned_employee_id 
+            INNER JOIN erp->customers c ON c.id = e.customer_id 
+            WHERE t.status = 'In Progress'
+            """);
+        var planner = CreatePlannerMock();
+        var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
+
+        var plan = await optimizer.Optimize(select);
+
+        // Root may be a join of pushdowns, or a single pushdown depending on planner behavior.
+        if (plan.RootOperator is JoinPlanOperator join)
+        {
+            join.Left.Should().BeAssignableTo<PlanOperator>();
+            join.Right.Should().BeAssignableTo<PlanOperator>();
+            join.Left.Should().BeOfType<PushdownSqlPlanOperator>();
+            join.Right.Should().BeOfType<PushdownSqlPlanOperator>();
+        }
+        else
+        {
+            plan.RootOperator.Should().BeOfType<PushdownSqlPlanOperator>();
+        }
+    }
+
+    #endregion
 }

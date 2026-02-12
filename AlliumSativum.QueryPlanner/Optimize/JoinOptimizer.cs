@@ -65,16 +65,10 @@ public sealed class JoinOptimizer
     public (List<JoinBaseModel> joinsLeft, List<SelectBaseModel> joinedTablePlans) CombineTablesByJoinPushDown(List<JoinBaseModel> joins, List<SelectBaseModel> tablePlans)
     {
         var joinsLeft = new List<JoinBaseModel>();
-        var joinedTablePlans = new List<SelectBaseModel>();
         
         foreach (var join in joins)
         {
             var joinTables = _expressionNodeOptimizer.GetTablesOfExpression(join.Expression);
-
-            if (joinTables.Count != 2)
-            {
-                throw new AsSqlOptimizeException("Currently, only joins with parameters from exactly two tables are supported");
-            }
 
             var joinSelects = tablePlans
                 .Where(x => joinTables.Contains(x.From!))
@@ -86,24 +80,30 @@ public sealed class JoinOptimizer
                 joinsLeft.Add(join);
                 continue;
             }
+
+            if (joinTables.Count != 2)
+            {
+                throw new AsSqlOptimizeException("Currently, only joins with parameters from exactly two tables are supported");
+            }
             
             if (joinSelects.Count != 2)
             {
                 throw new AsSqlOptimizeException("At least one of the join plans are missing");
             }
-            
-            joinedTablePlans.Add(new SelectBaseModel()
+
+            var proposal = new SelectBaseModel()
             {
                 From = GetFromForJoin(join, joinSelects),
-                Where = _expressionNodeOptimizer.MergeCnfExpressions(joinSelects[0].Where, joinSelects[1].Where), 
+                Where = _expressionNodeOptimizer.MergeCnfExpressions(joinSelects[0].Where, joinSelects[1].Where),
                 Select = [..joinSelects[0].Select, ..joinSelects[1].Select],
-                Join = [join]
-            });
+                Join = [..joinSelects[0].Join, ..joinSelects[1].Join,  join]
+            };
             tablePlans.Remove(joinSelects[0]);
             tablePlans.Remove(joinSelects[1]);
+            tablePlans.Add(proposal);
         }
         
-        return (joinsLeft, [..joinedTablePlans, ..tablePlans]);
+        return (joinsLeft, tablePlans);
     }
 
     public TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectBaseModel> joinSelects)
