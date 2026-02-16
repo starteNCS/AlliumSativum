@@ -11,6 +11,14 @@ public interface ICostModel
     /// <param name="node"></param>
     /// <returns></returns>
     Task<double> GetSelectivityAsync(BinaryOperatorExpressionNode node);
+
+    /// <summary>
+    /// Caclualtes the expected cardinality after applying a given filter
+    /// </summary>
+    /// <param name="node"></param>
+    /// <param name="previousCardinality"></param>
+    /// <returns></returns>
+    Task<long> CalculateExpectedCardinalityAsync(BinaryOperatorExpressionNode node, long previousCardinality);
 }
 
 public static class CostModelExtensions

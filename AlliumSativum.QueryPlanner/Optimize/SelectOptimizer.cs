@@ -54,7 +54,8 @@ public sealed class SelectOptimizer
         
         return new ProjectPlanOperator(projected)
         {
-            Children = [pop]
+            Children = [pop],
+            ExpectedCardinality = pop.ExpectedCardinality,
         };
     }
 }

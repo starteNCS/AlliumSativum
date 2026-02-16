@@ -3,6 +3,7 @@ using AlliumSativum.Optimize;
 using AlliumSativum.Parser;
 using AlliumSativum.Semantic;
 using AlliumSativum.Shared.Costs;
+using AlliumSativum.Shared.Migrations;
 using AlliumSativum.Token;
 using AlliumSativum.Worker.Sdk;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
+builder.AddCatalogDatabase(builder.Configuration.GetConnectionString("catalog-database") ??
+                           throw new ArgumentException("Catalog connection must be provided"));
 builder.Services.AddAlliumSativumWorkerGrpcSdk(builder.Configuration["WorkerUrl"] ?? throw new ArgumentException("Worker Url is required!"));
 
 builder.Services

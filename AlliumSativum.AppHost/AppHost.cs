@@ -18,6 +18,7 @@ var worker = builder.AddProject<Projects.AlliumSativum_Worker>("Worker")
     .WaitFor(database);
 
 builder.AddProject<Projects.AlliumSativum_QueryServer>("Query-Service")
+    .WithReference(database)
     .WithReference(worker)
     .WaitFor(worker);
 

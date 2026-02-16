@@ -1,4 +1,5 @@
 using AlliumSativum.Parser.Algorithms;
+using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
@@ -18,19 +19,22 @@ public sealed class Optimizer
     private readonly JoinOptimizer _joinOptimizer;
     private readonly SelectOptimizer _selectOptimizer;
     private readonly WhereOptimizer _whereOptimizer;
+    private readonly ICostModel _costModel;
 
     public Optimizer(
         IPlannerApi planner,
         ExpressionNodeOptimizer expressionNodeOptimizer,
         JoinOptimizer joinOptimizer,
         SelectOptimizer selectOptimizer,
-        WhereOptimizer whereOptimizer)
+        WhereOptimizer whereOptimizer,
+        ICostModel costModel)
     {
         _planner = planner;
         _expressionNodeOptimizer = expressionNodeOptimizer;
         _joinOptimizer = joinOptimizer;
         _selectOptimizer = selectOptimizer;
         _whereOptimizer = whereOptimizer;
+        _costModel = costModel;
     }
     
     /// <summary>
@@ -94,7 +98,7 @@ public sealed class Optimizer
 
             foreach (var plannedProposal in plannedProposals)
             {
-                var wrappedResult = WrapPlanProposalWithMissingPops(plannedProposal, onPremise, unplanned);
+                var wrappedResult = await WrapPlanProposalWithMissingPopsAsync(plannedProposal, onPremise, unplanned);
                 plans.Add(wrappedResult.PlannedItems.AffectedTables, wrappedResult.Plan);
                 foreach (var x in plannedProposal.PlannedItems.Select)
                 {
@@ -116,7 +120,8 @@ public sealed class Optimizer
         {
             planRoot = new WherePlanOperator(onPremise.Where)
             {
-                Children = [planRoot]
+                Children = [planRoot],
+                ExpectedCardinality = await _costModel.CalculateExpectedCardinalityAsync((BinaryOperatorExpressionNode)onPremise.Where, planRoot.ExpectedCardinality)
             };
         }
 
@@ -125,7 +130,8 @@ public sealed class Optimizer
         {
             planRoot = new ProjectPlanOperator(projections.Where(x => !x.IsHidden).ToList())
             {
-                Children = [planRoot]
+                Children = [planRoot],
+                ExpectedCardinality = planRoot.ExpectedCardinality
             };
         }
         
@@ -136,11 +142,11 @@ public sealed class Optimizer
         };
     }
 
-    private PlanContainer WrapPlanProposalWithMissingPops(PlanContainer planContainer, SelectBaseModel onPremise, SelectBaseModel? unplanned)
+    private async Task<PlanContainer> WrapPlanProposalWithMissingPopsAsync(PlanContainer planContainer, SelectBaseModel onPremise, SelectBaseModel? unplanned)
     {
         // check if there are any pops, that are now exclusive to this proposal (TODO: PUSH DOWN AGAIN?)
         planContainer.Plan = _selectOptimizer.HandleProjection(planContainer.Plan, planContainer.PlannedItems.From, unplanned);
-        planContainer.Plan = _whereOptimizer.DistributeWhereToProposals(planContainer, onPremise, unplanned);
+        planContainer.Plan = await _whereOptimizer.DistributeWhereToProposalsAsync(planContainer, onPremise, unplanned);
 
         return planContainer;
     }

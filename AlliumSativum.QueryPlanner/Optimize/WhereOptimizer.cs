@@ -1,16 +1,22 @@
+using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
+using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 namespace AlliumSativum.Optimize;
 
 public sealed class WhereOptimizer
 {
     private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
+    private readonly ICostModel _costModel;
 
-    public WhereOptimizer(ExpressionNodeOptimizer expressionNodeOptimizer)
+    public WhereOptimizer(
+        ExpressionNodeOptimizer expressionNodeOptimizer,
+        ICostModel costModel)
     {
         _expressionNodeOptimizer = expressionNodeOptimizer;
+        _costModel = costModel;
     }
     
     /// <summary>
@@ -50,7 +56,7 @@ public sealed class WhereOptimizer
     /// <param name="proposalAffectedTables"></param>
     /// <param name="unplanned"></param>
     /// <returns></returns>
-    public PlanOperator DistributeWhereToProposals(PlanContainer scan, SelectBaseModel onPremise, SelectBaseModel? unplanned)
+    public async Task<PlanOperator> DistributeWhereToProposalsAsync(PlanContainer scan, SelectBaseModel onPremise, SelectBaseModel? unplanned)
     {
         if (unplanned?.Where is not null && unplanned.Where.GetTablesOfExpression().Count != 1)
         {
@@ -69,9 +75,13 @@ public sealed class WhereOptimizer
             return scan.Plan;
         }
 
+        var previousCardinality = scan.Plan.ExpectedCardinality;
+        var nextCardinality = await _costModel.CalculateExpectedCardinalityAsync((BinaryOperatorExpressionNode)mergedExpr, previousCardinality);
+        
         return new WherePlanOperator(mergedExpr)
         {
-            Children = [scan.Plan]
+            Children = [scan.Plan],
+            ExpectedCardinality = nextCardinality,
         };
     }
 }

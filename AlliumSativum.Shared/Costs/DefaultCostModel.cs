@@ -16,6 +16,18 @@ public sealed class DefaultCostModel : ICostModel
     {
         _catalog = catalog;
     }
+
+    /// <summary>
+    /// Caclualtes the expected cardinality after applying a given filter
+    /// </summary>
+    /// <param name="node"></param>
+    /// <param name="previousCardinality"></param>
+    /// <returns></returns>
+    public async Task<long> CalculateExpectedCardinalityAsync(BinaryOperatorExpressionNode node, long previousCardinality)
+    {
+        var selectivity = await GetSelectivityAsync(node);
+        return (long) (selectivity * previousCardinality);
+    }
     
     /// <summary>
     /// Uses selinger style selectivity estimation, which is very basic, but should be good enough for most cases
