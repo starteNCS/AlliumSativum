@@ -56,8 +56,19 @@ public sealed class Optimizer
     /// <exception cref="AsSqlOptimizeException"></exception>
     public async Task<QueryExecutionPlan> Optimize(SelectBaseModel model)
     {
+        var projections = new HashSet<AttributeSpecifier>();
+        foreach (var select in model.Select)
+        {
+            projections.Add((AttributeSpecifier) select);
+        }
+        
         // create on-premise only join tree
         var (onPremiseJoinTree, additionalSelectAttributesNeeded) = _joinOptimizer.ConstructOnPremiseJoin(model);
+        foreach (var select in additionalSelectAttributesNeeded)
+        {
+            projections.Add(select);
+        }
+        
         
         // split the given model into TABLES
         // check which WHERE expressions can be 100% assigned to one table
@@ -85,9 +96,13 @@ public sealed class Optimizer
             {
                 var wrappedResult = WrapPlanProposalWithMissingPops(plannedProposal, onPremise, unplanned);
                 plans.Add(wrappedResult.PlannedItems.AffectedTables, wrappedResult.Plan);
+                foreach (var x in plannedProposal.PlannedItems.Select)
+                {
+                    projections.Add((AttributeSpecifier)x);
+                }
             }
 
-            // push all joins left to the intermediate join tree, so that they can be optimized together with the on-premise joins
+            // push all joins left to the intermediate join tree, so that they can be optimized together with the on-premise joins.
             // (where in fact, those joins are now also on-premise, since they cannot be executed at the worker without the planned tables)
             foreach (var join in unplanned?.Join ?? [])
             {
@@ -105,7 +120,14 @@ public sealed class Optimizer
             };
         }
 
-        // todo: project finally with only non-hidden attributes
+        // if there is any Hidden attribute, get rid of it here by projecting to only non-Hidden attributes
+        if (projections.Any(p => p.IsHidden))
+        {
+            planRoot = new ProjectPlanOperator(projections.Where(x => !x.IsHidden).ToList())
+            {
+                Children = [planRoot]
+            };
+        }
         
         return new QueryExecutionPlan()
         {
@@ -174,7 +196,7 @@ public sealed class Optimizer
             From = model.From,
             Join = model.Join,
             Where = extractedWhere.@base,
-            Select = model.Select.Where(spec => spec is AttributeSpecifier aSpec && !aSpec.IsInTable(table)).ToList()
+            Select = model.Select 
         };
 
         var split = new SelectBaseModel()
