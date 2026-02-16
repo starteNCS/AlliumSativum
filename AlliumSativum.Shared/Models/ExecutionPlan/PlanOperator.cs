@@ -22,6 +22,11 @@ public abstract class PlanOperator
         sb.Append(isLast ? "└── " : "├── ");
         sb.AppendLine(GetNodeInfo());
 
+        // Add second line for POP's string aligned under the branch
+        sb.Append(prefix);
+        sb.Append(isLast ? "    " : "│   ");
+        sb.AppendLine(GetBaseNodeInto());
+
         // 2. Prepare prefix for children
         string childPrefix = prefix + (isLast ? "    " : "│   ");
 
@@ -34,5 +39,5 @@ public abstract class PlanOperator
     }
 
     protected abstract string GetNodeInfo();
-    protected string GetBaseNodeInto() => $"({Cost}ms, C: {ExpectedCardinality}, S: {Selectivity})";
+    protected string GetBaseNodeInto() => $"Estimated duration: {Cost}ms, C: {ExpectedCardinality}, S: {Selectivity}";
 }

@@ -11,7 +11,7 @@ public class PushdownSqlPlanOperator : PlanOperator
         SqlStatement = sqlStatement;
     }
 
-    protected override string GetNodeInfo() => $"{GetBaseNodeInto()} PUSH-DOWN SQL [{DataSource}]: '{SqlStatement}'";
+    protected override string GetNodeInfo() => $"PUSH-DOWN SQL [{DataSource}]: '{SqlStatement}'";
 
     public override int GetHashCode()
     {

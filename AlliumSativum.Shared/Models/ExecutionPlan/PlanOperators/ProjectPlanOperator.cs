@@ -12,7 +12,7 @@ public class ProjectPlanOperator : PlanOperator
         Attributes = attributes;
     }
     
-    protected override string GetNodeInfo() => $"{GetBaseNodeInto()} PROJECT: {string.Join(", ", Attributes.Select(x => 
+    protected override string GetNodeInfo() => $"PROJECT: {string.Join(", ", Attributes.Select(x => 
         new StringBuilder()
             .Append(x.IsHidden ? "{" : "")
             .Append(x.AttributeName)

@@ -11,7 +11,7 @@ public class WherePlanOperator : PlanOperator
         Expression = expression;
     }
     
-    protected override string GetNodeInfo() => $"{GetBaseNodeInto()} FILTER: {Expression}";
+    protected override string GetNodeInfo() => $"FILTER: {Expression}";
     
     public override int GetHashCode()
     {
