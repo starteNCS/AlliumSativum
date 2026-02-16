@@ -72,12 +72,15 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                             """,  relationMetrics);
         
         await _catalogDatabase.ExecuteAsync("""
-                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate)
-                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate)
+                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate, Min, Max, DataType)
+                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate, @Min, @Max, @DataType)
                                             ON CONFLICT (Id)
                                             DO UPDATE SET 
                                                           DistinctCardinality = EXCLUDED.DistinctCardinality,
-                                                          MetricsDate = EXCLUDED.MetricsDate
+                                                          MetricsDate = EXCLUDED.MetricsDate,
+                                                          Min = EXCLUDED.Min,
+                                                          Max = EXCLUDED.Max,
+                                                          DataType = EXCLUDED.DataType
                                             """,  attributeMetrics);
     }
 
@@ -100,9 +103,13 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         var tableStatsStringBuilder = new StringBuilder();
         tableStatsStringBuilder.Append("SELECT COUNT(*) AS Total");
         foreach (var column in columns.Where(c =>
-                     c.TableName == table.TableName && c.TableSchema == table.TableSchema).Select(t => t.ColumnName))
+                     c.TableName == table.TableName && c.TableSchema == table.TableSchema))
         {
-            tableStatsStringBuilder.Append($", COUNT(DISTINCT {column}) AS {column}");
+            tableStatsStringBuilder.Append($", COUNT(DISTINCT {column.ColumnName}) AS {column.ColumnName}");
+            if (column.IsNummeric)
+            {
+                tableStatsStringBuilder.Append($", MIN({column.ColumnName}) AS {column.ColumnName}_min, MAX({column.ColumnName}) AS {column.ColumnName}_max");
+            }
         }
         tableStatsStringBuilder.Append($" FROM {table.TableSchema}.{table.TableName}");
             
@@ -120,19 +127,34 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                 MetricsDate = DateTime.Now,
                 Cardinality = (long)rowDict["total"],
                 ConnectionOpenMs = accessTime,
-                Transfer100Ms = Math.Max(transfer100 - accessTime, 1), // max 1, as 0 would make no sense in multiplication
+                Transfer100Ms = Math.Max(transfer100 - accessTime, 1), // max 1, as 0 would make no sense in multiplication used later for cost
             });
 
-            foreach (var column in rowDict.Keys.Where(r => r != "total"))
+            foreach (var column in columns.Where(x => x.TableSchema == table.TableSchema && x.TableName == table.TableName))
             {
-                var attributeId = existingAttributes.Find(x => x.RelationId == relationId && x.Name == column)?.Id ?? Guid.NewGuid();
+                var attribute = existingAttributes.Find(x => x.RelationId == relationId && x.Name == column.ColumnName);
+                var attributeId = attribute?.Id ?? Guid.NewGuid();
+                double? min = null;
+                double? max = null;
+                if (rowDict.TryGetValue($"{column.ColumnName}_min", out var minObj))
+                {
+                    min = Convert.ToDouble(minObj);
+                }
+                if (rowDict.TryGetValue($"{column.ColumnName}_max", out var maxObj))
+                {
+                    max = Convert.ToDouble(maxObj);
+                }
+                
                 attributeMetrics.Add(new AttributeEntity
                 {
                     Id = attributeId,
                     RelationId = relationId, 
-                    Name = column,
+                    Name = column.ColumnName,
                     MetricsDate = DateTime.Now,
-                    DistinctCardinality = (long) rowDict[column] 
+                    DistinctCardinality = (long) rowDict[column.ColumnName],
+                    Min = min,
+                    Max = max,
+                    DataType = column.DataType,
                 });
             }
         }

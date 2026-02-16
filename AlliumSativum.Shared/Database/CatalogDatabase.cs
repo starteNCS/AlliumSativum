@@ -1,4 +1,6 @@
 using AlliumSativum.Shared.Database.Entities;
+using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
+using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using Dapper;
 using Npgsql;
 
@@ -49,6 +51,17 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
             new
             {
                 DataSourceId = dataSource,
+            });
+        
+        return dataSources.SingleOrDefault();
+    }
+    
+    public async Task<DataSourceEntity?> GetDataSourceAsync(string dataSource)
+    {
+        var dataSources = await QueryAsync<DataSourceEntity>($"SELECT * FROM Catalog.DataSources WHERE Name = @DataSource",
+            new
+            {
+                DataSource = dataSource,
             });
         
         return dataSources.SingleOrDefault();
@@ -107,6 +120,39 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
             });
         
         return attributes;
+    }
+
+    public async Task<AttributeEntity> GetAttributeAsync(AttributeSpecifier attributeSpecifier)
+    {
+        var dataSource = await GetDataSourceAsync(attributeSpecifier.DataSourceName);
+        if (dataSource is null)
+        {
+            throw new ArgumentException($"Datasource '{attributeSpecifier.DataSourceName}' not found");
+        }
+        
+        var relation = await GetRelationAsync(dataSource.Id, attributeSpecifier.TableName);
+        if (relation is null)
+        {
+            throw new ArgumentException($"Table '{attributeSpecifier.TableName}' not found in datasource '{attributeSpecifier.DataSourceName}'");
+        }
+        
+        var attribute = await QueryAsync<AttributeEntity>($"SELECT * FROM Catalog.Attributes WHERE Name = @AttributeName AND RelationId = @RelationId",
+            new
+            {
+                AttributeName = attributeSpecifier.AttributeName,
+                RelationId = relation.Id,
+            });
+        if (attribute.Count != 1)
+        {
+            throw new ArgumentException($"Attribute '{attributeSpecifier.AttributeName}' not found in table '{attributeSpecifier.TableName}' of datasource '{attributeSpecifier.DataSourceName}'");
+        }
+        
+        return  attribute.Single();
+    }
+
+    public Task<AttributeEntity> GetAttributeAsync(FullySpecifiedColumnExpressionNode node)
+    {
+        return GetAttributeAsync(new AttributeSpecifier(node.Attribute.DataSourceName, node.Attribute.TableName, node.Attribute.AttributeName));
     }
 
     public void Dispose()

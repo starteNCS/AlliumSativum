@@ -2,6 +2,7 @@ using AlliumSativum.Compiler;
 using AlliumSativum.Optimize;
 using AlliumSativum.Parser;
 using AlliumSativum.Semantic;
+using AlliumSativum.Shared.Costs;
 using AlliumSativum.Token;
 using AlliumSativum.Worker.Sdk;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,8 @@ builder.Services
     .AddScoped<SemanticTransformer>()
     .AddScoped<Tokenizer>()
     .AddOptimizer();
+
+builder.Services.AddCostModel();
 
 var app = builder.Build();
 

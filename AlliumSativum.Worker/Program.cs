@@ -2,6 +2,7 @@ using System.Reflection;
 using AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 using AlliumSativum.Connectors.PostgreSQL.Extensions;
 using AlliumSativum.Connectors.TicketSystem.Extensions;
+using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Migrations;
 using AlliumSativum.Worker.Services;
 using AlliumSativum.Worker.Strategies;
@@ -30,6 +31,9 @@ builder.Services
 builder.Services
     .AddScoped<PlannerStrategy>()
     .AddScoped<StatisticsStrategy>();
+
+builder.Services
+    .AddCostModel();
 
 var app = builder.Build();
 
