@@ -39,6 +39,7 @@ public class PlannerApi : IPlannerApi
                     {
                         Cost = plan.Plan.Cost,
                         ExpectedCardinality = plan.Plan.ExpectedCardinality,
+                        Selectivity = 1
                     },
                     PushdownRestCall => new PushdownRestCallPlanOperator(
                         Guid.Parse(plan.Plan.PushdownRestCall.DatasourceId),
@@ -48,6 +49,7 @@ public class PlannerApi : IPlannerApi
                     {
                         Cost = plan.Plan.Cost,
                         ExpectedCardinality = plan.Plan.ExpectedCardinality,
+                        Selectivity = 1
                     },
                     _ => throw new ArgumentException("Expected some plan operator"),
                 },

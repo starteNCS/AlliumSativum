@@ -76,12 +76,13 @@ public sealed class WhereOptimizer
         }
 
         var previousCardinality = scan.Plan.ExpectedCardinality;
-        var nextCardinality = await _costModel.CalculateExpectedCardinalityAsync((BinaryOperatorExpressionNode)mergedExpr, previousCardinality);
+        var (cardinality, selectivity) = await _costModel.CalculateExpectedCardinalityAsync((BinaryOperatorExpressionNode)mergedExpr, previousCardinality);
         
         return new WherePlanOperator(mergedExpr)
         {
             Children = [scan.Plan],
-            ExpectedCardinality = nextCardinality,
+            ExpectedCardinality = cardinality,
+            Selectivity = selectivity
         };
     }
 }

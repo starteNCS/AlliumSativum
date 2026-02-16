@@ -1,3 +1,4 @@
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +19,15 @@ public interface ICostModel
     /// <param name="node"></param>
     /// <param name="previousCardinality"></param>
     /// <returns></returns>
-    Task<long> CalculateExpectedCardinalityAsync(BinaryOperatorExpressionNode node, long previousCardinality);
+    Task<(long Cardinality, double Selectivity)> CalculateExpectedCardinalityAsync(BinaryOperatorExpressionNode node, long previousCardinality);
+
+    /// <summary>
+    /// Caclualtes the expected cardinality after applying a given filter
+    /// </summary>
+    /// <param name="join"></param>
+    /// <param name="previousCardinality"></param>
+    /// <returns></returns>
+    Task<(long Cardinality, double Selectivity)> CalculateExpectedCardinalityAsync(JoinPlanOperator join);
 }
 
 public static class CostModelExtensions

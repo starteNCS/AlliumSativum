@@ -1,4 +1,6 @@
 using AlliumSativum.Shared.Database;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
@@ -23,10 +25,22 @@ public sealed class DefaultCostModel : ICostModel
     /// <param name="node"></param>
     /// <param name="previousCardinality"></param>
     /// <returns></returns>
-    public async Task<long> CalculateExpectedCardinalityAsync(BinaryOperatorExpressionNode node, long previousCardinality)
+    public async Task<(long Cardinality, double Selectivity)> CalculateExpectedCardinalityAsync(BinaryOperatorExpressionNode node, long previousCardinality)
     {
         var selectivity = await GetSelectivityAsync(node);
-        return (long) (selectivity * previousCardinality);
+        return ((long) (selectivity * previousCardinality), selectivity);
+    }
+    
+    /// <summary>
+    /// Caclualtes the expected cardinality after applying a given filter
+    /// </summary>
+    /// <param name="join"></param>
+    /// <returns></returns>
+    public async Task<(long Cardinality, double Selectivity)> CalculateExpectedCardinalityAsync(JoinPlanOperator join)
+    {
+        var cardinality = (join.Left.ExpectedCardinality * join.Right.ExpectedCardinality) *
+                          await GetSelectivityAsync((BinaryOperatorExpressionNode)join.Expression);
+        return ((long) cardinality, 1);
     }
     
     /// <summary>
@@ -43,7 +57,6 @@ public sealed class DefaultCostModel : ICostModel
         
         if (node is { Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Left: ValueExpressionNode })
         {
-            // TODO: column > value (or any other open-ended comparison)  F = (high key value - value) / (high key value - low key value)‘  Linear interpolation of the value within the range of key values  yields F if the column is an arithmetic type and value is kno,wn at access path selection time.
             var valueNode = node.Left is ValueExpressionNode left ? left : (ValueExpressionNode)node.Right;
             var attributeNode = node.Left is FullySpecifiedColumnExpressionNode leftCol ? leftCol : (FullySpecifiedColumnExpressionNode)node.Right;
             var attribute = await _catalog.GetAttributeAsync(attributeNode);

@@ -56,6 +56,7 @@ public sealed class SelectOptimizer
         {
             Children = [pop],
             ExpectedCardinality = pop.ExpectedCardinality,
+            Selectivity = pop.Selectivity,
         };
     }
 }

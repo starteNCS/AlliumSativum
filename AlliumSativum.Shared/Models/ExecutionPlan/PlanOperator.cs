@@ -7,6 +7,7 @@ public abstract class PlanOperator
     public List<PlanOperator> Children { get; init; } = [];
     public double Cost { get; set; }
     public long ExpectedCardinality { get; set; }
+    public double Selectivity { get; set; }
     
     public string ToPrettyString()
     {
@@ -33,5 +34,5 @@ public abstract class PlanOperator
     }
 
     protected abstract string GetNodeInfo();
-    protected string GetBaseNodeInto() => $"({Cost}ms, Card: {ExpectedCardinality})";
+    protected string GetBaseNodeInto() => $"({Cost}ms, C: {ExpectedCardinality}, S: {Selectivity})";
 }

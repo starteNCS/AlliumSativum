@@ -1,3 +1,4 @@
+using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
@@ -10,10 +11,14 @@ namespace AlliumSativum.Optimize;
 public sealed class JoinOptimizer
 {
     private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
+    private readonly ICostModel _costModel;
 
-    public JoinOptimizer(ExpressionNodeOptimizer expressionNodeOptimizer)
+    public JoinOptimizer(
+        ExpressionNodeOptimizer expressionNodeOptimizer,
+        ICostModel costModel)
     {
         _expressionNodeOptimizer = expressionNodeOptimizer;
+        _costModel = costModel;
     }
     
     /// <summary>
@@ -21,7 +26,7 @@ public sealed class JoinOptimizer
     /// </summary>
     /// <param name="intermediateJoinTree"></param>
     /// <param name="popLookupTable"></param>
-    public PlanOperator ConstructJoinPopTreeFromIntermediateJoinTree(IIntermediateJoinNode? intermediateJoinTree,
+    public async Task<PlanOperator> ConstructJoinPopTreeFromIntermediateJoinTreeAsync(IIntermediateJoinNode? intermediateJoinTree,
         PopLookupTable popLookupTable)
     {
         if (intermediateJoinTree is null && popLookupTable.Count == 1)
@@ -34,10 +39,10 @@ public sealed class JoinOptimizer
             throw new AsSqlOptimizeException("Expected a intermediate join tree, as there are more than one plans");
         }
 
-        return CloneTransformJoinTree(intermediateJoinTree, null, ref popLookupTable);
+        return await CloneTransformJoinTreeAsync(intermediateJoinTree, null, popLookupTable);
     }
 
-    public PlanOperator CloneTransformJoinTree(IIntermediateJoinNode? node, PlanOperator? pop, ref PopLookupTable popLookupTable)
+    public async Task<PlanOperator> CloneTransformJoinTreeAsync(IIntermediateJoinNode? node, PlanOperator? pop, PopLookupTable popLookupTable)
     {
         if (pop is not null && node is null)
         {
@@ -47,10 +52,15 @@ public sealed class JoinOptimizer
         // 2. "Process" the current node (The "Pre" in Pre-Order)
         if (node is IntermediateJoinNode joinNode)
         {
-            var left = CloneTransformJoinTree(joinNode.Left, pop, ref popLookupTable);
-            var right = CloneTransformJoinTree(joinNode.Right, pop, ref popLookupTable);
-            
-            return new JoinPlanOperator(left, joinNode.Expression, right);
+            var left = await CloneTransformJoinTreeAsync(joinNode.Left, pop, popLookupTable);
+            var right = await CloneTransformJoinTreeAsync(joinNode.Right, pop, popLookupTable);
+
+            var joinPop = new JoinPlanOperator(left, joinNode.Expression, right);
+            var (cardinality, selectivity) = await _costModel.CalculateExpectedCardinalityAsync(joinPop);
+            joinPop.ExpectedCardinality = cardinality;
+            joinPop.Selectivity = selectivity;
+
+            return joinPop;
         }
     
         if (node is IntermediateJoinTreeTableSpecifier tableNode)

@@ -114,14 +114,18 @@ public sealed class Optimizer
             }
         }
         
-        var planRoot = _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTree(onPremiseJoinTree, plans);
+        var planRoot = await _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTreeAsync(onPremiseJoinTree, plans);
 
         if (onPremise.Where is not null)
         {
+            var (cardinality, selectivity) =
+                await _costModel.CalculateExpectedCardinalityAsync((BinaryOperatorExpressionNode)onPremise.Where,
+                    planRoot.ExpectedCardinality);
             planRoot = new WherePlanOperator(onPremise.Where)
             {
                 Children = [planRoot],
-                ExpectedCardinality = await _costModel.CalculateExpectedCardinalityAsync((BinaryOperatorExpressionNode)onPremise.Where, planRoot.ExpectedCardinality)
+                ExpectedCardinality = cardinality,
+                Selectivity = selectivity
             };
         }
 
@@ -131,7 +135,8 @@ public sealed class Optimizer
             planRoot = new ProjectPlanOperator(projections.Where(x => !x.IsHidden).ToList())
             {
                 Children = [planRoot],
-                ExpectedCardinality = planRoot.ExpectedCardinality
+                ExpectedCardinality = planRoot.ExpectedCardinality,
+                Selectivity = planRoot.Selectivity
             };
         }
         
