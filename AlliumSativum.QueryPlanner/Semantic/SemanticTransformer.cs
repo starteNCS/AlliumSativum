@@ -51,7 +51,7 @@ public class SemanticTransformer
         return specifiers;
     }
 
-    private IExpressionNode? CollapseVariableMappingsOfExpression(List<VariableMapping> variableMappings, IExpressionNode? expression)
+    private ExpressionNode? CollapseVariableMappingsOfExpression(List<VariableMapping> variableMappings, ExpressionNode? expression)
     {
         if (expression == null)
         {
@@ -68,7 +68,7 @@ public class SemanticTransformer
         return moveExpression;
     }
 
-    private void CollapseVariableMappingsOfExpressionRef(List<VariableMapping> variableMappings, ref IExpressionNode? expression)
+    private void CollapseVariableMappingsOfExpressionRef(List<VariableMapping> variableMappings, ref ExpressionNode? expression)
     {
         if (expression == null)
         {

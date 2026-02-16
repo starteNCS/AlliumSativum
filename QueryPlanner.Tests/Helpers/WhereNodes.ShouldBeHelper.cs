@@ -6,7 +6,7 @@ namespace QueryPlanner.Tests.Helpers;
 
 public static partial class ShouldBeHelper
 {
-    extension(IExpressionNode node)
+    extension(ExpressionNode node)
     {
         public void ShouldBeBinaryOperator(string @operator,
             AttributeSpecifier left, string right)

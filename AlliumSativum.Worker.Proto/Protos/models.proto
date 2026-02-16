@@ -22,6 +22,7 @@ message GTableSpecifier {
 message GAttributeSpecifier {
   GTableSpecifier table = 1;
   string attributeName = 2;
+  bool IsHidden = 3;
 }
 
 message GJoinBaseModel {

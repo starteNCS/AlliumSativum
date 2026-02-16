@@ -1,7 +1,6 @@
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
-using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Optimize;
 
@@ -29,7 +28,7 @@ public sealed class WhereOptimizer
         var clauses = _expressionNodeOptimizer.GetCnfSubTrees(onPremise.Where);
         foreach (var clause in clauses)
         {
-            var tables = _expressionNodeOptimizer.GetTablesOfExpression(clause);
+            var tables = clause.GetTablesOfExpression();
             
             var potentialProposal = joinedTableProposals.Find(p => tables.TrueForAll(t  => p.AffectedTables.Contains(t)));
             if (potentialProposal is null)
@@ -51,20 +50,28 @@ public sealed class WhereOptimizer
     /// <param name="proposalAffectedTables"></param>
     /// <param name="unplanned"></param>
     /// <returns></returns>
-    public PlanOperator DistributeWhereToProposals(PlanOperator scan, SelectBaseModel onPremise, List<TableSpecifier> proposalAffectedTables, SelectBaseModel? unplanned)
+    public PlanOperator DistributeWhereToProposals(PlanContainer scan, SelectBaseModel onPremise, SelectBaseModel? unplanned)
     {
-        (onPremise.Where, var onPremiseExpr) = _expressionNodeOptimizer.ExtractExpression(onPremise.Where, proposalAffectedTables);
+        if (unplanned?.Where is not null && unplanned.Where.GetTablesOfExpression().Count != 1)
+        {
+            onPremise.Where = _expressionNodeOptimizer.MergeCnfExpressions(onPremise.Where, unplanned.Where);
+            return scan.Plan;
+        }
+        
+        (onPremise.Where, var onPremiseExpr) = _expressionNodeOptimizer.ExtractExpression(onPremise.Where, scan.PlannedItems.AffectedTables);
+        var (unplannedWhereLeft, unplannedExpr) = _expressionNodeOptimizer.ExtractExpression(unplanned?.Where, scan.PlannedItems.AffectedTables);
+        unplanned?.Where = unplannedWhereLeft;
         
         // could be wrapped as WherePOP(WherePOP()), but reduce the nesting by "AND" combining them
-        var mergedExpr = _expressionNodeOptimizer.MergeCnfExpressions(onPremiseExpr, unplanned?.Where);
+        var mergedExpr = _expressionNodeOptimizer.MergeCnfExpressions(onPremiseExpr, unplannedExpr);
         if (mergedExpr is null)
         {
-            return scan;
+            return scan.Plan;
         }
 
         return new WherePlanOperator(mergedExpr)
         {
-            Children = [scan]
+            Children = [scan.Plan]
         };
     }
 }

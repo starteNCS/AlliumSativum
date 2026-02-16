@@ -18,7 +18,7 @@ public static class SelectBaseModelHelper
         return select;
     }
 
-    public static void ShouldBeSelect(this SelectBaseModel selectBaseModel, TableSpecifier? from = null, List<AttributeSpecifier>? select = null, List<JoinBaseModel>? join = null, IExpressionNode? where = null)
+    public static void ShouldBeSelect(this SelectBaseModel selectBaseModel, TableSpecifier? from = null, List<AttributeSpecifier>? select = null, List<JoinBaseModel>? join = null, ExpressionNode? where = null)
     {
         if (from is not null)
         {
@@ -44,7 +44,7 @@ public static class SelectBaseModelHelper
         }
     }
     
-    public static void ShouldContainSelect(this List<SelectBaseModel> selectBaseModels, TableSpecifier? expectedFrom = null, List<AttributeSpecifier>? expectedSelect = null, List<JoinBaseModel>? expectedJoin = null, IExpressionNode? expectedWhere = null)
+    public static void ShouldContainSelect(this List<SelectBaseModel> selectBaseModels, TableSpecifier? expectedFrom = null, List<AttributeSpecifier>? expectedSelect = null, List<JoinBaseModel>? expectedJoin = null, ExpressionNode? expectedWhere = null)
     {
         if (expectedFrom is not null)
         {

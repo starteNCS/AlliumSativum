@@ -24,7 +24,7 @@ public sealed class SelectOptimizer
                 throw new AsSqlOptimizeException("Expected to find select model to push hidden attribute to");
             }
 
-            if (select.Select.Any(s => s is AttributeSpecifier && attribute.Equals(s)))
+            if (select.Select.Any(s => s is AttributeSpecifier aSpec && aSpec.Equals(attribute)))
             {
                 // model already contains specific select
                 continue;
@@ -37,14 +37,22 @@ public sealed class SelectOptimizer
         return splitSelects;
     } 
         
-    public PlanOperator HandleProjection(PlanOperator pop, SelectBaseModel? unplanned)
+    public PlanOperator HandleProjection(PlanOperator pop, TableSpecifier forTable, SelectBaseModel? unplanned)
     {
         if (unplanned is null || unplanned.Select.Count == 0)
         {
             return pop;
         }
+
+        var projected = unplanned.Select
+            .OfType<AttributeSpecifier>()
+            .Where(x => x.IsInTable(forTable))
+            .ToList();
+        unplanned.Select = unplanned.Select
+            .Where(x => x is AttributeSpecifier aSpec && !aSpec.IsInTable(forTable))
+            .ToList();
         
-        return new ProjectPlanOperator(unplanned.Select)
+        return new ProjectPlanOperator(projected)
         {
             Children = [pop]
         };

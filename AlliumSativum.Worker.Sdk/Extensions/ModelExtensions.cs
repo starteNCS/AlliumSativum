@@ -27,7 +27,8 @@ public static class ModelExtensions
                     TableName = aSpec.TableName,
                     DataSource = aSpec.DataSourceName
                 },
-                AttributeName = aSpec.AttributeName
+                AttributeName = aSpec.AttributeName,
+                IsHidden = aSpec.IsHidden
             };
         }));
         payload.Joins.AddRange(model.Join.Select(j => new GJoinBaseModel()
@@ -43,7 +44,7 @@ public static class ModelExtensions
         return payload;
     }
 
-    public static GExpressionNode? ToGrpcModel(this IExpressionNode? root)
+    public static GExpressionNode? ToGrpcModel(this ExpressionNode? root)
     {
         if (root == null)
         {
@@ -51,8 +52,8 @@ public static class ModelExtensions
         }
 
         // Map to keep track of processed nodes for reconstruction
-        var nodeMap = new Dictionary<IExpressionNode, GExpressionNode>();
-        var stack = new Stack<IExpressionNode>();
+        var nodeMap = new Dictionary<ExpressionNode, GExpressionNode>();
+        var stack = new Stack<ExpressionNode>();
         stack.Push(root);
 
         while (stack.Count > 0)
@@ -102,7 +103,10 @@ public static class ModelExtensions
         {
             From = new TableSpecifier(model.From.DataSource, model.From.TableName),
             Select = model.Select.Select(ISpecifier (spec) =>
-                new AttributeSpecifier(spec.Table.DataSource, spec.Table.TableName, spec.AttributeName)).ToList(),
+                new AttributeSpecifier(spec.Table.DataSource, spec.Table.TableName, spec.AttributeName)
+                {
+                    IsHidden = spec.IsHidden
+                }).ToList(),
             Where = model.Where.FromGrpcModel(),
             Join = model.Joins.Select(j => new JoinBaseModel
             {
@@ -113,14 +117,14 @@ public static class ModelExtensions
         };
     }
 
-    public static IExpressionNode? FromGrpcModel(this GExpressionNode? root)
+    public static ExpressionNode? FromGrpcModel(this GExpressionNode? root)
     {
         if (root is null)
         {
             return null;
         }
         
-        var nodeMap = new Dictionary<GExpressionNode, IExpressionNode>();
+        var nodeMap = new Dictionary<GExpressionNode, ExpressionNode>();
         var stack = new Stack<GExpressionNode>();
         stack.Push(root);
 

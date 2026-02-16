@@ -25,7 +25,7 @@ public sealed class PlannerService : Planner.PlannerBase
         _plannerStrategy = plannerStrategy;
     }
     
-    public override async Task<PlanResponse> Plan(GSelectBaseModel request, ServerCallContext context)
+    public override async Task<GPlanResponse> Plan(GSelectBaseModel request, ServerCallContext context)
     {
         _logger.LogDebug("Begin query planning for: {FromTable}", request.From.TableName);
 
@@ -37,45 +37,53 @@ public sealed class PlannerService : Planner.PlannerBase
         var datasource = datasources.SingleOrDefault();
         if (datasource == null)
         {
-            return new PlanResponse()
+            return new GPlanResponse()
             {
                 Success = false
             };
         }
         
         var planner = _plannerStrategy.GetPlannerOfConnector(datasource.Connector);
-        var (proposal, unplanned) = await planner.PlanAsync(datasource.Id, request.FromGrpcModel());
+        var (proposals, unplanned) = await planner.PlanAsync(datasource.Id, request.FromGrpcModel());
 
-        var response = new PlanResponse
+        var response = new GPlanResponse
         {
             Success = true,
-            Plan = proposal switch
-            {
-                PushdownSqlPlanOperator psql => new GPlanOperator
-                {
-                    PushdownSql = new GPushdownSqlPlanOperator
-                    {
-                        SqlStatement = psql.SqlStatement,
-                        DatasourceId = psql.DataSource.ToString()
-                    },
-                    Cost = proposal.Cost,
-                    ExpectedCardinality = proposal.ExpectedCardinality,
-                },
-                PushdownRestCallPlanOperator prest => new GPlanOperator
-                {
-                    PushdownRestCall = new GPushdownRestCallPlanOperator
-                    {
-                        DatasourceId =  prest.DataSource.ToString(),
-                        HttpMethod = prest.HttpMethod,
-                        Url = prest.Url
-                    },
-                    Cost = proposal.Cost,
-                    ExpectedCardinality = proposal.ExpectedCardinality
-                },
-                _ => new GPlanOperator()
-            },
             Unplanned = unplanned?.ToGrpcModel(),
         };
+        
+        foreach (var proposal in proposals)
+        {
+            response.Plans.Add(new GPlanContainer
+            {
+                Plan = proposal.Plan switch
+                {
+                    PushdownSqlPlanOperator psql => new GPlanOperator
+                    {
+                        PushdownSql = new GPushdownSqlPlanOperator
+                        {
+                            SqlStatement = psql.SqlStatement,
+                            DatasourceId = psql.DataSource.ToString()
+                        },
+                        Cost = proposal.Plan.Cost,
+                        ExpectedCardinality = proposal.Plan.ExpectedCardinality,
+                    },
+                    PushdownRestCallPlanOperator prest => new GPlanOperator
+                    {
+                        PushdownRestCall = new GPushdownRestCallPlanOperator
+                        {
+                            DatasourceId =  prest.DataSource.ToString(),
+                            HttpMethod = prest.HttpMethod,
+                            Url = prest.Url
+                        },
+                        Cost = proposal.Plan.Cost,
+                        ExpectedCardinality = proposal.Plan.ExpectedCardinality
+                    },
+                    _ => new GPlanOperator()
+                },
+                Planned = proposal.PlannedItems.ToGrpcModel()
+            });
+        }
         
         return response;
     }

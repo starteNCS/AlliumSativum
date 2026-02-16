@@ -1,25 +1,23 @@
+using System.Text;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 
 public class ProjectPlanOperator : PlanOperator
 {
-    public List<string> Attributes { get; }
+    public List<AttributeSpecifier> Attributes { get; }
     
-    public ProjectPlanOperator(params List<string> attributes)
+    public ProjectPlanOperator(params List<AttributeSpecifier> attributes)
     {
         Attributes = attributes;
     }
     
-    public ProjectPlanOperator(params List<ISpecifier> attributes)
-    {
-        Attributes = attributes
-            .Where(x => x is AttributeSpecifier)
-            .Select(x => ((AttributeSpecifier)x).AttributeName)
-            .ToList();
-    }
-    
-    protected override string GetNodeInfo() => $"{GetBaseNodeInto()} PROJECT: {string.Join(", ", Attributes)}";
+    protected override string GetNodeInfo() => $"{GetBaseNodeInto()} PROJECT: {string.Join(", ", Attributes.Select(x => 
+        new StringBuilder()
+            .Append(x.IsHidden ? "{" : "")
+            .Append(x.AttributeName)
+            .Append(x.IsHidden ? "}" : "").ToString()
+    ))}";
     
     public override int GetHashCode()
     {

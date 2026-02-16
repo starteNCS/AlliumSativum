@@ -17,12 +17,12 @@ public sealed class PostgreSqlPlanner : IPlanner
         _catalogDatabase = catalogDatabase;
     }
     
-    public async Task<(PlanOperator? proposal, SelectBaseModel? unplanned)> PlanAsync(Guid dataSourceId, SelectBaseModel selectModel)
+    public async Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanAsync(Guid dataSourceId, SelectBaseModel selectModel)
     {
         var relation = await _catalogDatabase.GetRelationAsync(dataSourceId, selectModel.From!.TableName);
         if (relation is null)
         {
-            return (null, null);
+            return ([], null);
         }
         
         // TODO: adjust cost for filters and joins
@@ -31,10 +31,16 @@ public sealed class PostgreSqlPlanner : IPlanner
         // TODO: Calculate adjusted cardinality
         var cardinality = relation.Cardinality;
 
-        return (new PushdownSqlPlanOperator(relation.DataSourceId, selectModel.ToPostgreSqlString())
-        {
-            Cost = cost,
-            ExpectedCardinality = cardinality,
-        }, null);
+        return ([
+            new PlanContainer
+            {
+                Plan = new PushdownSqlPlanOperator(relation.DataSourceId, selectModel.ToPostgreSqlString())
+                {
+                    Cost = cost,
+                    ExpectedCardinality = cardinality,
+                },
+                PlannedItems = selectModel
+            }
+        ], null);
     }
 }

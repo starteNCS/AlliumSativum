@@ -1,3 +1,4 @@
+using System.Text;
 using AlliumSativum.Shared.Constants;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
@@ -17,7 +18,12 @@ public sealed class AttributeSpecifier : TableSpecifier, IEquatable<AttributeSpe
         AttributeName = attributeName;
     }
     
-    public override string ToString() => $"{base.ToString()}{AsSqlParameters.Attribute.TableSeparator}{AttributeName}";
+    public override string ToString() => new StringBuilder()
+        .Append(IsHidden ? "[HIDDEN] " : "")
+        .Append(base.ToString())
+        .Append(AsSqlParameters.Attribute.TableSeparator)
+        .Append(AttributeName)
+        .ToString();
 
     public bool IsInTable(TableSpecifier table)
     {

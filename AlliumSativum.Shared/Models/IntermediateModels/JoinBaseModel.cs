@@ -8,7 +8,7 @@ public sealed class JoinBaseModel
 {
     public JoinType JoinType { get; init; }
     public TableSpecifier Inner { get; init; }
-    public IExpressionNode Expression { get; set; }
+    public ExpressionNode Expression { get; set; }
 
     public override bool Equals(object? obj)
     {
@@ -21,6 +21,20 @@ public sealed class JoinBaseModel
                && Inner.Equals(join.Inner)
                && Expression.Equals(join.Expression);
     }
+    
+    /// <summary>
+    /// Returns the "other" table from a join (the table needed for the expression, rather than the newly joined table)
+    /// </summary>
+    /// <param name="join"></param>
+    /// <returns></returns>
+    public TableSpecifier GetJoinExpressionTable()
+    {
+        return Expression.GetAttributesOfExpression()
+            .Select(x => new TableSpecifier(x.DataSourceName, x.TableName))
+            .Where(x => !x.Equals(Inner))
+            .Distinct()
+            .Single();
+    } 
 }
 
 public enum JoinType

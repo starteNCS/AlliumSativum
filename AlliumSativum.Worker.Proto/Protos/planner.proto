@@ -4,11 +4,16 @@ import "models.proto";
 option csharp_namespace = "AlliumSativum.Worker";
 
 service Planner {
-  rpc Plan (GSelectBaseModel) returns (PlanResponse);
+  rpc Plan (GSelectBaseModel) returns (GPlanResponse);
 }
 
-message PlanResponse {
+message GPlanResponse {
   bool success = 1;
-  GPlanOperator plan = 2;
+  repeated GPlanContainer plans = 2;
   optional GSelectBaseModel unplanned = 3;
+}
+
+message GPlanContainer {
+  GPlanOperator plan = 1;
+  GSelectBaseModel planned = 2;
 }

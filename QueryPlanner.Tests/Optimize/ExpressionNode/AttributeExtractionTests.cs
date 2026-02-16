@@ -26,7 +26,7 @@ public sealed class AttributeExtractionTests
             }
         };
 
-        var attributes = ExpressionOptimizer.GetAttributesOfExpression(expression);
+        var attributes = expression.GetAttributesOfExpression();
 
         attributes.Should().NotBeEmpty()
             .And.HaveCount(1)
@@ -49,7 +49,7 @@ public sealed class AttributeExtractionTests
             }
         };
 
-        var tables = ExpressionOptimizer.GetTablesOfExpression(expression);
+        var tables = expression.GetTablesOfExpression();
 
         tables.Should().NotBeEmpty()
             .And.HaveCount(2)
@@ -66,7 +66,7 @@ public sealed class AttributeExtractionTests
             Type = ValueExpressionNode.ValueExpressionType.String
         };
 
-        var attributes = ExpressionOptimizer.GetAttributesOfExpression(expression);
+        var attributes = expression.GetAttributesOfExpression();
 
         attributes.Should().BeEmpty();
     }
@@ -80,7 +80,7 @@ public sealed class AttributeExtractionTests
             Type = ValueExpressionNode.ValueExpressionType.String
         };
 
-        var tables = ExpressionOptimizer.GetTablesOfExpression(expression);
+        var tables = expression.GetTablesOfExpression();
 
         tables.Should().BeEmpty();
     }
@@ -109,7 +109,7 @@ public sealed class AttributeExtractionTests
             }
         };
 
-        var attributes = ExpressionOptimizer.GetAttributesOfExpression(expression);
+        var attributes = expression.GetAttributesOfExpression();
 
         attributes.Should().NotBeEmpty()
             .And.HaveCount(3)

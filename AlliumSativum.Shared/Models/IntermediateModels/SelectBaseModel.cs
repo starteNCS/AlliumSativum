@@ -9,7 +9,7 @@ public sealed class SelectBaseModel
     public List<VariableMapping> VariableMappings { get; set; } = [];
     public List<ISpecifier> Select { get; set; } = [];
     public TableSpecifier From { get; set; } = null!;
-    public IExpressionNode? Where { get; set; } 
+    public ExpressionNode? Where { get; set; } 
     public List<JoinBaseModel> Join { get; set; } = [];
 
     public List<TableSpecifier> AffectedTables => [From, ..Join.Select(x => x.Inner)];
@@ -48,4 +48,27 @@ public sealed class SelectBaseModel
         
         return stringBuilder.ToString();
     }
+    
+
+    /// <summary>
+    /// Appends the given attributes either as hidden, when not existing
+    /// or leave the attribute as is, when already existing (i.e. not hidden)
+    /// </summary>
+    /// <param name="select"></param>
+    /// <param name="hiddenAttributes"></param>
+    /// <returns></returns>
+    public void AppendHiddenAttribute(List<AttributeSpecifier> hiddenAttributes)
+    {
+        foreach (var attribute in hiddenAttributes)
+        {
+            if (Select.Any(s => s is AttributeSpecifier aSpec && aSpec.Equals(attribute)))
+            {
+                // model already contains specific select
+                continue;
+            }
+
+            attribute.IsHidden = true;
+            Select.Add(attribute);
+        }
+    } 
 }

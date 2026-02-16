@@ -75,14 +75,24 @@ public sealed class Optimizer
         // propose to the worker
         foreach (var select in joinedTableSelect)
         {
-            var (plan, unplanned) = await _planner.PlanQueryAsync(select);
-            if (plan is null)
+            var (plannedProposals, unplanned) = await _planner.PlanQueryAsync(select);
+            if (plans is null)
             {
                 throw new AsSqlOptimizeException("Expected pushdown plan, but got none");
             }
-            
-            var popTree = WrapPlanProposalWithMissingPops(plan, onPremise, select, unplanned);
-            plans.Add(select.AffectedTables, popTree);
+
+            foreach (var plannedProposal in plannedProposals)
+            {
+                var wrappedResult = WrapPlanProposalWithMissingPops(plannedProposal, onPremise, unplanned);
+                plans.Add(wrappedResult.PlannedItems.AffectedTables, wrappedResult.Plan);
+            }
+
+            // push all joins left to the intermediate join tree, so that they can be optimized together with the on-premise joins
+            // (where in fact, those joins are now also on-premise, since they cannot be executed at the worker without the planned tables)
+            foreach (var join in unplanned?.Join ?? [])
+            {
+                onPremiseJoinTree = _joinOptimizer.AddJoinToIntermediateJoinTree(onPremiseJoinTree, join);
+            }
         }
         
         var planRoot = _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTree(onPremiseJoinTree, plans);
@@ -95,6 +105,8 @@ public sealed class Optimizer
             };
         }
 
+        // todo: project finally with only non-hidden attributes
+        
         return new QueryExecutionPlan()
         {
             Cost = 1,
@@ -102,13 +114,13 @@ public sealed class Optimizer
         };
     }
 
-    private PlanOperator WrapPlanProposalWithMissingPops(PlanOperator pop, SelectBaseModel onPremise, SelectBaseModel proposalBase, SelectBaseModel? unplanned)
+    private PlanContainer WrapPlanProposalWithMissingPops(PlanContainer planContainer, SelectBaseModel onPremise, SelectBaseModel? unplanned)
     {
         // check if there are any pops, that are now exclusive to this proposal (TODO: PUSH DOWN AGAIN?)
-        pop = _whereOptimizer.DistributeWhereToProposals(pop, onPremise, proposalBase.AffectedTables, unplanned);
-        pop = _selectOptimizer.HandleProjection(pop, unplanned);
+        planContainer.Plan = _selectOptimizer.HandleProjection(planContainer.Plan, planContainer.PlannedItems.From, unplanned);
+        planContainer.Plan = _whereOptimizer.DistributeWhereToProposals(planContainer, onPremise, unplanned);
 
-        return pop;
+        return planContainer;
     }
 
     /// <summary>

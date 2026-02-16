@@ -16,7 +16,7 @@ public sealed class ExpressionNodeOptimizer
     ///     - base: the tree with the items left, that were not extracted
     ///     - split: a tree for only the provided table
     /// </returns>
-    public (IExpressionNode? @base, IExpressionNode? split) ExtractExpression(IExpressionNode? node,
+    public (ExpressionNode? @base, ExpressionNode? split) ExtractExpression(ExpressionNode? node,
         TableSpecifier table)
     {
         return ExtractExpression(node, [table]);
@@ -32,7 +32,7 @@ public sealed class ExpressionNodeOptimizer
     ///     - base: the tree with the items left, that were not extracted
     ///     - split: a tree for only the provided table
     /// </returns>
-    public (IExpressionNode? @base, IExpressionNode? split) ExtractExpression(IExpressionNode? node,
+    public (ExpressionNode? @base, ExpressionNode? split) ExtractExpression(ExpressionNode? node,
         List<TableSpecifier> table)
     {
         if (node is null)
@@ -46,7 +46,7 @@ public sealed class ExpressionNodeOptimizer
             var (leftBase, leftSplit) = ExtractExpression(binary.Left, table);
             var (rightBase, rightSplit) = ExtractExpression(binary.Right, table);
 
-            IExpressionNode? finalSplit;
+            ExpressionNode? finalSplit;
             if (leftSplit is not null && rightSplit is not null)
             {
                 finalSplit = new BinaryOperatorExpressionNode
@@ -57,7 +57,7 @@ public sealed class ExpressionNodeOptimizer
                 finalSplit = leftSplit ?? rightSplit;
             }
 
-            IExpressionNode? finalBase;
+            ExpressionNode? finalBase;
             if (leftBase is not null && rightBase is not null)
             {
                 finalBase = new BinaryOperatorExpressionNode { Operation = "AND", Left = leftBase, Right = rightBase };
@@ -70,7 +70,7 @@ public sealed class ExpressionNodeOptimizer
             return (finalBase, finalSplit);
         }
 
-        if (IsPurelyTables(node, table))
+        if (node.IsPurelyTables(table))
         {
             return (null, node); 
         }
@@ -78,55 +78,7 @@ public sealed class ExpressionNodeOptimizer
         return (node, null); 
     }
     
-    public bool IsPurelyTables(IExpressionNode node, List<TableSpecifier> table)
-    {
-        return node switch
-        {
-            ValueExpressionNode => true,
-            FullySpecifiedColumnExpressionNode fully => table.Exists(x => x.TableName == fully.Attribute.TableName &&  x.DataSourceName == fully.Attribute.DataSourceName),
-            BinaryOperatorExpressionNode binary =>
-                IsPurelyTables(binary.Left, table) && IsPurelyTables(binary.Right, table),
-            _ => false
-        };
-    }
-    
-    public List<AttributeSpecifier> GetAttributesOfExpression(IExpressionNode root)
-    {
-        var results = new HashSet<AttributeSpecifier>();
-        var stack = new Stack<IExpressionNode>();
-    
-        stack.Push(root);
 
-        while (stack.Count > 0)
-        {
-            var current = stack.Pop();
-
-            switch (current)
-            {
-                case FullySpecifiedColumnExpressionNode fully:
-                    results.Add(fully.Attribute);
-                    break;
-
-                case BinaryOperatorExpressionNode binary:
-                    stack.Push(binary.Right);
-                    stack.Push(binary.Left);
-                    break;
-
-                case VariableMappingExpressionNode varMap:
-                    throw new AsSqlOptimizeException($"Variable mapping is not expected at this point. Should have been expanded by the semantic transformer. Did not expect alias {varMap.VariableMapping.VariableName}");
-            }
-        }
-
-        return results.ToList();
-    }
-
-    public List<TableSpecifier> GetTablesOfExpression(IExpressionNode root)
-    {
-        return GetAttributesOfExpression(root)
-            .Select(x => new TableSpecifier(x.DataSourceName, x.TableName))
-            .Distinct()
-            .ToList();
-    }
 
     /// <summary>
     /// Merges two expressions (which need to already be in CNF!) into a new singular expression (which also is in CNF)
@@ -134,7 +86,7 @@ public sealed class ExpressionNodeOptimizer
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns></returns>
-    public IExpressionNode? MergeCnfExpressions(IExpressionNode? left, IExpressionNode? right)
+    public ExpressionNode? MergeCnfExpressions(ExpressionNode? left, ExpressionNode? right)
     {
         if (left is null && right is null)
         {
@@ -164,15 +116,15 @@ public sealed class ExpressionNodeOptimizer
     /// </summary>
     /// <param name="root"></param>
     /// <returns></returns>
-    public List<IExpressionNode> GetCnfSubTrees(IExpressionNode? root)
+    public List<ExpressionNode> GetCnfSubTrees(ExpressionNode? root)
     {
-        var clauses = new List<IExpressionNode>();
+        var clauses = new List<ExpressionNode>();
         if (root == null)
         {
             return clauses;
         }
 
-        var stack = new Stack<IExpressionNode>();
+        var stack = new Stack<ExpressionNode>();
         stack.Push(root);
 
         while (stack.Count > 0)
@@ -194,14 +146,14 @@ public sealed class ExpressionNodeOptimizer
         return clauses;
     }
 
-    public IExpressionNode RemoveCnfExpression(IExpressionNode? fromNode, IExpressionNode remove)
+    public ExpressionNode RemoveCnfExpression(ExpressionNode? fromNode, ExpressionNode remove)
     {
         var from = GetCnfSubTrees(fromNode);
         from.Remove(remove);
         return RebuildAndTree(from);
     }
 
-    public IExpressionNode? RebuildAndTree(List<IExpressionNode> clauses)
+    public ExpressionNode? RebuildAndTree(List<ExpressionNode> clauses)
     {
         if (clauses.Count == 0)
         {

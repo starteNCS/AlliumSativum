@@ -4,9 +4,9 @@ namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 
 public class WherePlanOperator : PlanOperator
 {
-    public IExpressionNode Expression { get; }
+    public ExpressionNode Expression { get; }
 
-    public WherePlanOperator(IExpressionNode expression)
+    public WherePlanOperator(ExpressionNode expression)
     {
         Expression = expression;
     }

@@ -68,7 +68,7 @@ public sealed class JoinOptimizer
         
         foreach (var join in joins)
         {
-            var joinTables = _expressionNodeOptimizer.GetTablesOfExpression(join.Expression);
+            var joinTables = join.Expression.GetTablesOfExpression();
 
             var joinSelects = tablePlans
                 .Where(x => joinTables.Contains(x.From!))
@@ -140,7 +140,7 @@ public sealed class JoinOptimizer
         var joinLookup = new Dictionary<TableSpecifier, List<JoinBaseModel>>();
         foreach (var j in joins)
         {
-            var joinExpressionTable = GetJoinExpressionTable(j);
+            var joinExpressionTable = j.GetJoinExpressionTable();
             if (joinLookup.TryGetValue(joinExpressionTable, out var joinExpressions))
             {
                 joinExpressions.Add(j);
@@ -155,7 +155,7 @@ public sealed class JoinOptimizer
         {
             Left = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(join.Inner),
             Expression = join.Expression,
-            Right = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(GetJoinExpressionTable(join)),
+            Right = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(join.GetJoinExpressionTable()),
         };
 
         List<IntermediateJoinTreeTableSpecifier> alreadyJoinedRelations = [
@@ -166,7 +166,7 @@ public sealed class JoinOptimizer
         int continued = 0;
         while (joins.Count > 0)
         {
-            join = joins.GetAndRemove(x => alreadyJoinedRelations.Contains(GetJoinExpressionTable(x)));
+            join = joins.GetAndRemove(x => alreadyJoinedRelations.Contains(x.GetJoinExpressionTable()));
             if (join is null)
             {
                 continued++;
@@ -188,22 +188,30 @@ public sealed class JoinOptimizer
         }
 
         
-        return (root, mixedJoins.SelectMany(x => _expressionNodeOptimizer.GetAttributesOfExpression(x.Expression)).ToList());
+        return (root, mixedJoins.SelectMany(x => x.Expression.GetAttributesOfExpression()).ToList());
     }
     
-    /// <summary>
-    /// Returns the "other" table from a join (the table needed for the expression, rather than the newly joined table)
-    /// </summary>
-    /// <param name="join"></param>
-    /// <returns></returns>
-    public TableSpecifier GetJoinExpressionTable(JoinBaseModel join)
+    public IIntermediateJoinNode AddJoinToIntermediateJoinTree(IIntermediateJoinNode? root, JoinBaseModel join)
     {
-        return _expressionNodeOptimizer.GetAttributesOfExpression(join.Expression)
-            .Select(x => new TableSpecifier(x.DataSourceName, x.TableName))
-            .Where(x => !x.Equals(join.Inner))
-            .Distinct()
-            .Single();
-    } 
+        if (root is null)
+        {
+            return new IntermediateJoinNode()
+            {
+                Left = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(join.Inner),
+                Expression = join.Expression,
+                Right = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(join.GetJoinExpressionTable()),
+            };
+        }
+        
+        return new IntermediateJoinNode()
+        {
+            Left = root,
+            Expression = join.Expression,
+            Right = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(join.Inner)
+        };
+    }
+    
+
     
     /// <summary>
     /// Returns a list of all joins, where the tables reside in different data sources
@@ -212,6 +220,6 @@ public sealed class JoinOptimizer
     /// <returns></returns>
     public List<JoinBaseModel> GetOnlyMixedJoins(SelectBaseModel select) =>
         select.Join
-            .Where(join => GetJoinExpressionTable(join).DataSourceName != join.Inner.DataSourceName)
+            .Where(join => join.GetJoinExpressionTable().DataSourceName != join.Inner.DataSourceName)
             .ToList();
 }

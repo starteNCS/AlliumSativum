@@ -19,10 +19,10 @@ public static partial class BooleanExpressionParser
         { "=", 3 }, { "!=", 3 }, { "<", 3 }, { ">", 3 }, { "<=", 3 }, { ">=", 3 }, { "LIKE", 3 }
     };
 
-    public static IExpressionNode? Parse(Stack<string> tokens)
+    public static ExpressionNode? Parse(Stack<string> tokens)
     {
         var operatorStack = new Stack<string>();
-        var operandStack = new Stack<IExpressionNode>();
+        var operandStack = new Stack<ExpressionNode>();
 
         foreach (var token in tokens)
         {
@@ -75,7 +75,7 @@ public static partial class BooleanExpressionParser
         return operandStack.Count > 0 ? operandStack.Pop() : null;
     }
     
-    public static IExpressionNode AsConjunctiveNormalForm(IExpressionNode? node)
+    public static ExpressionNode AsConjunctiveNormalForm(ExpressionNode? node)
     {
         if (node is not BinaryOperatorExpressionNode binary)
         {
@@ -112,7 +112,7 @@ public static partial class BooleanExpressionParser
     }
 
     // Helper to combine top operator with top 2 operands
-    private static void BuildNode(Stack<string> operators, Stack<IExpressionNode> operands)
+    private static void BuildNode(Stack<string> operators, Stack<ExpressionNode> operands)
     {
         var op = operators.Pop();
         var right = GetFullTopMostNode(operands);
@@ -121,7 +121,7 @@ public static partial class BooleanExpressionParser
         operands.Push(new BinaryOperatorExpressionNode { Operation = op, Left = left, Right = right });
     }
 
-    private static IExpressionNode GetFullTopMostNode(Stack<IExpressionNode> operands)
+    private static ExpressionNode GetFullTopMostNode(Stack<ExpressionNode> operands)
     {
         if (operands.Peek() is ValueExpressionNode || operands.Peek() is BinaryOperatorExpressionNode)
         {
@@ -174,7 +174,7 @@ public static partial class BooleanExpressionParser
         };
     }
 
-    private static IExpressionNode CreateOperandNode(string token)
+    private static ExpressionNode CreateOperandNode(string token)
     {
         // Simple heuristic: if it starts with single quote or is a number, it's a value.
         // Otherwise, treat as column.

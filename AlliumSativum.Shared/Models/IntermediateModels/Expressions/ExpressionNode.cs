@@ -11,17 +11,67 @@ namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 [JsonDerivedType(typeof(FullySpecifiedColumnExpressionNode), typeDiscriminator: "fullySpecified")]
 [JsonDerivedType(typeof(ValueExpressionNode), typeDiscriminator: "value")]
 [JsonDerivedType(typeof(BinaryOperatorExpressionNode), typeDiscriminator: "binary")]
-public interface IExpressionNode
+public abstract class ExpressionNode
 {
-    public string ToSqlQueryString();
-    public bool Equals(object? obj);
+    public abstract string ToSqlQueryString();
+    public abstract bool Equals(object? obj);
+    
+    public bool IsPurelyTables(List<TableSpecifier> table)
+    {
+        return this switch
+        {
+            ValueExpressionNode => true,
+            FullySpecifiedColumnExpressionNode fully => table.Exists(x => x.TableName == fully.Attribute.TableName &&  x.DataSourceName == fully.Attribute.DataSourceName),
+            BinaryOperatorExpressionNode binary =>
+                binary.Left.IsPurelyTables(table) && binary.Right.IsPurelyTables(table),
+            _ => false
+        };
+    }
+    
+    public List<AttributeSpecifier> GetAttributesOfExpression()
+    {
+        var results = new HashSet<AttributeSpecifier>();
+        var stack = new Stack<ExpressionNode>();
+    
+        stack.Push(this);
+
+        while (stack.Count > 0)
+        {
+            var current = stack.Pop();
+
+            switch (current)
+            {
+                case FullySpecifiedColumnExpressionNode fully:
+                    results.Add(fully.Attribute);
+                    break;
+
+                case BinaryOperatorExpressionNode binary:
+                    stack.Push(binary.Right);
+                    stack.Push(binary.Left);
+                    break;
+
+                case VariableMappingExpressionNode varMap:
+                    throw new ArgumentException($"Variable mapping is not expected at this point. Should have been expanded by the semantic transformer. Did not expect alias {varMap.VariableMapping.VariableName}");
+            }
+        }
+
+        return results.ToList();
+    }
+
+    public List<TableSpecifier> GetTablesOfExpression()
+    {
+        return GetAttributesOfExpression()
+            .Select(x => new TableSpecifier(x.DataSourceName, x.TableName))
+            .Distinct()
+            .ToList();
+    }
 }
 
-public class PartialColumnExpressionNode : IExpressionNode
+public class PartialColumnExpressionNode : ExpressionNode
 {
     public string Name { get; set; } = string.Empty;
     public override string ToString() => $"[{Name}]";
-    public string ToSqlQueryString() => "invalid";
+    public override string ToSqlQueryString() => "invalid";
 
     public override bool Equals(object? obj)
     {
@@ -34,11 +84,11 @@ public class PartialColumnExpressionNode : IExpressionNode
     }
 }
 
-public class VariableMappingExpressionNode : IExpressionNode
+public class VariableMappingExpressionNode : ExpressionNode
 {
     public required VariableMappingSpecifier VariableMapping { get; set; }
     public override string ToString() => $"[{VariableMapping.VariableName}{AsSqlParameters.Attribute.TableSeparator}{VariableMapping.AttributeName}]";
-    public string ToSqlQueryString() => $"{VariableMapping.VariableName}.{VariableMapping.AttributeName}";
+    public override string ToSqlQueryString() => $"{VariableMapping.VariableName}.{VariableMapping.AttributeName}";
     
     public override bool Equals(object? obj)
     {
@@ -51,13 +101,13 @@ public class VariableMappingExpressionNode : IExpressionNode
     }
 }
 
-public class FullySpecifiedColumnExpressionNode : IExpressionNode
+public class FullySpecifiedColumnExpressionNode : ExpressionNode
 {
     public required AttributeSpecifier Attribute { get; set; }
     public override string ToString() => $"[{Attribute.DataSourceName}{AsSqlParameters.Attribute.DataSourceSeparator}{Attribute.TableName}{AsSqlParameters.Attribute.TableSeparator}{Attribute.AttributeName}]";
     
     // currently discards the data source attribute
-    public string ToSqlQueryString() => $"{Attribute.TableName}.{Attribute.AttributeName}";
+    public override string ToSqlQueryString() => $"{Attribute.TableName}.{Attribute.AttributeName}";
     
     public override bool Equals(object? obj)
     {
@@ -70,7 +120,7 @@ public class FullySpecifiedColumnExpressionNode : IExpressionNode
     }
 }
 
-public class ValueExpressionNode : IExpressionNode
+public class ValueExpressionNode : ExpressionNode
 {
     public ValueExpressionType Type { get; init; }
     public string Value { get; init; } = string.Empty;
@@ -80,7 +130,7 @@ public class ValueExpressionNode : IExpressionNode
         ValueExpressionType.Decimal => Value,
         _ => "false"
     };
-    public string ToSqlQueryString() => ToString();
+    public override string ToSqlQueryString() => ToString();
     
     public override bool Equals(object? obj)
     {
@@ -99,13 +149,13 @@ public class ValueExpressionNode : IExpressionNode
     }
 }
 
-public class BinaryOperatorExpressionNode : IExpressionNode
+public class BinaryOperatorExpressionNode : ExpressionNode
 {
     public string Operation { get; set; } = string.Empty;
-    public required IExpressionNode Left { get; set; }
-    public required IExpressionNode Right { get; set; }
+    public required ExpressionNode Left { get; set; }
+    public required ExpressionNode Right { get; set; }
     public override string ToString() => $"({Left} {Operation} {Right})";
-    public string ToSqlQueryString() => $"({Left.ToSqlQueryString()} {Operation} {Right.ToSqlQueryString()})";
+    public override string ToSqlQueryString() => $"({Left.ToSqlQueryString()} {Operation} {Right.ToSqlQueryString()})";
     
     public override bool Equals(object? obj)
     {

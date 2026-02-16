@@ -29,7 +29,7 @@ public class IntermediateJoinNode : IIntermediateJoinNode
 {
     public required IIntermediateJoinNode Left { get; set; }
     
-    public required IExpressionNode Expression { get; init; }
+    public required ExpressionNode Expression { get; init; }
 
     public required IIntermediateJoinNode Right { get; set; }
 }

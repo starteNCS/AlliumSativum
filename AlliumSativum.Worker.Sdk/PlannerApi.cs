@@ -2,12 +2,13 @@ using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Worker.Sdk.Extensions;
+using static AlliumSativum.Worker.GPlanOperator.OperatorTypeOneofCase;
 
 namespace AlliumSativum.Worker.Sdk;
 
 public interface IPlannerApi
 {
-    Task<(PlanOperator? proposal, SelectBaseModel? unplanned)> PlanQueryAsync(SelectBaseModel model);
+    Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanQueryAsync(SelectBaseModel model);
 }
 
 public class PlannerApi : IPlannerApi
@@ -19,33 +20,39 @@ public class PlannerApi : IPlannerApi
         _client = client;
     }
 
-    public async Task<(PlanOperator? proposal, SelectBaseModel? unplanned)> PlanQueryAsync(SelectBaseModel model)
+    public async Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanQueryAsync(SelectBaseModel model)
     {
         var response = await _client.PlanAsync(model.ToGrpcModel());
         if (response == null)
         {
-            return (null, null);
+            return ([], null);
         }
 
-        return (response.Plan.OperatorTypeCase switch
-        {
-            GPlanOperator.OperatorTypeOneofCase.PushdownSql => new PushdownSqlPlanOperator(
-                Guid.Parse(response.Plan.PushdownSql.DatasourceId),
-                response.Plan.PushdownSql.SqlStatement)
+        return (
+            response.Plans.Select(plan => new PlanContainer
             {
-                Cost = response.Plan.Cost,
-                ExpectedCardinality = response.Plan.ExpectedCardinality,
-            },
-            GPlanOperator.OperatorTypeOneofCase.PushdownRestCall => new PushdownRestCallPlanOperator(
-                Guid.Parse(response.Plan.PushdownRestCall.DatasourceId),
-                response.Plan.PushdownRestCall.HttpMethod,
-                response.Plan.PushdownRestCall.Url,
-                null)
-            {
-                Cost = response.Plan.Cost,
-                ExpectedCardinality = response.Plan.ExpectedCardinality,
-            },
-            _ => throw new ArgumentException("Expected some plan operator")
-        }, response.Unplanned?.FromGrpcModel());
+                Plan = plan.Plan.OperatorTypeCase switch
+                {
+                    PushdownSql => new PushdownSqlPlanOperator(
+                        Guid.Parse(plan.Plan.PushdownSql.DatasourceId),
+                        plan.Plan.PushdownSql.SqlStatement)
+                    {
+                        Cost = plan.Plan.Cost,
+                        ExpectedCardinality = plan.Plan.ExpectedCardinality,
+                    },
+                    PushdownRestCall => new PushdownRestCallPlanOperator(
+                        Guid.Parse(plan.Plan.PushdownRestCall.DatasourceId),
+                        plan.Plan.PushdownRestCall.HttpMethod,
+                        plan.Plan.PushdownRestCall.Url,
+                        null)
+                    {
+                        Cost = plan.Plan.Cost,
+                        ExpectedCardinality = plan.Plan.ExpectedCardinality,
+                    },
+                    _ => throw new ArgumentException("Expected some plan operator"),
+                },
+                PlannedItems = plan.Planned.FromGrpcModel()
+            }).ToList()
+            , response.Unplanned?.FromGrpcModel());
     }
 }

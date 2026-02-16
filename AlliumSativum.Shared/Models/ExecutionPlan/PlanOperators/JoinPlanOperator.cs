@@ -5,10 +5,10 @@ namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 public class JoinPlanOperator : PlanOperator
 {
     public PlanOperator Left { get; }
-    public IExpressionNode Expression { get; }
+    public ExpressionNode Expression { get; }
     public PlanOperator Right { get;  }
 
-    public JoinPlanOperator(PlanOperator left, IExpressionNode expression, PlanOperator right)
+    public JoinPlanOperator(PlanOperator left, ExpressionNode expression, PlanOperator right)
     {
         Left = left;
         Expression = expression;
