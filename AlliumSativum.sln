@@ -30,6 +30,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.ServiceDefaul
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.Connectors.TicketSystem", "AlliumSativum.Connectors.TicketSystem\AlliumSativum.Connectors.TicketSystem.csproj", "{8C899B36-1201-41BB-9CDE-0B9A60036C28}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{D1502C93-AA8A-4EC5-93DB-5FAED550FAEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.Performance.Utils", "AlliumSativum.Performance.Utils\AlliumSativum.Performance.Utils.csproj", "{96DF5C1B-DF4C-4589-A2FA-9432A54109CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +88,10 @@ Global
 		{8C899B36-1201-41BB-9CDE-0B9A60036C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C899B36-1201-41BB-9CDE-0B9A60036C28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C899B36-1201-41BB-9CDE-0B9A60036C28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96DF5C1B-DF4C-4589-A2FA-9432A54109CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96DF5C1B-DF4C-4589-A2FA-9432A54109CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96DF5C1B-DF4C-4589-A2FA-9432A54109CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96DF5C1B-DF4C-4589-A2FA-9432A54109CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{70DC5659-FED1-4412-BF99-006D7F974B30} = {A36F6308-248D-46B9-BE2A-91F9FA3314BA}
@@ -94,5 +102,6 @@ Global
 		{81A3E3A7-9193-4086-9164-573D154D1155} = {1D8FF991-6C38-47A8-BE92-424247101159}
 		{D6812921-C08A-495A-8162-1F7490361469} = {1D8FF991-6C38-47A8-BE92-424247101159}
 		{8C899B36-1201-41BB-9CDE-0B9A60036C28} = {512A5D2C-D936-47A5-97D5-059F96E7C46E}
+		{96DF5C1B-DF4C-4589-A2FA-9432A54109CB} = {D1502C93-AA8A-4EC5-93DB-5FAED550FAEB}
 	EndGlobalSection
 EndGlobal
