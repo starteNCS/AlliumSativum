@@ -1,3 +1,4 @@
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Utils;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
@@ -12,6 +13,7 @@ public class WherePlanOperator : PlanOperator
     }
     
     protected override string GetNodeInfo() => $"FILTER: {Expression}";
+    protected override string GetNodeInfoHtml() => $"{HtmlClasses.Bold(HtmlClasses.Colored("FILTER", color: "crimson"))}: {HtmlClasses.Italic(Expression?.ToString())}";
     
     public override int GetHashCode()
     {

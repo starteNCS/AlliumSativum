@@ -1,4 +1,5 @@
 using System.Text;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Utils;
 
 namespace AlliumSativum.Shared.Models.ExecutionPlan;
 
@@ -9,10 +10,20 @@ public abstract class PlanOperator
     public long ExpectedCardinality { get; set; }
     public double Selectivity { get; set; }
     
-    public string ToPrettyString()
+    public string ToPrettyString(bool html = false)
     {
         var sb = new StringBuilder();
-        BuildString(sb, "", true);
+        if (html)
+        {
+            sb.Append("<div style=\"font-family: monospace; white-space: pre;\">");
+            BuildStringHtml(sb, "", true);
+            sb.Append("</div>");
+        }
+        else
+        {
+            BuildString(sb, "", true);
+        }
+        
         return sb.ToString();
     }
 
@@ -25,19 +36,45 @@ public abstract class PlanOperator
         // Add second line for POP's string aligned under the branch
         sb.Append(prefix);
         sb.Append(isLast ? "    " : "│   ");
-        sb.AppendLine(GetBaseNodeInto());
+        sb.AppendLine(GetBaseNodeInfo());
 
         // 2. Prepare prefix for children
-        string childPrefix = prefix + (isLast ? "    " : "│   ");
+        var childPrefix = prefix + (isLast ? "    " : "│   ");
 
         // 3. Recurse
-        for (int i = 0; i < Children.Count; i++)
+        for (var i = 0; i < Children.Count; i++)
         {
-            bool childIsLast = (i == Children.Count - 1);
+            var childIsLast = (i == Children.Count - 1);
             Children[i].BuildString(sb, childPrefix, childIsLast);
+        }
+    }
+    
+    protected void BuildStringHtml(StringBuilder sb, string prefix, bool isLast)
+    {
+        sb.Append(prefix);
+        sb.Append(isLast ? "└── " : "├── ");
+        sb.Append(GetNodeInfoHtml());
+        sb.Append("<br/>");
+
+        // Add second line for POP's string aligned under the branch
+        sb.Append(prefix);
+        sb.Append(isLast ? "    " : "│   ");
+        sb.Append(GetHtmlBaseNodeInfo());
+        sb.Append("<br/>");
+
+        // 2. Prepare prefix for children
+        var childPrefix = prefix + (isLast ? "    " : "│   ");
+
+        // 3. Recurse
+        for (var i = 0; i < Children.Count; i++)
+        {
+            var childIsLast = (i == Children.Count - 1);
+            Children[i].BuildStringHtml(sb, childPrefix, childIsLast);
         }
     }
 
     protected abstract string GetNodeInfo();
-    protected string GetBaseNodeInto() => $"Estimated duration: {Cost}ms, C: {ExpectedCardinality}, S: {Selectivity}";
+    protected abstract string GetNodeInfoHtml();
+    private string GetBaseNodeInfo() => $"Estimated duration: {Cost:F2}ms, C: {ExpectedCardinality}, S: {Selectivity}";
+    private string GetHtmlBaseNodeInfo() => $"Estimated duration: {HtmlClasses.Colored(Cost.ToString("F3"), color: "coral")}ms, C: {HtmlClasses.Colored(ExpectedCardinality.ToString(), color: "coral")}, S: {HtmlClasses.Colored(Selectivity.ToString("F2"), color: "coral")}";
 }

@@ -6,6 +6,7 @@ using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Migrations;
 using AlliumSativum.Token;
 using AlliumSativum.Worker.Sdk;
+using Azure;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,7 +41,9 @@ app.UseHttpsRedirection();
 app.MapPost("/compile", async (QueryCompiler compiler, [FromBody] CompileInput query) =>
 {
     var executionPlan = await compiler.CompileAsync(query.Query);
-    return executionPlan.RootOperator.ToPrettyString();
+    
+    var pretty = executionPlan.RootOperator.ToPrettyString(html: true);
+    return Results.Content(pretty, "text/html");
 });
 app.MapGet("/metrics/{datasourceId:guid}", async (MetricsApi metrics, [FromRoute] Guid datasourceId) =>
 {

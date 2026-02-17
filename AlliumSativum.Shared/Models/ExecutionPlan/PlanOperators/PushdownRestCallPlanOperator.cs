@@ -1,3 +1,5 @@
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Utils;
+
 namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 
 public class PushdownRestCallPlanOperator : PlanOperator
@@ -16,6 +18,7 @@ public class PushdownRestCallPlanOperator : PlanOperator
     }
 
     protected override string GetNodeInfo() => $"PUSH-DOWN REST [{DataSource}]: '{HttpMethod} {Url}'";
+    protected override string GetNodeInfoHtml() => $"{HtmlClasses.Bold(HtmlClasses.Colored("PUSH-DOWN REST"))} [{HtmlClasses.Italic(HtmlClasses.Colored(DataSource.ToString(), color: "gray"))}]: '{HttpMethod} {Url}'";
     
     public override int GetHashCode()
     {

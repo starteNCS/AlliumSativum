@@ -1,3 +1,5 @@
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Utils;
+
 namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 
 public class PushdownSqlPlanOperator : PlanOperator
@@ -12,6 +14,7 @@ public class PushdownSqlPlanOperator : PlanOperator
     }
 
     protected override string GetNodeInfo() => $"PUSH-DOWN SQL [{DataSource}]: '{SqlStatement}'";
+    protected override string GetNodeInfoHtml() => $"{HtmlClasses.Bold(HtmlClasses.Colored("PUSH-DOWN SQL"))} [{HtmlClasses.Italic(HtmlClasses.Colored(DataSource.ToString(), color: "gray"))}]: '{SqlStatement}'";
 
     public override int GetHashCode()
     {

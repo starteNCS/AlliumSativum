@@ -1,4 +1,5 @@
 using System.Text;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Utils;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
@@ -13,6 +14,13 @@ public class ProjectPlanOperator : PlanOperator
     }
     
     protected override string GetNodeInfo() => $"PROJECT: {string.Join(", ", Attributes.Select(x => 
+        new StringBuilder()
+            .Append(x.IsHidden ? "{" : "")
+            .Append(x.AttributeName)
+            .Append(x.IsHidden ? "}" : "").ToString()
+    ))}";
+    
+    protected override string GetNodeInfoHtml() => $"{HtmlClasses.Bold(HtmlClasses.Colored("PROJECT", color: "purple"))}: {string.Join(", ", Attributes.Select(x => 
         new StringBuilder()
             .Append(x.IsHidden ? "{" : "")
             .Append(x.AttributeName)
