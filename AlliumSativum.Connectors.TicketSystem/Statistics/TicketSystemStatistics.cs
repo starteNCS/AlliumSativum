@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json;
 using AlliumSativum.Connectors.Shared.HttpUtils;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Exceptions;
@@ -35,7 +36,7 @@ public sealed class TicketSystemStatistics : IDataSourceStatistics
         {
             var url = $"{dataSourceEntity.ConnectionString}/{relation.AccessPath}";
             var connectionMetrics = await HttpMetricsScraper.MeasureRequestAsync<dynamic>($"{url}?per_page=100");
-            var total = await HttpMetricsScraper.MeasureRequestAsync<List<Dictionary<string, object>>>(url);
+            var total = await HttpMetricsScraper.MeasureRequestAsync<List<Dictionary<string, JsonElement>>>(url);
 
             relation.ConnectionOpenMs = connectionMetrics.ConnectionOpenTotal;
             relation.Transfer100Ms = connectionMetrics.TotalElapsed;
@@ -52,17 +53,47 @@ public sealed class TicketSystemStatistics : IDataSourceStatistics
                 relationAttribute.DistinctCardinality = total.Response
                     .Select(x =>
                     {
-                        x.TryGetValue(relation.Name, out var value);
-                        return value;
+                        if (!x.TryGetValue(relationAttribute.Name, out var value))
+                        {
+                            return null;
+                        }
+                        return value.ToString();
                     })
                     .Distinct()
                     .Count();
                 relationAttribute.MetricsDate = DateTime.Now;
+                var nummeric = total.Response
+                        .Select<Dictionary<string, JsonElement>, double?>(x =>
+                        {
+                            if (!x.TryGetValue(relationAttribute.Name, out var jsonElement))
+                            {
+                                return null;
+                            }
+                            
+                            if (jsonElement.ValueKind == JsonValueKind.Number)
+                            {
+                                return jsonElement.GetDouble();
+                            }
+
+                            return null;
+                        })
+                        .Where(x => x.HasValue)
+                        .Select(x => x!.Value)
+                        .ToList();
+                relationAttribute.Min = nummeric.Count != 0 ? nummeric.Min() : null;
+                relationAttribute.Max = nummeric.Count != 0 ? nummeric.Max() : null;
+                if (total.Response[0].TryGetValue(relationAttribute.Name, out var value))
+                {
+                    relationAttribute.DataType = value.ValueKind.ToString();
+                }
                 
                 await _catalog.ExecuteAsync("""
                                             UPDATE Catalog.Attributes
                                             SET DistinctCardinality = @DistinctCardinality,
-                                                MetricsDate = @MetricsDate
+                                                MetricsDate = @MetricsDate,
+                                                Min = @Min,
+                                                Max = @Max,
+                                                DataType = @DataType
                                                 WHERE Id = @Id
                                             """, relationAttribute);
             }
