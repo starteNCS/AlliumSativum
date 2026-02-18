@@ -1,5 +1,8 @@
+using AlliumSativum.Shared.Costs.Settings;
+using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AlliumSativum.Shared.Costs;
@@ -28,13 +31,24 @@ public interface ICostModel
     /// <param name="previousCardinality"></param>
     /// <returns></returns>
     Task<(long Cardinality, double Selectivity)> CalculateExpectedCardinalityAsync(JoinPlanOperator join);
+
+    double CalculateCost(PlanOperator op);
+
+    /// <summary>
+    /// Iterates through the POP-tree and calculates the total cost of the plan, by summing up the cost of each operator
+    /// </summary>
+    /// <param name="planOperator"></param>
+    /// <returns></returns>
+    double TotalCost(PlanOperator planOperator);
 }
 
 public static class CostModelExtensions
 {
-    public static IServiceCollection AddCostModel(this IServiceCollection services)
+    public static IServiceCollection AddCostModel(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ICostModel, DefaultCostModel>();
+        services.AddOptions<CostModelSettings>()
+            .Bind(configuration.GetSection("CostModel"));
 
         return services;
     }

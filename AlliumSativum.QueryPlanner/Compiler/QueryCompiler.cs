@@ -33,7 +33,7 @@ public class QueryCompiler
         }
         _semanticTransformer.Transform(selectModel);
         // TODO: semantic checker (check attributes etc.)
-        var executionPlan = await _optimizer.Optimize(selectModel);
+        var executionPlan = await _optimizer.OptimizeAsync(selectModel);
         
         return executionPlan;
     }

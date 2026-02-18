@@ -43,7 +43,7 @@ public sealed class OptimizerTests
         var planner = CreatePlannerMock();
         var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
 
-        var plan = await optimizer.Optimize(select);
+        var plan = await optimizer.OptimizeAsync(select);
 
         plan.Should().NotBeNull();
         plan.RootOperator.Should().BeOfType<PushdownSqlPlanOperator>();
@@ -63,7 +63,7 @@ public sealed class OptimizerTests
         var planner = CreatePlannerMock();
         var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
 
-        var plan = await optimizer.Optimize(select);
+        var plan = await optimizer.OptimizeAsync(select);
 
         // Optimizer may return a single pushdown plan if the join collapses at planner stage,
         // or a JoinPlanOperator combining two pushdowns.
@@ -90,7 +90,7 @@ public sealed class OptimizerTests
         var planner = CreatePlannerMock();
         var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
 
-        var plan = await optimizer.Optimize(select);
+        var plan = await optimizer.OptimizeAsync(select);
 
         // Root may be a join of pushdowns, or a single pushdown depending on planner behavior.
         if (plan.RootOperator is JoinPlanOperator join)
@@ -114,7 +114,7 @@ public sealed class OptimizerTests
         planner.PlanQueryAsync(Arg.Any<SelectBaseModel>()).Returns(Task.FromResult<(PlanOperator?, SelectBaseModel?)>((null, null)));
         var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
 
-        var act = async () => await optimizer.Optimize(select);
+        var act = async () => await optimizer.OptimizeAsync(select);
         await act.Should().ThrowAsync<AsSqlOptimizeException>();
     }
 
@@ -133,7 +133,7 @@ public sealed class OptimizerTests
         var planner = CreatePlannerMock();
         var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
 
-        var plan = await optimizer.Optimize(select);
+        var plan = await optimizer.OptimizeAsync(select);
 
         // Root may be a join of pushdowns, or a single pushdown depending on planner behavior.
         if (plan.RootOperator is JoinPlanOperator join)
@@ -162,7 +162,7 @@ public sealed class OptimizerTests
         var planner = CreatePlannerMock();
         var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
 
-        var plan = await optimizer.Optimize(select);
+        var plan = await optimizer.OptimizeAsync(select);
 
         // Root may be a join of pushdowns, or a single pushdown depending on planner behavior.
         if (plan.RootOperator is JoinPlanOperator join)
@@ -191,7 +191,7 @@ public sealed class OptimizerTests
         var planner = CreatePlannerMock();
         var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
 
-        var plan = await optimizer.Optimize(select);
+        var plan = await optimizer.OptimizeAsync(select);
 
         // Root may be a join of pushdowns, or a single pushdown depending on planner behavior.
         if (plan.RootOperator is JoinPlanOperator join)

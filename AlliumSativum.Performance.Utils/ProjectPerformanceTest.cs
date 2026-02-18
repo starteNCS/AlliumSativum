@@ -8,9 +8,6 @@ namespace AlliumSativum.Performance.Utils;
 [MemoryDiagnoser]
 [CsvExporter]
 [CsvMeasurementsExporter]
-[HtmlExporter]
-[PlainExporter]
-[RPlotExporter]
 public class ProjectPerformanceTest
 {
     private List<SourceTable> _data;

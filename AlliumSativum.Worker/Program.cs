@@ -33,7 +33,7 @@ builder.Services
     .AddScoped<StatisticsStrategy>();
 
 builder.Services
-    .AddCostModel();
+    .AddCostModel(builder.Configuration);
 
 var app = builder.Build();
 

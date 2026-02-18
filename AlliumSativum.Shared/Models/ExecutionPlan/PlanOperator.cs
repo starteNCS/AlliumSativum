@@ -53,14 +53,12 @@ public abstract class PlanOperator
     {
         sb.Append(prefix);
         sb.Append(isLast ? "└── " : "├── ");
-        sb.Append(GetNodeInfoHtml());
-        sb.Append("<br/>");
+        sb.AppendLine(GetNodeInfoHtml());
 
         // Add second line for POP's string aligned under the branch
         sb.Append(prefix);
         sb.Append(isLast ? "    " : "│   ");
-        sb.Append(GetHtmlBaseNodeInfo());
-        sb.Append("<br/>");
+        sb.AppendLine(GetHtmlBaseNodeInfo());
 
         // 2. Prepare prefix for children
         var childPrefix = prefix + (isLast ? "    " : "│   ");
@@ -76,5 +74,5 @@ public abstract class PlanOperator
     protected abstract string GetNodeInfo();
     protected abstract string GetNodeInfoHtml();
     private string GetBaseNodeInfo() => $"Estimated duration: {Cost:F2}ms, C: {ExpectedCardinality}, S: {Selectivity}";
-    private string GetHtmlBaseNodeInfo() => $"Estimated duration: {HtmlClasses.Colored(Cost.ToString("F3"), color: "coral")}ms, C: {HtmlClasses.Colored(ExpectedCardinality.ToString(), color: "coral")}, S: {HtmlClasses.Colored(Selectivity.ToString("F2"), color: "coral")}";
+    private string GetHtmlBaseNodeInfo() => $"Estimated duration: {HtmlClasses.Colored(Cost.ToString("F3"), color: "coral")}ms, C: {HtmlClasses.Colored(ExpectedCardinality.ToString(), color: "yellowgreen")}, S: {HtmlClasses.Colored(Selectivity.ToString("F2"), color: "olive")}";
 }

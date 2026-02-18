@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using AlliumSativum.Parser.Algorithms;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
@@ -58,8 +59,9 @@ public sealed class Optimizer
     /// <param name="model"></param>
     /// <returns></returns>
     /// <exception cref="AsSqlOptimizeException"></exception>
-    public async Task<QueryExecutionPlan> Optimize(SelectBaseModel model)
+    public async Task<QueryExecutionPlan> OptimizeAsync(SelectBaseModel model)
     {
+        var stopwatch = Stopwatch.StartNew();
         var projections = new HashSet<AttributeSpecifier>();
         foreach (var select in model.Select)
         {
@@ -138,11 +140,14 @@ public sealed class Optimizer
                 ExpectedCardinality = planRoot.ExpectedCardinality,
                 Selectivity = planRoot.Selectivity
             };
+            planRoot.Cost = _costModel.CalculateCost(planRoot);
         }
         
+        stopwatch.Stop();
         return new QueryExecutionPlan()
         {
-            Cost = 1,
+            TotalCost = _costModel.TotalCost(planRoot),
+            OptimizeTimeMs = stopwatch.ElapsedMilliseconds,
             RootOperator = planRoot
         };
     }

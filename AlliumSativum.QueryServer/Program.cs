@@ -24,7 +24,7 @@ builder.Services
     .AddScoped<Tokenizer>()
     .AddOptimizer();
 
-builder.Services.AddCostModel();
+builder.Services.AddCostModel(builder.Configuration);
 
 var app = builder.Build();
 
@@ -42,7 +42,7 @@ app.MapPost("/compile", async (QueryCompiler compiler, [FromBody] CompileInput q
 {
     var executionPlan = await compiler.CompileAsync(query.Query);
     
-    var pretty = executionPlan.RootOperator.ToPrettyString(html: true);
+    var pretty = executionPlan.ToPrettyString(html: true);
     return Results.Content(pretty, "text/html");
 });
 app.MapGet("/metrics/{datasourceId:guid}", async (MetricsApi metrics, [FromRoute] Guid datasourceId) =>

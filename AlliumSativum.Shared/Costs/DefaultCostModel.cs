@@ -1,8 +1,11 @@
+using AlliumSativum.Shared.Costs.Settings;
 using AlliumSativum.Shared.Database;
+using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
+using Microsoft.Extensions.Options;
 
 namespace AlliumSativum.Shared.Costs;
 
@@ -13,12 +16,60 @@ namespace AlliumSativum.Shared.Costs;
 public sealed class DefaultCostModel : ICostModel
 {
     private readonly CatalogDatabase _catalog;
+    private readonly CostModelSettings _settings;
 
-    public DefaultCostModel(CatalogDatabase catalog)
+    public DefaultCostModel(
+        CatalogDatabase catalog,
+        IOptions<CostModelSettings> settings)
     {
         _catalog = catalog;
+        _settings = settings.Value;
     }
 
+    /// <summary>
+    /// Iterates through the POP-tree and calculates the total cost of the plan, by summing up the cost of each operator
+    /// </summary>
+    /// <param name="planOperator"></param>
+    /// <returns></returns>
+    public double TotalCost(PlanOperator planOperator)
+    {
+        var stack = new Stack<PlanOperator>();
+        stack.Push(planOperator);
+        double totalCost = 0;
+
+        while (stack.Count > 0)
+        {
+            var item = stack.Pop();
+            totalCost += item.Cost;
+
+            foreach (var child in item.Children)
+            {
+                stack.Push(child);
+            }
+        }
+
+        return totalCost;
+    }
+
+    /// <summary>
+    /// Calculates the cost of a given plan operator
+    /// </summary>
+    /// <remarks>
+    /// All other fields must already be initialized, as the cost of a plan operator may depend on them
+    /// </remarks>
+    /// <param name="op"></param>
+    /// <returns>
+    /// The cost for ONLY the given plan operator
+    /// </returns>
+    public double CalculateCost(PlanOperator op)
+    {
+        return op switch
+        {
+            ProjectPlanOperator project => CalculateProjectCost(project),
+            _ => -1
+        };
+    }
+    
     /// <summary>
     /// Caclualtes the expected cardinality after applying a given filter
     /// </summary>
@@ -50,48 +101,50 @@ public sealed class DefaultCostModel : ICostModel
     /// <returns></returns>
     public async Task<double> GetSelectivityAsync(BinaryOperatorExpressionNode node)
     {
-        if (node is { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: "=", Left: ValueExpressionNode })
+        switch (node)
         {
-            return 0.1; 
-        }
-        
-        if (node is { Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Left: ValueExpressionNode })
-        {
-            var valueNode = node.Left is ValueExpressionNode left ? left : (ValueExpressionNode)node.Right;
-            var attributeNode = node.Left is FullySpecifiedColumnExpressionNode leftCol ? leftCol : (FullySpecifiedColumnExpressionNode)node.Right;
-            var attribute = await _catalog.GetAttributeAsync(attributeNode);
-            
-            if (attribute.IsNummeric && valueNode.Type == ValueExpressionNode.ValueExpressionType.Decimal)
+            case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: "=", Left: ValueExpressionNode }:
+                return 0.1;
+            case { Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Left: ValueExpressionNode }:
             {
-                var result = (attribute.Max - double.Parse(valueNode.Value)) / (attribute.Max - attribute.Min);
-                if (result is not null)
-                {
-                    return result.Value;
-                }
-            }
+                var valueNode = node.Left as ValueExpressionNode ?? (ValueExpressionNode)node.Right;
+                var attributeNode = node.Left as FullySpecifiedColumnExpressionNode ?? (FullySpecifiedColumnExpressionNode)node.Right;
+                var attribute = await _catalog.GetAttributeAsync(attributeNode);
             
-            return 0.33; 
+                if (attribute.IsNummeric && valueNode.Type == ValueExpressionNode.ValueExpressionType.Decimal)
+                {
+                    var result = (attribute.Max - double.Parse(valueNode.Value)) / (attribute.Max - attribute.Min);
+                    if (result is not null)
+                    {
+                        return result.Value;
+                    }
+                }
+            
+                return 0.33;
+            }
+            case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: FullySpecifiedColumnExpressionNode }:
+                return 0.1;
+            case {Left : BinaryOperatorExpressionNode, Operation: "OR", Right: BinaryOperatorExpressionNode}:
+            {
+                var leftSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Left);
+                var rightSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Right);
+                return leftSelectivity + rightSelectivity - leftSelectivity * rightSelectivity;
+            }
+            case {Left : BinaryOperatorExpressionNode, Operation: "AND", Right: BinaryOperatorExpressionNode}:
+            {
+                var leftSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Left);
+                var rightSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Right);
+                return leftSelectivity * rightSelectivity;
+            }
+            default:
+                throw new ArgumentException("Unsupported expression node for selectivity estimation");
         }
-        
-        if (node is { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: FullySpecifiedColumnExpressionNode })
-        {
-            return 0.1;
-        }
-        
-        if(node is {Left : BinaryOperatorExpressionNode, Operation: "OR", Right: BinaryOperatorExpressionNode})
-        {
-            var leftSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Left);
-            var rightSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Right);
-            return leftSelectivity + rightSelectivity - leftSelectivity * rightSelectivity; 
-        }
-        
-        if(node is {Left : BinaryOperatorExpressionNode, Operation: "AND", Right: BinaryOperatorExpressionNode})
-        {
-            var leftSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Left);
-            var rightSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Right);
-            return leftSelectivity * rightSelectivity; 
-        }
-        
-        throw new ArgumentException("Unsupported expression node for selectivity estimation");
+    }
+    
+    private double CalculateProjectCost(ProjectPlanOperator project)
+    {
+        return _settings.Project.BaseCost 
+               + project.ExpectedCardinality 
+               * (project.Attributes.Count * _settings.Project.PerAttributeCost);
     }
 }

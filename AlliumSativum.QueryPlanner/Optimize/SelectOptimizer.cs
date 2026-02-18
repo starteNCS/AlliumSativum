@@ -1,3 +1,4 @@
+using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
@@ -8,6 +9,13 @@ namespace AlliumSativum.Optimize;
 
 public sealed class SelectOptimizer
 {
+    private readonly ICostModel _costModel;
+
+    public SelectOptimizer(ICostModel costModel)
+    {
+        _costModel = costModel;
+    }
+    
     /// <summary>
     /// Appends the select projections needed for computational purposes (i.e. join) to all push down proposals
     /// </summary>
@@ -52,11 +60,14 @@ public sealed class SelectOptimizer
             .Where(x => x is AttributeSpecifier aSpec && !aSpec.IsInTable(forTable))
             .ToList();
         
-        return new ProjectPlanOperator(projected)
+        var projectPop = new ProjectPlanOperator(projected)
         {
             Children = [pop],
             ExpectedCardinality = pop.ExpectedCardinality,
             Selectivity = pop.Selectivity,
         };
+        projectPop.Cost = _costModel.CalculateCost(projectPop);
+
+        return projectPop;
     }
 }
