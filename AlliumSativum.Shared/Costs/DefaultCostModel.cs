@@ -122,6 +122,12 @@ public sealed class DefaultCostModel : ICostModel
             
                 return 0.33;
             }
+            
+            case { Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Right: FullySpecifiedColumnExpressionNode }:
+            {
+                // TODO: selinger has not proposed this case - therefore we need to do some here
+                return 0.5;
+            }
             case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: FullySpecifiedColumnExpressionNode }:
                 return 0.1;
             case {Left : BinaryOperatorExpressionNode, Operation: "OR", Right: BinaryOperatorExpressionNode}:

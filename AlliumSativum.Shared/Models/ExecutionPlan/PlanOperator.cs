@@ -8,7 +8,7 @@ public abstract class PlanOperator
     public List<PlanOperator> Children { get; init; } = [];
     public double Cost { get; set; }
     public long ExpectedCardinality { get; set; }
-    public double Selectivity { get; set; }
+    public double Selectivity { get; set; } = 1;
     
     public string ToPrettyString(bool html = false)
     {
