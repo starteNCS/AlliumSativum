@@ -56,31 +56,7 @@ public sealed class PlannerService : Planner.PlannerBase
         {
             response.Plans.Add(new GPlanContainer
             {
-                Plan = proposal.Plan switch
-                {
-                    PushdownSqlPlanOperator psql => new GPlanOperator
-                    {
-                        PushdownSql = new GPushdownSqlPlanOperator
-                        {
-                            SqlStatement = psql.SqlStatement,
-                            DatasourceId = psql.DataSource.ToString()
-                        },
-                        Cost = proposal.Plan.Cost,
-                        ExpectedCardinality = proposal.Plan.ExpectedCardinality,
-                    },
-                    PushdownRestCallPlanOperator prest => new GPlanOperator
-                    {
-                        PushdownRestCall = new GPushdownRestCallPlanOperator
-                        {
-                            DatasourceId =  prest.DataSource.ToString(),
-                            HttpMethod = prest.HttpMethod,
-                            Url = prest.Url
-                        },
-                        Cost = proposal.Plan.Cost,
-                        ExpectedCardinality = proposal.Plan.ExpectedCardinality
-                    },
-                    _ => new GPlanOperator()
-                },
+                Plan = proposal.Plan.ToGrpcModel(),
                 Planned = proposal.PlannedItems.ToGrpcModel()
             });
         }

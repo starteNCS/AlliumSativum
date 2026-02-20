@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/struct.proto";
 
 option csharp_namespace = "AlliumSativum.Worker";
 
@@ -84,4 +85,12 @@ message GPushdownRestCallPlanOperator {
   string datasourceId = 1;
   string httpMethod = 2;
   string url = 3;
+}
+
+// Executor
+message GExecutorWrapper {
+  GPlanOperator planOperator = 1;
+  repeated google.protobuf.Struct result = 2;
+  int64 factualCardinality = 3;
+  double factualCost = 4;
 }

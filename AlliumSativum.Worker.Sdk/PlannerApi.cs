@@ -31,28 +31,7 @@ public class PlannerApi : IPlannerApi
         return (
             response.Plans.Select(plan => new PlanContainer
             {
-                Plan = plan.Plan.OperatorTypeCase switch
-                {
-                    PushdownSql => new PushdownSqlPlanOperator(
-                        Guid.Parse(plan.Plan.PushdownSql.DatasourceId),
-                        plan.Plan.PushdownSql.SqlStatement)
-                    {
-                        Cost = plan.Plan.Cost,
-                        ExpectedCardinality = plan.Plan.ExpectedCardinality,
-                        Selectivity = 1
-                    },
-                    PushdownRestCall => new PushdownRestCallPlanOperator(
-                        Guid.Parse(plan.Plan.PushdownRestCall.DatasourceId),
-                        plan.Plan.PushdownRestCall.HttpMethod,
-                        plan.Plan.PushdownRestCall.Url,
-                        null)
-                    {
-                        Cost = plan.Plan.Cost,
-                        ExpectedCardinality = plan.Plan.ExpectedCardinality,
-                        Selectivity = 1
-                    },
-                    _ => throw new ArgumentException("Expected some plan operator"),
-                },
+                Plan = plan.Plan.FromGrpcModel(),
                 PlannedItems = plan.Planned.FromGrpcModel()
             }).ToList()
             , response.Unplanned?.FromGrpcModel());

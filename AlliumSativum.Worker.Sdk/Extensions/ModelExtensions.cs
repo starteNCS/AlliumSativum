@@ -1,6 +1,11 @@
+using System.Text.Json;
+using AlliumSativum.Shared.Models.ExecutionPlan;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.Executor;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
+using Google.Protobuf.WellKnownTypes;
 
 namespace AlliumSativum.Worker.Sdk.Extensions;
 
@@ -95,8 +100,62 @@ public static class ModelExtensions
 
         return nodeMap[root];
     }
-    
 
+    public static GPlanOperator? ToGrpcModel(this PlanOperator? planOperator)
+    {
+        return planOperator switch
+        {
+            PushdownSqlPlanOperator psql => new GPlanOperator
+            {
+                PushdownSql = new GPushdownSqlPlanOperator
+                {
+                    SqlStatement = psql.SqlStatement,
+                    DatasourceId = psql.DataSource.ToString()
+                },
+                Cost = planOperator.Cost,
+                ExpectedCardinality = planOperator.ExpectedCardinality,
+            },
+            PushdownRestCallPlanOperator prest => new GPlanOperator
+            {
+                PushdownRestCall = new GPushdownRestCallPlanOperator
+                {
+                    DatasourceId = prest.DataSource.ToString(),
+                    HttpMethod = prest.HttpMethod,
+                    Url = prest.Url
+                },
+                Cost = planOperator.Cost,
+                ExpectedCardinality = planOperator.ExpectedCardinality
+            },
+            _ => new GPlanOperator()
+        };
+    }
+
+    public static GExecutorWrapper? ToGrpcModel(this ExecutorWrapper? executor)
+    {
+        if (executor is null)
+        {
+            return null;
+        }
+
+        var wrapper = new GExecutorWrapper
+        {
+            PlanOperator = executor.PlanOperator.ToGrpcModel(),
+            FactualCardinality = executor.FactualCardinality,
+            FactualCost = executor.FactualCost,
+        };
+        
+        var resultStruct = executor.Result.Select(x =>
+        {
+            var json = JsonSerializer.Serialize(x);
+            return Struct.Parser.ParseJson(json);
+        });
+        
+        wrapper.Result.Add(resultStruct);
+
+        return wrapper;
+    }
+    
+    
     public static SelectBaseModel FromGrpcModel(this GSelectBaseModel model)
     {
         return new SelectBaseModel
@@ -169,5 +228,58 @@ public static class ModelExtensions
         }
 
         return nodeMap[root];
+    }
+    
+    public static PlanOperator? FromGrpcModel(this GPlanOperator? proto)
+    {
+        if (proto is null)
+        {
+            return null;
+        }
+        
+        return proto.OperatorTypeCase switch
+        {
+            GPlanOperator.OperatorTypeOneofCase.PushdownSql => new PushdownSqlPlanOperator(
+                Guid.Parse(proto.PushdownSql.DatasourceId),
+                proto.PushdownSql.SqlStatement)
+            {
+                Cost = proto.Cost,
+                ExpectedCardinality = proto.ExpectedCardinality,
+                Selectivity = 1
+            },
+            GPlanOperator.OperatorTypeOneofCase.PushdownRestCall => new PushdownRestCallPlanOperator(
+                Guid.Parse(proto.PushdownRestCall.DatasourceId),
+                proto.PushdownRestCall.HttpMethod,
+                proto.PushdownRestCall.Url,
+                null)
+            {
+                Cost = proto.Cost,
+                ExpectedCardinality = proto.ExpectedCardinality,
+                Selectivity = 1
+            },
+            _ => throw new ArgumentException("Expected some plan operator"),
+        };
+    }
+    
+    public static ExecutorWrapper? FromGrpcModel(this GExecutorWrapper? executor)
+    {
+        if (executor is null)
+        {
+            return null;
+        }
+
+        var wrapper = new ExecutorWrapper
+        {
+            PlanOperator = executor.PlanOperator.FromGrpcModel(),
+            FactualCardinality = executor.FactualCardinality,
+            FactualCost = executor.FactualCost,
+            Result = executor.Result.Select(item =>
+            {
+                var json = item.ToString();
+                return JsonSerializer.Deserialize<object>(json)!;
+            }).ToList()
+        };
+
+        return wrapper;
     }
 }

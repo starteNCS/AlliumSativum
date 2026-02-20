@@ -11,9 +11,12 @@ public static class ServiceCollectionExtension
         var channel = GrpcChannel.ForAddress(workerUrl);
         services.AddSingleton(new Metrics.MetricsClient(channel));
         services.AddSingleton(new Planner.PlannerClient(channel));
+        services.AddSingleton(new Executor.ExecutorClient(channel));
         
         services.AddScoped<MetricsApi>();
         services.AddScoped<IPlannerApi, PlannerApi>();
+        services.AddScoped<IExecutorApi, ExecutorApi>();
+        
         
         return services;
     }

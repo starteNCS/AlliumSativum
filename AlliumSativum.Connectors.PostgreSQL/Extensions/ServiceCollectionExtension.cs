@@ -1,3 +1,4 @@
+using AlliumSativum.Connectors.PostgreSQL.Executor;
 using AlliumSativum.Connectors.PostgreSQL.Planners;
 using AlliumSativum.Connectors.PostgreSQL.Statistics;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,8 @@ public static class ServiceCollectionExtension
     {
         services
             .AddScoped<PostgreSqlStatistics>()
-            .AddScoped<PostgreSqlPlanner>();
+            .AddScoped<PostgreSqlPlanner>()
+            .AddScoped<PostgreSqlExecutor>();
         
         return services;
     }

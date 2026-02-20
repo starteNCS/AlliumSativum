@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\AlliumSativum.QueryExecutor\AlliumSativum.QueryExecutor.csproj" />
       <ProjectReference Include="..\AlliumSativum.QueryPlanner\AlliumSativum.QueryPlanner.csproj" />
       <ProjectReference Include="..\AlliumSativum.ServiceDefaults\AlliumSativum.ServiceDefaults.csproj" />
       <ProjectReference Include="..\AlliumSativum.Worker.Sdk\AlliumSativum.Worker.Sdk.csproj" />

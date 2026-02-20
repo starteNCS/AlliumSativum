@@ -30,7 +30,8 @@ builder.Services
 
 builder.Services
     .AddScoped<PlannerStrategy>()
-    .AddScoped<StatisticsStrategy>();
+    .AddScoped<StatisticsStrategy>()
+    .AddScoped<ExecutorStrategy>();
 
 builder.Services
     .AddCostModel(builder.Configuration);
@@ -41,6 +42,7 @@ app.MapDefaultEndpoints();
 
 app.MapGrpcService<MetricsService>();
 app.MapGrpcService<PlannerService>();
+app.MapGrpcService<ExecutorService>();
 app.MapGet("/",
     () =>
         "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");

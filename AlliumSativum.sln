@@ -34,6 +34,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.Performance.Utils", "AlliumSativum.Performance.Utils\AlliumSativum.Performance.Utils.csproj", "{96DF5C1B-DF4C-4589-A2FA-9432A54109CB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.QueryExecutor", "AlliumSativum.QueryExecutor\AlliumSativum.QueryExecutor.csproj", "{9EE23521-2ED9-40FC-8821-BF69217FD190}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,6 +94,10 @@ Global
 		{96DF5C1B-DF4C-4589-A2FA-9432A54109CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96DF5C1B-DF4C-4589-A2FA-9432A54109CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96DF5C1B-DF4C-4589-A2FA-9432A54109CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EE23521-2ED9-40FC-8821-BF69217FD190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EE23521-2ED9-40FC-8821-BF69217FD190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EE23521-2ED9-40FC-8821-BF69217FD190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EE23521-2ED9-40FC-8821-BF69217FD190}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{70DC5659-FED1-4412-BF99-006D7F974B30} = {A36F6308-248D-46B9-BE2A-91F9FA3314BA}

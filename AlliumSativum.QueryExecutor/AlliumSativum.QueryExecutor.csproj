@@ -8,11 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj" />
-      <ProjectReference Include="..\AlliumSativum.Worker.Proto\AlliumSativum.Worker.Proto.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Google.Protobuf" Version="3.33.0" />
+      <ProjectReference Include="..\AlliumSativum.Worker.Sdk\AlliumSativum.Worker.Sdk.csproj" />
     </ItemGroup>
 
 </Project>
