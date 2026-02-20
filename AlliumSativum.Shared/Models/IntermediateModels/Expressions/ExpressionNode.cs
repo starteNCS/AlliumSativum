@@ -164,7 +164,7 @@ public class ValueExpressionNode : ExpressionNode
     public override string ToString() => Type switch
     {
         ValueExpressionType.String => $"'{Value}'",
-        ValueExpressionType.Decimal => Value,
+        ValueExpressionType.Numeric => Value,
         _ => "false"
     };
     public override string ToSqlQueryString() => ToString();
@@ -182,7 +182,7 @@ public class ValueExpressionNode : ExpressionNode
     public enum ValueExpressionType
     {
         String = 0,
-        Decimal = 1
+        Numeric = 1
     }
 }
 

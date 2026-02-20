@@ -55,6 +55,7 @@ app.MapGet("/metrics/{datasourceId:guid}", async (MetricsApi metrics, [FromRoute
 });
 app.MapPost("execute", async (QueryCompiler compiler, QueryExecutor queryExecutor, [FromBody] CompileInput query) =>
 {
+    // TODO: filter attribute is missing 
     var executionPlan = await compiler.CompileAsync(query.Query);
     
     var result = await queryExecutor.ExecuteAsync(executionPlan.RootOperator);

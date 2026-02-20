@@ -7,15 +7,18 @@ namespace AlliumSativum.QueryExecutor;
 public sealed class QueryExecutor
 {
     private readonly ProjectPlanOperatorExecutor _projectPlanOperatorExecutor;
+    private readonly FilterPlanOperatorExecutor _filterPlanOperatorExecutor;
     private readonly PushdownSqlPlanOperatorExecutor _pushdownSqlPlanOperatorExecutor;
     private readonly PushdownRestPlanOperatorExecutor _pushdownRestPlanOperatorExecutor;
 
     public QueryExecutor(
         ProjectPlanOperatorExecutor projectPlanOperatorExecutor,
+        FilterPlanOperatorExecutor filterPlanOperatorExecutor,
         PushdownSqlPlanOperatorExecutor pushdownSqlPlanOperatorExecutor,
         PushdownRestPlanOperatorExecutor pushdownRestPlanOperatorExecutor)
     {
         _projectPlanOperatorExecutor = projectPlanOperatorExecutor;
+        _filterPlanOperatorExecutor = filterPlanOperatorExecutor;
         _pushdownSqlPlanOperatorExecutor = pushdownSqlPlanOperatorExecutor;
         _pushdownRestPlanOperatorExecutor = pushdownRestPlanOperatorExecutor;
     }
@@ -39,6 +42,7 @@ public sealed class QueryExecutor
             var result = item switch
             {
                 ProjectPlanOperator project => await _projectPlanOperatorExecutor.ExecuteAsync(project, currentItems),
+                FilterPlanOperator filter => await _filterPlanOperatorExecutor.ExecuteAsync(filter, currentItems),
                 PushdownSqlPlanOperator pushdown => await _pushdownSqlPlanOperatorExecutor.ExecuteAsync(pushdown, []),
                 PushdownRestCallPlanOperator pushdown => await _pushdownRestPlanOperatorExecutor.ExecuteAsync(pushdown, []),
                 _ => throw new NotSupportedException($"Unsupported plan operator: {root.GetType().Name}")

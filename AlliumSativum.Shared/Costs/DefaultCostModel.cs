@@ -112,7 +112,7 @@ public sealed class DefaultCostModel : ICostModel
                 var attributeNode = node.Left as FullySpecifiedColumnExpressionNode ?? (FullySpecifiedColumnExpressionNode)node.Right;
                 var attribute = await _catalog.GetAttributeAsync(attributeNode);
             
-                if (attribute.IsNummeric && valueNode.Type == ValueExpressionNode.ValueExpressionType.Decimal)
+                if (attribute.IsNummeric && valueNode.Type == ValueExpressionNode.ValueExpressionType.Numeric)
                 {
                     var result = (attribute.Max - double.Parse(valueNode.Value)) / (attribute.Max - attribute.Min);
                     if (result is not null)
@@ -165,7 +165,7 @@ public sealed class DefaultCostModel : ICostModel
             costPerRow += typedCount.Key switch
             {
                 ValueExpressionNode.ValueExpressionType.String => _settings.Filter.PerAttributeCostString,
-                ValueExpressionNode.ValueExpressionType.Decimal => _settings.Filter.PerAttributeCostNumeric,
+                ValueExpressionNode.ValueExpressionType.Numeric => _settings.Filter.PerAttributeCostNumeric,
                 _ => -1
             };
         }

@@ -11,6 +11,7 @@ public static class ServiceCollectionExtension
 
         services
             .AddScoped<ProjectPlanOperatorExecutor>()
+            .AddScoped<FilterPlanOperatorExecutor>()
             .AddScoped<PushdownSqlPlanOperatorExecutor>()
             .AddScoped<PushdownRestPlanOperatorExecutor>();
         

@@ -185,7 +185,7 @@ public static partial class BooleanExpressionParser
             return new ValueExpressionNode
             {
                 Value = token.Trim('\''),
-                Type = isTokenString ? ValueExpressionNode.ValueExpressionType.String : ValueExpressionNode.ValueExpressionType.Decimal
+                Type = isTokenString ? ValueExpressionNode.ValueExpressionType.String : ValueExpressionNode.ValueExpressionType.Numeric
             };
         }
         return new PartialColumnExpressionNode { Name = token };
