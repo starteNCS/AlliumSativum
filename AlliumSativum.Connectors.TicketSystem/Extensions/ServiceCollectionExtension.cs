@@ -1,3 +1,4 @@
+using AlliumSativum.Connectors.TicketSystem.Executor;
 using AlliumSativum.Connectors.TicketSystem.Planner;
 using AlliumSativum.Connectors.TicketSystem.Statistics;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,8 @@ public static class ServiceCollectionExtension
     {
         services
             .AddScoped<TicketSystemStatistics>()
-            .AddScoped<TicketSystemPlanner>();
+            .AddScoped<TicketSystemPlanner>()
+            .AddScoped<TicketSystemExecutor>();
         
         return services;
     }

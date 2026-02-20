@@ -53,10 +53,11 @@ app.MapGet("/metrics/{datasourceId:guid}", async (MetricsApi metrics, [FromRoute
 {
     await metrics.TriggerMetricsScrapeAsync(datasourceId);
 });
-app.MapGet("execute", async (QueryExecutor queryExecutor) =>
+app.MapPost("execute", async (QueryCompiler compiler, QueryExecutor queryExecutor, [FromBody] CompileInput query) =>
 {
-    var result = await queryExecutor.ExecuteAsync(new PushdownSqlPlanOperator(Guid.Parse("6e69646b-47be-4e80-aa02-06b48b8c7253"),
-        "SELECT employees.first_name, employees.last_name, employees.id, customers.company_name FROM employees INNER JOIN customers ON (customers.id = employees.customer_id)"));
+    var executionPlan = await compiler.CompileAsync(query.Query);
+    
+    var result = await queryExecutor.ExecuteAsync(executionPlan.RootOperator);
 
     return result;
 });

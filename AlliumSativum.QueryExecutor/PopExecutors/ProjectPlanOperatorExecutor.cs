@@ -9,19 +9,16 @@ namespace AlliumSativum.QueryExecutor.PopExecutors;
 
 public sealed class ProjectPlanOperatorExecutor : IPlanOperatorExecutor<ProjectPlanOperator>
 {
-    public Task<ExecutorWrapper> ExecuteAsync(ProjectPlanOperator pop, List<object> source)
+    public Task<ExecutorWrapper> ExecuteAsync(ProjectPlanOperator pop, List<Dictionary<string, object>> source)
     {
         var stopwatch = Stopwatch.StartNew();
-        var result = new List<object>(source.Count);
+        var result = new List<Dictionary<string, object>>(source.Count);
         foreach (var item in source)
         {
-            var type = item.GetType();
-            var projected = new ExpandoObject() as IDictionary<string, object>;
-        
+            var projected = new  Dictionary<string, object>(pop.Attributes.Count);
             foreach (var propName in pop.Attributes.Select(x => x.AttributeName))
             {
-                var value = type.GetProperty(propName)?.GetValue(item);
-                projected[propName] = value;
+                projected[propName] = item[propName];
             }
             result.Add(projected);
         }

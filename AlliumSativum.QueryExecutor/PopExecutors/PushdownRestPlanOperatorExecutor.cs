@@ -6,16 +6,16 @@ using AlliumSativum.Worker.Sdk;
 
 namespace AlliumSativum.QueryExecutor.PopExecutors;
 
-public sealed class PushdownSqlPlanOperatorExecutor : IPlanOperatorExecutor<PushdownSqlPlanOperator>
+public sealed class PushdownRestPlanOperatorExecutor : IPlanOperatorExecutor<PushdownRestCallPlanOperator>
 {
     private readonly IExecutorApi _executorApi;
 
-    public PushdownSqlPlanOperatorExecutor(IExecutorApi executorApi)
+    public PushdownRestPlanOperatorExecutor(IExecutorApi executorApi)
     {
         _executorApi = executorApi;
     }
     
-    public async Task<ExecutorWrapper> ExecuteAsync(PushdownSqlPlanOperator pop, List<Dictionary<string, object>> source)
+    public async Task<ExecutorWrapper> ExecuteAsync(PushdownRestCallPlanOperator pop, List<Dictionary<string, object>> source)
     {
         if (source.Count > 0)
         {

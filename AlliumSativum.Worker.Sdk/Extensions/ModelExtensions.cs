@@ -5,6 +5,7 @@ using AlliumSativum.Shared.Models.Executor;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
+using AlliumSativum.Shared.Utils;
 using Google.Protobuf.WellKnownTypes;
 
 namespace AlliumSativum.Worker.Sdk.Extensions;
@@ -276,7 +277,8 @@ public static class ModelExtensions
             Result = executor.Result.Select(item =>
             {
                 var json = item.ToString();
-                return JsonSerializer.Deserialize<object>(json)!;
+                var jsonElement = JsonSerializer.Deserialize<Dictionary<string, object>>(json)!;
+                return jsonElement;
             }).ToList()
         };
 

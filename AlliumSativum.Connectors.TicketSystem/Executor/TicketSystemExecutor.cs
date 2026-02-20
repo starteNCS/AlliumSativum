@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Dynamic;
 using System.Text.Json;
 using AlliumSativum.Connectors.Shared.Interfaces;
 using AlliumSativum.Shared.Database;
@@ -7,6 +8,7 @@ using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.Executor;
+using AlliumSativum.Shared.Utils;
 
 namespace AlliumSativum.Connectors.TicketSystem.Executor;
 
@@ -47,14 +49,14 @@ public sealed class TicketSystemExecutor : IWorkerExecutor
         var response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
         var responseContent = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<List<object>>(responseContent);
+        var jsonResult = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(responseContent);
         stopwatch.Stop();
         
         return new ExecutorWrapper
         {
             PlanOperator = @operator,
-            Result = result ?? [],
-            FactualCardinality = result?.Count ?? 0,
+            Result = jsonResult ?? [],
+            FactualCardinality = jsonResult?.Count ?? 0,
             FactualCost = stopwatch.ElapsedMilliseconds,
         };
     }

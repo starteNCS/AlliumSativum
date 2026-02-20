@@ -29,7 +29,7 @@ public sealed class PostgreSqlExecutor : IWorkerExecutor
         }
         
         var stopwatch = Stopwatch.StartNew();
-        var result = await _dataSource.QueryAsync<object>(@pushdown.DataSource, @pushdown.SqlStatement);
+        var result = await _dataSource.QueryAsync<Dictionary<string, object>>(@pushdown.DataSource, @pushdown.SqlStatement);
         stopwatch.Stop();
         
         return new ExecutorWrapper
