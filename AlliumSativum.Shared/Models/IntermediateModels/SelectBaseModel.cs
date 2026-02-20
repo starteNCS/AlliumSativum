@@ -48,7 +48,12 @@ public sealed class SelectBaseModel
         
         return stringBuilder.ToString();
     }
-    
+
+    public override string ToString()
+    {
+        return ToPostgreSqlString();
+    }
+
 
     /// <summary>
     /// Appends the given attributes either as hidden, when not existing

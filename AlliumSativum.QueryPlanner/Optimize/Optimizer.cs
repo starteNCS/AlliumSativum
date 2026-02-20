@@ -107,6 +107,12 @@ public sealed class Optimizer
                     projections.Add((AttributeSpecifier)x);
                 }
             }
+            
+            // could not distribute WHERE fully, therefore the missing part needs to be added to the on-premise plan
+            if (unplanned?.Where is not null)
+            {
+                onPremise.Where = _expressionNodeOptimizer.MergeCnfExpressions(onPremise.Where, unplanned.Where);
+            }
 
             // push all joins left to the intermediate join tree, so that they can be optimized together with the on-premise joins.
             // (where in fact, those joins are now also on-premise, since they cannot be executed at the worker without the planned tables)

@@ -58,15 +58,15 @@ public sealed class WhereOptimizer
     /// <returns></returns>
     public async Task<PlanOperator> DistributeWhereToProposalsAsync(PlanContainer scan, SelectBaseModel onPremise, SelectBaseModel? unplanned)
     {
-        if (unplanned?.Where is not null && unplanned.Where.GetTablesOfExpression().Count != 1)
+        var (unplannedExprLeft, unplannedExpr) = _expressionNodeOptimizer.ExtractExpression(unplanned?.Where, scan.PlannedItems.AffectedTables);
+        if (unplannedExpr is null)
         {
-            onPremise.Where = _expressionNodeOptimizer.MergeCnfExpressions(onPremise.Where, unplanned.Where);
+            // unplanned.Where is later assigned to OnPremise, or later POP's
             return scan.Plan;
         }
         
         (onPremise.Where, var onPremiseExpr) = _expressionNodeOptimizer.ExtractExpression(onPremise.Where, scan.PlannedItems.AffectedTables);
-        var (unplannedWhereLeft, unplannedExpr) = _expressionNodeOptimizer.ExtractExpression(unplanned?.Where, scan.PlannedItems.AffectedTables);
-        unplanned?.Where = unplannedWhereLeft;
+        unplanned?.Where = unplannedExprLeft;
         
         // could be wrapped as WherePOP(WherePOP()), but reduce the nesting by "AND" combining them
         var mergedExpr = _expressionNodeOptimizer.MergeCnfExpressions(onPremiseExpr, unplannedExpr);
