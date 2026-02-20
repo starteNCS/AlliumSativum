@@ -70,7 +70,7 @@ public abstract class ExpressionNode
     /// Returns the number of arithmetic expressions contained within this expression with the given type
     /// </summary>
     /// <returns></returns>
-    public Dictionary<ValueExpressionNode.ValueExpressionType, int> GetExpressionCount()
+    public Dictionary<ValueExpressionNode.ValueExpressionType, int> GetExpressionsCount()
     {
         var counts = new Dictionary<ValueExpressionNode.ValueExpressionType, int>();
         var stack = new Stack<ExpressionNode>();

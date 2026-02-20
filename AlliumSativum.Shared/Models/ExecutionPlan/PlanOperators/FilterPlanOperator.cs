@@ -3,11 +3,11 @@ using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 
-public class WherePlanOperator : PlanOperator
+public class FilterPlanOperator : PlanOperator
 {
     public ExpressionNode Expression { get; }
 
-    public WherePlanOperator(ExpressionNode expression)
+    public FilterPlanOperator(ExpressionNode expression)
     {
         Expression = expression;
     }
@@ -22,7 +22,7 @@ public class WherePlanOperator : PlanOperator
 
     public override bool Equals(object? obj)
     {
-        if (obj is not WherePlanOperator other)
+        if (obj is not FilterPlanOperator other)
         {
             return false;
         }

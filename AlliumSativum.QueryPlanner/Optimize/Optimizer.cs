@@ -129,12 +129,13 @@ public sealed class Optimizer
             var (cardinality, selectivity) =
                 await _costModel.CalculateExpectedCardinalityAsync((BinaryOperatorExpressionNode)onPremise.Where,
                     planRoot.ExpectedCardinality);
-            planRoot = new WherePlanOperator(onPremise.Where)
+            planRoot = new FilterPlanOperator(onPremise.Where)
             {
                 Children = [planRoot],
                 ExpectedCardinality = cardinality,
                 Selectivity = selectivity
             };
+            planRoot.Cost = _costModel.CalculateCost(planRoot);
         }
 
         // if there is any Hidden attribute, get rid of it here by projecting to only non-Hidden attributes

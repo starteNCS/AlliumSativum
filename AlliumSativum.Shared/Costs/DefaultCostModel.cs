@@ -66,6 +66,7 @@ public sealed class DefaultCostModel : ICostModel
         return op switch
         {
             ProjectPlanOperator project => CalculateProjectCost(project),
+            FilterPlanOperator filter => CalculateFilterCost(filter),
             _ => -1
         };
     }
@@ -154,9 +155,22 @@ public sealed class DefaultCostModel : ICostModel
                * (project.Attributes.Count * _settings.Project.PerAttributeCost);
     }
     
-    private double CalculateFilterCost(WherePlanOperator filter)
+    private double CalculateFilterCost(FilterPlanOperator filter)
     {
+        var numberOfExpressions = filter.Expression.GetExpressionsCount();
+
+        double costPerRow = 0;
+        foreach (var typedCount in numberOfExpressions)
+        {
+            costPerRow += typedCount.Key switch
+            {
+                ValueExpressionNode.ValueExpressionType.String => _settings.Filter.PerAttributeCostString,
+                ValueExpressionNode.ValueExpressionType.Decimal => _settings.Filter.PerAttributeCostNumeric,
+                _ => -1
+            };
+        }
+        
         return _settings.Filter.BaseCost 
-               + filter.ExpectedCardinality;
+               + filter.ExpectedCardinality * costPerRow;
     }
 }
