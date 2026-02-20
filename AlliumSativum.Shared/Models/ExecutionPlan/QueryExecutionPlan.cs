@@ -36,13 +36,16 @@ public sealed class QueryExecutionPlan
             
             stringBuilder.Append("» ")
                 .Append(HtmlClasses.Colored(HtmlClasses.Bold("ED"), color: "coral"))
-                .AppendLine(": Expected Duration (Cost in Ms)");
+                .Append(": Expected Duration ")
+                .AppendLine(HtmlClasses.Italic(HtmlClasses.Colored("(Cost in Ms)", color: "gray")));
             stringBuilder.Append("» ")
                 .Append(HtmlClasses.Colored(HtmlClasses.Bold("C "), color: "yellowgreen"))
-                .AppendLine(": Cardinality (Estimated number of rows output by the operator)");
+                .Append(": Cardinality ")
+                .AppendLine(HtmlClasses.Italic(HtmlClasses.Colored("(Estimated number of rows output by the operator)", color: "gray")));
             stringBuilder.Append("» ")
                 .Append(HtmlClasses.Colored(HtmlClasses.Bold("S "), color: "olive"))
-                .AppendLine(": Selectivity (Estimated fraction of rows that pass the operator's filter, between 0 and 1)");
+                .Append(": Selectivity ")
+                .AppendLine(HtmlClasses.Italic(HtmlClasses.Colored("(Estimated fraction of rows that pass the operator's filter, between 0 and 1)", color: "gray")));
             
             stringBuilder.Append("<hr />");
             
