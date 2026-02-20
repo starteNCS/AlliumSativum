@@ -32,7 +32,19 @@ public sealed class QueryExecutionPlan
             stringBuilder.Append(OptimizeTimeMs);
             stringBuilder.AppendLine("ms");
             
-            stringBuilder.AppendLine("<hr />");
+            stringBuilder.Append("<hr />");
+            
+            stringBuilder.Append("» ")
+                .Append(HtmlClasses.Colored(HtmlClasses.Bold("ED"), color: "coral"))
+                .AppendLine(": Expected Duration (Cost in Ms)");
+            stringBuilder.Append("» ")
+                .Append(HtmlClasses.Colored(HtmlClasses.Bold("C "), color: "yellowgreen"))
+                .AppendLine(": Cardinality (Estimated number of rows output by the operator)");
+            stringBuilder.Append("» ")
+                .Append(HtmlClasses.Colored(HtmlClasses.Bold("S "), color: "olive"))
+                .AppendLine(": Selectivity (Estimated fraction of rows that pass the operator's filter, between 0 and 1)");
+            
+            stringBuilder.Append("<hr />");
             
             stringBuilder.Append("</div>");
         }

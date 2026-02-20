@@ -73,6 +73,6 @@ public abstract class PlanOperator
 
     protected abstract string GetNodeInfo();
     protected abstract string GetNodeInfoHtml();
-    private string GetBaseNodeInfo() => $"Estimated duration: {Cost:F2}ms, C: {ExpectedCardinality}, S: {Selectivity}";
-    private string GetHtmlBaseNodeInfo() => $"Estimated duration: {HtmlClasses.Colored(Cost.ToString("F3"), color: "coral")}ms, C: {HtmlClasses.Colored(ExpectedCardinality.ToString(), color: "yellowgreen")}, S: {HtmlClasses.Colored(Selectivity.ToString("F2"), color: "olive")}";
+    private string GetBaseNodeInfo() => $"ED: {Cost:F2}ms, C: {ExpectedCardinality}, S: {Selectivity}";
+    private string GetHtmlBaseNodeInfo() => $"ED: {HtmlClasses.Colored(Cost.ToString("F3"), color: "coral")}ms, C: {HtmlClasses.Colored(ExpectedCardinality.ToString(), color: "yellowgreen")}, S: {HtmlClasses.Colored(Selectivity.ToString("F2"), color: "olive")}";
 }

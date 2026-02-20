@@ -147,4 +147,10 @@ public sealed class DefaultCostModel : ICostModel
                + project.ExpectedCardinality 
                * (project.Attributes.Count * _settings.Project.PerAttributeCost);
     }
+    
+    private double CalculateFilterCost(WherePlanOperator filter)
+    {
+        return _settings.Filter.BaseCost 
+               + filter.ExpectedCardinality;
+    }
 }

@@ -16,7 +16,7 @@ public static partial class BooleanExpressionParser
     {
         { "OR", 1 },
         { "AND", 2 },
-        { "=", 3 }, { "!=", 3 }, { "<", 3 }, { ">", 3 }, { "<=", 3 }, { ">=", 3 }, { "LIKE", 3 }
+        { "=", 3 }, { "!=", 3 }, { "<", 3 }, { ">", 3 }, { "<=", 3 }, { ">=", 3 }
     };
 
     public static ExpressionNode? Parse(Stack<string> tokens)

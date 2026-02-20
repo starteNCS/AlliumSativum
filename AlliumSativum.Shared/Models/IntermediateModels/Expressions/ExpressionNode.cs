@@ -65,6 +65,43 @@ public abstract class ExpressionNode
             .Distinct()
             .ToList();
     }
+
+    /// <summary>
+    /// Returns the number of arithmetic expressions contained within this expression with the given type
+    /// </summary>
+    /// <returns></returns>
+    public Dictionary<ValueExpressionNode.ValueExpressionType, int> GetExpressionCount()
+    {
+        var counts = new Dictionary<ValueExpressionNode.ValueExpressionType, int>();
+        var stack = new Stack<ExpressionNode>();
+        stack.Push(this);
+        
+        while (stack.Count > 0)
+        {
+            var current = stack.Pop();
+
+            switch (current)
+            {
+                case BinaryOperatorExpressionNode binary:
+                    stack.Push(binary.Right);
+                    stack.Push(binary.Left);
+                    break;
+                
+                case ValueExpressionNode valueExpression:
+                    if (counts.TryGetValue(valueExpression.Type, out var value))
+                    {
+                        counts[valueExpression.Type] = ++value;
+                    }
+                    else
+                    {
+                        counts[valueExpression.Type] = 1;
+                    }
+                    break;
+            }
+        }
+
+        return counts;
+    }
 }
 
 public class PartialColumnExpressionNode : ExpressionNode
