@@ -23,18 +23,18 @@ public sealed class PostgreSqlExecutor : IWorkerExecutor
 
     public async Task<ExecutorWrapper> ExecuteAsync(PlanOperator @operator)
     {
-        if (@operator is not PushdownSqlPlanOperator pushdownPop)
+        if (@operator is not PushdownSqlPlanOperator pushdown)
         {
-            throw new AsSQLExecuteException("Unsupported plan operator type", ConnectorType.Postgres);
+            throw new AsSQLExecuteException("Invalid plan operator type for PostgreSqlExecutor. Expected PushdownSqlPlanOperator.", ConnectorType.Postgres);
         }
-
+        
         var stopwatch = Stopwatch.StartNew();
-        var result = await _dataSource.QueryAsync<object>(pushdownPop.DataSource, pushdownPop.SqlStatement);
+        var result = await _dataSource.QueryAsync<object>(@pushdown.DataSource, @pushdown.SqlStatement);
         stopwatch.Stop();
         
         return new ExecutorWrapper
         {
-            PlanOperator = pushdownPop,
+            PlanOperator = @operator,
             Result = result,
             FactualCardinality = result.Count,
             FactualCost = stopwatch.ElapsedMilliseconds

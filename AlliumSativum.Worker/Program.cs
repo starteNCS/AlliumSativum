@@ -36,6 +36,8 @@ builder.Services
 builder.Services
     .AddCostModel(builder.Configuration);
 
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
