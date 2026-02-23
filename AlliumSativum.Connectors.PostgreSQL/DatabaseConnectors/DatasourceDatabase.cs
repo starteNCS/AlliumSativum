@@ -49,6 +49,36 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
         }
     }
     
+    public async Task<List<Dictionary<string, object>>> QueryAsync(Guid dataSource, string query, object? parameters = null)
+    {
+        var connection = await GetConnectionStringForDataSource(dataSource);
+        if (connection is null)
+        {
+            throw new ArgumentException("Connection string may not be null");
+        }
+
+        _logger.LogDebug("Executing query against {DataSource}: {Query}", dataSource, query);
+        try
+        {
+            await connection.OpenAsync();
+            var result = await connection.QueryAsync(query, parameters);
+            await connection.CloseAsync();
+            return result
+                .Select(row => (IDictionary<string, object>)row)
+                .Select(dict => dict.ToDictionary(k => k.Key, v => v.Value))
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to query datasource {DataSource}", dataSource);
+            return [];
+        }
+        finally
+        {
+            await connection.DisposeAsync();
+        }
+    }
+    
     public async Task<long> TimeQueryAsync(Guid dataSource, string query, object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
