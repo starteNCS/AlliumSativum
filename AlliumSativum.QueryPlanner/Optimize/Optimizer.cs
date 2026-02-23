@@ -69,17 +69,16 @@ public sealed class Optimizer
         }
         
         // create on-premise only join tree
-        var (onPremiseJoinTree, additionalSelectAttributesNeeded) = _joinOptimizer.ConstructOnPremiseJoin(model);
-        foreach (var select in additionalSelectAttributesNeeded)
+        var (onPremiseJoinTree, additionalSelectAttributesNeededForJoin) = _joinOptimizer.ConstructOnPremiseJoin(model);
+        foreach (var select in additionalSelectAttributesNeededForJoin)
         {
             projections.Add(select);
         }
         
         
         // split the given model into TABLES
-        // check which WHERE expressions can be 100% assigned to one table
-        var (onPremise, tables) = SplitIntoTables(model);
-        tables = _selectOptimizer.AppendComputationalSelects(tables, additionalSelectAttributesNeeded);
+        var (onPremise, tables) = SplitIntoTables(model, projections);
+        tables = _selectOptimizer.AppendComputationalSelects(tables, additionalSelectAttributesNeededForJoin);
         
         // check joins, merge multiple tables into one sub plan if possible
         var (joinsLeftOnPremise, joinedTableSelect) = _joinOptimizer.CombineTablesByJoinPushDown(onPremise.Join, tables);
@@ -175,7 +174,7 @@ public sealed class Optimizer
     ///     - onPremise: whatever was not able to be split for data sources
     ///     - dataSources: the parts which should be checked for push down
     /// </returns>
-    public (SelectBaseModel onPremise, List<SelectBaseModel> dataSources) SplitIntoTables(SelectBaseModel model)
+    public (SelectBaseModel onPremise, List<SelectBaseModel> dataSources) SplitIntoTables(SelectBaseModel model, HashSet<AttributeSpecifier> allProjections)
     {
         // new data sources may only be introduced in either JOIN or FROM
         var tables = model.Join
@@ -191,7 +190,7 @@ public sealed class Optimizer
         List<SelectBaseModel> selects = [];
         foreach (var table in tables)
         {
-            var (@base, split) = ExtractTable(model, table);
+            var (@base, split) = ExtractTable(model, table, allProjections);
             model = @base;
             selects.Add(split);
         }
@@ -208,26 +207,35 @@ public sealed class Optimizer
     ///     - base: what is left of the base model
     ///     - split: the split for this specific table
     /// </returns>
-    private (SelectBaseModel @base, SelectBaseModel split) ExtractTable(SelectBaseModel model, TableSpecifier table)
+    private (SelectBaseModel @base, SelectBaseModel split) ExtractTable(SelectBaseModel model, TableSpecifier table, HashSet<AttributeSpecifier> allProjections)
     {
         
         var extractedWhere = _expressionNodeOptimizer.ExtractExpression(model.Where, table);
+        var hiddenSplitWhereAttributes = extractedWhere.split?.GetAttributesOfExpression() ?? [];
         
         var selectModel = new SelectBaseModel
         {
             From = model.From,
             Join = model.Join,
             Where = extractedWhere.@base,
-            Select = model.Select 
+            Select = model.Select,
         };
 
         var split = new SelectBaseModel()
         {
             From = table,
-            Select = model.Select.Where(spec => spec is AttributeSpecifier aSpec && aSpec.IsInTable(table)).ToList(),
+            Select = model.Select
+                .Where(spec => spec is AttributeSpecifier aSpec && aSpec.IsInTable(table))
+                .ToList()
+                .AppendHiddenAttributes(hiddenSplitWhereAttributes),
             Join = [], 
-            Where = extractedWhere.split 
+            Where = extractedWhere.split
         };
+
+        foreach (var attr in hiddenSplitWhereAttributes)
+        {
+            allProjections.Add(attr);
+        }
         
         return (selectModel, split);
     }

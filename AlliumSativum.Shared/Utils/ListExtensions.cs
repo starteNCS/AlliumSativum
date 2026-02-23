@@ -1,3 +1,5 @@
+using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
+
 namespace AlliumSativum.Shared.Utils;
 
 public static class ListExtensions
@@ -19,5 +21,21 @@ public static class ListExtensions
         
         list.Remove(item);
         return item;
+    }
+    
+    public static List<ISpecifier> AppendHiddenAttributes(this List<ISpecifier> list, List<AttributeSpecifier> hiddenAttributes)
+    {
+        foreach (var attribute in hiddenAttributes)
+        {
+            if (list.Any(a => a is AttributeSpecifier aSpec && aSpec.Equals(attribute)))
+            {
+                continue;
+            }
+            
+            attribute.IsHidden = true;
+            list.Add(attribute);
+        }
+
+        return list;
     }
 }

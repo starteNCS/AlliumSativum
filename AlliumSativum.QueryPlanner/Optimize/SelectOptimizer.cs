@@ -43,7 +43,7 @@ public sealed class SelectOptimizer
         }
         
         return splitSelects;
-    } 
+    }
         
     public PlanOperator HandleProjection(PlanOperator pop, TableSpecifier forTable, SelectBaseModel? unplanned)
     {
