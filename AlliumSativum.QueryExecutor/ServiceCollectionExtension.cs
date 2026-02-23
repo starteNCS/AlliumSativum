@@ -1,4 +1,5 @@
 using AlliumSativum.QueryExecutor.PopExecutors;
+using AlliumSativum.QueryExecutor.PopExecutors.Join;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AlliumSativum.QueryExecutor;
@@ -13,7 +14,8 @@ public static class ServiceCollectionExtension
             .AddScoped<ProjectPlanOperatorExecutor>()
             .AddScoped<FilterPlanOperatorExecutor>()
             .AddScoped<PushdownSqlPlanOperatorExecutor>()
-            .AddScoped<PushdownRestPlanOperatorExecutor>();
+            .AddScoped<PushdownRestPlanOperatorExecutor>()
+            .AddScoped<NestedLoopJoinPlanOperatorExecutor>();
         
         
         return services;

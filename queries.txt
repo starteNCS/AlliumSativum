@@ -2,3 +2,6 @@ SELECT t.subject, t.status, tc.body, e.first_name, e.last_name, c.name FROM tick
 
 
 SELECT t.subject FROM ticket->tickets t WHERE t.priority = 'Low'
+
+
+SELECT t.subject, tc.body FROM ticket->tickets t INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id

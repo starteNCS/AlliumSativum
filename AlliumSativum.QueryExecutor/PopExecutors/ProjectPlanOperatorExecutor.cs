@@ -9,11 +9,13 @@ namespace AlliumSativum.QueryExecutor.PopExecutors;
 
 public sealed class ProjectPlanOperatorExecutor : IPlanOperatorExecutor<ProjectPlanOperator>
 {
-    public Task<ExecutorWrapper> ExecuteAsync(ProjectPlanOperator pop, List<Dictionary<string, object>> source)
+    public Task<PlanOperator> ExecuteAsync(ProjectPlanOperator pop)
     {
         var stopwatch = Stopwatch.StartNew();
-        var result = new List<Dictionary<string, object>>(source.Count);
-        foreach (var item in source)
+
+        var childData = pop.Children.Single().ExecutionData.Data;
+        var result = new List<Dictionary<string, object>>(childData.Count);
+        foreach (var item in childData)
         {
             var projected = new  Dictionary<string, object>(pop.Attributes.Count);
             foreach (var propName in pop.Attributes.Select(x => x.AttributeName))
@@ -24,12 +26,15 @@ public sealed class ProjectPlanOperatorExecutor : IPlanOperatorExecutor<ProjectP
         }
         stopwatch.Stop();
 
-        return Task.FromResult(new ExecutorWrapper()
+        var executionData = new PlanOperatorExecutionData
         {
-            Result = result,
-            FactualCardinality = result.Count,
-            FactualCost = stopwatch.ElapsedMilliseconds,
-            PlanOperator = pop
-        });
+            Materialized = true,
+            ActualCardinality = result.Count,
+            ActualCost = stopwatch.ElapsedMilliseconds,
+            Data = result
+        };
+        pop.ExecutionData = executionData;
+
+        return Task.FromResult<PlanOperator>(pop);
     }
 }

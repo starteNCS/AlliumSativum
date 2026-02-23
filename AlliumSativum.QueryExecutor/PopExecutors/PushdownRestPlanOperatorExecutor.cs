@@ -15,19 +15,23 @@ public sealed class PushdownRestPlanOperatorExecutor : IPlanOperatorExecutor<Pus
         _executorApi = executorApi;
     }
     
-    public async Task<ExecutorWrapper> ExecuteAsync(PushdownRestCallPlanOperator pop, List<Dictionary<string, object>> source)
+    public async Task<PlanOperator> ExecuteAsync(PushdownRestCallPlanOperator pop)
     {
-        if (source.Count > 0)
-        {
-            throw new AsSQLExecuteException("Source for PushdownSqlPlanOperatorExecutor should be empty, as pushdown has to be leave of tree.");
-        }
-
         var result = await _executorApi.ExecutePlanAsync(pop);
         if (result == null)
         {
             throw new AsSQLExecuteException("Execution of pushdown SQL plan operator failed.");
         }
+        
+        var executionData = new PlanOperatorExecutionData
+        {
+            Materialized = true,
+            ActualCardinality = result.FactualCardinality,
+            ActualCost = result.FactualCost,
+            Data = result.Result
+        };
+        pop.ExecutionData = executionData;
 
-        return result;
+        return pop;
     }
 }

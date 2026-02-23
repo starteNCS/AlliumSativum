@@ -1,6 +1,8 @@
 ﻿using AlliumSativum.QueryExecutor.PopExecutors;
+using AlliumSativum.QueryExecutor.PopExecutors.Join;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Join;
 
 namespace AlliumSativum.QueryExecutor;
 
@@ -10,48 +12,73 @@ public sealed class QueryExecutor
     private readonly FilterPlanOperatorExecutor _filterPlanOperatorExecutor;
     private readonly PushdownSqlPlanOperatorExecutor _pushdownSqlPlanOperatorExecutor;
     private readonly PushdownRestPlanOperatorExecutor _pushdownRestPlanOperatorExecutor;
+    private readonly NestedLoopJoinPlanOperatorExecutor _nestedLoopJoinPlanOperatorExecutor;
 
     public QueryExecutor(
         ProjectPlanOperatorExecutor projectPlanOperatorExecutor,
         FilterPlanOperatorExecutor filterPlanOperatorExecutor,
         PushdownSqlPlanOperatorExecutor pushdownSqlPlanOperatorExecutor,
-        PushdownRestPlanOperatorExecutor pushdownRestPlanOperatorExecutor)
+        PushdownRestPlanOperatorExecutor pushdownRestPlanOperatorExecutor,
+        NestedLoopJoinPlanOperatorExecutor nestedLoopJoinPlanOperatorExecutor)
     {
         _projectPlanOperatorExecutor = projectPlanOperatorExecutor;
         _filterPlanOperatorExecutor = filterPlanOperatorExecutor;
         _pushdownSqlPlanOperatorExecutor = pushdownSqlPlanOperatorExecutor;
         _pushdownRestPlanOperatorExecutor = pushdownRestPlanOperatorExecutor;
+        _nestedLoopJoinPlanOperatorExecutor = nestedLoopJoinPlanOperatorExecutor;
     }
     
-    public async Task<List<Dictionary<string, object>>> ExecuteAsync(PlanOperator root)
+    public async Task<List<Dictionary<string, object>>> ExecuteAsync(ParallelQueryExecutionPlan root)
     {
-        var stack = new Stack<PlanOperator>();
-        stack.Push(root);
-        // TODO: add support for parallel branches
-        while (root.Children.Count > 0)
+        if (root.AwaitableStacks.Count > 0)
         {
-            root = root.Children[0];
-            stack.Push(root);
+            // hand off to workers, especially those close to the data source
+            await Task.WhenAll(root.AwaitableStacks.Select(ExecuteAsync));
         }
 
-        List<Dictionary<string, object>> currentItems = [];
-        while (stack.Count > 0)
+        PlanOperator? latestPop = null;
+        while (root.Continuation.Count > 0)
         {
-            var item = stack.Pop();
+            latestPop = root.Continuation.Pop();
             
-            var result = item switch
+            latestPop = await (latestPop switch
             {
-                ProjectPlanOperator project => await _projectPlanOperatorExecutor.ExecuteAsync(project, currentItems),
-                FilterPlanOperator filter => await _filterPlanOperatorExecutor.ExecuteAsync(filter, currentItems),
-                PushdownSqlPlanOperator pushdown => await _pushdownSqlPlanOperatorExecutor.ExecuteAsync(pushdown, []),
-                PushdownRestCallPlanOperator pushdown => await _pushdownRestPlanOperatorExecutor.ExecuteAsync(pushdown, []),
-                _ => throw new NotSupportedException($"Unsupported plan operator: {root.GetType().Name}")
-            };
-
-            currentItems = result.Result;
+                ProjectPlanOperator project => _projectPlanOperatorExecutor.ExecuteAsync(project),
+                FilterPlanOperator filter => _filterPlanOperatorExecutor.ExecuteAsync(filter),
+                PushdownSqlPlanOperator pushdown => _pushdownSqlPlanOperatorExecutor.ExecuteAsync(pushdown),
+                PushdownRestCallPlanOperator pushdown => _pushdownRestPlanOperatorExecutor.ExecuteAsync(pushdown), 
+                NestedLoopJoinPlanOperator join => _nestedLoopJoinPlanOperatorExecutor.ExecuteAsync(join),
+                _ => throw new NotSupportedException($"Unsupported plan operator: {latestPop.GetType().Name}")
+            });
+            
         }
-        
 
-        return currentItems;
+        return latestPop?.ExecutionData.Data ?? [];
+    }
+
+    public static ParallelQueryExecutionPlan ToParallelStacks(PlanOperator root)
+    {
+        var continuation = new List<PlanOperator>();
+        var branches = new List<ParallelQueryExecutionPlan>();
+
+        var current = root;
+        while (current != null)
+        {
+            if (current.Children.Count > 1)
+            {
+                branches = current.Children.Select(ToParallelStacks).ToList();
+                continuation.Add(current);
+                break;
+            }
+
+            continuation.Add(current);
+            current = current.Children.FirstOrDefault();
+        }
+
+        return new ParallelQueryExecutionPlan
+        {
+            AwaitableStacks = branches,
+            Continuation = new Stack<PlanOperator>(continuation)
+        };
     }
 }

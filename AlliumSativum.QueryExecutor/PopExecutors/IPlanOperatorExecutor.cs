@@ -5,5 +5,5 @@ namespace AlliumSativum.QueryExecutor.PopExecutors;
 
 public interface IPlanOperatorExecutor<T> where T : PlanOperator
 {
-    Task<ExecutorWrapper> ExecuteAsync(T pop, List<Dictionary<string, object>> source);
+    Task<PlanOperator> ExecuteAsync(T pop);
 }

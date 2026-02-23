@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using AlliumSativum.Shared.Exceptions;
+using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.Executor;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
@@ -9,12 +10,12 @@ namespace AlliumSativum.QueryExecutor.PopExecutors;
 
 public sealed class FilterPlanOperatorExecutor : IPlanOperatorExecutor<FilterPlanOperator>
 {
-    public Task<ExecutorWrapper> ExecuteAsync(FilterPlanOperator pop, List<Dictionary<string, object>> source)
+    public Task<PlanOperator> ExecuteAsync(FilterPlanOperator pop)
     {
         var stopwatch = Stopwatch.StartNew();
 
         List<Dictionary<string, object>> result = [];
-        foreach (var item in source)
+        foreach (var item in pop.Children.Single().ExecutionData.Data)
         {
             // TODO: nested expression
             if(pop.Expression is not BinaryOperatorExpressionNode binaryExpression)
@@ -37,14 +38,16 @@ public sealed class FilterPlanOperatorExecutor : IPlanOperatorExecutor<FilterPla
         }
         
         stopwatch.Stop();
-
-        return Task.FromResult(new ExecutorWrapper()
+        var executionData = new PlanOperatorExecutionData
         {
-            FactualCardinality = result.Count,
-            FactualCost = stopwatch.ElapsedMilliseconds,
-            PlanOperator = pop,
-            Result = result
-        });
+            Materialized = true,
+            ActualCardinality = result.Count,
+            ActualCost = stopwatch.ElapsedMilliseconds,
+            Data = result
+        };
+        pop.ExecutionData = executionData;
+
+        return Task.FromResult<PlanOperator>(pop);
     }
 
     private bool Matches(Dictionary<string, object> obj, FullySpecifiedColumnExpressionNode col, string operation, ValueExpressionNode value)

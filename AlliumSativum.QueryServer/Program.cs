@@ -58,7 +58,8 @@ app.MapPost("execute", async (QueryCompiler compiler, QueryExecutor queryExecuto
     // TODO: filter attribute is missing 
     var executionPlan = await compiler.CompileAsync(query.Query);
     
-    var result = await queryExecutor.ExecuteAsync(executionPlan.RootOperator);
+    var parallelPlan = QueryExecutor.ToParallelStacks(executionPlan.RootOperator);
+    var result = await queryExecutor.ExecuteAsync(parallelPlan);
 
     return result;
 });
