@@ -2,6 +2,7 @@ using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Join;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Shared.Utils;
@@ -55,7 +56,7 @@ public sealed class JoinOptimizer
             var left = await CloneTransformJoinTreeAsync(joinNode.Left, pop, popLookupTable);
             var right = await CloneTransformJoinTreeAsync(joinNode.Right, pop, popLookupTable);
 
-            var joinPop = new JoinPlanOperator(left, joinNode.Expression, right);
+            var joinPop = new NestedLoopJoinPlanOperator(left, joinNode.Expression, right);
             var (cardinality, selectivity) = await _costModel.CalculateExpectedCardinalityAsync(joinPop);
             joinPop.ExpectedCardinality = cardinality;
             joinPop.Selectivity = selectivity;

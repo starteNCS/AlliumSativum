@@ -1,1 +1,4 @@
 SELECT t.subject, t.status, tc.body, e.first_name, e.last_name, c.name FROM ticket->tickets t INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id INNER JOIN erp->employees e ON e.id = t.assigned_employee_id INNER JOIN erp->customers c ON c.id = e.customer_id WHERE t.status = 'In Progress'
+
+
+SELECT t.subject FROM ticket->tickets t WHERE t.priority = 'Low'

@@ -21,8 +21,8 @@ public class JoinPlanOperator : PlanOperator
     // override to avoid some outer class to add more children
     public new IReadOnlyList<PlanOperator> Children => base.Children;
     
-    protected override string GetNodeInfo() => $"JOIN: {Expression}";
-    protected override string GetNodeInfoHtml() => $"{HtmlClasses.Bold(HtmlClasses.Colored("JOIN", color: "green"))}: {Expression}";
+    protected override string GetNodeInfo() => $"JOIN: {Expression} INCOMPLETE! MISSING JOIN ALGORITHM INFO";
+    protected override string GetNodeInfoHtml() => $"{HtmlClasses.Bold(HtmlClasses.Colored("JOIN", color: "green"))}: {Expression} {HtmlClasses.Bold(HtmlClasses.Colored("INCOMPLETE! MISSING JOIN ALGORITHM INFO", color: "red"))}";
     
     public override int GetHashCode()
     {

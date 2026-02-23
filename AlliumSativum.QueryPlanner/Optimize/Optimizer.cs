@@ -92,19 +92,22 @@ public sealed class Optimizer
         foreach (var select in joinedTableSelect)
         {
             var (plannedProposals, unplanned) = await _planner.PlanQueryAsync(select);
-            if (plans is null)
+            if (plannedProposals.Count == 0)
             {
                 throw new AsSqlOptimizeException("Expected pushdown plan, but got none");
+            }
+            
+            // add all projections. Since projections is a hash map, duplicates are not an issue, but hidden
+            // attributes are added as well, which is important for the final projection at the end of the optimization process
+            foreach (var x in unplanned?.Select ?? [])
+            {
+                projections.Add((AttributeSpecifier)x);
             }
 
             foreach (var plannedProposal in plannedProposals)
             {
                 var wrappedResult = await WrapPlanProposalWithMissingPopsAsync(plannedProposal, onPremise, unplanned);
                 plans.Add(wrappedResult.PlannedItems.AffectedTables, wrappedResult.Plan);
-                foreach (var x in plannedProposal.PlannedItems.Select)
-                {
-                    projections.Add((AttributeSpecifier)x);
-                }
             }
             
             // could not distribute WHERE fully, therefore the missing part needs to be added to the on-premise plan
