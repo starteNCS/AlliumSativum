@@ -42,7 +42,10 @@ public sealed class JoinOptimizer
 
     private async Task<List<PlanOperator>> BuildSubtreesAsync(int mask, List<TableSpecifier> tables, List<JoinBaseModel> joins, Dictionary<int, List<PlanOperator>> memo, PopLookupTable popLookupTable)
     {
-        if (memo.TryGetValue(mask, out var subtrees)) return subtrees;
+        if (memo.TryGetValue(mask, out var subtrees))
+        {
+            return subtrees;
+        }
 
         var results = new List<PlanOperator>();
 

@@ -82,7 +82,8 @@ public sealed class DefaultCostModel : ICostModel
     public async Task<(long Cardinality, double Selectivity)> CalculateExpectedCardinalityAsync(BinaryOperatorExpressionNode node, long previousCardinality)
     {
         var selectivity = await GetSelectivityAsync(node);
-        return ((long) (selectivity * previousCardinality), selectivity);
+        var cardinality = Math.Max(1, (long)(selectivity * previousCardinality));
+        return (cardinality, selectivity);
     }
     
     /// <summary>
@@ -92,9 +93,10 @@ public sealed class DefaultCostModel : ICostModel
     /// <returns></returns>
     public async Task<(long Cardinality, double Selectivity)> CalculateExpectedCardinalityAsync(JoinPlanOperator join)
     {
-        var cardinality = (join.Left.ExpectedCardinality * join.Right.ExpectedCardinality) *
-                          await GetSelectivityAsync((BinaryOperatorExpressionNode)join.Expression);
-        return ((long) cardinality, await GetSelectivityAsync((BinaryOperatorExpressionNode)join.Expression));
+        var selectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)join.Expression);
+        var cardinality = Math.Max(1.0, (join.Left.ExpectedCardinality * join.Right.ExpectedCardinality) *
+                          selectivity);
+        return ((long) cardinality, selectivity);
     }
     
     /// <summary>
@@ -107,7 +109,11 @@ public sealed class DefaultCostModel : ICostModel
         switch (node)
         {
             case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: "=", Left: ValueExpressionNode }:
-                return 0.1;
+                var attr = await _catalog.GetAttributeAsync((FullySpecifiedColumnExpressionNode)node.Left);
+                var relation = await _catalog.GetRelationAsync(attr.RelationId);
+                double ratio = (double) relation.Cardinality / attr.DistinctCardinality;
+                
+                return ratio * (1.0 / relation.Cardinality);
             case { Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Left: ValueExpressionNode }:
             {
                 var valueNode = node.Left as ValueExpressionNode ?? (ValueExpressionNode)node.Right;
@@ -132,7 +138,18 @@ public sealed class DefaultCostModel : ICostModel
                 return 0.5;
             }
             case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: FullySpecifiedColumnExpressionNode }:
-                return 0.1;
+                var leftAttribute = await _catalog.GetAttributeAsync((FullySpecifiedColumnExpressionNode)node.Left);
+                var leftRelation = await _catalog.GetRelationAsync(leftAttribute.RelationId);
+                var rightAttribute = await _catalog.GetAttributeAsync((FullySpecifiedColumnExpressionNode)node.Right);
+                var rightRelation = await _catalog.GetRelationAsync(leftAttribute.RelationId);
+
+                double leftRatio = (double) leftRelation.Cardinality / leftAttribute.DistinctCardinality;
+                double rightRatio = (double) rightRelation.Cardinality / rightAttribute.DistinctCardinality;
+                var left = leftRatio * (1.0 / leftRelation.Cardinality);
+                var right = rightRatio * (1.0 / rightRelation.Cardinality);
+                
+                var res =  left * right;
+                return res;
             case {Left : BinaryOperatorExpressionNode, Operation: "OR", Right: BinaryOperatorExpressionNode}:
             {
                 var leftSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Left);

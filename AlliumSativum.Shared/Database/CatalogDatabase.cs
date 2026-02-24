@@ -78,7 +78,7 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
         return relations.SingleOrDefault();
     }
     
-    public async Task<RelationEntity?> GetRelationAsync(Guid dataSource, string tableName)
+    public async Task<RelationEntity> GetRelationAsync(Guid dataSource, string tableName)
     {
         var relations = await QueryAsync<RelationEntity>($"SELECT * FROM Catalog.Relations WHERE Name LIKE @TableName AND DataSourceId = @DataSourceId",
             new
@@ -92,7 +92,23 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
                 $"Datasource '{dataSource}' contains two or more tables with the same name. Please also provide the schema");
         }
         
-        return relations.SingleOrDefault();
+        return relations.Single();
+    }
+    
+    public async Task<RelationEntity> GetRelationAsync(Guid relationId)
+    {
+        var relations = await QueryAsync<RelationEntity>($"SELECT * FROM Catalog.Relations WHERE Id = @RelationId",
+            new
+            {
+                RelationId = relationId,
+            });
+        if (relations.Count > 1)
+        {
+            throw new ArgumentException(
+                $"Relation with id '{relationId}' does not exist or is not unique");
+        }
+        
+        return relations.Single();
     }
     
     public async Task<List<RelationEntity>> GetRelationsOfDataSourceAsync(Guid dataSource)
