@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using AlliumSativum.Shared.Constants;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
@@ -102,105 +101,7 @@ public abstract class ExpressionNode
 
         return counts;
     }
-}
 
-public class PartialColumnExpressionNode : ExpressionNode
-{
-    public string Name { get; set; } = string.Empty;
-    public override string ToString() => $"[{Name}]";
-    public override string ToSqlQueryString() => "invalid";
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not PartialColumnExpressionNode other)
-        {
-            return false;
-        }
-        
-        return other.Name.Equals(Name);
-    }
-}
-
-public class VariableMappingExpressionNode : ExpressionNode
-{
-    public required VariableMappingSpecifier VariableMapping { get; set; }
-    public override string ToString() => $"[{VariableMapping.VariableName}{AsSqlParameters.Attribute.TableSeparator}{VariableMapping.AttributeName}]";
-    public override string ToSqlQueryString() => $"{VariableMapping.VariableName}.{VariableMapping.AttributeName}";
-    
-    public override bool Equals(object? obj)
-    {
-        if (obj is not VariableMappingExpressionNode other)
-        {
-            return false;
-        }
-        
-        return other.VariableMapping.Equals(VariableMapping);
-    }
-}
-
-public class FullySpecifiedColumnExpressionNode : ExpressionNode
-{
-    public required AttributeSpecifier Attribute { get; set; }
-    public override string ToString() => $"[{Attribute.DataSourceName}{AsSqlParameters.Attribute.DataSourceSeparator}{Attribute.TableName}{AsSqlParameters.Attribute.TableSeparator}{Attribute.AttributeName}]";
-    
-    // currently discards the data source attribute
-    public override string ToSqlQueryString() => $"{Attribute.TableName}.{Attribute.AttributeName}";
-    
-    public override bool Equals(object? obj)
-    {
-        if (obj is not FullySpecifiedColumnExpressionNode other)
-        {
-            return false;
-        }
-        
-        return other.Attribute.Equals(Attribute);
-    }
-}
-
-public class ValueExpressionNode : ExpressionNode
-{
-    public ValueExpressionType Type { get; init; }
-    public string Value { get; init; } = string.Empty;
-    public override string ToString() => Type switch
-    {
-        ValueExpressionType.String => $"'{Value}'",
-        ValueExpressionType.Numeric => Value,
-        _ => "false"
-    };
-    public override string ToSqlQueryString() => ToString();
-    
-    public override bool Equals(object? obj)
-    {
-        if (obj is not ValueExpressionNode other)
-        {
-            return false;
-        }
-        
-        return other.Value.Equals(Value) &&  other.Type.Equals(Type);
-    }
-
-    public enum ValueExpressionType
-    {
-        String = 0,
-        Numeric = 1
-    }
-}
-
-public class BinaryOperatorExpressionNode : ExpressionNode
-{
-    public string Operation { get; set; } = string.Empty;
-    public required ExpressionNode Left { get; set; }
-    public required ExpressionNode Right { get; set; }
-    public override string ToString() => $"({Left} {Operation} {Right})";
-    public override string ToSqlQueryString() => $"({Left.ToSqlQueryString()} {Operation} {Right.ToSqlQueryString()})";
-    
-    public override bool Equals(object? obj)
-    {
-        if (obj is not BinaryOperatorExpressionNode other)
-        {
-            return false;
-        }
-        
-        return other.Operation == Operation && other.Left.Equals(Left) && other.Right.Equals(Right);
-    }
+    public abstract object? ResolveValue(Dictionary<string, object> row);
+    public abstract bool EvaluatePredicate(Dictionary<string, object> row);
 }

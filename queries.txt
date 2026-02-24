@@ -1,7 +1,16 @@
 SELECT t.subject, t.status, tc.body, e.first_name, e.last_name, c.name FROM ticket->tickets t INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id INNER JOIN erp->employees e ON e.id = t.assigned_employee_id INNER JOIN erp->customers c ON c.id = e.customer_id WHERE t.status = 'In Progress'
 
-
+-- project, filter one data source
 SELECT t.subject FROM ticket->tickets t WHERE t.priority = 'Low'
 
+-- project, filter complex one data source
+SELECT t.subject FROM ticket->tickets t WHERE t.priority = 'Low' AND t.status = 'In Progress'
 
+-- project, join one data source
 SELECT t.subject, tc.body FROM ticket->tickets t INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id
+
+-- project, join two data sources
+SELECT t.subject, e.first_name FROM ticket->tickets t INNER JOIN erp->employees e ON t.assigned_employee_id = e.id
+
+-- project only first, join for filter two data sources
+SELECT t.subject FROM ticket->tickets t INNER JOIN ticket->time_bookings tb ON tb.ticket_id = t.id WHERE tb.minutes_spent > 160
