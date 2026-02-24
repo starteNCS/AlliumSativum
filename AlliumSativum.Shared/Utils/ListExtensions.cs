@@ -23,6 +23,32 @@ public static class ListExtensions
         return item;
     }
     
+    public static List<List<T>> GetPermutations<T>(this List<T> items)
+    {
+        if (items.Count > 5)
+        {
+            throw new InvalidOperationException("Generating permutations for more than 5 items is not supported due to performance reasons.");
+        }
+        
+        if (items.Count == 0)
+            return [[]];
+
+        var results = new List<List<T>>();
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            var current = items[i];
+            var remaining = items.Where((_, idx) => idx != i).ToList();
+
+            foreach (var permutation in remaining.GetPermutations())
+            {
+                results.Add([current, ..permutation]);
+            }
+        }
+
+        return results;
+    }
+    
     public static List<ISpecifier> AppendHiddenAttributes(this List<ISpecifier> list, List<AttributeSpecifier> hiddenAttributes)
     {
         foreach (var attribute in hiddenAttributes)

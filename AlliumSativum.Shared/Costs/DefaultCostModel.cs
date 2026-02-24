@@ -33,6 +33,7 @@ public sealed class DefaultCostModel : ICostModel
     /// <returns></returns>
     public double TotalCost(PlanOperator planOperator)
     {
+        // todo: only max of both child branches, not the sum, as they can be executed in parallel
         var stack = new Stack<PlanOperator>();
         stack.Push(planOperator);
         double totalCost = 0;
@@ -67,6 +68,7 @@ public sealed class DefaultCostModel : ICostModel
         {
             ProjectPlanOperator project => CalculateProjectCost(project),
             FilterPlanOperator filter => CalculateFilterCost(filter),
+            JoinPlanOperator join => CalculateJoinCost(join),
             _ => -1
         };
     }
@@ -92,7 +94,7 @@ public sealed class DefaultCostModel : ICostModel
     {
         var cardinality = (join.Left.ExpectedCardinality * join.Right.ExpectedCardinality) *
                           await GetSelectivityAsync((BinaryOperatorExpressionNode)join.Expression);
-        return ((long) cardinality, 1);
+        return ((long) cardinality, await GetSelectivityAsync((BinaryOperatorExpressionNode)join.Expression));
     }
     
     /// <summary>
@@ -172,5 +174,12 @@ public sealed class DefaultCostModel : ICostModel
         
         return _settings.Filter.BaseCost 
                + filter.ExpectedCardinality * costPerRow;
+    }
+    
+    private double CalculateJoinCost(JoinPlanOperator join)
+    {
+        // For simplicity, we assume a nested loop join, which has a cost of O(n*m), where n and m are the cardinalities of the left and right branches
+        return 0.5 
+               + (join.Left.ExpectedCardinality * join.Right.ExpectedCardinality) * 0.001;
     }
 }

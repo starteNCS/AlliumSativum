@@ -45,6 +45,16 @@ public sealed class PopLookupTable
 
         return planOperator;
     }
+    
+    public PlanOperator? Get(TableSpecifier tableSpecifier)
+    {
+        if (!_lookupTable.TryGetValue(tableSpecifier, out var planOperator))
+        {
+            return null;
+        }
+
+        return planOperator;
+    }
 
     public PlanOperator Single() => _lookupTable.Values.Distinct().Single();
 }

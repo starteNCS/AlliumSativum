@@ -35,6 +35,8 @@ public sealed class JoinBaseModel
             .Distinct()
             .Single();
     } 
+    
+    public List<TableSpecifier> AffectedTables => [Inner, GetJoinExpressionTable()];
 }
 
 public enum JoinType

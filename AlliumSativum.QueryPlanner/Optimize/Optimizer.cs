@@ -69,7 +69,7 @@ public sealed class Optimizer
         }
         
         // create on-premise only join tree
-        var (onPremiseJoinTree, additionalSelectAttributesNeededForJoin) = _joinOptimizer.ConstructOnPremiseJoin(model);
+        var (onPremiseJoins, additionalSelectAttributesNeededForJoin) = _joinOptimizer.ConstructOnPremiseJoin(model);
         foreach (var select in additionalSelectAttributesNeededForJoin)
         {
             projections.Add(select);
@@ -120,11 +120,18 @@ public sealed class Optimizer
             // (where in fact, those joins are now also on-premise, since they cannot be executed at the worker without the planned tables)
             foreach (var join in unplanned?.Join ?? [])
             {
-                onPremiseJoinTree = _joinOptimizer.AddJoinToIntermediateJoinTree(onPremiseJoinTree, join);
+                (onPremiseJoins, var attributes) = _joinOptimizer.AddJoinToIntermediateJoinTree(onPremiseJoins, join);
+                foreach (var attr in attributes)
+                {
+                    projections.Add(attr);
+                }
             }
         }
         
-        var planRoot = await _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTreeAsync(onPremiseJoinTree, plans);
+        var joinPlans = await _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTreeAsync(onPremiseJoins, plans);
+        var asdfasdf = joinPlans.Select(y => _costModel.TotalCost(y)).ToList();
+        
+        var planRoot = joinPlans[0];
 
         if (onPremise.Where is not null)
         {

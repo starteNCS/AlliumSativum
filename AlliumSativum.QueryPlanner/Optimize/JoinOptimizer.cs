@@ -1,9 +1,11 @@
+using System.Numerics;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Join;
 using AlliumSativum.Shared.Models.IntermediateModels;
+using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Shared.Utils;
 
@@ -25,52 +27,86 @@ public sealed class JoinOptimizer
     /// <summary>
     /// Constructs the "real" Join-POP tree from the intermediate model 
     /// </summary>
-    /// <param name="intermediateJoinTree"></param>
+    /// <param name="joins"></param>
     /// <param name="popLookupTable"></param>
-    public async Task<PlanOperator> ConstructJoinPopTreeFromIntermediateJoinTreeAsync(IIntermediateJoinNode? intermediateJoinTree,
-        PopLookupTable popLookupTable)
+    public async Task<List<PlanOperator>> ConstructJoinPopTreeFromIntermediateJoinTreeAsync(List<JoinBaseModel> joins, PopLookupTable popLookupTable)
     {
-        if (intermediateJoinTree is null && popLookupTable.Count == 1)
-        {
-            return popLookupTable.Single();
-        }
+        // 1. Identify all unique tables involved
+        var allTables = joins.SelectMany(j => j.AffectedTables).Distinct().ToList();
 
-        if (intermediateJoinTree is null)
-        {
-            throw new AsSqlOptimizeException("Expected a intermediate join tree, as there are more than one plans");
-        }
+        // Memoization: Map a bitmask of tables to all possible PlanOperators for that set
+        var memo = new Dictionary<int, List<PlanOperator>>();
 
-        return await CloneTransformJoinTreeAsync(intermediateJoinTree, null, popLookupTable);
+        return await BuildSubtreesAsync((1 << allTables.Count) - 1, allTables, joins, memo, popLookupTable);
     }
 
-    public async Task<PlanOperator> CloneTransformJoinTreeAsync(IIntermediateJoinNode? node, PlanOperator? pop, PopLookupTable popLookupTable)
+    private async Task<List<PlanOperator>> BuildSubtreesAsync(int mask, List<TableSpecifier> tables, List<JoinBaseModel> joins, Dictionary<int, List<PlanOperator>> memo, PopLookupTable popLookupTable)
     {
-        if (pop is not null && node is null)
+        if (memo.TryGetValue(mask, out var subtrees)) return subtrees;
+
+        var results = new List<PlanOperator>();
+
+        // Base Case: Only one table in the set, return the access plan
+        if ((mask & (mask - 1)) == 0) 
         {
-            return pop;
+            int index = BitOperations.TrailingZeroCount(mask);
+            results.Add(popLookupTable.Get(tables[index]));
+            return results;
         }
 
-        // 2. "Process" the current node (The "Pre" in Pre-Order)
-        if (node is IntermediateJoinNode joinNode)
+        // Iterate through all possible binary splits of the current mask
+        // This generates the "bushy" permutations
+        for (int submask = (mask - 1) & mask; submask > 0; submask = (submask - 1) & mask)
         {
-            var left = await CloneTransformJoinTreeAsync(joinNode.Left, pop, popLookupTable);
-            var right = await CloneTransformJoinTreeAsync(joinNode.Right, pop, popLookupTable);
+            int leftMask = submask;
+            int rightMask = mask ^ submask;
 
-            var joinPop = new NestedLoopJoinPlanOperator(left, joinNode.Expression, right);
-            var (cardinality, selectivity) = await _costModel.CalculateExpectedCardinalityAsync(joinPop);
-            joinPop.ExpectedCardinality = cardinality;
-            joinPop.Selectivity = selectivity;
+            // To avoid redundant permutations (Left join Right vs Right join Left), 
+            // we can enforce an ordering, but since you asked for ALL permuted trees, we process both.
+            var leftPlans = await BuildSubtreesAsync(leftMask, tables, joins, memo, popLookupTable);
+            var rightPlans = await BuildSubtreesAsync(rightMask, tables, joins, memo, popLookupTable);
 
-            return joinPop;
+            foreach (var left in leftPlans)
+            {
+                foreach (var right in rightPlans)
+                {
+                    // Find the expression that connects the 'left' set and 'right' set
+                    var expression = FindExpressionForSets(leftMask, rightMask, tables, joins);
+                    
+                    if (expression != null)
+                    {
+                        var join = new JoinPlanOperator(left, expression, right);
+                        (join.ExpectedCardinality, join.Selectivity) = await _costModel.CalculateExpectedCardinalityAsync(join);
+                        join.Cost = _costModel.CalculateCost(join);
+                        results.Add(join);
+                    }
+                }
+            }
         }
+
+        memo[mask] = results;
+        return results;
+    }
+
+    private ExpressionNode? FindExpressionForSets(int mask1, int mask2, List<TableSpecifier> tables, List<JoinBaseModel> joins)
+    {
+        // Identify which tables are in each mask and find the join spec that connects them
+        // This logic assumes a join exists; in a cross-product scenario, this would return a Const(true)
+        return joins.FirstOrDefault(j => 
+            (TableInMask(j.Inner, mask1, tables) && TableInMask(j.GetJoinExpressionTable(), mask2, tables)) ||
+            (TableInMask(j.Inner, mask2, tables) && TableInMask(j.GetJoinExpressionTable(), mask1, tables))
+        )?.Expression;
+    }
     
-        if (node is IntermediateJoinTreeTableSpecifier tableNode)
-        {
-            var planOperator = popLookupTable.GetAndRemove(tableNode.ToTableSpecifier());
-            return planOperator ?? throw new AsSqlOptimizeException("Expected to find plan for table specifier, but found null");
-        }
-
-        throw new InvalidOperationException("Unknown node type.");
+    private bool TableInMask(TableSpecifier table, int mask, List<TableSpecifier> allTables)
+    {
+        // 1. Find the position (index) of the table in our master list
+        int index = allTables.IndexOf(table);
+    
+        // 2. Create a bit for that index (1 << index) 
+        // and check if it exists in the mask using bitwise AND
+        if (index == -1) return false;
+        return (mask & (1 << index)) != 0;
     }
     
     public (List<JoinBaseModel> joinsLeft, List<SelectBaseModel> joinedTablePlans) CombineTablesByJoinPushDown(List<JoinBaseModel> joins, List<SelectBaseModel> tablePlans)
@@ -136,90 +172,16 @@ public sealed class JoinOptimizer
     /// </summary>
     /// <param name="select"></param>
     /// <returns></returns>
-    public (IIntermediateJoinNode? mixedJoinTree, List<AttributeSpecifier> selectNeeded) ConstructOnPremiseJoin(SelectBaseModel select)
+    public (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) ConstructOnPremiseJoin(SelectBaseModel select)
     {
-        // TODO: JOIN ORDER OPTIMIZATION???? kann durch constaint auf nur inner join auch später noch gemischt werden
         var mixedJoins = GetOnlyMixedJoins(select);
-        List<JoinBaseModel> joins = [..mixedJoins];
-        var joinsCount = joins.Count;
-        if (joinsCount == 0)
-        {
-            return (null, []);
-        }
-        
-        // create a join Lookup to search for a join given the table of the join expression
-        var joinLookup = new Dictionary<TableSpecifier, List<JoinBaseModel>>();
-        foreach (var j in joins)
-        {
-            var joinExpressionTable = j.GetJoinExpressionTable();
-            if (joinLookup.TryGetValue(joinExpressionTable, out var joinExpressions))
-            {
-                joinExpressions.Add(j);
-                continue;
-            }
-            
-            joinLookup.Add(joinExpressionTable, [j]);
-        }
-
-        var join = joins.GetFirstAndRemove();
-        var root = new IntermediateJoinNode
-        {
-            Left = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(join.Inner),
-            Expression = join.Expression,
-            Right = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(join.GetJoinExpressionTable()),
-        };
-
-        List<IntermediateJoinTreeTableSpecifier> alreadyJoinedRelations = [
-            (IntermediateJoinTreeTableSpecifier)root.Left,
-            (IntermediateJoinTreeTableSpecifier)root.Right
-        ];
-
-        int continued = 0;
-        while (joins.Count > 0)
-        {
-            join = joins.GetAndRemove(x => alreadyJoinedRelations.Contains(x.GetJoinExpressionTable()));
-            if (join is null)
-            {
-                continued++;
-                if (continued > joinsCount)
-                {
-                    throw new AsSqlOptimizeException($"Unable to join the join into the tree");
-                }
-                continue;
-            }
-            continued = 0;
-
-            root = new IntermediateJoinNode()
-            {
-                Left = root,
-                Expression = join.Expression,
-                Right = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(join.Inner)
-            };
-            select.Join.Remove(join);
-        }
-
-        
-        return (root, mixedJoins.SelectMany(x => x.Expression.GetAttributesOfExpression()).ToList());
+        return (mixedJoins, mixedJoins.SelectMany(x => x.Expression.GetAttributesOfExpression()).ToList());
     }
     
-    public IIntermediateJoinNode AddJoinToIntermediateJoinTree(IIntermediateJoinNode? root, JoinBaseModel join)
+    public (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) AddJoinToIntermediateJoinTree(List<JoinBaseModel> root, JoinBaseModel join)
     {
-        if (root is null)
-        {
-            return new IntermediateJoinNode()
-            {
-                Left = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(join.Inner),
-                Expression = join.Expression,
-                Right = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(join.GetJoinExpressionTable()),
-            };
-        }
-        
-        return new IntermediateJoinNode()
-        {
-            Left = root,
-            Expression = join.Expression,
-            Right = IntermediateJoinTreeTableSpecifier.FromTableSpecifier(join.Inner)
-        };
+        root.Add(join);
+        return (root, join.Expression.GetAttributesOfExpression());
     }
     
 
