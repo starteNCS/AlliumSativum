@@ -78,7 +78,7 @@ public sealed class JoinOptimizer
                     
                     if (expression != null)
                     {
-                        var join = new JoinPlanOperator(left, expression, right);
+                        var join = new NestedLoopJoinPlanOperator(left, expression, right);
                         (join.ExpectedCardinality, join.Selectivity) = await _costModel.CalculateExpectedCardinalityAsync(join);
                         join.Cost = _costModel.CalculateCost(join);
                         results.Add(join);

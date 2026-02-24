@@ -110,10 +110,9 @@ public sealed class DefaultCostModel : ICostModel
         {
             case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: "=", Left: ValueExpressionNode }:
                 var attr = await _catalog.GetAttributeAsync((FullySpecifiedColumnExpressionNode)node.Left);
-                var relation = await _catalog.GetRelationAsync(attr.RelationId);
-                double ratio = (double) relation.Cardinality / attr.DistinctCardinality;
+                var ratio = 1.0 / attr.DistinctCardinality;
                 
-                return ratio * (1.0 / relation.Cardinality);
+                return ratio;
             case { Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Left: ValueExpressionNode }:
             {
                 var valueNode = node.Left as ValueExpressionNode ?? (ValueExpressionNode)node.Right;
@@ -141,15 +140,29 @@ public sealed class DefaultCostModel : ICostModel
                 var leftAttribute = await _catalog.GetAttributeAsync((FullySpecifiedColumnExpressionNode)node.Left);
                 var leftRelation = await _catalog.GetRelationAsync(leftAttribute.RelationId);
                 var rightAttribute = await _catalog.GetAttributeAsync((FullySpecifiedColumnExpressionNode)node.Right);
-                var rightRelation = await _catalog.GetRelationAsync(leftAttribute.RelationId);
+                var rightRelation = await _catalog.GetRelationAsync(rightAttribute.RelationId);
 
-                double leftRatio = (double) leftRelation.Cardinality / leftAttribute.DistinctCardinality;
-                double rightRatio = (double) rightRelation.Cardinality / rightAttribute.DistinctCardinality;
-                var left = leftRatio * (1.0 / leftRelation.Cardinality);
-                var right = rightRatio * (1.0 / rightRelation.Cardinality);
+                // If the cardinality of the relation is the same as the distinct cardinality of the attribute,
+                // we can assume that the attribute is a unique key
+                // therefore each value will appear once. If both attributes are unique keys, we use the normal formular
+                if((leftAttribute.DistinctCardinality == leftRelation.Cardinality &&
+                    rightAttribute.DistinctCardinality == rightRelation.Cardinality) || 
+                   (leftAttribute.DistinctCardinality != leftRelation.Cardinality &&
+                    rightAttribute.DistinctCardinality != rightRelation.Cardinality))
+                {
+                    return 1.0 / Math.Min(leftAttribute.DistinctCardinality, rightAttribute.DistinctCardinality);
+                }
                 
-                var res =  left * right;
-                return res;
+                if (leftAttribute.DistinctCardinality == leftRelation.Cardinality)
+                {
+                    return 1.0 / leftAttribute.DistinctCardinality;
+                } 
+                if (rightAttribute.DistinctCardinality == rightRelation.Cardinality)
+                {
+                    return 1.0 / rightAttribute.DistinctCardinality;
+                }
+                
+                return -1;
             case {Left : BinaryOperatorExpressionNode, Operation: "OR", Right: BinaryOperatorExpressionNode}:
             {
                 var leftSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Left);

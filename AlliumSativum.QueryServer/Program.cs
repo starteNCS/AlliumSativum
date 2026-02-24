@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using AlliumSativum.Compiler;
 using AlliumSativum.Optimize;
 using AlliumSativum.Parser;
@@ -55,13 +56,39 @@ app.MapGet("/metrics/{datasourceId:guid}", async (MetricsApi metrics, [FromRoute
 });
 app.MapPost("execute", async (QueryCompiler compiler, QueryExecutor queryExecutor, [FromBody] CompileInput query) =>
 {
-    // TODO: filter attribute is missing 
     var executionPlan = await compiler.CompileAsync(query.Query);
     
     var parallelPlan = QueryExecutor.ToParallelStacks(executionPlan.RootOperator);
     var result = await queryExecutor.ExecuteAsync(parallelPlan);
 
     return result;
+});
+
+app.MapPost("compare-selectivity", async (QueryCompiler compiler, QueryExecutor queryExecutor, [FromBody] CompileInput query) =>
+{
+    var executionPlan = await compiler.CompileAsync(query.Query);
+    
+    var parallelPlan = QueryExecutor.ToParallelStacks(executionPlan.RootOperator);
+
+    var sw = Stopwatch.StartNew();
+    var result = await queryExecutor.ExecuteAsync(parallelPlan);
+    sw.Stop();
+
+    return new
+    {
+        Cardinality = new
+        {
+            Expected = executionPlan.RootOperator.ExpectedCardinality,
+            Actual = result.Count,
+            Precision = (double) result.Count / executionPlan.RootOperator.ExpectedCardinality
+        },
+        Cost = new
+        {
+            Expected = executionPlan.RootOperator.Cost,
+            Actual = sw.ElapsedMilliseconds,
+            Precision = sw.ElapsedMilliseconds / executionPlan.RootOperator.Cost
+        }
+    };
 });
 
 app.Run();
