@@ -27,9 +27,9 @@ public class QueryCompiler
     {
         var tokens = _tokenizer.Tokenize(query);
         var selectModel = _parser.Parse(tokens);
-        if (selectModel == null)
+        if (selectModel is null)
         {
-            throw new AsSqlException();
+            throw new AsSqlException("Failed to parse query.");
         }
         _semanticTransformer.Transform(selectModel);
         // TODO: semantic checker (check attributes etc.)

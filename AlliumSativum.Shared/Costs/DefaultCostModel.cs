@@ -119,7 +119,7 @@ public sealed class DefaultCostModel : ICostModel
                 var attributeNode = node.Left as FullySpecifiedColumnExpressionNode ?? (FullySpecifiedColumnExpressionNode)node.Right;
                 var attribute = await _catalog.GetAttributeAsync(attributeNode);
             
-                if (attribute.IsNummeric && valueNode.Type == ValueExpressionNode.ValueExpressionType.Numeric)
+                if (attribute.IsNumeric && valueNode.Type == ValueExpressionNode.ValueExpressionType.Numeric)
                 {
                     var result = (attribute.Max - double.Parse(valueNode.Value)) / (attribute.Max - attribute.Min);
                     if (result is not null)

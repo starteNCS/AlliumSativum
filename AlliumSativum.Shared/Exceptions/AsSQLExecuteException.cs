@@ -6,8 +6,8 @@ public sealed class AsSQLExecuteException : AsSqlException
 {
     public ConnectorType? Connector { get; set; }
     
-    public AsSQLExecuteException(string message, ConnectorType? connector = null)
+    public AsSQLExecuteException(string message, ConnectorType? connector = null) : base(message)
     {
-        AsMessage = message;
+        Connector = connector;
     }
 }

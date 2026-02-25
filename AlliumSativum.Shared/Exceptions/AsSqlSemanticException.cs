@@ -2,8 +2,7 @@ namespace AlliumSativum.Shared.Exceptions;
 
 public sealed class AsSqlSemanticException : AsSqlException
 {
-    public AsSqlSemanticException(string message)
+    public AsSqlSemanticException(string message) : base(message)
     {
-        AsMessage = message;
     }
 }

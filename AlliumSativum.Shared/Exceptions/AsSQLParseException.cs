@@ -4,10 +4,9 @@ public sealed class AsSqlParseException : AsSqlException
 {
     public string ParseContent { get; set; }
 
-    public AsSqlParseException(string parseContent, string message)
+    public AsSqlParseException(string parseContent, string message) : base(message)
     {
         ParseContent = parseContent;
-        AsMessage = message;
     }
 
     public override string ToString()

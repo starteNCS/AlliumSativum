@@ -1,7 +1,9 @@
 using System.Diagnostics;
 using System.Text.Json;
+using AlliumSativum.Connectors.Shared;
 using AlliumSativum.Connectors.Shared.HttpUtils;
 using AlliumSativum.Shared.Database;
+using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSavitum.Connectors.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -42,7 +44,7 @@ public sealed class TicketSystemStatistics : IDataSourceStatistics
             relation.Transfer100Ms = connectionMetrics.TotalElapsed;
             if (total.Response is null)
             {
-                throw new AsSqlException();
+                throw new AsSqlException($"Failed to retrieve data for relation {relation.Name} when calculating statistics.");
             }
             relation.Cardinality = total.Response.Count;
             relation.MetricsDate = DateTime.Now;
@@ -86,6 +88,18 @@ public sealed class TicketSystemStatistics : IDataSourceStatistics
                 {
                     relationAttribute.DataType = value.ValueKind.ToString();
                 }
+
+                var values = total.Response
+                    .Select(x =>
+                    {
+                        if (!x.TryGetValue(relationAttribute.Name, out var jsonElement))
+                        {
+                            throw new AsSqlException("");
+                        }
+
+                        return jsonElement;
+                    }).ToList();
+                var relationAttributeWithDistribution = CalculateDistribution(values, relationAttribute);
                 
                 await _catalog.ExecuteAsync("""
                                             UPDATE Catalog.Attributes
@@ -93,9 +107,15 @@ public sealed class TicketSystemStatistics : IDataSourceStatistics
                                                 MetricsDate = @MetricsDate,
                                                 Min = @Min,
                                                 Max = @Max,
+                                                Mean = @Mean,
+                                                Variance = @Variance,
+                                                StandardDeviation = @StandardDeviation,
+                                                Range = @Range,
+                                                Skewness = @Skewness,
+                                                Kurtosis = @Kurtosis,
                                                 DataType = @DataType
                                                 WHERE Id = @Id
-                                            """, relationAttribute);
+                                            """, relationAttributeWithDistribution);
             }
             
             await _catalog.ExecuteAsync("""
@@ -111,18 +131,23 @@ public sealed class TicketSystemStatistics : IDataSourceStatistics
         await _catalog.CommitTransactionAsync();
     }
 
-    public double GetCardinalityOfTable(Guid dataSource, string table)
+    private AttributeEntity CalculateDistribution(List<JsonElement> values, AttributeEntity attribute)
     {
-        throw new NotImplementedException();
-    }
-
-    public double GetUpperBoundSizeOfTable(Guid dataSource, string table)
-    {
-        throw new NotImplementedException();
-    }
-
-    public double GetUpperBoundSizeOfTable(Guid dataSource, string table, List<string> columns)
-    {
-        throw new NotImplementedException();
+        var type = values.FirstOrDefault().ValueKind;
+        switch (type)
+        {
+            case JsonValueKind.Number:
+            {
+                var parsedValues = values.Select(x => x.GetDouble()).ToList();
+                return DistributionUtils.CalculateDistribution(parsedValues, attribute);
+            }
+            case JsonValueKind.String:
+            {
+                var parsedValues = values.Select(x => x.GetString() ?? string.Empty).ToList();
+                return DistributionUtils.CalculateDistribution(parsedValues, attribute);
+            }
+            default:
+                throw new AsSqlException("Only numeric and string attributes are supported for distribution calculation.");
+        }
     }
 }

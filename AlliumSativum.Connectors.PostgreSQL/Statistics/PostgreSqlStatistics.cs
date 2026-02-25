@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 using AlliumSativum.Connectors.PostgreSQL.Models.ORM;
+using AlliumSativum.Connectors.Shared;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
 using AlliumSavitum.Connectors.Shared.Interfaces;
@@ -72,15 +73,21 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                             """,  relationMetrics);
         
         await _catalogDatabase.ExecuteAsync("""
-                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate, Min, Max, DataType)
-                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate, @Min, @Max, @DataType)
+                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate, Min, Max, DataType, Mean, Range, Variance, StandardDeviation, Skewness, Kurtosis)
+                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate, @Min, @Max, @DataType, @Mean, @Range, @Variance, @StandardDeviation, @Skewness, @Kurtosis)
                                             ON CONFLICT (Id)
                                             DO UPDATE SET 
                                                           DistinctCardinality = EXCLUDED.DistinctCardinality,
                                                           MetricsDate = EXCLUDED.MetricsDate,
                                                           Min = EXCLUDED.Min,
                                                           Max = EXCLUDED.Max,
-                                                          DataType = EXCLUDED.DataType
+                                                          DataType = EXCLUDED.DataType,
+                                                          Mean = EXCLUDED.Mean,
+                                                          Range = EXCLUDED.Range,
+                                                          Variance = EXCLUDED.Variance,
+                                                          StandardDeviation = EXCLUDED.StandardDeviation,
+                                                          Skewness = EXCLUDED.Skewness,
+                                                          Kurtosis = EXCLUDED.Kurtosis
                                             """,  attributeMetrics);
     }
 
@@ -105,7 +112,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         foreach (var column in columns.Where(c =>
                      c.TableName == table.TableName && c.TableSchema == table.TableSchema))
         {
-            tableStatsStringBuilder.Append($", COUNT(DISTINCT {column.ColumnName}) AS {column.ColumnName}");
+            tableStatsStringBuilder.Append($", COUNT(DISTINCT {column.ColumnName}) AS {column.ColumnName}_distinct");
             if (column.IsNummeric)
             {
                 tableStatsStringBuilder.Append($", MIN({column.ColumnName}) AS {column.ColumnName}_min, MAX({column.ColumnName}) AS {column.ColumnName}_max");
@@ -144,36 +151,39 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                 {
                     max = Convert.ToDouble(maxObj);
                 }
-                
-                attributeMetrics.Add(new AttributeEntity
+
+                var attributeEntity = new AttributeEntity
                 {
                     Id = attributeId,
-                    RelationId = relationId, 
+                    RelationId = relationId,
                     Name = column.ColumnName,
                     MetricsDate = DateTime.Now,
-                    DistinctCardinality = (long) rowDict[column.ColumnName],
+                    DistinctCardinality = (long)rowDict[$"{column.ColumnName}_distinct"],
                     Min = min,
                     Max = max,
                     DataType = column.DataType,
-                });
+                };
+
+                var data = await _dataSource.QueryAsync(dataSource, $"SELECT {attributeEntity.Name} FROM {table.TableSchema}.{table.TableName}");
+                if (attributeEntity.IsNumeric)
+                {
+                    var items = data
+                        .Select(x => Convert.ToDouble(x.GetValueOrDefault(attributeEntity.Name)))
+                        .ToList();
+                    attributeEntity = DistributionUtils.CalculateDistribution(items, attributeEntity);
+                }
+                else
+                {
+                    var items = data
+                        .Select(x => Convert.ToString(x.GetValueOrDefault(attributeEntity.Name)) ?? string.Empty)
+                        .ToList();
+                    attributeEntity = DistributionUtils.CalculateDistribution(items, attributeEntity);
+                }
+                
+                attributeMetrics.Add(attributeEntity);
             }
         }
         
         return (relationMetrics, attributeMetrics);
-    }
-
-    public double GetCardinalityOfTable(Guid dataSource, string table)
-    {
-        throw new NotImplementedException();
-    }
-
-    public double GetUpperBoundSizeOfTable(Guid dataSource, string table)
-    {
-        throw new NotImplementedException();
-    }
-
-    public double GetUpperBoundSizeOfTable(Guid dataSource, string table, List<string> columns)
-    {
-        throw new NotImplementedException();
     }
 }

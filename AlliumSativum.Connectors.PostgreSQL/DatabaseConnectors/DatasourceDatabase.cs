@@ -22,7 +22,6 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
     }
     
     public async Task<List<T>> QueryAsync<T>(Guid dataSource, string query, object? parameters = null)
-        where T : new()
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
         if (connection is null)

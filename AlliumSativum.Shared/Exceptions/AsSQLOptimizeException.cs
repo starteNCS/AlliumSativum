@@ -2,9 +2,8 @@ namespace AlliumSativum.Shared.Exceptions;
 
 public sealed class AsSqlOptimizeException : AsSqlException
 {
-    public AsSqlOptimizeException(string message)
+    public AsSqlOptimizeException(string message) : base(message)
     {
-        AsMessage = message;
     }
 
     public override string ToString()
