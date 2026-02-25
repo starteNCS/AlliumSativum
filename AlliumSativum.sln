@@ -28,7 +28,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.AppHost", "Al
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.ServiceDefaults", "AlliumSativum.ServiceDefaults\AlliumSativum.ServiceDefaults.csproj", "{F1C46C3B-E5A3-42E5-AEB7-6ED606832FD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.Connectors.TicketSystem", "AlliumSativum.Connectors.TicketSystem\AlliumSativum.Connectors.TicketSystem.csproj", "{8C899B36-1201-41BB-9CDE-0B9A60036C28}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlliumSativum.Connectors.JsonServer", "AlliumSativum.Connectors.JsonServer\AlliumSativum.Connectors.JsonServer.csproj", "{8C899B36-1201-41BB-9CDE-0B9A60036C28}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{D1502C93-AA8A-4EC5-93DB-5FAED550FAEB}"
 EndProject

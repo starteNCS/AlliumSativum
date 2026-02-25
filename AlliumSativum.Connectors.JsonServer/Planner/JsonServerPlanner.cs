@@ -7,13 +7,13 @@ using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
-namespace AlliumSativum.Connectors.TicketSystem.Planner;
+namespace AlliumSativum.Connectors.JsonServer.Planner;
 
-public sealed class TicketSystemPlanner : IPlanner
+public sealed class JsonServerPlanner : IPlanner
 {
     private readonly CatalogDatabase _catalogDatabase;
 
-    public TicketSystemPlanner(CatalogDatabase catalogDatabase)
+    public JsonServerPlanner(CatalogDatabase catalogDatabase)
     {
         _catalogDatabase = catalogDatabase;
     }

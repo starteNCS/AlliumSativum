@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.Json;
 using AlliumSativum.Connectors.Shared;
 using AlliumSativum.Connectors.Shared.HttpUtils;
@@ -8,16 +7,16 @@ using AlliumSativum.Shared.Exceptions;
 using AlliumSavitum.Connectors.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace AlliumSativum.Connectors.TicketSystem.Statistics;
+namespace AlliumSativum.Connectors.JsonServer.Statistics;
 
-public sealed class TicketSystemStatistics : IDataSourceStatistics
+public sealed class JsonServerStatistics : IDataSourceStatistics
 {
     private readonly CatalogDatabase _catalog;
-    private readonly ILogger<TicketSystemStatistics> _logger;
+    private readonly ILogger<JsonServerStatistics> _logger;
 
-    public TicketSystemStatistics(
+    public JsonServerStatistics(
         CatalogDatabase catalog,
-        ILogger<TicketSystemStatistics> logger)
+        ILogger<JsonServerStatistics> logger)
     {
         _catalog = catalog;
         _logger = logger;

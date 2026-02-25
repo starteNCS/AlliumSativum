@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Dynamic;
 using System.Text.Json;
 using AlliumSativum.Connectors.Shared.Interfaces;
 using AlliumSativum.Shared.Database;
@@ -8,16 +7,15 @@ using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.Executor;
-using AlliumSativum.Shared.Utils;
 
-namespace AlliumSativum.Connectors.TicketSystem.Executor;
+namespace AlliumSativum.Connectors.JsonServer.Executor;
 
-public sealed class TicketSystemExecutor : IWorkerExecutor
+public sealed class JsonServerExecutor : IWorkerExecutor
 {
     private readonly CatalogDatabase _catalog;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public TicketSystemExecutor(
+    public JsonServerExecutor(
         CatalogDatabase catalog,
         IHttpClientFactory httpClientFactory)
     {
@@ -29,13 +27,13 @@ public sealed class TicketSystemExecutor : IWorkerExecutor
     {
         if (@operator is not PushdownRestCallPlanOperator pushdown)
         {
-            throw new AsSQLExecuteException("Invalid plan operator type for TicketSystemExecutor. Expected PushdownRestCallPlanOperator.", ConnectorType.TicketSystem);
+            throw new AsSQLExecuteException("Invalid plan operator type for TicketSystemExecutor. Expected PushdownRestCallPlanOperator.", ConnectorType.JsonServer);
         }
         
         var dataSource = await _catalog.GetDataSourceAsync(@pushdown.DataSource);
         if (dataSource is null)
         {
-            throw new AsSQLExecuteException($"Data source with id {@pushdown.DataSource} not found", ConnectorType.TicketSystem);
+            throw new AsSQLExecuteException($"Data source with id {@pushdown.DataSource} not found", ConnectorType.JsonServer);
         }
         
         var httpClient = _httpClientFactory.CreateClient();

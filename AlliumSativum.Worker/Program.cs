@@ -1,7 +1,7 @@
 using System.Reflection;
+using AlliumSativum.Connectors.JsonServer.Extensions;
 using AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 using AlliumSativum.Connectors.PostgreSQL.Extensions;
-using AlliumSativum.Connectors.TicketSystem.Extensions;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Migrations;
 using AlliumSativum.Worker.Services;
@@ -26,7 +26,7 @@ builder.Services
 
 builder.Services
     .AddPostgreSqlConnector()
-    .AddTicketSystemConnector();
+    .AddJsonServerConnector();
 
 builder.Services
     .AddScoped<PlannerStrategy>()

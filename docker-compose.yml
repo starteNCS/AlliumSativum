@@ -1,13 +1,13 @@
 version: '3.4'
 
 volumes:
-  db-data:
+  tpc-h-data:
 
 services:
   db:
     image: postgres:17.5
     restart: always
-    container_name: postgres_test
+    container_name: tpc_h
     ports:
       - 54321:5432
     environment:
@@ -16,4 +16,4 @@ services:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=database
     volumes:
-      - db-data:/data
+      - tpc-h-data:/data

@@ -1,5 +1,5 @@
+using AlliumSativum.Connectors.JsonServer.Statistics;
 using AlliumSativum.Connectors.PostgreSQL.Statistics;
-using AlliumSativum.Connectors.TicketSystem.Statistics;
 using AlliumSativum.Shared.Enums;
 using AlliumSavitum.Connectors.Shared.Interfaces;
 
@@ -8,14 +8,14 @@ namespace AlliumSativum.Worker.Strategies;
 public sealed class StatisticsStrategy
 {
     private readonly PostgreSqlStatistics _postgreSqlStatistics;
-    private readonly TicketSystemStatistics _ticketSystemStatistics;
+    private readonly JsonServerStatistics _jsonServerStatistics;
 
     public StatisticsStrategy(
         PostgreSqlStatistics  postgreSqlStatistics,
-        TicketSystemStatistics ticketSystemStatistics)
+        JsonServerStatistics jsonServerStatistics)
     {
         _postgreSqlStatistics = postgreSqlStatistics;
-        _ticketSystemStatistics = ticketSystemStatistics;
+        _jsonServerStatistics = jsonServerStatistics;
     }
 
     public IDataSourceStatistics GetStatisticsOfConnector(ConnectorType connectorType)
@@ -23,7 +23,7 @@ public sealed class StatisticsStrategy
         return connectorType switch
         {
             ConnectorType.Postgres => _postgreSqlStatistics,
-            ConnectorType.TicketSystem => _ticketSystemStatistics,
+            ConnectorType.JsonServer => _jsonServerStatistics,
             _ => throw new ArgumentException("Invalid connector type. Did you forget to add it to the strategy?", nameof(connectorType))
         };
     }
