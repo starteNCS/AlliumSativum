@@ -112,6 +112,7 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
                                                 Range = @Range,
                                                 Skewness = @Skewness,
                                                 Kurtosis = @Kurtosis,
+                                                KellySkewness = @KellySkewness,
                                                 DataType = @DataType
                                                 WHERE Id = @Id
                                             """, relationAttributeWithDistribution);
@@ -130,7 +131,7 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
         await _catalog.CommitTransactionAsync();
     }
 
-    private AttributeEntity CalculateDistribution(List<JsonElement> values, AttributeEntity attribute)
+    private static AttributeEntity CalculateDistribution(List<JsonElement> values, AttributeEntity attribute)
     {
         var type = values.FirstOrDefault(x => x.ValueKind != JsonValueKind.Null).ValueKind;
         switch (type)

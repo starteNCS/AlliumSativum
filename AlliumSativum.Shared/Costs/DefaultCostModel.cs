@@ -1,10 +1,12 @@
 using AlliumSativum.Shared.Costs.Settings;
 using AlliumSativum.Shared.Database;
+using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
+using AlliumSativum.Shared.Utils;
 using Microsoft.Extensions.Options;
 
 namespace AlliumSativum.Shared.Costs;
@@ -142,27 +144,7 @@ public sealed class DefaultCostModel : ICostModel
                 var rightAttribute = await _catalog.GetAttributeAsync((FullySpecifiedColumnExpressionNode)node.Right);
                 var rightRelation = await _catalog.GetRelationAsync(rightAttribute.RelationId);
 
-                // If the cardinality of the relation is the same as the distinct cardinality of the attribute,
-                // we can assume that the attribute is a unique key
-                // therefore each value will appear once. If both attributes are unique keys, we use the normal formular
-                if((leftAttribute.DistinctCardinality == leftRelation.Cardinality &&
-                    rightAttribute.DistinctCardinality == rightRelation.Cardinality) || 
-                   (leftAttribute.DistinctCardinality != leftRelation.Cardinality &&
-                    rightAttribute.DistinctCardinality != rightRelation.Cardinality))
-                {
-                    return 1.0 / Math.Min(leftAttribute.DistinctCardinality, rightAttribute.DistinctCardinality);
-                }
-                
-                if (leftAttribute.DistinctCardinality == leftRelation.Cardinality)
-                {
-                    return 1.0 / leftAttribute.DistinctCardinality;
-                } 
-                if (rightAttribute.DistinctCardinality == rightRelation.Cardinality)
-                {
-                    return 1.0 / rightAttribute.DistinctCardinality;
-                }
-                
-                return -1;
+                return CalculateEquiSelectivity(leftAttribute, rightAttribute, leftRelation, rightRelation);
             case {Left : BinaryOperatorExpressionNode, Operation: "OR", Right: BinaryOperatorExpressionNode}:
             {
                 var leftSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Left);
@@ -179,7 +161,44 @@ public sealed class DefaultCostModel : ICostModel
                 throw new ArgumentException("Unsupported expression node for selectivity estimation");
         }
     }
-    
+
+    private static double CalculateEquiSelectivity(AttributeEntity leftAttribute, AttributeEntity rightAttribute,
+        RelationEntity leftRelation, RelationEntity rightRelation)
+    {
+        var leftDistribution = DistributionUtils.GetDistributionType(leftAttribute);
+        var rightDistribution = DistributionUtils.GetDistributionType(leftAttribute);
+        switch (leftDistribution, rightDistribution)
+        {
+            case (QuasiUniformDistributionType uniLeft, QuasiUniformDistributionType uniRight):
+                var selectivity = 1.0 / Math.Max(leftAttribute.DistinctCardinality, rightAttribute.DistinctCardinality);
+                var penalty = (uniLeft.CoefficientOfVariation + uniRight.CoefficientOfVariation) / 2;
+                        
+                return Math.Min(1, selectivity + penalty);
+            case (QuasiUniformDistributionType uniform, QuasiConstantDistributionType):
+                var uniformSelectivity = (1.0 / leftAttribute.DistinctCardinality) + uniform.CoefficientOfVariation;
+                var constantSelectivity = 1.0 / rightAttribute.DistinctCardinality;
+
+                return uniformSelectivity * constantSelectivity;
+            case (QuasiUniformDistributionType, PowerLawDistributionType):
+            case (QuasiUniformDistributionType, SkewedDistributionType):
+                return Math.Abs(rightAttribute.KellySkewness);
+            case (QuasiConstantDistributionType, QuasiConstantDistributionType):
+                return 1.0/Math.Max(leftAttribute.DistinctCardinality, rightAttribute.DistinctCardinality);
+            case (QuasiConstantDistributionType, PowerLawDistributionType):
+            case (QuasiConstantDistributionType, SkewedDistributionType):
+                return (1.0/leftAttribute.DistinctCardinality) * Math.Abs(rightAttribute.KellySkewness);
+            case (PowerLawDistributionType, PowerLawDistributionType):
+            case (PowerLawDistributionType, SkewedDistributionType):
+            case (SkewedDistributionType, SkewedDistributionType):
+                return Math.Max(
+                    Math.Abs(leftAttribute.KellySkewness),
+                    Math.Abs(rightAttribute.KellySkewness));
+            default:
+                // other way, to catch the "other half" of the matrix
+                return CalculateEquiSelectivity(rightAttribute, leftAttribute, rightRelation, leftRelation);
+        }
+    }
+
     private double CalculateProjectCost(ProjectPlanOperator project)
     {
         return _settings.Project.BaseCost 

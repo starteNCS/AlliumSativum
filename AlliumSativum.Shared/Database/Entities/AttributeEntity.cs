@@ -16,6 +16,7 @@ public sealed class AttributeEntity
     public double StandardDeviation { get; set; }
     public double Range { get; set; }
     public double Skewness { get; set; }
+    public double KellySkewness { get; set; }
     public double Kurtosis { get; set; } 
     public string DataType { get; set; } = string.Empty;
     

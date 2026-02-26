@@ -1,0 +1,1 @@
+ALTER TABLE Catalog.Attributes ADD COLUMN KellySkewness double precision NULL;
