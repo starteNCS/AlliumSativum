@@ -168,7 +168,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                 if (attributeEntity.IsNumeric)
                 {
                     var items = data
-                        .Select(x => Convert.ToDouble(x.GetValueOrDefault(attributeEntity.Name)))
+                        .Select(double? (x) => x.TryGetValue(attributeEntity.Name, out var value) ? Convert.ToDouble(value) : null)
                         .ToList();
                     attributeEntity = DistributionUtils.CalculateDistribution(items, attributeEntity);
                 }

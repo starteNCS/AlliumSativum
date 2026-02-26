@@ -132,12 +132,20 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
 
     private AttributeEntity CalculateDistribution(List<JsonElement> values, AttributeEntity attribute)
     {
-        var type = values.FirstOrDefault().ValueKind;
+        var type = values.FirstOrDefault(x => x.ValueKind != JsonValueKind.Null).ValueKind;
         switch (type)
         {
             case JsonValueKind.Number:
             {
-                var parsedValues = values.Select(x => x.GetDouble()).ToList();
+                var parsedValues = values.Select(double? (x) =>
+                {
+                    if (x.ValueKind == JsonValueKind.Null)
+                    {
+                        return null;
+                    }
+                    
+                    return x.TryGetDouble(out var num) ? num : null;
+                }).ToList();
                 return DistributionUtils.CalculateDistribution(parsedValues, attribute);
             }
             case JsonValueKind.String:
