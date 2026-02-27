@@ -64,6 +64,16 @@ app.MapPost("execute", async (QueryCompiler compiler, QueryExecutor queryExecuto
     return result;
 });
 
+app.MapPost("execute-return-plan", async (QueryCompiler compiler, QueryExecutor queryExecutor, [FromBody] CompileInput query) =>
+{
+    var executionPlan = await compiler.CompileAsync(query.Query);
+    
+    var parallelPlan = QueryExecutor.ToParallelStacks(executionPlan.RootOperator);
+    var result = await queryExecutor.ExecuteAsync(parallelPlan);
+
+    return executionPlan.RootOperator.ToPrettyString(html: true, includeActual: true);
+});
+
 app.MapPost("compare-selectivity", async (QueryCompiler compiler, QueryExecutor queryExecutor, [FromBody] CompileInput query) =>
 {
     var executionPlan = await compiler.CompileAsync(query.Query);
