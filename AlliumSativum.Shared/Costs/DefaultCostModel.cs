@@ -15,7 +15,7 @@ namespace AlliumSativum.Shared.Costs;
 /// Default cost model, should be okay-ish for all types of data source, but connectors maybe need to implement their
 /// own, to fit their specific needs
 /// </summary>
-public sealed class DefaultCostModel : ICostModel
+public sealed partial class DefaultCostModel : ICostModel
 {
     private readonly CatalogDatabase _catalog;
     private readonly CostModelSettings _settings;
@@ -111,10 +111,7 @@ public sealed class DefaultCostModel : ICostModel
         switch (node)
         {
             case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: "=", Left: ValueExpressionNode }:
-                var attr = await _catalog.GetAttributeAsync((FullySpecifiedColumnExpressionNode)node.Left);
-                var ratio = 1.0 / attr.DistinctCardinality;
-                
-                return ratio;
+                return await CalculateEqualsSelectivityAsync(node);
             case { Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Left: ValueExpressionNode }:
             {
                 var valueNode = node.Left as ValueExpressionNode ?? (ValueExpressionNode)node.Right;
@@ -139,12 +136,7 @@ public sealed class DefaultCostModel : ICostModel
                 return 0.5;
             }
             case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: FullySpecifiedColumnExpressionNode }:
-                var leftAttribute = await _catalog.GetAttributeAsync((FullySpecifiedColumnExpressionNode)node.Left);
-                var leftRelation = await _catalog.GetRelationAsync(leftAttribute.RelationId);
-                var rightAttribute = await _catalog.GetAttributeAsync((FullySpecifiedColumnExpressionNode)node.Right);
-                var rightRelation = await _catalog.GetRelationAsync(rightAttribute.RelationId);
-
-                return CalculateEquiSelectivity(leftAttribute, rightAttribute, leftRelation, rightRelation);
+                return await CalculateEquiJoinSelectivityAsync(node);
             case {Left : BinaryOperatorExpressionNode, Operation: "OR", Right: BinaryOperatorExpressionNode}:
             {
                 var leftSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Left);
@@ -162,42 +154,6 @@ public sealed class DefaultCostModel : ICostModel
         }
     }
 
-    private static double CalculateEquiSelectivity(AttributeEntity leftAttribute, AttributeEntity rightAttribute,
-        RelationEntity leftRelation, RelationEntity rightRelation)
-    {
-        var leftDistribution = DistributionUtils.GetDistributionType(leftAttribute);
-        var rightDistribution = DistributionUtils.GetDistributionType(leftAttribute);
-        switch (leftDistribution, rightDistribution)
-        {
-            case (QuasiUniformDistributionType uniLeft, QuasiUniformDistributionType uniRight):
-                var selectivity = 1.0 / Math.Max(leftAttribute.DistinctCardinality, rightAttribute.DistinctCardinality);
-                var penalty = (uniLeft.CoefficientOfVariation + uniRight.CoefficientOfVariation) / 2;
-                        
-                return Math.Min(1, selectivity + penalty);
-            case (QuasiUniformDistributionType uniform, QuasiConstantDistributionType):
-                var uniformSelectivity = (1.0 / leftAttribute.DistinctCardinality) + uniform.CoefficientOfVariation;
-                var constantSelectivity = 1.0 / rightAttribute.DistinctCardinality;
-
-                return uniformSelectivity * constantSelectivity;
-            case (QuasiUniformDistributionType, PowerLawDistributionType):
-            case (QuasiUniformDistributionType, SkewedDistributionType):
-                return Math.Abs(rightAttribute.KellySkewness);
-            case (QuasiConstantDistributionType, QuasiConstantDistributionType):
-                return 1.0/Math.Max(leftAttribute.DistinctCardinality, rightAttribute.DistinctCardinality);
-            case (QuasiConstantDistributionType, PowerLawDistributionType):
-            case (QuasiConstantDistributionType, SkewedDistributionType):
-                return (1.0/leftAttribute.DistinctCardinality) * Math.Abs(rightAttribute.KellySkewness);
-            case (PowerLawDistributionType, PowerLawDistributionType):
-            case (PowerLawDistributionType, SkewedDistributionType):
-            case (SkewedDistributionType, SkewedDistributionType):
-                return Math.Max(
-                    Math.Abs(leftAttribute.KellySkewness),
-                    Math.Abs(rightAttribute.KellySkewness));
-            default:
-                // other way, to catch the "other half" of the matrix
-                return CalculateEquiSelectivity(rightAttribute, leftAttribute, rightRelation, leftRelation);
-        }
-    }
 
     private double CalculateProjectCost(ProjectPlanOperator project)
     {
