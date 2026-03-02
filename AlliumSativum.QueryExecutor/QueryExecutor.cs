@@ -56,6 +56,12 @@ public sealed class QueryExecutor
         return latestPop?.ExecutionData.Data ?? [];
     }
 
+    public Task<List<Dictionary<string, object>>> ExecuteAsync(PlanOperator root)
+    {
+        var parallelStacks = ToParallelStacks(root);
+        return ExecuteAsync(parallelStacks);
+    }
+
     public static ParallelQueryExecutionPlan ToParallelStacks(PlanOperator root)
     {
         var continuation = new List<PlanOperator>();

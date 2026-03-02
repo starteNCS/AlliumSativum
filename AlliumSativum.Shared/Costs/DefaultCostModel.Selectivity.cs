@@ -6,7 +6,6 @@ namespace AlliumSativum.Shared.Costs;
 
 public partial class DefaultCostModel
 {
-    
 
     private async Task<double> CalculateEqualsSelectivityAsync(BinaryOperatorExpressionNode node)
     {
@@ -45,25 +44,37 @@ public partial class DefaultCostModel
                         
                 return Math.Min(1, selectivity + penalty);
             case (QuasiUniformDistributionType uniform, QuasiConstantDistributionType):
-                // TODO: quasi uniform and constant are basically the same?
                 var uniformSelectivity = (1.0 / leftAttribute.DistinctCardinality) + uniform.CoefficientOfVariation;
-                var constantSelectivity = 1.0 / rightAttribute.DistinctCardinality;
+                var constantSelectivity = (1.0 / rightAttribute.DistinctCardinality) * _settings.SelectivityEstimation.PenaltyForConstant;
 
                 return uniformSelectivity * constantSelectivity;
             case (QuasiUniformDistributionType, PowerLawDistributionType):
             case (QuasiUniformDistributionType, SkewedDistributionType):
                 return Math.Abs(rightAttribute.KellySkewness);
+            case (QuasiUniformDistributionType, MultiModalDistributionType):
+                return 0.1;
+                throw new NotImplementedException();
             case (QuasiConstantDistributionType, QuasiConstantDistributionType):
-                return 1.0/Math.Max(leftAttribute.DistinctCardinality, rightAttribute.DistinctCardinality);
+                return (1.0 / Math.Max(leftAttribute.DistinctCardinality, rightAttribute.DistinctCardinality)) * _settings.SelectivityEstimation.PenaltyForConstant;
             case (QuasiConstantDistributionType, PowerLawDistributionType):
             case (QuasiConstantDistributionType, SkewedDistributionType):
-                return (1.0/leftAttribute.DistinctCardinality) * Math.Abs(rightAttribute.KellySkewness);
+                return (1.0/leftAttribute.DistinctCardinality) * _settings.SelectivityEstimation.PenaltyForConstant * Math.Abs(rightAttribute.KellySkewness);
+            case (QuasiConstantDistributionType, MultiModalDistributionType):
+                return 0.1;
+                throw new NotImplementedException();
             case (PowerLawDistributionType, PowerLawDistributionType):
             case (PowerLawDistributionType, SkewedDistributionType):
             case (SkewedDistributionType, SkewedDistributionType):
                 return Math.Max(
                     Math.Abs(leftAttribute.KellySkewness),
                     Math.Abs(rightAttribute.KellySkewness));
+            case (PowerLawDistributionType, MultiModalDistributionType):
+            case (SkewedDistributionType, MultiModalDistributionType):
+                return 0.1;
+                throw new NotImplementedException();
+            case (MultiModalDistributionType, MultiModalDistributionType):
+                return 0.1;
+                throw new NotImplementedException();
             default:
                 // other way, to catch the "other half" of the matrix
                 return await CalculateEquiJoinSelectivityAsync(new BinaryOperatorExpressionNode

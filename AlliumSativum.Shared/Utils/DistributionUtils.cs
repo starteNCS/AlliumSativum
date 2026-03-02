@@ -9,10 +9,6 @@ public static class DistributionUtils
         // Basic heuristic to detect if uniform.
         // expresses the standard deviation as a percentage of the mean
         var coefficientOfVariation = attributeEntity.StandardDeviation / attributeEntity.Mean;
-        if (coefficientOfVariation < 0.15)
-        {
-            return DistributionType.QuasiUniform(coefficientOfVariation);
-        }
 
         // Basic heuristic to detect if quasi-constant
         // distribution is so heavily skewed, that the one outlier is the "quasi constant" field
@@ -33,6 +29,11 @@ public static class DistributionUtils
         if(attributeEntity is { Skewness: > 2, Kurtosis: > 3 })
         {
             return DistributionType.PowerLaw();
+        }
+        
+        if (coefficientOfVariation < 0.15 && attributeEntity is {Skewness: < 0.5})
+        {
+            return DistributionType.QuasiUniform(coefficientOfVariation);
         }
         
         // Fallback to skewed distribution
