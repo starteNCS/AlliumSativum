@@ -8,6 +8,7 @@ using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.Executor;
+using AlliumSativum.Shared.Utils;
 
 namespace AlliumSativum.Connectors.JsonServer.Executor;
 
@@ -48,10 +49,10 @@ public sealed class JsonServerExecutor : IWorkerExecutor
         var response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
         var responseContent = await response.Content.ReadAsStringAsync();
-        var jsonResult = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(responseContent, new JsonSerializerOptions
-        {
-            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
-        });
+        var jsonResult = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(responseContent);
+        jsonResult = jsonResult?
+            .Select(x => x.PrefixKeys(pushdown.Self.ToString() + "."))
+            .ToList();
         stopwatch.Stop();
         
         return new ExecutorWrapper

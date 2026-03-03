@@ -79,12 +79,14 @@ message GPlanOperator {
 message GPushdownSqlPlanOperator {
   string datasourceId = 1;
   string sql_statement = 2;
+  GTableSpecifier self = 3;
 }
 
 message GPushdownRestCallPlanOperator {
   string datasourceId = 1;
   string httpMethod = 2;
   string url = 3;
+  GTableSpecifier self = 4;
 }
 
 // Executor

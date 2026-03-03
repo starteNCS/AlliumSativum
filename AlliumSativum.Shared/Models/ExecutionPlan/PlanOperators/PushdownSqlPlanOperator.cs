@@ -1,9 +1,11 @@
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Utils;
+using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 
 public class PushdownSqlPlanOperator : PlanOperator
 {
+    public required TableSpecifier Self { get; init; }
     public Guid DataSource { get;  }
     public string SqlStatement { get; }
 

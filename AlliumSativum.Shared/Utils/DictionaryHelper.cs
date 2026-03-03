@@ -16,4 +16,14 @@ public static class DictionaryHelper
 
         return expando;
     }
+    
+    public static Dictionary<string, TValue> PrefixKeys<TValue>(
+        this Dictionary<string, TValue> source, 
+        string prefix)
+    {
+        return source.ToDictionary(
+            kvp => $"{prefix}{kvp.Key}", 
+            kvp => kvp.Value
+        );
+    }
 }

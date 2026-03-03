@@ -18,7 +18,7 @@ public sealed class ProjectPlanOperatorExecutor : IPlanOperatorExecutor<ProjectP
         foreach (var item in childData)
         {
             var projected = new  Dictionary<string, object>(pop.Attributes.Count);
-            foreach (var propName in pop.Attributes.Select(x => x.AttributeName))
+            foreach (var propName in pop.Attributes.Select(x => x.ToDictKey()))
             {
                 projected[propName] = item[propName];
             }

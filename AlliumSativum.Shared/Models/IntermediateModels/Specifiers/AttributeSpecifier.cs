@@ -24,6 +24,13 @@ public sealed class AttributeSpecifier : TableSpecifier, IEquatable<AttributeSpe
         .Append(AsSqlParameters.Attribute.TableSeparator)
         .Append(AttributeName)
         .ToString();
+    
+    public string ToDictKey() => new StringBuilder()
+        .Append(base.ToString())
+        .Append(AsSqlParameters.Attribute.TableSeparator)
+        .Append(AttributeName)
+        .ToString();
+    
 
     public bool IsInTable(TableSpecifier table)
     {

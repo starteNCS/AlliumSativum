@@ -8,6 +8,7 @@ using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.Executor;
+using AlliumSativum.Shared.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace AlliumSativum.Connectors.PostgreSQL.Executor;
@@ -31,6 +32,10 @@ public sealed class PostgreSqlExecutor : IWorkerExecutor
         var stopwatch = Stopwatch.StartNew();
         var result = await _dataSource.QueryAsync(@pushdown.DataSource, @pushdown.SqlStatement);
         stopwatch.Stop();
+        
+        result = result
+            .Select(x => x.PrefixKeys(pushdown.Self.ToString() + "."))
+            .ToList();
         
         return new ExecutorWrapper
         {

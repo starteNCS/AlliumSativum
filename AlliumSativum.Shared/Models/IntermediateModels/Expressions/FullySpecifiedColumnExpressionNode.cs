@@ -23,11 +23,11 @@ public class FullySpecifiedColumnExpressionNode : ExpressionNode
 
     public override object? ResolveValue(Dictionary<string, object> row)
     {
-        return row.GetValueOrDefault(Attribute.AttributeName)?.ToString();
+        return row.GetValueOrDefault(Attribute.ToDictKey())?.ToString();
     }
 
     public override bool EvaluatePredicate(Dictionary<string, object> row)
     {
-        return row.TryGetValue(Attribute.AttributeName, out var val) && val is not null;
+        return row.TryGetValue(Attribute.ToDictKey(), out var val) && val is not null;
     }
 }

@@ -111,7 +111,12 @@ public static class ModelExtensions
                 PushdownSql = new GPushdownSqlPlanOperator
                 {
                     SqlStatement = psql.SqlStatement,
-                    DatasourceId = psql.DataSource.ToString()
+                    DatasourceId = psql.DataSource.ToString(),
+                    Self = new GTableSpecifier
+                    {
+                        DataSource =  psql.Self.DataSourceName,
+                        TableName = psql.Self.TableName
+                    }
                 },
                 Cost = planOperator.Cost,
                 ExpectedCardinality = planOperator.ExpectedCardinality,
@@ -122,7 +127,12 @@ public static class ModelExtensions
                 {
                     DatasourceId = prest.DataSource.ToString(),
                     HttpMethod = prest.HttpMethod,
-                    Url = prest.Url
+                    Url = prest.Url,
+                    Self = new GTableSpecifier
+                    {
+                        DataSource =  prest.Self.DataSourceName,
+                        TableName = prest.Self.TableName
+                    }
                 },
                 Cost = planOperator.Cost,
                 ExpectedCardinality = planOperator.ExpectedCardinality
@@ -246,7 +256,8 @@ public static class ModelExtensions
             {
                 Cost = proto.Cost,
                 ExpectedCardinality = proto.ExpectedCardinality,
-                Selectivity = 1
+                Selectivity = 1,
+                Self = new TableSpecifier(proto.PushdownSql.Self.DataSource, proto.PushdownSql.Self.TableName)
             },
             GPlanOperator.OperatorTypeOneofCase.PushdownRestCall => new PushdownRestCallPlanOperator(
                 Guid.Parse(proto.PushdownRestCall.DatasourceId),
@@ -256,7 +267,8 @@ public static class ModelExtensions
             {
                 Cost = proto.Cost,
                 ExpectedCardinality = proto.ExpectedCardinality,
-                Selectivity = 1
+                Selectivity = 1,
+                Self = new TableSpecifier(proto.PushdownRestCall.Self.DataSource, proto.PushdownRestCall.Self.TableName)
             },
             _ => throw new ArgumentException("Expected some plan operator"),
         };

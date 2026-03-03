@@ -72,6 +72,7 @@ public sealed class JsonServerPlanner : IPlanner
             {
                 Cost = cost,
                 ExpectedCardinality = relation.Cardinality,
+                Self = from
             },
             PlannedItems = new SelectBaseModel { From = from },
         };
