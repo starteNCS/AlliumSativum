@@ -1,0 +1,31 @@
+dataset_id,name,source_url,domain,row_count,feature_count,license,published_year
+1,BLS Current Population Survey,http://www.vazquez.com/,Economics,2288377,147,CC-BY-4.0,2022
+2,UCI Adult Income Dataset,https://carr.com/,Social Science,6322879,241,MIT,2015
+3,Kaggle Consumer Behaviour Survey 2023,https://harmon.com/,Behavioural,8401224,228,ODC-By,2017
+4,Federal Reserve Consumer Finance Panel,http://www.martinez.com/,Finance,9081012,11,CC-BY-4.0,2019
+5,OECD Employment Outlook Microdata,https://www.powell.com/,Economics,5649540,146,ODC-By,2015
+6,Nielsen Homescan Panel Extract,https://www.sanchez.com/,Behavioural,6479860,224,Public Domain,2015
+7,Twitter Financial Sentiment Corpus,http://brown-schultz.com/,NLP,6338277,183,Apache-2.0,2017
+8,Amazon Product Reviews (5-star subset),https://carroll.net/,NLP,9678831,13,CC-BY-4.0,2022
+9,MNIST Handwritten Digits,https://www.johnson-thomas.com/,Computer Vision,9629837,53,CC-BY-4.0,2019
+10,ImageNet-1k Validation Set,https://www.benton.com/,Computer Vision,8471961,224,ODC-By,2015
+11,UCI Heart Disease Dataset,http://www.mitchell.info/,Healthcare,2179607,208,ODC-By,2022
+12,MIMIC-III Clinical Notes (de-id),http://garrett-cole.info/,Healthcare,8345838,115,ODC-By,2015
+13,World Bank WDI Time Series,https://www.daniels.info/,Economics,7065863,166,Apache-2.0,2023
+14,Stack Overflow Developer Survey 2023,https://www.kelly.com/,Social Science,4573402,202,CC-BY-4.0,2023
+15,GitHub Activity Graph Dataset,https://reeves.com/,Social Science,4334184,217,CC-BY-4.0,2018
+16,MovieLens 25M Ratings,http://www.hudson-brown.biz/,Recommendation,622329,104,ODC-By,2023
+17,Open Payments CMS Drug Data,https://www.hull.com/,Healthcare,3081616,177,ODC-By,2021
+18,EuroStat Labour Force Survey,https://www.diaz.com/,Economics,5733061,142,MIT,2016
+19,Yelp Open Dataset (Business),https://www.bates.com/,Behavioural,174673,163,Apache-2.0,2019
+20,Common Crawl News Corpus (en),http://www.stevenson.net/,NLP,1361400,123,ODC-By,2016
+21,Pew Research Political Survey 2022,http://www.nolan-lloyd.org/,Social Science,139755,38,MIT,2021
+22,Quandl NASDAQ Price History,https://aguilar.com/,Finance,4633746,165,MIT,2020
+23,UK Biobank Lifestyle Questionnaire,https://thornton-morales.biz/,Healthcare,9216471,98,CC-BY-4.0,2019
+24,Behavioural Risk Factor Surveillance,http://www.williams.net/,Behavioural,5303936,146,MIT,2016
+25,MS COCO Object Detection 2017,http://www.harris-perez.info/,Computer Vision,5934411,248,CC-BY-4.0,2019
+26,UCI Bank Marketing Dataset,https://www.daniels-webb.net/,Finance,4450238,192,Apache-2.0,2016
+27,GoodReads Book Reviews,http://www.simpson.com/,NLP,7507258,226,MIT,2017
+28,OpenStreetMap POI Density Grid,http://www.thompson.biz/,Social Science,8165640,188,Apache-2.0,2018
+29,European Social Survey Round 10,https://jenkins.net/,Social Science,7481006,37,ODC-By,2020
+30,GlobalJobsMiner LinkedIn Scrape,http://russo.com/,Economics,3007370,231,CC-BY-4.0,2019

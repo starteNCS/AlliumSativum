@@ -1,0 +1,48 @@
+study_id,dataset_id,usage_role,rows_sampled
+1,30,Validation,481371
+1,21,Baseline,409790
+2,30,Validation,319830
+2,22,Primary Dataset,13413
+3,30,Supplementary,267118
+3,13,Supplementary,300589
+3,3,Comparative,315143
+4,6,Comparative,133794
+4,18,Validation,336697
+4,14,Primary Dataset,108346
+5,2,Validation,123618
+6,14,Comparative,125037
+6,6,Baseline,371354
+7,4,Baseline,13294
+7,13,Primary Dataset,334629
+8,19,Baseline,314683
+9,2,Comparative,86024
+9,4,Comparative,233742
+9,28,Validation,236254
+10,6,Validation,486973
+11,26,Comparative,9052
+11,22,Primary Dataset,435488
+11,13,Supplementary,444463
+12,15,Primary Dataset,271667
+12,1,Primary Dataset,408049
+12,26,Primary Dataset,337020
+13,28,Validation,1767
+13,2,Supplementary,418325
+13,15,Validation,396719
+14,1,Supplementary,223335
+14,29,Validation,18586
+14,28,Supplementary,209272
+15,14,Validation,406319
+15,22,Baseline,139445
+15,21,Primary Dataset,475072
+16,18,Baseline,392211
+17,21,Primary Dataset,76690
+17,19,Primary Dataset,33385
+17,3,Comparative,62572
+18,30,Baseline,349971
+18,28,Supplementary,267861
+19,2,Comparative,293461
+19,24,Primary Dataset,243883
+19,3,Baseline,44650
+20,4,Validation,388954
+20,28,Comparative,366318
+20,2,Supplementary,288278

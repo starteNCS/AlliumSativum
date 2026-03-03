@@ -1,0 +1,16 @@
+instrument_id,name,scale_type,item_count,validated,language,domain
+1,Likert-7 Financial Anxiety Scale,Likert-7,19,False,en,Job Satisfaction
+2,VAS Consumer Confidence Index,Likert-5,20,True,en,Brand Trust
+3,Likert-5 Brand Trust Scale,Binary,17,True,en,Job Satisfaction
+4,Binary Employment Hardship Screen,Binary,5,False,en,Job Satisfaction
+5,Semantic-Diff Job Satisfaction,Binary,5,False,en,Job Satisfaction
+6,Likert-7 UX Satisfaction (SUS-derived),VAS,23,False,en,UX
+7,NASA-TLX Cognitive Load Instrument,Likert-5,7,True,en,Brand Trust
+8,VAS Perceived Effort Scale,Semantic-Diff,20,True,en,Consumer Psych
+9,Likert-5 Technology Acceptance (TAM),Likert-7,17,False,en,Job Satisfaction
+10,Likert-7 Impulse Buying Tendency,Likert-5,5,True,en,Financial Anxiety
+11,Binary Financial Literacy Screener,Likert-5,23,True,en,UX
+12,Likert-5 Price Sensitivity Scale,VAS,13,True,en,Consumer Psych
+13,Semantic-Diff Brand Perception,VAS,21,True,en,Financial Anxiety
+14,Likert-7 Work Engagement Scale,VAS,12,False,en,Financial Anxiety
+15,VAS Stress & Burnout Indicator,Likert-5,18,True,en,Cognitive Load

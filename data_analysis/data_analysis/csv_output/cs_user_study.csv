@@ -1,0 +1,13 @@
+user_study_id,title,system_tested,algorithm_id,instrument_id,start_date,end_date,n_participants,protocol
+1,User Study: Churn Prediction Dashboard,Churn Prediction Dashboard,11,8,2022-05-07,2022-05-21,30,Mixed
+2,User Study: Fraud Alert UI,Fraud Alert UI,2,11,2021-08-05,2021-09-29,40,Mixed
+3,User Study: Recommendation Engine Interface,Recommendation Engine Interface,14,15,2023-11-27,2024-01-18,29,Within-subject
+4,User Study: AutoML Pipeline Wizard,AutoML Pipeline Wizard,11,12,2022-08-05,2022-09-18,20,Within-subject
+5,User Study: Loan Risk Scoring Tool,Loan Risk Scoring Tool,,10,2023-06-27,2023-07-18,53,Counterbalanced
+6,User Study: NLP Query Interface,NLP Query Interface,19,8,2022-10-10,2022-11-19,28,Between-subject
+7,User Study: Anomaly Heatmap Explorer,Anomaly Heatmap Explorer,17,8,2021-09-10,2021-10-09,35,Between-subject
+8,User Study: A/B Test Results Dashboard,A/B Test Results Dashboard,,2,2023-04-07,2023-06-17,55,Within-subject
+9,User Study: Customer Segmentation View,Customer Segmentation View,,3,2022-07-07,2022-08-05,40,Between-subject
+10,User Study: Model Explainability Panel,Model Explainability Panel,4,11,2022-10-17,2023-01-02,29,Counterbalanced
+11,User Study: Job Market Trend Visualiser,Job Market Trend Visualiser,2,9,2021-08-06,2021-10-22,55,Between-subject
+12,User Study: Consumer Sentiment Monitor,Consumer Sentiment Monitor,18,7,2022-10-15,2022-12-08,37,Within-subject

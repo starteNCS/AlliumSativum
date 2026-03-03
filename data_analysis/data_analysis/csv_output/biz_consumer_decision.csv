@@ -1,0 +1,1597 @@
+decision_id,respondent_id,study_id,decision_type,employment_status,income_at_time,amount_usd,decision_date,reversed,confidence_score
+1,215,1,Loan Repayment,Full-time,60-100k,5269.86,2023-01-10,False,0.919
+2,486,1,Savings Deposit,Full-time,100k+,8139.96,2023-01-30,False,0.888
+3,574,1,Major Purchase,Unemployed,<30k,64.9,2023-06-19,True,0.738
+4,263,1,Subscription,Part-time,60-100k,368.04,2022-09-15,False,0.573
+5,208,1,Subscription Cancel,Student,30-60k,417.93,2023-06-22,False,0.138
+6,224,1,Major Purchase,Full-time,60-100k,622.12,2022-04-06,False,0.823
+7,529,1,Investment,Retired,60-100k,367.1,2022-10-12,False,0.668
+8,367,1,Major Purchase,Full-time,60-100k,1763.02,2022-04-22,False,0.847
+9,273,1,Major Purchase,Full-time,60-100k,6053.73,2022-06-03,False,0.708
+10,652,1,Subscription,Unemployed,<30k,859.94,2022-10-07,False,0.719
+11,243,1,Subscription Cancel,Full-time,100k+,8838.47,2023-02-13,False,0.549
+12,113,1,Subscription,Retired,60-100k,205.51,2023-02-19,False,0.621
+13,239,1,Major Purchase,Part-time,30-60k,4657.54,2022-11-06,False,0.144
+14,200,1,Credit Application,Unemployed,30-60k,968.83,2022-10-21,True,0.384
+15,425,1,Credit Application,Full-time,<30k,7456.71,2023-01-14,False,0.362
+16,234,1,Investment,Retired,60-100k,731.2,2023-03-17,False,0.355
+17,689,1,Credit Application,Unemployed,60-100k,214.03,2022-05-07,False,0.311
+18,786,1,Credit Application,Unemployed,100k+,1228.6,2022-06-04,False,0.469
+19,74,1,Major Purchase,Unemployed,30-60k,828.43,2022-04-28,True,0.439
+20,158,1,Credit Application,Student,60-100k,686.99,2023-05-11,False,0.182
+21,311,1,Loan Repayment,Student,60-100k,1231.6,2022-07-14,True,0.26
+22,474,1,Subscription,Student,<30k,305.16,2022-12-19,False,0.383
+23,565,1,Loan Repayment,Unemployed,30-60k,1061.14,2022-05-28,False,0.392
+24,231,1,Subscription,Full-time,100k+,8775.48,2022-10-06,False,0.536
+25,614,1,Credit Application,Student,60-100k,813.15,2023-06-07,False,0.24
+26,240,1,Subscription,Full-time,60-100k,10463.02,2022-11-15,False,0.374
+27,569,1,Investment,Full-time,60-100k,13154.7,2022-06-25,False,0.415
+28,211,1,Subscription Cancel,Part-time,100k+,2316.49,2022-03-24,False,0.219
+29,115,1,Investment,Student,100k+,968.61,2023-05-15,True,0.501
+30,448,1,Credit Application,Unemployed,<30k,415.92,2022-09-08,False,0.141
+31,463,1,Subscription Cancel,Student,30-60k,1127.54,2022-04-11,False,0.191
+32,588,1,Loan Repayment,Full-time,100k+,2645.66,2022-04-17,False,0.781
+33,304,1,Subscription,Full-time,60-100k,5825.35,2023-01-10,False,0.785
+34,589,1,Major Purchase,Full-time,60-100k,12747.55,2022-06-13,False,0.47
+35,527,1,Savings Deposit,Full-time,60-100k,1767.89,2022-05-23,False,0.814
+36,422,1,Savings Deposit,Unemployed,30-60k,298.72,2023-06-12,False,0.357
+37,14,1,Credit Application,Full-time,60-100k,11372.85,2022-10-07,False,0.8
+38,245,1,Subscription,Full-time,100k+,17136.44,2023-05-11,False,0.785
+39,500,1,Credit Application,Self-employed,60-100k,4690.89,2022-09-23,False,0.362
+40,230,1,Loan Repayment,Full-time,60-100k,8266.88,2023-04-12,False,0.543
+41,70,1,Subscription Cancel,Full-time,30-60k,4901.97,2023-01-15,True,0.386
+42,723,1,Savings Deposit,Full-time,30-60k,7798.25,2022-05-23,False,0.788
+43,188,1,Subscription Cancel,Unemployed,60-100k,103.44,2023-06-20,False,0.644
+44,584,1,Loan Repayment,Retired,<30k,313.15,2023-06-19,False,0.325
+45,735,1,Loan Repayment,Part-time,30-60k,4882.06,2023-05-09,False,0.555
+46,785,1,Loan Repayment,Unemployed,<30k,297.5,2022-10-19,False,0.24
+47,553,1,Loan Repayment,Unemployed,30-60k,782.9,2022-03-25,True,0.28
+48,116,1,Major Purchase,Unemployed,<30k,957.1,2022-12-26,True,0.297
+49,149,1,Subscription Cancel,Unemployed,30-60k,53.59,2023-06-25,False,0.303
+50,433,1,Savings Deposit,Student,60-100k,1371.81,2023-01-18,False,0.689
+51,727,1,Subscription,Full-time,100k+,13589.29,2022-03-22,False,0.796
+52,462,1,Investment,Self-employed,100k+,1216.58,2022-04-29,False,0.313
+53,659,1,Major Purchase,Self-employed,<30k,3642.17,2022-07-28,False,0.378
+54,489,1,Subscription Cancel,Unemployed,<30k,110.22,2023-03-29,True,0.451
+55,151,1,Subscription Cancel,Unemployed,<30k,535.98,2023-03-13,False,0.191
+56,748,1,Loan Repayment,Full-time,60-100k,10644.04,2022-10-13,False,0.453
+57,597,1,Savings Deposit,Full-time,30-60k,15724.53,2022-08-31,False,0.344
+58,127,1,Credit Application,Full-time,60-100k,17255.38,2022-05-19,False,0.484
+59,767,1,Credit Application,Student,60-100k,832.18,2023-01-19,False,0.479
+60,638,1,Investment,Student,30-60k,1030.94,2022-12-23,False,0.168
+61,43,1,Major Purchase,Self-employed,60-100k,1094.36,2023-06-16,False,0.711
+62,763,1,Subscription Cancel,Full-time,30-60k,6588.35,2022-09-28,False,0.939
+63,89,1,Major Purchase,Full-time,60-100k,2558.31,2022-09-08,False,0.491
+64,281,1,Investment,Part-time,100k+,717.46,2022-06-02,False,0.584
+65,508,1,Subscription,Unemployed,60-100k,435.35,2022-09-21,False,0.271
+66,452,1,Investment,Retired,30-60k,89.87,2023-04-11,False,0.714
+67,141,1,Savings Deposit,Part-time,60-100k,1311.6,2023-04-08,False,0.424
+68,657,1,Credit Application,Full-time,30-60k,9947.64,2022-04-06,False,0.752
+69,644,1,Loan Repayment,Part-time,60-100k,3945.23,2022-05-17,True,0.33
+70,147,1,Savings Deposit,Full-time,60-100k,8463.32,2023-06-06,False,0.732
+71,143,1,Subscription,Self-employed,30-60k,2880.97,2022-10-14,False,0.279
+72,734,1,Subscription Cancel,Full-time,30-60k,4966.92,2022-08-14,True,0.934
+73,724,1,Credit Application,Student,60-100k,1118.69,2022-04-16,False,0.543
+74,135,1,Subscription,Part-time,30-60k,3932.68,2022-09-01,False,0.406
+75,415,1,Loan Repayment,Unemployed,<30k,1331.01,2022-08-13,True,0.587
+76,711,1,Savings Deposit,Full-time,60-100k,6735.34,2022-09-30,False,0.465
+77,434,1,Subscription Cancel,Part-time,30-60k,4840.61,2023-05-12,False,0.366
+78,491,1,Investment,Unemployed,30-60k,1378.58,2022-09-02,True,0.558
+79,319,1,Subscription Cancel,Part-time,100k+,2609.1,2023-06-22,True,0.398
+80,777,1,Credit Application,Part-time,100k+,3147.11,2022-10-17,False,0.116
+81,661,1,Major Purchase,Full-time,60-100k,5180.49,2022-04-24,False,0.632
+82,400,1,Credit Application,Part-time,60-100k,1631.52,2023-03-05,True,0.569
+83,435,1,Subscription Cancel,Retired,100k+,970.88,2023-06-30,False,0.188
+84,351,1,Major Purchase,Full-time,60-100k,6577.4,2022-05-29,True,0.451
+85,427,1,Credit Application,Student,30-60k,1356.12,2022-04-05,True,0.217
+86,201,1,Major Purchase,Student,<30k,1348.03,2023-04-28,False,0.466
+87,393,2,Credit Application,Part-time,100k+,4546.05,2019-07-26,False,0.102
+88,546,2,Loan Repayment,Part-time,100k+,4820.27,2019-08-04,True,0.505
+89,357,2,Investment,Full-time,30-60k,5484.23,2019-08-19,False,0.598
+90,382,2,Subscription,Full-time,60-100k,16599.77,2019-07-12,False,0.916
+91,464,2,Investment,Full-time,60-100k,13357.63,2019-06-30,False,0.381
+92,251,2,Savings Deposit,Student,60-100k,613.2,2019-08-22,False,0.725
+93,438,2,Credit Application,Full-time,100k+,14129.28,2019-07-27,False,0.942
+94,317,2,Subscription Cancel,Full-time,100k+,4161.39,2019-08-17,False,0.84
+95,257,2,Major Purchase,Part-time,60-100k,4064.37,2019-08-09,True,0.5
+96,644,2,Major Purchase,Part-time,60-100k,3973.31,2019-07-25,False,0.133
+97,56,2,Subscription,Unemployed,30-60k,1305.68,2019-07-01,False,0.445
+98,177,2,Loan Repayment,Part-time,30-60k,1570.41,2019-08-07,False,0.133
+99,458,2,Loan Repayment,Full-time,30-60k,4019.68,2019-08-21,False,0.975
+100,580,2,Investment,Retired,30-60k,1342.6,2019-07-10,False,0.174
+101,395,2,Major Purchase,Unemployed,30-60k,41.7,2019-07-01,False,0.334
+102,748,2,Subscription Cancel,Full-time,60-100k,2912.42,2019-07-29,False,0.878
+103,514,2,Investment,Student,100k+,1283.09,2019-07-06,False,0.414
+104,303,2,Subscription Cancel,Unemployed,30-60k,1007.32,2019-07-25,False,0.334
+105,111,2,Investment,Part-time,60-100k,4024.14,2019-06-30,False,0.558
+106,191,2,Savings Deposit,Self-employed,60-100k,2824.15,2019-07-31,False,0.141
+107,285,2,Loan Repayment,Student,30-60k,758.34,2019-07-30,False,0.311
+108,635,2,Subscription,Part-time,30-60k,4454.22,2019-07-29,True,0.189
+109,570,2,Investment,Student,60-100k,1007.16,2019-08-22,False,0.395
+110,68,2,Savings Deposit,Unemployed,<30k,499.54,2019-08-21,False,0.417
+111,261,2,Subscription,Student,<30k,704.94,2019-07-17,False,0.412
+112,317,2,Subscription Cancel,Full-time,100k+,4762.31,2019-06-27,False,0.693
+113,585,2,Savings Deposit,Part-time,30-60k,3491.72,2019-08-19,False,0.723
+114,636,2,Savings Deposit,Retired,100k+,1167.81,2019-07-26,False,0.738
+115,549,2,Subscription,Self-employed,30-60k,2718.63,2019-07-05,False,0.44
+116,683,2,Major Purchase,Student,30-60k,754.12,2019-08-19,False,0.747
+117,761,2,Loan Repayment,Unemployed,30-60k,1121.26,2019-07-09,False,0.428
+118,763,2,Subscription,Full-time,30-60k,1105.41,2019-08-24,False,0.985
+119,484,2,Savings Deposit,Full-time,100k+,15180.96,2019-07-27,False,0.481
+120,55,2,Investment,Student,100k+,317.42,2019-08-22,False,0.189
+121,531,2,Subscription,Full-time,30-60k,2422.62,2019-08-24,False,0.467
+122,271,2,Credit Application,Full-time,30-60k,2921.14,2019-08-23,False,0.889
+123,270,2,Major Purchase,Full-time,30-60k,10980.84,2019-07-11,False,0.469
+124,557,2,Credit Application,Part-time,60-100k,4702.7,2019-07-03,False,0.523
+125,137,2,Credit Application,Part-time,30-60k,2089.0,2019-08-22,False,0.613
+126,51,2,Savings Deposit,Student,30-60k,723.11,2019-08-14,True,0.613
+127,165,2,Savings Deposit,Full-time,<30k,8007.5,2019-07-08,False,0.326
+128,62,2,Subscription,Self-employed,30-60k,5191.52,2019-07-27,False,0.746
+129,147,2,Loan Repayment,Full-time,60-100k,7186.9,2019-07-05,False,0.499
+130,345,2,Subscription,Full-time,30-60k,9259.82,2019-08-12,False,0.421
+131,248,2,Subscription,Full-time,100k+,12258.34,2019-08-22,False,0.558
+132,34,2,Subscription Cancel,Unemployed,<30k,980.05,2019-08-04,False,0.209
+133,158,2,Loan Repayment,Student,60-100k,598.04,2019-07-22,False,0.291
+134,725,2,Major Purchase,Full-time,60-100k,15004.1,2019-07-25,False,0.84
+135,174,2,Subscription Cancel,Student,60-100k,892.39,2019-07-12,False,0.277
+136,502,2,Loan Repayment,Student,<30k,1050.57,2019-08-15,False,0.558
+137,774,2,Loan Repayment,Full-time,30-60k,1603.91,2019-07-05,False,0.653
+138,296,2,Major Purchase,Self-employed,60-100k,4335.81,2019-07-25,False,0.51
+139,799,2,Subscription,Part-time,100k+,1812.19,2019-07-17,True,0.377
+140,388,2,Investment,Part-time,30-60k,3155.8,2019-07-17,False,0.114
+141,334,2,Savings Deposit,Retired,30-60k,1138.14,2019-08-24,False,0.707
+142,356,2,Loan Repayment,Full-time,30-60k,5997.58,2019-08-09,False,0.599
+143,170,2,Subscription,Part-time,30-60k,3967.52,2019-07-04,False,0.104
+144,244,2,Subscription Cancel,Retired,100k+,1166.97,2019-07-07,False,0.34
+145,398,2,Credit Application,Full-time,60-100k,3802.37,2019-07-15,False,0.615
+146,449,2,Savings Deposit,Unemployed,60-100k,729.92,2019-07-19,True,0.42
+147,434,2,Investment,Part-time,30-60k,2847.42,2019-07-21,False,0.681
+148,187,2,Major Purchase,Unemployed,100k+,747.6,2019-08-08,False,0.57
+149,463,2,Subscription,Student,30-60k,1005.15,2019-07-02,False,0.199
+150,796,2,Subscription Cancel,Full-time,60-100k,10311.14,2019-08-08,False,0.402
+151,272,2,Investment,Full-time,60-100k,13331.87,2019-08-08,False,0.751
+152,478,2,Subscription Cancel,Full-time,30-60k,9609.88,2019-07-02,False,0.354
+153,799,2,Subscription,Part-time,100k+,2804.25,2019-08-09,True,0.438
+154,372,2,Savings Deposit,Retired,60-100k,384.78,2019-07-02,False,0.264
+155,103,2,Savings Deposit,Part-time,100k+,1287.03,2019-07-30,False,0.551
+156,306,2,Investment,Full-time,60-100k,16631.15,2019-07-16,False,0.766
+157,584,2,Subscription Cancel,Retired,<30k,374.42,2019-06-26,False,0.348
+158,380,2,Subscription,Unemployed,100k+,761.13,2019-07-15,False,0.336
+159,725,2,Savings Deposit,Full-time,60-100k,14361.57,2019-06-25,False,0.432
+160,536,2,Credit Application,Unemployed,<30k,785.36,2019-07-22,False,0.177
+161,197,2,Loan Repayment,Student,30-60k,1234.01,2019-08-08,False,0.502
+162,278,2,Loan Repayment,Full-time,<30k,5814.72,2019-07-07,False,0.458
+163,136,2,Investment,Full-time,30-60k,7016.03,2019-08-19,False,0.552
+164,127,2,Subscription,Full-time,60-100k,12520.8,2019-08-05,False,0.4
+165,358,2,Loan Repayment,Full-time,30-60k,2933.9,2019-07-29,False,0.768
+166,479,2,Subscription Cancel,Retired,60-100k,1364.76,2019-08-02,False,0.251
+167,586,2,Investment,Student,100k+,1086.24,2019-08-09,False,0.171
+168,94,2,Savings Deposit,Retired,100k+,118.32,2019-06-26,True,0.321
+169,601,3,Investment,Retired,100k+,328.65,2022-02-11,False,0.124
+170,281,3,Savings Deposit,Part-time,100k+,2260.04,2022-02-09,True,0.404
+171,214,3,Investment,Self-employed,<30k,3718.48,2022-03-07,True,0.564
+172,602,3,Investment,Part-time,30-60k,1323.59,2022-01-18,False,0.361
+173,283,3,Savings Deposit,Part-time,30-60k,1077.47,2022-05-21,True,0.598
+174,698,3,Major Purchase,Self-employed,60-100k,1965.71,2021-11-08,False,0.684
+175,452,3,Credit Application,Retired,30-60k,1382.72,2022-06-26,False,0.701
+176,455,3,Loan Repayment,Part-time,60-100k,271.21,2021-12-03,True,0.283
+177,344,3,Investment,Full-time,60-100k,14081.36,2022-08-15,False,0.481
+178,595,3,Loan Repayment,Unemployed,100k+,663.85,2022-08-03,False,0.539
+179,209,3,Loan Repayment,Retired,60-100k,1275.42,2022-05-20,False,0.45
+180,123,3,Subscription Cancel,Student,<30k,641.58,2021-10-23,False,0.642
+181,332,3,Investment,Full-time,30-60k,15515.33,2022-02-13,False,0.611
+182,538,3,Major Purchase,Full-time,60-100k,6334.26,2021-12-14,False,0.559
+183,765,3,Subscription,Full-time,100k+,9515.18,2021-12-23,False,0.649
+184,115,3,Loan Repayment,Student,100k+,317.88,2022-04-03,False,0.386
+185,76,3,Credit Application,Full-time,100k+,13630.03,2022-02-21,False,0.382
+186,1,3,Loan Repayment,Part-time,30-60k,2242.4,2022-01-02,False,0.475
+187,586,3,Credit Application,Student,100k+,1142.51,2022-07-16,True,0.258
+188,166,3,Investment,Full-time,60-100k,2131.88,2022-04-14,False,0.549
+189,333,3,Major Purchase,Self-employed,60-100k,3104.36,2022-03-23,False,0.475
+190,617,3,Loan Repayment,Full-time,30-60k,13309.46,2022-05-29,False,0.385
+191,431,3,Credit Application,Self-employed,60-100k,3421.34,2022-03-01,False,0.362
+192,166,3,Subscription Cancel,Full-time,60-100k,10924.39,2022-04-11,False,0.397
+193,24,3,Loan Repayment,Full-time,60-100k,3886.22,2022-02-13,False,0.556
+194,313,3,Subscription Cancel,Student,60-100k,1293.65,2022-07-17,False,0.274
+195,630,3,Savings Deposit,Full-time,30-60k,6950.97,2022-07-21,False,0.671
+196,339,3,Loan Repayment,Student,<30k,837.39,2021-12-07,False,0.434
+197,17,3,Investment,Part-time,60-100k,5104.55,2022-04-26,False,0.594
+198,186,3,Loan Repayment,Student,60-100k,57.35,2022-03-01,False,0.41
+199,592,3,Subscription,Full-time,<30k,5994.28,2022-05-22,False,0.641
+200,615,3,Loan Repayment,Unemployed,30-60k,967.47,2021-10-27,False,0.234
+201,699,3,Loan Repayment,Part-time,<30k,2459.24,2022-04-05,False,0.37
+202,459,3,Loan Repayment,Unemployed,60-100k,87.81,2022-05-08,True,0.125
+203,302,3,Investment,Retired,<30k,50.07,2021-12-22,False,0.469
+204,790,3,Credit Application,Self-employed,30-60k,4727.65,2022-09-09,False,0.297
+205,177,3,Loan Repayment,Part-time,30-60k,248.89,2022-01-21,False,0.677
+206,714,3,Loan Repayment,Student,<30k,1300.51,2021-10-13,False,0.276
+207,88,3,Investment,Student,<30k,567.98,2022-05-22,False,0.204
+208,390,3,Subscription,Part-time,100k+,2276.59,2022-06-16,False,0.122
+209,648,3,Savings Deposit,Full-time,60-100k,4650.78,2022-04-13,False,0.378
+210,643,3,Subscription Cancel,Full-time,<30k,2837.71,2022-02-12,False,1.0
+211,111,3,Investment,Part-time,60-100k,4706.97,2022-02-17,False,0.148
+212,240,3,Investment,Full-time,60-100k,11617.73,2022-08-08,False,0.998
+213,360,3,Major Purchase,Retired,60-100k,161.52,2021-12-28,True,0.466
+214,640,3,Subscription Cancel,Unemployed,<30k,688.44,2022-07-23,False,0.501
+215,419,3,Credit Application,Full-time,100k+,5199.96,2022-04-29,False,0.648
+216,17,3,Major Purchase,Part-time,60-100k,221.27,2022-02-15,False,0.263
+217,619,3,Credit Application,Student,100k+,1174.15,2022-06-03,False,0.47
+218,560,3,Savings Deposit,Full-time,60-100k,5835.47,2022-03-16,False,0.962
+219,120,3,Credit Application,Full-time,30-60k,12011.48,2022-01-26,False,0.66
+220,117,3,Investment,Unemployed,60-100k,934.1,2021-12-17,True,0.378
+221,243,3,Savings Deposit,Full-time,100k+,1714.32,2022-03-02,False,0.995
+222,67,3,Major Purchase,Retired,30-60k,1244.72,2022-04-12,False,0.648
+223,574,3,Loan Repayment,Unemployed,<30k,807.3,2022-09-17,False,0.653
+224,120,3,Investment,Full-time,30-60k,2435.89,2022-09-08,False,0.518
+225,770,3,Major Purchase,Student,<30k,391.15,2022-09-05,False,0.222
+226,468,3,Major Purchase,Self-employed,60-100k,475.85,2022-05-29,False,0.625
+227,337,3,Loan Repayment,Self-employed,30-60k,1343.32,2022-06-20,False,0.223
+228,768,3,Investment,Self-employed,60-100k,2469.14,2021-10-11,False,0.664
+229,503,3,Loan Repayment,Part-time,60-100k,3137.55,2021-12-13,False,0.205
+230,52,3,Subscription Cancel,Self-employed,<30k,4701.4,2021-11-24,True,0.291
+231,367,3,Loan Repayment,Full-time,60-100k,11722.71,2022-02-04,False,0.631
+232,216,3,Subscription Cancel,Unemployed,30-60k,67.21,2021-10-31,False,0.171
+233,103,3,Subscription Cancel,Part-time,100k+,1726.63,2021-11-30,True,0.537
+234,247,3,Credit Application,Part-time,60-100k,2517.49,2021-11-16,False,0.449
+235,499,3,Major Purchase,Retired,30-60k,376.89,2021-12-15,True,0.298
+236,70,3,Savings Deposit,Full-time,30-60k,5980.47,2021-11-02,False,0.32
+237,229,3,Subscription Cancel,Full-time,<30k,15776.4,2022-02-07,False,0.636
+238,585,3,Subscription,Part-time,30-60k,3038.57,2021-10-18,True,0.485
+239,623,3,Loan Repayment,Self-employed,60-100k,1459.57,2022-08-30,True,0.218
+240,690,3,Subscription Cancel,Retired,<30k,1374.62,2021-12-06,True,0.357
+241,297,3,Subscription Cancel,Part-time,60-100k,3226.79,2021-12-09,False,0.581
+242,479,3,Credit Application,Retired,60-100k,336.76,2022-06-24,False,0.28
+243,150,3,Subscription,Part-time,60-100k,4886.7,2022-02-06,False,0.319
+244,501,3,Major Purchase,Student,60-100k,377.67,2021-10-12,False,0.308
+245,673,3,Savings Deposit,Unemployed,60-100k,615.29,2022-02-25,True,0.151
+246,418,3,Subscription,Full-time,60-100k,16650.11,2022-01-15,False,0.582
+247,255,3,Loan Repayment,Retired,60-100k,1068.08,2022-08-26,False,0.477
+248,401,4,Investment,Part-time,60-100k,1248.62,2023-07-30,True,0.578
+249,399,4,Subscription,Part-time,30-60k,2376.76,2023-08-28,False,0.518
+250,743,4,Investment,Retired,60-100k,389.52,2023-06-10,True,0.635
+251,231,4,Investment,Full-time,100k+,2614.61,2023-03-25,False,0.557
+252,676,4,Savings Deposit,Part-time,30-60k,4869.32,2023-08-31,False,0.729
+253,231,4,Major Purchase,Full-time,100k+,7856.81,2023-05-17,False,0.557
+254,146,4,Subscription Cancel,Unemployed,60-100k,1105.05,2023-08-20,False,0.334
+255,742,4,Loan Repayment,Unemployed,60-100k,672.42,2023-04-08,True,0.528
+256,6,4,Credit Application,Student,<30k,726.41,2023-07-17,False,0.29
+257,289,4,Credit Application,Student,100k+,1100.62,2023-04-11,False,0.345
+258,341,4,Major Purchase,Part-time,30-60k,993.32,2023-09-11,True,0.588
+259,318,4,Subscription Cancel,Self-employed,60-100k,1648.78,2023-04-29,True,0.381
+260,392,4,Savings Deposit,Part-time,60-100k,2034.84,2023-05-23,False,0.567
+261,65,4,Subscription Cancel,Full-time,100k+,6161.29,2023-07-09,False,0.827
+262,582,4,Credit Application,Part-time,60-100k,2883.95,2023-05-19,False,0.208
+263,134,4,Credit Application,Full-time,60-100k,8782.44,2023-08-11,False,0.936
+264,782,4,Investment,Unemployed,30-60k,580.87,2023-05-16,False,0.47
+265,44,4,Credit Application,Full-time,30-60k,5311.72,2023-06-05,False,0.997
+266,289,4,Savings Deposit,Student,100k+,215.74,2023-06-04,False,0.691
+267,240,4,Subscription Cancel,Full-time,60-100k,15536.36,2023-07-12,False,0.786
+268,751,4,Investment,Unemployed,100k+,663.17,2023-05-13,False,0.143
+269,374,4,Major Purchase,Unemployed,30-60k,1339.81,2023-09-16,False,0.519
+270,158,4,Investment,Student,60-100k,593.72,2023-04-01,False,0.108
+271,508,4,Loan Repayment,Unemployed,60-100k,761.59,2023-03-25,False,0.746
+272,376,4,Loan Repayment,Student,60-100k,204.62,2023-08-25,True,0.548
+273,164,4,Major Purchase,Part-time,100k+,4313.61,2023-09-05,False,0.275
+274,487,4,Investment,Student,60-100k,165.5,2023-08-01,False,0.719
+275,429,4,Investment,Unemployed,100k+,413.69,2023-08-06,False,0.633
+276,12,4,Savings Deposit,Full-time,60-100k,15126.93,2023-07-11,False,0.54
+277,423,4,Subscription Cancel,Full-time,100k+,16011.5,2023-04-02,False,0.495
+278,152,4,Subscription Cancel,Unemployed,30-60k,1109.18,2023-08-11,False,0.28
+279,794,4,Subscription Cancel,Part-time,30-60k,4391.95,2023-08-09,True,0.646
+280,75,4,Major Purchase,Part-time,30-60k,3531.79,2023-06-11,False,0.243
+281,599,4,Investment,Full-time,100k+,3383.56,2023-05-17,False,0.581
+282,97,4,Credit Application,Self-employed,100k+,2550.54,2023-06-30,False,0.11
+283,25,4,Subscription,Full-time,100k+,7428.38,2023-04-08,False,0.967
+284,85,4,Savings Deposit,Student,30-60k,463.62,2023-07-07,False,0.62
+285,691,4,Subscription Cancel,Full-time,60-100k,5568.03,2023-04-25,False,0.556
+286,608,4,Major Purchase,Part-time,60-100k,5004.71,2023-09-18,False,0.223
+287,693,4,Subscription Cancel,Retired,30-60k,1063.64,2023-07-04,False,0.676
+288,742,4,Subscription,Unemployed,60-100k,413.51,2023-08-28,True,0.48
+289,579,4,Investment,Retired,30-60k,1283.66,2023-08-31,False,0.112
+290,10,4,Loan Repayment,Self-employed,30-60k,1192.1,2023-05-05,False,0.238
+291,417,4,Credit Application,Unemployed,<30k,653.08,2023-06-20,False,0.731
+292,526,4,Subscription Cancel,Student,30-60k,87.38,2023-05-28,False,0.14
+293,23,4,Loan Repayment,Part-time,100k+,3684.36,2023-07-26,False,0.407
+294,381,4,Savings Deposit,Part-time,100k+,819.08,2023-06-13,False,0.716
+295,272,4,Savings Deposit,Full-time,60-100k,8468.53,2023-07-30,False,0.775
+296,481,4,Subscription,Retired,30-60k,195.21,2023-07-17,False,0.108
+297,14,4,Credit Application,Full-time,60-100k,10654.49,2023-07-03,False,0.764
+298,441,4,Savings Deposit,Self-employed,100k+,5248.2,2023-09-12,False,0.307
+299,750,4,Loan Repayment,Unemployed,60-100k,1235.32,2023-05-17,True,0.668
+300,57,4,Subscription,Retired,60-100k,540.6,2023-09-17,False,0.479
+301,5,4,Loan Repayment,Full-time,60-100k,13219.56,2023-08-19,False,0.573
+302,279,4,Investment,Retired,60-100k,774.06,2023-05-15,False,0.242
+303,402,4,Major Purchase,Part-time,30-60k,1093.91,2023-04-09,False,0.602
+304,741,4,Loan Repayment,Full-time,60-100k,13540.28,2023-08-24,False,0.811
+305,247,4,Credit Application,Part-time,60-100k,2295.54,2023-03-26,False,0.689
+306,446,4,Loan Repayment,Full-time,30-60k,2995.97,2023-09-13,False,0.348
+307,20,4,Credit Application,Unemployed,<30k,873.85,2023-04-15,True,0.104
+308,452,4,Investment,Retired,30-60k,428.93,2023-03-25,False,0.37
+309,509,4,Subscription,Full-time,100k+,9864.21,2023-04-29,False,0.651
+310,445,4,Subscription,Unemployed,30-60k,1369.5,2023-07-14,False,0.681
+311,276,4,Savings Deposit,Full-time,<30k,1806.44,2023-08-25,False,0.573
+312,379,4,Loan Repayment,Student,30-60k,87.25,2023-09-10,False,0.276
+313,321,4,Loan Repayment,Student,30-60k,754.84,2023-07-23,False,0.747
+314,797,4,Major Purchase,Full-time,60-100k,5028.39,2023-05-13,False,0.563
+315,734,4,Credit Application,Full-time,30-60k,16967.37,2023-05-25,False,0.473
+316,152,4,Savings Deposit,Unemployed,30-60k,727.98,2023-09-15,True,0.526
+317,464,4,Major Purchase,Full-time,60-100k,2781.47,2023-06-12,False,0.484
+318,495,4,Subscription,Self-employed,30-60k,3232.98,2023-08-14,False,0.726
+319,682,4,Subscription Cancel,Self-employed,60-100k,4819.38,2023-09-01,True,0.693
+320,337,4,Major Purchase,Self-employed,30-60k,4712.41,2023-07-17,True,0.154
+321,78,4,Major Purchase,Full-time,<30k,17220.97,2023-06-04,False,0.73
+322,516,4,Subscription,Unemployed,30-60k,178.34,2023-04-21,False,0.709
+323,475,4,Savings Deposit,Unemployed,<30k,353.83,2023-09-02,False,0.13
+324,87,4,Investment,Part-time,60-100k,1786.23,2023-06-17,False,0.623
+325,681,4,Major Purchase,Unemployed,60-100k,401.39,2023-03-24,False,0.313
+326,33,4,Subscription Cancel,Unemployed,100k+,991.98,2023-05-29,False,0.649
+327,211,4,Subscription,Part-time,100k+,1237.25,2023-07-13,True,0.289
+328,466,4,Major Purchase,Full-time,60-100k,5362.23,2023-07-01,False,0.892
+329,348,4,Subscription Cancel,Full-time,30-60k,1780.36,2023-09-02,False,0.56
+330,456,4,Credit Application,Full-time,30-60k,8667.61,2023-07-01,False,0.578
+331,596,4,Subscription,Full-time,60-100k,14200.17,2023-05-21,False,0.301
+332,353,4,Subscription,Self-employed,100k+,575.44,2023-06-10,False,0.731
+333,502,4,Loan Repayment,Student,<30k,1048.4,2023-07-27,False,0.512
+334,773,4,Subscription,Unemployed,<30k,440.52,2023-08-22,False,0.644
+335,354,4,Savings Deposit,Retired,100k+,326.9,2023-06-18,False,0.616
+336,493,4,Investment,Retired,60-100k,933.96,2023-09-04,False,0.492
+337,8,5,Major Purchase,Retired,30-60k,1142.64,2022-05-24,True,0.411
+338,521,5,Subscription,Full-time,60-100k,4395.61,2022-03-16,False,0.376
+339,282,5,Savings Deposit,Retired,60-100k,802.13,2022-06-16,False,0.534
+340,208,5,Major Purchase,Student,30-60k,913.32,2021-10-05,False,0.727
+341,142,5,Credit Application,Full-time,100k+,13621.18,2021-10-16,False,0.575
+342,647,5,Subscription Cancel,Self-employed,60-100k,2374.2,2022-03-30,False,0.414
+343,783,5,Major Purchase,Full-time,30-60k,9482.19,2021-09-19,False,0.935
+344,669,5,Investment,Full-time,30-60k,14437.86,2022-07-22,False,0.834
+345,563,5,Investment,Full-time,30-60k,1778.76,2021-08-20,False,0.858
+346,503,5,Investment,Part-time,60-100k,3232.39,2022-05-04,False,0.238
+347,655,5,Investment,Student,30-60k,825.86,2022-04-19,False,0.733
+348,583,5,Major Purchase,Full-time,60-100k,16741.43,2022-05-04,False,0.597
+349,219,5,Subscription,Student,30-60k,75.37,2021-11-15,False,0.463
+350,538,5,Loan Repayment,Full-time,60-100k,12578.71,2022-04-21,False,0.623
+351,662,5,Major Purchase,Full-time,30-60k,2179.58,2021-08-30,False,0.609
+352,119,5,Investment,Retired,60-100k,787.1,2021-12-03,False,0.36
+353,678,5,Subscription,Unemployed,30-60k,1066.83,2021-10-01,False,0.513
+354,43,5,Subscription,Self-employed,60-100k,3311.29,2021-10-18,True,0.691
+355,89,5,Major Purchase,Full-time,60-100k,8953.97,2021-11-25,False,0.49
+356,553,5,Subscription,Unemployed,30-60k,1084.52,2022-02-06,False,0.409
+357,512,5,Savings Deposit,Full-time,30-60k,12228.18,2022-08-15,False,0.904
+358,622,5,Savings Deposit,Student,60-100k,349.86,2021-09-08,False,0.506
+359,109,5,Credit Application,Full-time,30-60k,6192.98,2021-10-19,True,0.366
+360,464,5,Credit Application,Full-time,60-100k,6104.53,2021-09-24,False,0.713
+361,480,5,Investment,Full-time,60-100k,5490.63,2021-12-20,False,0.846
+362,7,5,Major Purchase,Unemployed,<30k,1020.18,2022-05-30,False,0.734
+363,464,5,Savings Deposit,Full-time,60-100k,6325.69,2021-12-31,False,0.627
+364,548,5,Investment,Part-time,60-100k,4066.54,2021-12-14,False,0.736
+365,552,5,Subscription Cancel,Unemployed,100k+,169.11,2021-12-10,False,0.558
+366,506,5,Subscription Cancel,Student,30-60k,1337.22,2021-10-15,False,0.589
+367,652,5,Subscription Cancel,Unemployed,<30k,520.46,2021-10-22,False,0.659
+368,509,5,Investment,Full-time,100k+,4573.57,2021-12-07,False,0.466
+369,774,5,Investment,Full-time,30-60k,9752.31,2022-01-16,False,0.409
+370,347,5,Major Purchase,Unemployed,60-100k,410.42,2022-07-16,False,0.674
+371,180,5,Subscription,Full-time,60-100k,15070.65,2022-01-13,False,0.889
+372,61,5,Savings Deposit,Part-time,30-60k,893.32,2021-11-07,True,0.709
+373,374,5,Subscription Cancel,Unemployed,30-60k,808.21,2022-07-20,True,0.144
+374,389,5,Credit Application,Self-employed,100k+,5190.74,2022-05-05,False,0.57
+375,410,5,Savings Deposit,Retired,100k+,867.7,2022-06-17,False,0.25
+376,537,5,Major Purchase,Unemployed,<30k,677.05,2022-02-28,False,0.236
+377,440,5,Major Purchase,Part-time,<30k,2003.23,2022-05-22,False,0.296
+378,585,5,Major Purchase,Part-time,30-60k,4338.71,2021-11-19,False,0.119
+379,785,5,Subscription Cancel,Unemployed,<30k,49.5,2021-11-09,True,0.437
+380,16,5,Subscription Cancel,Part-time,60-100k,5172.92,2021-12-04,False,0.409
+381,32,5,Subscription Cancel,Self-employed,30-60k,3867.6,2022-01-02,False,0.698
+382,35,5,Subscription Cancel,Student,<30k,1084.91,2022-06-18,False,0.675
+383,609,5,Loan Repayment,Student,60-100k,189.58,2022-04-04,False,0.19
+384,199,5,Subscription,Part-time,30-60k,2848.17,2022-06-30,False,0.438
+385,170,5,Credit Application,Part-time,30-60k,1258.29,2021-09-23,False,0.359
+386,200,5,Credit Application,Unemployed,30-60k,525.29,2021-09-02,True,0.618
+387,417,5,Loan Repayment,Unemployed,<30k,408.55,2022-07-29,False,0.565
+388,231,5,Subscription Cancel,Full-time,100k+,11440.37,2022-05-24,False,0.494
+389,777,5,Savings Deposit,Part-time,100k+,2082.39,2021-11-10,True,0.41
+390,123,5,Loan Repayment,Student,<30k,488.92,2022-05-19,False,0.663
+391,454,5,Subscription Cancel,Retired,30-60k,1324.01,2022-08-07,True,0.353
+392,505,5,Savings Deposit,Part-time,30-60k,3051.74,2021-12-31,False,0.525
+393,229,5,Major Purchase,Full-time,<30k,4299.33,2022-02-25,False,0.993
+394,470,5,Subscription Cancel,Full-time,100k+,5762.96,2021-11-18,False,0.642
+395,367,5,Loan Repayment,Full-time,60-100k,3399.78,2022-08-12,False,0.782
+396,600,5,Subscription Cancel,Unemployed,<30k,1397.84,2022-03-30,False,0.542
+397,154,5,Subscription,Unemployed,30-60k,722.7,2022-01-02,False,0.448
+398,670,5,Subscription,Part-time,<30k,2647.83,2022-04-17,False,0.562
+399,667,5,Subscription Cancel,Full-time,100k+,7437.15,2021-09-08,False,0.938
+400,781,5,Credit Application,Full-time,30-60k,2892.63,2021-11-02,False,0.467
+401,653,5,Subscription Cancel,Full-time,30-60k,10005.09,2022-05-22,False,0.984
+402,339,5,Major Purchase,Student,<30k,632.14,2022-01-10,True,0.537
+403,266,5,Subscription,Part-time,30-60k,1749.28,2022-01-06,False,0.396
+404,137,5,Subscription,Part-time,30-60k,4476.74,2022-06-02,True,0.389
+405,653,5,Investment,Full-time,30-60k,5614.73,2022-05-05,False,0.777
+406,276,5,Subscription Cancel,Full-time,<30k,11429.59,2021-09-22,False,0.836
+407,31,5,Loan Repayment,Retired,100k+,505.93,2022-07-11,False,0.397
+408,219,5,Subscription Cancel,Student,30-60k,1053.28,2022-01-05,False,0.112
+409,442,5,Subscription,Unemployed,30-60k,1386.82,2022-04-11,False,0.444
+410,311,5,Investment,Student,60-100k,1135.62,2021-10-19,True,0.323
+411,32,5,Subscription Cancel,Self-employed,30-60k,788.59,2022-03-11,False,0.242
+412,665,5,Major Purchase,Full-time,60-100k,8173.39,2021-10-07,False,0.351
+413,622,5,Subscription Cancel,Student,60-100k,156.27,2021-12-17,True,0.731
+414,476,5,Subscription,Student,60-100k,1257.75,2021-09-25,False,0.211
+415,45,5,Subscription Cancel,Part-time,60-100k,3218.19,2021-10-14,False,0.307
+416,191,5,Investment,Self-employed,60-100k,3955.95,2022-02-12,False,0.656
+417,107,5,Major Purchase,Self-employed,100k+,4872.89,2022-06-12,False,0.669
+418,592,5,Credit Application,Full-time,<30k,3015.31,2022-05-11,False,0.372
+419,375,5,Loan Repayment,Part-time,100k+,1085.94,2022-04-03,False,0.343
+420,711,5,Loan Repayment,Full-time,60-100k,10316.97,2022-03-09,False,0.929
+421,269,5,Major Purchase,Full-time,<30k,15524.88,2022-05-29,False,0.516
+422,424,5,Major Purchase,Full-time,100k+,4151.0,2022-02-10,False,0.979
+423,715,5,Major Purchase,Unemployed,30-60k,535.86,2022-07-17,False,0.318
+424,643,6,Investment,Full-time,<30k,2672.71,2021-07-15,False,0.717
+425,294,6,Subscription,Full-time,60-100k,5581.94,2021-08-12,False,0.692
+426,611,6,Loan Repayment,Full-time,60-100k,3271.39,2021-08-05,False,0.866
+427,377,6,Subscription,Student,<30k,553.97,2021-09-23,False,0.477
+428,270,6,Loan Repayment,Full-time,30-60k,13933.54,2021-10-08,False,0.958
+429,475,6,Subscription Cancel,Unemployed,<30k,289.93,2021-09-11,False,0.537
+430,214,6,Loan Repayment,Self-employed,<30k,952.87,2021-07-24,False,0.402
+431,134,6,Credit Application,Full-time,60-100k,9303.67,2021-09-04,False,0.712
+432,303,6,Subscription,Unemployed,30-60k,1067.24,2021-10-21,False,0.702
+433,654,6,Subscription,Full-time,<30k,6698.36,2021-08-24,False,0.98
+434,247,6,Credit Application,Part-time,60-100k,4370.94,2021-10-24,False,0.696
+435,521,6,Subscription Cancel,Full-time,60-100k,8711.96,2021-10-09,True,0.808
+436,361,6,Investment,Unemployed,60-100k,397.0,2021-09-17,False,0.45
+437,577,6,Savings Deposit,Student,30-60k,259.67,2021-08-01,True,0.17
+438,210,6,Credit Application,Unemployed,30-60k,1164.5,2021-06-27,False,0.455
+439,126,6,Loan Repayment,Student,<30k,1237.54,2021-07-04,False,0.46
+440,514,6,Major Purchase,Student,100k+,472.6,2021-10-16,False,0.62
+441,462,6,Investment,Self-employed,100k+,5184.35,2021-10-12,True,0.24
+442,548,6,Subscription,Part-time,60-100k,719.19,2021-09-01,False,0.502
+443,767,6,Savings Deposit,Student,60-100k,1075.13,2021-07-18,False,0.14
+444,763,6,Subscription,Full-time,30-60k,14982.55,2021-06-23,False,0.732
+445,448,6,Loan Repayment,Unemployed,<30k,1213.87,2021-07-12,True,0.585
+446,279,6,Investment,Retired,60-100k,930.59,2021-08-02,False,0.452
+447,708,6,Investment,Full-time,30-60k,15170.53,2021-07-29,False,0.739
+448,294,6,Subscription Cancel,Full-time,60-100k,6354.53,2021-08-06,False,0.682
+449,625,6,Credit Application,Unemployed,100k+,962.25,2021-10-20,False,0.555
+450,573,6,Subscription,Student,30-60k,68.58,2021-09-20,False,0.59
+451,423,6,Subscription Cancel,Full-time,100k+,11532.66,2021-08-07,False,0.974
+452,13,6,Investment,Student,30-60k,624.77,2021-09-19,True,0.272
+453,240,6,Subscription Cancel,Full-time,60-100k,2388.89,2021-08-26,False,0.653
+454,632,6,Savings Deposit,Student,<30k,663.63,2021-10-26,False,0.643
+455,331,6,Major Purchase,Full-time,30-60k,3663.1,2021-07-06,False,0.934
+456,56,6,Credit Application,Unemployed,30-60k,1142.34,2021-09-08,True,0.32
+457,379,6,Investment,Student,30-60k,230.06,2021-06-15,False,0.339
+458,678,6,Investment,Unemployed,30-60k,1338.87,2021-06-21,False,0.55
+459,570,6,Savings Deposit,Student,60-100k,529.66,2021-08-01,True,0.708
+460,242,6,Credit Application,Unemployed,30-60k,989.15,2021-07-06,True,0.458
+461,244,6,Subscription,Retired,100k+,1338.5,2021-08-04,True,0.171
+462,428,6,Loan Repayment,Student,100k+,139.01,2021-06-21,False,0.236
+463,208,6,Investment,Student,30-60k,1364.13,2021-06-19,True,0.531
+464,194,6,Loan Repayment,Full-time,60-100k,9902.81,2021-06-20,False,0.475
+465,603,6,Major Purchase,Student,60-100k,957.47,2021-06-15,False,0.728
+466,579,6,Major Purchase,Retired,30-60k,68.26,2021-06-19,False,0.656
+467,581,6,Savings Deposit,Part-time,60-100k,1135.64,2021-10-21,False,0.212
+468,409,6,Savings Deposit,Student,60-100k,894.93,2021-09-14,False,0.583
+469,450,6,Investment,Full-time,60-100k,2021.01,2021-08-13,False,0.653
+470,133,6,Major Purchase,Full-time,60-100k,15566.25,2021-08-13,False,0.742
+471,778,6,Credit Application,Self-employed,30-60k,2747.19,2021-08-07,True,0.61
+472,176,6,Savings Deposit,Student,100k+,469.66,2021-08-26,False,0.613
+473,124,6,Subscription,Part-time,60-100k,1827.58,2021-09-28,False,0.105
+474,281,6,Loan Repayment,Part-time,100k+,1371.45,2021-08-16,False,0.357
+475,663,6,Credit Application,Full-time,30-60k,16898.35,2021-08-14,False,0.477
+476,589,6,Investment,Full-time,60-100k,4269.6,2021-07-19,True,0.482
+477,706,6,Savings Deposit,Full-time,30-60k,16083.15,2021-07-01,False,0.654
+478,487,6,Subscription Cancel,Student,60-100k,1261.88,2021-07-20,True,0.474
+479,347,6,Subscription,Unemployed,60-100k,373.84,2021-07-19,False,0.28
+480,271,6,Subscription Cancel,Full-time,30-60k,2889.11,2021-07-01,False,0.317
+481,528,6,Investment,Full-time,60-100k,6535.29,2021-09-11,False,0.962
+482,123,6,Credit Application,Student,<30k,157.29,2021-10-23,True,0.347
+483,62,6,Credit Application,Self-employed,30-60k,3382.93,2021-10-10,True,0.648
+484,741,6,Subscription Cancel,Full-time,60-100k,12753.16,2021-08-05,False,0.46
+485,686,6,Subscription,Full-time,100k+,11684.29,2021-09-19,False,0.336
+486,147,6,Subscription,Full-time,60-100k,9486.66,2021-07-23,False,0.692
+487,259,6,Subscription Cancel,Full-time,60-100k,4101.53,2021-08-23,False,0.848
+488,102,6,Loan Repayment,Retired,30-60k,1001.83,2021-09-07,False,0.541
+489,406,7,Major Purchase,Full-time,30-60k,8119.77,2021-02-25,True,0.722
+490,153,7,Credit Application,Full-time,100k+,14597.4,2021-05-06,False,0.903
+491,134,7,Subscription Cancel,Full-time,60-100k,9335.8,2021-04-25,False,0.575
+492,689,7,Subscription Cancel,Unemployed,60-100k,227.77,2021-04-28,False,0.303
+493,455,7,Loan Repayment,Part-time,60-100k,4424.66,2021-06-05,False,0.406
+494,38,7,Investment,Part-time,100k+,3088.06,2021-06-11,False,0.721
+495,15,7,Subscription Cancel,Part-time,30-60k,501.8,2021-05-10,True,0.53
+496,154,7,Loan Repayment,Unemployed,30-60k,691.92,2021-06-04,True,0.198
+497,482,7,Loan Repayment,Retired,<30k,428.41,2021-04-12,False,0.404
+498,134,7,Credit Application,Full-time,60-100k,4435.82,2021-06-05,False,0.829
+499,582,7,Subscription Cancel,Part-time,60-100k,4254.99,2021-03-16,False,0.496
+500,407,7,Investment,Unemployed,<30k,1261.5,2021-02-28,True,0.216
+501,285,7,Credit Application,Student,30-60k,990.49,2021-06-14,False,0.101
+502,188,7,Savings Deposit,Unemployed,60-100k,942.73,2021-02-22,True,0.235
+503,187,7,Subscription Cancel,Unemployed,100k+,311.46,2021-04-23,False,0.562
+504,422,7,Investment,Unemployed,30-60k,633.15,2021-04-20,False,0.212
+505,795,7,Investment,Part-time,30-60k,2441.66,2021-02-24,False,0.45
+506,449,7,Credit Application,Unemployed,60-100k,887.34,2021-04-05,False,0.287
+507,625,7,Subscription,Unemployed,100k+,1283.96,2021-05-31,False,0.706
+508,296,7,Investment,Self-employed,60-100k,227.38,2021-03-30,True,0.495
+509,118,7,Credit Application,Full-time,60-100k,3899.79,2021-04-22,False,0.377
+510,708,7,Subscription Cancel,Full-time,30-60k,15375.79,2021-03-05,False,0.764
+511,284,7,Major Purchase,Self-employed,60-100k,2438.09,2021-04-13,False,0.565
+512,782,7,Credit Application,Unemployed,30-60k,476.03,2021-05-11,False,0.131
+513,405,7,Subscription,Full-time,100k+,14546.46,2021-04-15,False,0.376
+514,683,7,Subscription,Student,30-60k,312.23,2021-05-08,False,0.626
+515,385,7,Major Purchase,Full-time,<30k,13439.27,2021-03-31,False,0.693
+516,133,7,Savings Deposit,Full-time,60-100k,3293.01,2021-05-13,False,0.483
+517,339,7,Major Purchase,Student,<30k,441.8,2021-04-30,False,0.119
+518,91,7,Subscription,Full-time,30-60k,11456.91,2021-04-22,False,0.772
+519,690,7,Loan Repayment,Retired,<30k,837.95,2021-05-20,True,0.715
+520,798,7,Subscription Cancel,Retired,100k+,143.32,2021-05-01,False,0.105
+521,153,7,Subscription,Full-time,100k+,10862.11,2021-04-30,False,0.637
+522,217,7,Investment,Full-time,60-100k,17141.23,2021-06-09,False,0.335
+523,467,7,Major Purchase,Student,<30k,928.26,2021-06-02,True,0.418
+524,713,7,Loan Repayment,Retired,30-60k,1184.82,2021-04-07,False,0.424
+525,128,7,Savings Deposit,Part-time,100k+,287.85,2021-03-17,True,0.685
+526,269,7,Subscription,Full-time,<30k,3310.96,2021-06-15,False,0.896
+527,723,7,Loan Repayment,Full-time,30-60k,4759.96,2021-06-18,False,0.922
+528,616,7,Subscription,Full-time,30-60k,6471.02,2021-03-10,False,0.507
+529,327,7,Subscription Cancel,Full-time,60-100k,10215.56,2021-06-16,False,0.678
+530,569,7,Subscription Cancel,Full-time,60-100k,777.07,2021-03-09,False,0.735
+531,272,7,Savings Deposit,Full-time,60-100k,5958.67,2021-06-20,False,0.923
+532,649,7,Credit Application,Full-time,30-60k,12852.07,2021-02-24,False,0.938
+533,690,7,Savings Deposit,Retired,<30k,877.54,2021-06-17,True,0.359
+534,512,7,Major Purchase,Full-time,30-60k,758.49,2021-02-27,False,0.872
+535,183,7,Subscription,Self-employed,60-100k,3200.0,2021-04-10,False,0.214
+536,26,7,Loan Repayment,Unemployed,30-60k,1172.93,2021-04-18,False,0.177
+537,211,7,Savings Deposit,Part-time,100k+,3256.27,2021-05-17,False,0.592
+538,361,7,Subscription,Unemployed,60-100k,645.34,2021-06-17,False,0.732
+539,671,7,Subscription,Part-time,60-100k,3792.77,2021-05-31,False,0.121
+540,240,7,Major Purchase,Full-time,60-100k,8594.39,2021-05-11,False,0.766
+541,105,7,Credit Application,Full-time,60-100k,6872.26,2021-06-17,False,0.434
+542,223,7,Major Purchase,Full-time,60-100k,12582.15,2021-03-06,False,0.417
+543,204,7,Savings Deposit,Part-time,60-100k,4211.59,2021-05-23,False,0.174
+544,199,7,Subscription Cancel,Part-time,30-60k,3339.21,2021-03-10,False,0.198
+545,4,7,Subscription Cancel,Full-time,60-100k,12267.15,2021-04-11,False,0.465
+546,429,7,Credit Application,Unemployed,100k+,309.93,2021-03-22,False,0.663
+547,316,7,Credit Application,Full-time,30-60k,4216.07,2021-06-03,True,0.893
+548,424,7,Investment,Full-time,100k+,16689.27,2021-03-03,False,0.556
+549,570,7,Credit Application,Student,60-100k,135.59,2021-04-10,False,0.268
+550,8,7,Subscription Cancel,Retired,30-60k,1004.44,2021-03-08,False,0.413
+551,69,7,Investment,Part-time,60-100k,3039.96,2021-04-18,True,0.712
+552,45,7,Major Purchase,Part-time,60-100k,3011.48,2021-06-16,False,0.415
+553,467,7,Subscription Cancel,Student,<30k,828.9,2021-05-11,True,0.51
+554,365,7,Major Purchase,Unemployed,100k+,1369.86,2021-06-15,False,0.122
+555,429,7,Major Purchase,Unemployed,100k+,664.36,2021-06-19,False,0.121
+556,206,7,Investment,Full-time,30-60k,2723.08,2021-03-08,False,0.396
+557,514,7,Investment,Student,100k+,1229.67,2021-03-14,False,0.57
+558,709,8,Subscription Cancel,Self-employed,60-100k,3915.85,2021-03-06,False,0.594
+559,360,8,Credit Application,Retired,60-100k,953.88,2021-01-20,False,0.193
+560,495,8,Credit Application,Self-employed,30-60k,3183.87,2020-12-24,False,0.661
+561,536,8,Major Purchase,Unemployed,<30k,208.19,2021-03-22,False,0.229
+562,401,8,Credit Application,Part-time,60-100k,1780.43,2021-02-26,False,0.617
+563,491,8,Investment,Unemployed,30-60k,1266.53,2021-03-12,False,0.338
+564,688,8,Credit Application,Retired,60-100k,572.15,2020-11-13,False,0.593
+565,185,8,Investment,Retired,30-60k,252.05,2021-01-08,False,0.121
+566,555,8,Loan Repayment,Self-employed,60-100k,4710.27,2021-02-01,False,0.512
+567,77,8,Major Purchase,Student,<30k,728.61,2020-11-18,False,0.36
+568,459,8,Investment,Unemployed,60-100k,154.29,2020-12-02,False,0.133
+569,595,8,Subscription Cancel,Unemployed,100k+,550.02,2020-12-30,False,0.692
+570,778,8,Loan Repayment,Self-employed,30-60k,3742.22,2021-01-13,False,0.395
+571,722,8,Investment,Retired,100k+,67.94,2021-02-27,True,0.269
+572,27,8,Savings Deposit,Full-time,60-100k,2441.06,2021-01-15,False,0.638
+573,154,8,Savings Deposit,Unemployed,30-60k,1221.2,2020-11-14,False,0.719
+574,575,8,Savings Deposit,Self-employed,30-60k,1926.99,2020-11-12,False,0.628
+575,471,8,Savings Deposit,Full-time,100k+,13748.68,2020-12-05,False,0.693
+576,497,8,Subscription,Retired,30-60k,570.59,2020-12-31,False,0.482
+577,601,8,Credit Application,Retired,100k+,462.9,2021-01-02,False,0.233
+578,172,8,Investment,Retired,60-100k,1295.73,2021-04-08,True,0.214
+579,56,8,Subscription Cancel,Unemployed,30-60k,1229.06,2021-01-26,False,0.294
+580,725,8,Credit Application,Full-time,60-100k,9979.52,2020-11-30,True,0.413
+581,187,8,Subscription,Unemployed,100k+,1027.29,2021-02-08,False,0.513
+582,165,8,Investment,Full-time,<30k,11936.6,2021-02-17,False,0.57
+583,395,8,Savings Deposit,Unemployed,30-60k,548.03,2021-03-29,False,0.256
+584,586,8,Subscription Cancel,Student,100k+,1132.02,2020-12-17,True,0.15
+585,309,8,Subscription,Self-employed,60-100k,1249.54,2021-01-10,False,0.61
+586,562,8,Major Purchase,Self-employed,60-100k,228.86,2021-04-01,False,0.129
+587,702,8,Subscription,Part-time,30-60k,1695.92,2021-03-16,False,0.739
+588,558,8,Loan Repayment,Part-time,30-60k,1961.94,2021-02-17,False,0.161
+589,795,8,Savings Deposit,Part-time,30-60k,3333.21,2021-01-12,False,0.674
+590,664,8,Credit Application,Unemployed,30-60k,688.46,2021-03-25,True,0.276
+591,520,8,Savings Deposit,Student,30-60k,822.07,2021-03-27,False,0.249
+592,599,8,Investment,Full-time,100k+,9253.72,2020-11-17,False,0.799
+593,334,8,Subscription,Retired,30-60k,1238.77,2021-03-03,False,0.54
+594,366,8,Loan Repayment,Part-time,30-60k,562.61,2021-02-01,False,0.506
+595,288,8,Savings Deposit,Full-time,30-60k,3568.71,2020-12-04,False,0.92
+596,404,8,Investment,Self-employed,30-60k,2167.11,2021-01-02,False,0.296
+597,294,8,Loan Repayment,Full-time,60-100k,3057.23,2021-02-01,False,0.658
+598,181,8,Savings Deposit,Retired,<30k,926.35,2020-12-28,False,0.341
+599,774,8,Subscription,Full-time,30-60k,5373.91,2021-01-19,False,0.511
+600,550,8,Loan Repayment,Unemployed,60-100k,73.51,2021-03-23,False,0.546
+601,207,8,Credit Application,Full-time,100k+,10559.82,2020-12-31,False,0.762
+602,232,8,Subscription Cancel,Student,60-100k,498.0,2021-01-17,False,0.622
+603,465,8,Subscription Cancel,Student,<30k,49.43,2021-04-15,True,0.539
+604,363,8,Major Purchase,Retired,60-100k,1077.9,2021-02-05,False,0.265
+605,145,8,Major Purchase,Retired,100k+,1352.15,2020-11-20,False,0.333
+606,264,8,Subscription Cancel,Full-time,30-60k,907.48,2021-01-25,False,0.88
+607,799,8,Loan Repayment,Part-time,100k+,186.63,2021-01-03,False,0.714
+608,290,8,Subscription,Part-time,60-100k,1552.37,2021-03-02,False,0.554
+609,273,8,Investment,Full-time,60-100k,9909.19,2020-11-15,False,0.585
+610,352,8,Subscription Cancel,Part-time,60-100k,4040.04,2020-11-17,False,0.44
+611,597,8,Investment,Full-time,30-60k,11095.43,2021-03-17,False,0.407
+612,178,8,Investment,Unemployed,<30k,172.25,2021-04-02,False,0.622
+613,595,8,Subscription Cancel,Unemployed,100k+,1074.61,2021-03-27,False,0.68
+614,78,8,Credit Application,Full-time,<30k,15094.89,2021-01-06,False,0.385
+615,473,8,Loan Repayment,Full-time,30-60k,11988.57,2021-04-08,False,0.917
+616,430,8,Savings Deposit,Unemployed,30-60k,285.42,2020-12-14,False,0.108
+617,341,8,Investment,Part-time,30-60k,1831.67,2020-11-15,False,0.213
+618,298,9,Credit Application,Student,100k+,625.78,2023-03-15,False,0.49
+619,270,9,Subscription,Full-time,30-60k,6857.08,2023-05-09,False,0.485
+620,544,9,Loan Repayment,Full-time,60-100k,2316.32,2023-06-27,False,0.408
+621,350,9,Savings Deposit,Retired,100k+,89.66,2023-04-24,False,0.728
+622,218,9,Loan Repayment,Part-time,60-100k,3024.06,2023-07-15,True,0.64
+623,682,9,Major Purchase,Self-employed,60-100k,4296.07,2023-04-05,True,0.461
+624,656,9,Credit Application,Student,30-60k,957.06,2023-08-19,False,0.253
+625,349,9,Subscription,Part-time,100k+,1974.19,2023-06-16,True,0.655
+626,331,9,Savings Deposit,Full-time,30-60k,3678.06,2023-04-06,False,0.794
+627,776,9,Credit Application,Unemployed,<30k,602.19,2023-04-03,True,0.193
+628,768,9,Investment,Self-employed,60-100k,349.66,2023-09-23,False,0.579
+629,327,9,Subscription,Full-time,60-100k,14711.99,2023-08-04,False,0.814
+630,418,9,Investment,Full-time,60-100k,6408.83,2023-08-10,False,0.743
+631,287,9,Investment,Full-time,30-60k,4562.48,2023-05-05,False,0.635
+632,559,9,Loan Repayment,Part-time,30-60k,4109.87,2023-05-19,False,0.408
+633,232,9,Credit Application,Student,60-100k,333.76,2023-04-26,False,0.737
+634,688,9,Investment,Retired,60-100k,1199.08,2023-05-18,False,0.634
+635,42,9,Investment,Full-time,30-60k,7701.28,2023-05-24,False,0.74
+636,670,9,Investment,Part-time,<30k,348.1,2023-05-02,False,0.519
+637,443,9,Loan Repayment,Part-time,30-60k,3159.33,2023-05-04,False,0.359
+638,252,9,Subscription,Full-time,30-60k,15788.53,2023-09-11,False,0.469
+639,53,9,Major Purchase,Full-time,30-60k,11438.04,2023-10-09,False,0.444
+640,714,9,Subscription,Student,<30k,1374.58,2023-03-15,True,0.246
+641,192,9,Credit Application,Retired,<30k,1205.31,2023-08-14,False,0.119
+642,279,9,Major Purchase,Retired,60-100k,442.89,2023-03-25,False,0.374
+643,201,9,Credit Application,Student,<30k,1304.66,2023-08-26,False,0.257
+644,564,9,Savings Deposit,Full-time,100k+,9461.59,2023-06-29,False,0.553
+645,651,9,Subscription,Full-time,100k+,12205.55,2023-05-09,False,0.331
+646,463,9,Loan Repayment,Student,30-60k,665.56,2023-06-02,False,0.594
+647,609,9,Subscription,Student,60-100k,450.23,2023-07-09,False,0.376
+648,33,9,Subscription,Unemployed,100k+,815.32,2023-10-03,False,0.455
+649,524,9,Savings Deposit,Full-time,60-100k,1102.1,2023-08-10,False,0.797
+650,786,9,Major Purchase,Unemployed,100k+,540.43,2023-04-15,False,0.475
+651,482,9,Major Purchase,Retired,<30k,1204.63,2023-07-08,False,0.574
+652,597,9,Savings Deposit,Full-time,30-60k,13182.41,2023-05-10,False,0.805
+653,577,9,Investment,Student,30-60k,592.7,2023-07-20,False,0.2
+654,232,9,Savings Deposit,Student,60-100k,884.43,2023-08-26,False,0.668
+655,678,9,Savings Deposit,Unemployed,30-60k,525.49,2023-07-12,True,0.615
+656,431,9,Major Purchase,Self-employed,60-100k,2992.68,2023-03-13,False,0.286
+657,15,9,Major Purchase,Part-time,30-60k,1221.73,2023-05-23,True,0.564
+658,282,9,Major Purchase,Retired,60-100k,1237.8,2023-05-19,False,0.565
+659,305,9,Subscription Cancel,Full-time,60-100k,11960.79,2023-07-27,False,0.752
+660,526,9,Savings Deposit,Student,30-60k,1048.6,2023-08-14,False,0.205
+661,537,9,Subscription,Unemployed,<30k,694.97,2023-05-28,False,0.283
+662,306,9,Credit Application,Full-time,60-100k,15906.45,2023-05-09,False,0.959
+663,380,9,Investment,Unemployed,100k+,1390.71,2023-05-31,False,0.205
+664,188,9,Loan Repayment,Unemployed,60-100k,1316.94,2023-08-29,False,0.67
+665,648,9,Loan Repayment,Full-time,60-100k,12229.44,2023-07-30,False,0.945
+666,20,9,Subscription,Unemployed,<30k,450.93,2023-09-24,False,0.167
+667,268,9,Subscription Cancel,Full-time,60-100k,15475.59,2023-05-19,False,0.901
+668,779,9,Savings Deposit,Part-time,60-100k,5144.04,2023-09-05,False,0.243
+669,136,9,Savings Deposit,Full-time,30-60k,4629.4,2023-06-19,False,0.994
+670,731,9,Major Purchase,Retired,<30k,832.8,2023-09-29,False,0.252
+671,251,9,Credit Application,Student,60-100k,344.08,2023-09-27,True,0.136
+672,189,9,Investment,Unemployed,<30k,473.81,2023-09-16,False,0.639
+673,199,9,Investment,Part-time,30-60k,254.98,2023-08-15,False,0.302
+674,239,9,Credit Application,Part-time,30-60k,186.24,2023-06-20,False,0.221
+675,175,9,Savings Deposit,Unemployed,30-60k,809.95,2023-06-15,True,0.398
+676,141,9,Credit Application,Part-time,60-100k,3978.54,2023-04-01,False,0.323
+677,733,9,Subscription Cancel,Full-time,60-100k,14131.06,2023-06-27,False,0.83
+678,423,9,Subscription Cancel,Full-time,100k+,11998.41,2023-08-25,True,0.377
+679,240,9,Subscription,Full-time,60-100k,4596.55,2023-09-27,True,0.609
+680,456,9,Savings Deposit,Full-time,30-60k,2676.72,2023-05-28,False,0.477
+681,619,9,Subscription Cancel,Student,100k+,421.83,2023-08-30,False,0.484
+682,81,9,Subscription,Full-time,60-100k,4388.24,2023-04-25,False,0.375
+683,644,9,Savings Deposit,Part-time,60-100k,4492.75,2023-03-14,False,0.156
+684,322,9,Subscription,Student,<30k,284.21,2023-07-27,False,0.227
+685,166,9,Savings Deposit,Full-time,60-100k,3096.56,2023-07-30,False,0.992
+686,330,9,Subscription Cancel,Student,<30k,351.73,2023-04-28,False,0.711
+687,262,9,Credit Application,Unemployed,100k+,1390.76,2023-05-12,False,0.559
+688,509,10,Savings Deposit,Full-time,100k+,7887.58,2023-01-07,False,0.351
+689,788,10,Subscription Cancel,Unemployed,30-60k,758.27,2023-02-19,True,0.45
+690,294,10,Subscription Cancel,Full-time,60-100k,12387.92,2022-12-22,False,0.846
+691,545,10,Loan Repayment,Full-time,30-60k,16679.05,2022-09-20,False,0.941
+692,161,10,Major Purchase,Self-employed,30-60k,4100.76,2022-12-06,False,0.452
+693,689,10,Savings Deposit,Unemployed,60-100k,1045.91,2022-12-03,False,0.168
+694,515,10,Major Purchase,Full-time,60-100k,4507.28,2022-12-08,False,0.336
+695,700,10,Investment,Unemployed,<30k,624.32,2023-01-03,False,0.371
+696,127,10,Savings Deposit,Full-time,60-100k,12656.77,2022-09-17,False,0.854
+697,611,10,Savings Deposit,Full-time,60-100k,12045.75,2023-02-11,False,0.544
+698,314,10,Savings Deposit,Part-time,100k+,2278.78,2023-02-08,False,0.391
+699,737,10,Subscription,Full-time,60-100k,3834.92,2023-01-21,False,0.454
+700,243,10,Major Purchase,Full-time,100k+,5748.47,2022-09-18,False,0.495
+701,47,10,Subscription Cancel,Part-time,60-100k,4608.76,2022-10-19,False,0.224
+702,27,10,Major Purchase,Full-time,60-100k,11702.46,2022-12-05,False,0.606
+703,571,10,Subscription,Full-time,60-100k,1272.05,2023-02-21,False,0.63
+704,345,10,Credit Application,Full-time,30-60k,8808.16,2022-09-20,False,0.31
+705,312,10,Credit Application,Full-time,100k+,15151.62,2022-10-16,False,0.734
+706,670,10,Subscription,Part-time,<30k,765.41,2023-02-03,True,0.711
+707,522,10,Subscription Cancel,Part-time,100k+,1874.22,2022-10-30,False,0.683
+708,180,10,Subscription Cancel,Full-time,60-100k,2231.35,2022-12-01,False,0.643
+709,682,10,Loan Repayment,Self-employed,60-100k,3189.47,2022-11-25,False,0.122
+710,352,10,Credit Application,Part-time,60-100k,2556.64,2022-10-31,False,0.417
+711,594,10,Subscription Cancel,Full-time,<30k,14768.2,2022-10-22,False,0.88
+712,465,10,Subscription Cancel,Student,<30k,1087.69,2022-11-03,False,0.491
+713,491,10,Credit Application,Unemployed,30-60k,303.51,2023-01-26,False,0.37
+714,237,10,Subscription,Full-time,60-100k,14692.14,2022-12-29,False,0.661
+715,208,10,Subscription,Student,30-60k,1318.08,2022-10-10,False,0.708
+716,147,10,Subscription Cancel,Full-time,60-100k,10148.49,2022-12-14,False,0.846
+717,648,10,Savings Deposit,Full-time,60-100k,11802.25,2023-02-18,False,0.727
+718,463,10,Subscription,Student,30-60k,1134.23,2023-01-25,False,0.422
+719,507,10,Investment,Student,60-100k,395.28,2022-12-11,False,0.724
+720,406,10,Major Purchase,Full-time,30-60k,14823.04,2023-02-14,False,0.318
+721,507,10,Subscription Cancel,Student,60-100k,549.07,2022-11-03,True,0.304
+722,615,10,Loan Repayment,Unemployed,30-60k,887.58,2022-12-31,False,0.482
+723,785,10,Credit Application,Unemployed,<30k,1266.0,2022-09-16,True,0.523
+724,154,10,Loan Repayment,Unemployed,30-60k,560.91,2023-01-04,False,0.397
+725,797,10,Subscription,Full-time,60-100k,2470.23,2022-10-15,False,0.505
+726,637,10,Investment,Full-time,100k+,14758.51,2022-09-30,False,0.851
+727,479,10,Major Purchase,Retired,60-100k,1197.34,2022-12-17,False,0.246
+728,448,10,Credit Application,Unemployed,<30k,124.47,2022-10-12,False,0.745
+729,630,10,Credit Application,Full-time,30-60k,6450.39,2022-12-06,False,0.584
+730,569,10,Investment,Full-time,60-100k,8103.51,2022-11-14,False,0.367
+731,223,10,Subscription,Full-time,60-100k,4594.96,2022-11-20,False,0.393
+732,687,10,Credit Application,Unemployed,30-60k,166.48,2022-12-08,True,0.289
+733,434,10,Major Purchase,Part-time,30-60k,419.92,2023-01-07,False,0.462
+734,622,10,Subscription,Student,60-100k,1302.55,2022-11-19,False,0.681
+735,71,10,Credit Application,Unemployed,30-60k,786.72,2022-12-09,False,0.16
+736,459,10,Credit Application,Unemployed,60-100k,1047.94,2022-10-13,False,0.189
+737,588,10,Subscription,Full-time,100k+,8862.1,2022-11-09,False,0.898
+738,298,10,Savings Deposit,Student,100k+,143.12,2022-12-01,False,0.143
+739,792,10,Savings Deposit,Student,30-60k,525.28,2022-11-10,False,0.511
+740,147,10,Major Purchase,Full-time,60-100k,10166.11,2022-09-21,False,0.852
+741,671,10,Subscription Cancel,Part-time,60-100k,2514.34,2023-01-07,False,0.719
+742,366,10,Subscription Cancel,Part-time,30-60k,1853.33,2023-01-11,False,0.496
+743,646,10,Major Purchase,Part-time,30-60k,2879.69,2023-01-17,True,0.588
+744,91,10,Savings Deposit,Full-time,30-60k,10573.7,2022-09-18,False,0.536
+745,211,10,Loan Repayment,Part-time,100k+,1607.18,2022-10-13,False,0.749
+746,353,10,Savings Deposit,Self-employed,100k+,410.09,2022-11-13,False,0.609
+747,481,10,Subscription,Retired,30-60k,1300.15,2022-10-22,False,0.418
+748,71,10,Major Purchase,Unemployed,30-60k,1269.67,2023-01-22,False,0.579
+749,106,10,Subscription Cancel,Retired,<30k,286.17,2022-10-07,False,0.572
+750,70,10,Investment,Full-time,30-60k,14632.03,2023-02-23,False,0.546
+751,159,10,Savings Deposit,Full-time,100k+,7540.64,2023-01-12,False,0.413
+752,681,10,Subscription Cancel,Unemployed,60-100k,1316.11,2023-02-23,False,0.567
+753,230,10,Subscription Cancel,Full-time,60-100k,5006.08,2023-01-25,False,0.976
+754,97,10,Subscription,Self-employed,100k+,1507.04,2023-02-24,False,0.71
+755,741,10,Savings Deposit,Full-time,60-100k,14096.24,2022-09-17,False,0.434
+756,684,10,Savings Deposit,Full-time,30-60k,5929.26,2022-11-30,False,0.64
+757,291,10,Savings Deposit,Full-time,60-100k,7909.46,2023-02-15,False,0.841
+758,686,11,Savings Deposit,Full-time,100k+,6460.67,2020-10-08,True,0.576
+759,722,11,Subscription Cancel,Retired,100k+,272.95,2020-07-18,False,0.535
+760,341,11,Subscription,Part-time,30-60k,4078.07,2020-05-18,True,0.274
+761,436,11,Loan Repayment,Part-time,60-100k,3590.47,2020-10-21,True,0.565
+762,271,11,Savings Deposit,Full-time,30-60k,7798.88,2020-07-30,False,0.51
+763,471,11,Subscription Cancel,Full-time,100k+,7727.17,2020-11-06,False,0.346
+764,454,11,Major Purchase,Retired,30-60k,739.42,2020-10-10,False,0.715
+765,670,11,Credit Application,Part-time,<30k,2003.79,2020-05-16,True,0.519
+766,640,11,Subscription,Unemployed,<30k,1288.08,2020-06-27,False,0.538
+767,623,11,Subscription,Self-employed,60-100k,4554.25,2020-07-04,True,0.255
+768,495,11,Subscription,Self-employed,30-60k,4465.25,2020-06-22,True,0.131
+769,769,11,Loan Repayment,Student,60-100k,1377.09,2020-09-21,False,0.33
+770,129,11,Subscription,Part-time,<30k,462.93,2020-08-04,False,0.613
+771,311,11,Credit Application,Student,60-100k,468.73,2020-12-02,False,0.707
+772,504,11,Savings Deposit,Student,30-60k,1005.9,2020-07-10,False,0.469
+773,151,11,Loan Repayment,Unemployed,<30k,646.81,2020-07-20,False,0.656
+774,54,11,Savings Deposit,Full-time,60-100k,12295.9,2021-01-06,False,0.501
+775,549,11,Loan Repayment,Self-employed,30-60k,1799.09,2020-06-23,False,0.147
+776,57,11,Subscription Cancel,Retired,60-100k,407.38,2020-06-08,False,0.14
+777,783,11,Loan Repayment,Full-time,30-60k,14844.48,2020-08-27,False,0.371
+778,550,11,Subscription Cancel,Unemployed,60-100k,1252.14,2020-10-21,False,0.284
+779,367,11,Credit Application,Full-time,60-100k,8487.7,2020-12-28,False,0.646
+780,548,11,Credit Application,Part-time,60-100k,2249.33,2020-12-06,True,0.558
+781,187,11,Subscription Cancel,Unemployed,100k+,1313.51,2020-07-26,False,0.142
+782,307,11,Credit Application,Part-time,60-100k,2014.26,2020-08-11,True,0.541
+783,75,11,Subscription Cancel,Part-time,30-60k,2022.19,2020-10-30,False,0.645
+784,339,11,Credit Application,Student,<30k,899.3,2020-10-28,False,0.283
+785,39,11,Savings Deposit,Self-employed,60-100k,5026.72,2020-08-22,False,0.42
+786,393,11,Subscription,Part-time,100k+,2986.74,2020-12-16,False,0.518
+787,572,11,Investment,Part-time,60-100k,5230.22,2020-07-17,False,0.663
+788,210,11,Subscription Cancel,Unemployed,30-60k,392.25,2020-10-02,False,0.671
+789,600,11,Credit Application,Unemployed,<30k,1017.03,2020-10-24,False,0.137
+790,313,11,Major Purchase,Student,60-100k,691.84,2020-06-09,False,0.104
+791,512,11,Investment,Full-time,30-60k,848.8,2020-09-24,True,0.803
+792,540,11,Credit Application,Full-time,60-100k,15554.46,2020-10-03,False,0.764
+793,32,11,Subscription Cancel,Self-employed,30-60k,778.72,2020-12-16,False,0.685
+794,416,11,Subscription Cancel,Part-time,100k+,2344.01,2020-06-17,True,0.647
+795,644,11,Credit Application,Part-time,60-100k,173.2,2020-10-24,False,0.248
+796,280,11,Loan Repayment,Unemployed,<30k,1026.14,2021-01-13,True,0.245
+797,781,11,Credit Application,Full-time,30-60k,4989.23,2020-05-28,False,0.301
+798,753,11,Investment,Full-time,<30k,1089.66,2020-10-20,False,0.593
+799,256,11,Credit Application,Part-time,30-60k,3901.18,2020-07-05,False,0.128
+800,58,11,Subscription Cancel,Full-time,100k+,3326.97,2020-10-31,False,0.606
+801,340,11,Loan Repayment,Full-time,100k+,7384.07,2021-01-08,False,0.667
+802,8,11,Savings Deposit,Retired,30-60k,1095.51,2020-10-16,False,0.225
+803,492,11,Savings Deposit,Part-time,30-60k,3377.38,2020-10-14,False,0.326
+804,183,11,Subscription,Self-employed,60-100k,4233.98,2021-01-19,False,0.745
+805,786,11,Investment,Unemployed,100k+,905.92,2020-06-07,False,0.309
+806,367,11,Major Purchase,Full-time,60-100k,7886.84,2020-08-03,True,0.362
+807,47,11,Credit Application,Part-time,60-100k,3663.56,2020-09-17,False,0.707
+808,220,11,Subscription Cancel,Part-time,60-100k,3349.05,2020-08-03,False,0.349
+809,32,11,Loan Repayment,Self-employed,30-60k,2567.43,2020-09-24,False,0.43
+810,477,11,Subscription Cancel,Retired,60-100k,911.82,2020-07-09,False,0.218
+811,535,11,Savings Deposit,Full-time,60-100k,6045.09,2020-09-09,False,0.751
+812,277,11,Savings Deposit,Self-employed,30-60k,894.9,2020-12-19,False,0.618
+813,220,11,Investment,Part-time,60-100k,3895.15,2020-08-14,False,0.115
+814,183,11,Subscription Cancel,Self-employed,60-100k,1844.0,2020-08-08,True,0.375
+815,597,11,Loan Repayment,Full-time,30-60k,1488.94,2020-11-24,False,0.383
+816,169,11,Credit Application,Student,30-60k,1067.58,2020-07-28,False,0.66
+817,368,11,Loan Repayment,Unemployed,<30k,468.17,2020-11-26,True,0.683
+818,46,11,Loan Repayment,Full-time,30-60k,7484.41,2020-11-26,False,0.805
+819,318,11,Subscription Cancel,Self-employed,60-100k,984.92,2020-08-26,False,0.467
+820,208,11,Major Purchase,Student,30-60k,275.95,2020-10-16,False,0.408
+821,618,11,Investment,Unemployed,<30k,1032.6,2020-10-30,True,0.372
+822,127,11,Loan Repayment,Full-time,60-100k,14425.69,2020-10-04,False,0.679
+823,54,11,Subscription Cancel,Full-time,60-100k,13661.72,2020-08-04,False,0.974
+824,265,11,Subscription,Self-employed,30-60k,1901.61,2020-06-13,True,0.583
+825,483,11,Loan Repayment,Full-time,100k+,2019.05,2020-08-21,False,0.302
+826,69,11,Major Purchase,Part-time,60-100k,5127.3,2020-10-06,True,0.474
+827,703,11,Credit Application,Full-time,60-100k,16758.52,2020-11-16,False,0.852
+828,589,11,Subscription Cancel,Full-time,60-100k,2501.59,2020-08-06,False,0.574
+829,51,11,Savings Deposit,Student,30-60k,1048.21,2021-01-05,False,0.163
+830,680,11,Subscription Cancel,Part-time,60-100k,4679.31,2020-07-04,True,0.5
+831,370,11,Major Purchase,Full-time,30-60k,1752.34,2020-09-20,False,0.522
+832,493,11,Credit Application,Retired,60-100k,1114.86,2020-12-28,False,0.533
+833,4,11,Credit Application,Full-time,60-100k,12260.67,2020-06-11,False,0.618
+834,240,11,Subscription Cancel,Full-time,60-100k,6544.33,2020-10-24,False,0.392
+835,472,11,Investment,Full-time,60-100k,886.98,2020-10-28,True,0.89
+836,41,11,Credit Application,Part-time,60-100k,3461.08,2020-06-18,False,0.568
+837,620,11,Major Purchase,Full-time,30-60k,2090.04,2020-12-07,False,0.537
+838,761,11,Investment,Unemployed,30-60k,609.83,2021-01-08,False,0.309
+839,532,11,Investment,Full-time,100k+,16899.76,2020-09-28,False,0.346
+840,130,11,Subscription,Self-employed,30-60k,1824.77,2020-11-15,False,0.49
+841,379,12,Subscription Cancel,Student,30-60k,168.39,2020-04-21,False,0.719
+842,113,12,Loan Repayment,Retired,60-100k,511.4,2020-02-14,False,0.42
+843,326,12,Subscription,Self-employed,30-60k,1873.2,2020-03-15,False,0.3
+844,122,12,Investment,Part-time,60-100k,2721.32,2020-04-22,True,0.503
+845,472,12,Subscription,Full-time,60-100k,10483.43,2020-05-21,False,0.761
+846,576,12,Subscription Cancel,Full-time,100k+,11151.46,2019-12-08,False,0.813
+847,234,12,Investment,Retired,60-100k,127.18,2020-03-07,True,0.442
+848,639,12,Subscription,Part-time,60-100k,3151.87,2020-07-22,False,0.258
+849,144,12,Credit Application,Full-time,100k+,12433.64,2020-07-20,False,0.914
+850,266,12,Subscription Cancel,Part-time,30-60k,3309.33,2020-03-22,False,0.643
+851,51,12,Loan Repayment,Student,30-60k,660.33,2019-11-06,False,0.178
+852,476,12,Subscription,Student,60-100k,131.87,2020-04-16,False,0.665
+853,595,12,Loan Repayment,Unemployed,100k+,1375.75,2020-06-24,False,0.393
+854,239,12,Subscription,Part-time,30-60k,3528.57,2020-07-28,False,0.419
+855,172,12,Major Purchase,Retired,60-100k,1392.55,2019-08-14,False,0.575
+856,287,12,Investment,Full-time,30-60k,2496.4,2019-08-13,False,0.358
+857,655,12,Major Purchase,Student,30-60k,1358.95,2020-01-16,False,0.71
+858,216,12,Credit Application,Unemployed,30-60k,1226.84,2019-11-07,False,0.346
+859,633,12,Subscription,Unemployed,<30k,405.3,2020-03-13,False,0.734
+860,794,12,Subscription Cancel,Part-time,30-60k,3159.09,2019-08-22,False,0.316
+861,439,12,Major Purchase,Retired,<30k,400.38,2019-11-25,False,0.194
+862,314,12,Credit Application,Part-time,100k+,4258.7,2020-07-04,True,0.506
+863,751,12,Major Purchase,Unemployed,100k+,885.65,2020-07-31,True,0.399
+864,143,12,Credit Application,Self-employed,30-60k,2086.63,2019-08-26,False,0.405
+865,636,12,Credit Application,Retired,100k+,296.23,2019-10-19,False,0.321
+866,456,12,Subscription,Full-time,30-60k,3833.28,2020-03-25,True,0.952
+867,765,12,Credit Application,Full-time,100k+,5310.03,2020-05-21,False,0.724
+868,133,12,Loan Repayment,Full-time,60-100k,17024.36,2020-02-21,False,0.587
+869,614,12,Savings Deposit,Student,60-100k,455.34,2019-09-18,False,0.229
+870,573,12,Savings Deposit,Student,30-60k,68.61,2020-04-04,False,0.223
+871,537,12,Major Purchase,Unemployed,<30k,1176.58,2019-10-17,False,0.293
+872,687,12,Savings Deposit,Unemployed,30-60k,1037.92,2020-05-23,True,0.215
+873,25,12,Savings Deposit,Full-time,100k+,12012.78,2020-08-01,False,0.307
+874,732,12,Investment,Unemployed,<30k,1378.07,2019-09-21,False,0.36
+875,669,12,Loan Repayment,Full-time,30-60k,2989.24,2019-10-28,False,0.473
+876,112,12,Loan Repayment,Self-employed,30-60k,1552.79,2020-02-17,False,0.238
+877,551,12,Major Purchase,Part-time,100k+,4539.23,2019-10-12,False,0.702
+878,671,12,Loan Repayment,Part-time,60-100k,3455.55,2020-03-30,False,0.268
+879,514,12,Savings Deposit,Student,100k+,633.1,2019-09-29,False,0.651
+880,692,12,Investment,Full-time,60-100k,10517.07,2020-04-11,False,0.355
+881,790,12,Major Purchase,Self-employed,30-60k,2107.82,2020-01-12,False,0.628
+882,405,12,Subscription,Full-time,100k+,12456.7,2020-04-20,False,0.806
+883,131,12,Major Purchase,Full-time,30-60k,7392.85,2020-07-16,False,0.432
+884,494,12,Savings Deposit,Full-time,30-60k,1163.19,2020-05-26,False,0.972
+885,583,12,Investment,Full-time,60-100k,9864.09,2020-02-10,True,0.521
+886,655,12,Loan Repayment,Student,30-60k,1352.93,2020-05-08,False,0.607
+887,54,12,Loan Repayment,Full-time,60-100k,16518.44,2019-12-22,False,0.819
+888,290,12,Savings Deposit,Part-time,60-100k,1293.61,2019-11-27,False,0.427
+889,517,12,Investment,Full-time,60-100k,16127.83,2019-09-11,False,0.791
+890,206,12,Major Purchase,Full-time,30-60k,3772.72,2020-08-11,False,0.796
+891,364,12,Loan Repayment,Unemployed,30-60k,1031.44,2020-06-08,False,0.305
+892,84,12,Subscription Cancel,Full-time,60-100k,13326.4,2020-08-04,False,0.309
+893,106,12,Subscription,Retired,<30k,725.0,2019-10-08,False,0.633
+894,178,12,Credit Application,Unemployed,<30k,304.06,2020-07-20,True,0.18
+895,161,12,Subscription,Self-employed,30-60k,2808.92,2020-07-29,False,0.614
+896,211,12,Loan Repayment,Part-time,100k+,542.75,2020-02-08,False,0.144
+897,745,12,Investment,Full-time,100k+,13553.47,2019-08-30,False,0.588
+898,500,12,Savings Deposit,Self-employed,60-100k,3140.9,2020-07-31,False,0.352
+899,509,12,Subscription,Full-time,100k+,12656.12,2019-11-07,False,0.582
+900,152,12,Savings Deposit,Unemployed,30-60k,394.62,2020-02-13,False,0.273
+901,200,12,Savings Deposit,Unemployed,30-60k,139.86,2019-11-29,False,0.214
+902,224,12,Investment,Full-time,60-100k,10287.17,2020-03-17,False,0.459
+903,583,12,Major Purchase,Full-time,60-100k,8085.09,2020-06-10,False,0.392
+904,4,12,Loan Repayment,Full-time,60-100k,7104.64,2019-12-24,False,0.558
+905,664,12,Subscription,Unemployed,30-60k,974.22,2019-12-23,False,0.677
+906,27,12,Subscription Cancel,Full-time,60-100k,3810.99,2019-10-20,False,0.935
+907,566,12,Investment,Retired,60-100k,1250.57,2019-08-16,False,0.317
+908,345,12,Major Purchase,Full-time,30-60k,955.87,2019-09-23,False,0.469
+909,249,12,Subscription Cancel,Full-time,60-100k,14681.73,2020-01-08,False,0.901
+910,536,12,Investment,Unemployed,<30k,1135.59,2020-02-06,False,0.651
+911,117,12,Loan Repayment,Unemployed,60-100k,1164.6,2020-04-20,False,0.345
+912,28,13,Investment,Unemployed,100k+,747.28,2021-07-30,False,0.643
+913,707,13,Major Purchase,Self-employed,30-60k,4275.69,2021-06-15,False,0.187
+914,567,13,Savings Deposit,Full-time,30-60k,16363.0,2021-10-08,False,0.624
+915,687,13,Credit Application,Unemployed,30-60k,1033.75,2020-12-28,False,0.707
+916,596,13,Subscription Cancel,Full-time,60-100k,15083.04,2021-04-23,False,0.657
+917,77,13,Investment,Student,<30k,469.81,2021-03-21,True,0.243
+918,138,13,Loan Repayment,Full-time,100k+,581.13,2021-04-04,False,0.538
+919,67,13,Savings Deposit,Retired,30-60k,1140.85,2021-09-28,False,0.604
+920,349,13,Investment,Part-time,100k+,4344.87,2021-05-17,False,0.444
+921,190,13,Credit Application,Full-time,30-60k,8008.88,2021-01-17,False,0.689
+922,329,13,Credit Application,Part-time,60-100k,1711.96,2021-07-30,False,0.638
+923,584,13,Subscription Cancel,Retired,<30k,870.98,2021-09-19,False,0.705
+924,682,13,Subscription,Self-employed,60-100k,2685.07,2021-04-08,False,0.727
+925,403,13,Investment,Part-time,30-60k,2528.91,2021-05-26,False,0.749
+926,144,13,Subscription Cancel,Full-time,100k+,13132.92,2021-10-04,False,0.841
+927,30,13,Credit Application,Full-time,30-60k,12370.85,2021-09-14,False,0.309
+928,467,13,Loan Repayment,Student,<30k,504.05,2020-12-29,False,0.356
+929,750,13,Credit Application,Unemployed,60-100k,1116.54,2021-07-27,False,0.19
+930,401,13,Major Purchase,Part-time,60-100k,574.82,2021-09-06,False,0.454
+931,407,13,Credit Application,Unemployed,<30k,289.36,2020-12-08,False,0.159
+932,68,13,Subscription,Unemployed,<30k,1143.83,2021-09-07,False,0.717
+933,430,13,Major Purchase,Unemployed,30-60k,1373.42,2021-08-04,False,0.364
+934,131,13,Savings Deposit,Full-time,30-60k,759.29,2021-05-14,False,0.433
+935,18,13,Subscription,Student,60-100k,620.28,2021-04-17,True,0.448
+936,103,13,Major Purchase,Part-time,100k+,2380.9,2021-08-14,False,0.24
+937,84,13,Credit Application,Full-time,60-100k,11159.16,2021-07-24,False,0.889
+938,766,13,Savings Deposit,Full-time,<30k,17476.08,2020-12-11,False,0.473
+939,265,13,Loan Repayment,Self-employed,30-60k,4558.0,2021-02-16,True,0.545
+940,440,13,Subscription Cancel,Part-time,<30k,3909.7,2021-10-12,False,0.226
+941,593,13,Subscription,Retired,60-100k,1297.94,2021-08-27,False,0.35
+942,141,13,Loan Repayment,Part-time,60-100k,5163.21,2021-09-27,False,0.567
+943,188,13,Loan Repayment,Unemployed,60-100k,571.61,2021-02-01,False,0.562
+944,262,13,Major Purchase,Unemployed,100k+,179.94,2021-04-09,False,0.532
+945,23,13,Investment,Part-time,100k+,4225.44,2021-04-19,False,0.582
+946,221,13,Subscription,Retired,100k+,534.67,2021-02-24,False,0.143
+947,356,13,Subscription,Full-time,30-60k,3967.81,2021-04-14,False,0.582
+948,678,13,Savings Deposit,Unemployed,30-60k,516.81,2021-08-12,False,0.458
+949,744,13,Major Purchase,Full-time,30-60k,2826.21,2021-06-09,False,0.428
+950,8,13,Major Purchase,Retired,30-60k,1318.84,2021-10-06,True,0.179
+951,203,13,Major Purchase,Part-time,100k+,332.73,2021-04-09,True,0.613
+952,88,13,Savings Deposit,Student,<30k,500.65,2021-07-27,False,0.46
+953,793,13,Investment,Self-employed,30-60k,2582.56,2021-07-30,True,0.256
+954,13,13,Subscription Cancel,Student,30-60k,1378.72,2021-09-17,False,0.329
+955,288,13,Subscription Cancel,Full-time,30-60k,3548.35,2021-04-22,True,0.976
+956,17,13,Major Purchase,Part-time,60-100k,960.64,2021-06-09,False,0.525
+957,436,13,Major Purchase,Part-time,60-100k,4424.61,2021-09-24,False,0.406
+958,254,13,Subscription,Full-time,30-60k,10457.63,2021-03-22,False,0.737
+959,704,13,Investment,Unemployed,30-60k,658.61,2021-02-13,False,0.673
+960,192,13,Major Purchase,Retired,<30k,1155.6,2021-09-12,False,0.519
+961,230,13,Subscription Cancel,Full-time,60-100k,3770.7,2021-05-28,False,0.677
+962,485,13,Loan Repayment,Full-time,60-100k,17172.34,2021-05-21,False,0.911
+963,50,13,Subscription Cancel,Unemployed,<30k,534.67,2021-06-14,False,0.708
+964,571,13,Credit Application,Full-time,60-100k,10382.4,2021-09-20,False,0.504
+965,556,13,Loan Repayment,Full-time,60-100k,16726.69,2021-04-18,False,0.954
+966,108,13,Loan Repayment,Retired,<30k,1299.37,2021-01-08,False,0.148
+967,429,13,Savings Deposit,Unemployed,100k+,72.11,2020-12-04,False,0.12
+968,435,13,Investment,Retired,100k+,383.73,2021-08-01,False,0.616
+969,585,13,Major Purchase,Part-time,30-60k,1993.93,2021-04-14,True,0.382
+970,398,13,Loan Repayment,Full-time,60-100k,12149.24,2021-10-16,False,0.363
+971,605,13,Subscription,Full-time,30-60k,8304.76,2021-07-18,False,0.909
+972,193,13,Loan Repayment,Unemployed,30-60k,251.79,2021-05-22,False,0.473
+973,124,13,Savings Deposit,Part-time,60-100k,1738.54,2021-02-03,False,0.346
+974,653,13,Savings Deposit,Full-time,30-60k,10753.84,2021-06-28,False,0.517
+975,123,13,Subscription,Student,<30k,231.28,2021-02-25,False,0.592
+976,272,13,Loan Repayment,Full-time,60-100k,12475.54,2021-10-11,True,0.74
+977,91,13,Subscription Cancel,Full-time,30-60k,17400.86,2021-01-31,False,0.883
+978,593,13,Credit Application,Retired,60-100k,1159.93,2021-06-07,False,0.576
+979,798,13,Major Purchase,Retired,100k+,106.28,2021-03-03,False,0.608
+980,349,13,Major Purchase,Part-time,100k+,4440.72,2021-05-18,False,0.351
+981,513,14,Subscription,Student,<30k,401.49,2020-02-22,False,0.341
+982,387,14,Subscription,Part-time,30-60k,2619.04,2020-07-18,False,0.11
+983,566,14,Investment,Retired,60-100k,1168.91,2020-03-25,False,0.215
+984,345,14,Savings Deposit,Full-time,30-60k,13198.99,2020-07-25,False,0.798
+985,341,14,Major Purchase,Part-time,30-60k,259.0,2021-01-03,False,0.622
+986,187,14,Major Purchase,Unemployed,100k+,1276.12,2020-04-23,True,0.287
+987,372,14,Major Purchase,Retired,60-100k,1202.44,2020-02-18,False,0.535
+988,211,14,Savings Deposit,Part-time,100k+,587.7,2020-08-28,False,0.572
+989,588,14,Subscription Cancel,Full-time,100k+,13962.21,2020-08-19,False,0.487
+990,115,14,Investment,Student,100k+,1342.14,2020-03-01,True,0.591
+991,183,14,Savings Deposit,Self-employed,60-100k,999.63,2020-07-12,False,0.315
+992,707,14,Subscription Cancel,Self-employed,30-60k,2767.22,2021-01-27,False,0.185
+993,28,14,Credit Application,Unemployed,100k+,760.11,2020-04-13,True,0.143
+994,148,14,Subscription,Full-time,60-100k,14793.76,2020-02-19,False,0.765
+995,709,14,Investment,Self-employed,60-100k,4989.4,2020-12-27,False,0.492
+996,339,14,Loan Repayment,Student,<30k,287.94,2020-02-18,False,0.573
+997,436,14,Savings Deposit,Part-time,60-100k,2216.19,2020-03-10,False,0.115
+998,384,14,Loan Repayment,Unemployed,30-60k,551.53,2020-06-06,False,0.639
+999,730,14,Subscription,Part-time,60-100k,889.51,2021-01-14,False,0.144
+1000,212,14,Investment,Self-employed,60-100k,5022.17,2020-02-16,True,0.582
+1001,768,14,Subscription Cancel,Self-employed,60-100k,2448.44,2020-07-10,True,0.169
+1002,515,14,Major Purchase,Full-time,60-100k,3341.27,2020-07-25,False,0.476
+1003,63,14,Subscription,Self-employed,30-60k,724.04,2020-01-05,False,0.125
+1004,718,14,Savings Deposit,Retired,30-60k,1246.51,2020-03-18,True,0.632
+1005,705,14,Savings Deposit,Full-time,100k+,11600.42,2020-03-01,False,0.578
+1006,216,14,Major Purchase,Unemployed,30-60k,1391.2,2020-07-18,False,0.491
+1007,757,14,Loan Repayment,Student,100k+,289.98,2020-01-15,False,0.671
+1008,494,14,Major Purchase,Full-time,30-60k,2243.55,2020-08-01,False,0.677
+1009,552,14,Credit Application,Unemployed,100k+,381.5,2020-06-04,False,0.256
+1010,406,14,Subscription Cancel,Full-time,30-60k,12708.81,2020-10-06,False,0.955
+1011,760,14,Major Purchase,Full-time,<30k,13940.36,2020-06-07,False,0.797
+1012,5,14,Subscription Cancel,Full-time,60-100k,3486.05,2020-12-30,False,0.78
+1013,253,14,Subscription Cancel,Unemployed,<30k,1048.23,2020-09-14,False,0.152
+1014,258,14,Investment,Unemployed,30-60k,884.25,2021-02-07,False,0.1
+1015,209,14,Subscription Cancel,Retired,60-100k,1087.46,2021-02-25,False,0.704
+1016,535,14,Loan Repayment,Full-time,60-100k,548.31,2020-10-29,False,0.846
+1017,352,14,Savings Deposit,Part-time,60-100k,3749.78,2019-12-24,False,0.537
+1018,647,14,Subscription,Self-employed,60-100k,334.03,2020-05-12,True,0.216
+1019,199,14,Savings Deposit,Part-time,30-60k,2909.56,2020-06-20,False,0.195
+1020,379,14,Investment,Student,30-60k,1232.69,2020-03-14,False,0.41
+1021,231,14,Subscription Cancel,Full-time,100k+,9113.89,2019-12-26,False,0.948
+1022,485,14,Subscription Cancel,Full-time,60-100k,9726.11,2020-06-10,False,0.65
+1023,691,14,Credit Application,Full-time,60-100k,2203.99,2021-02-21,False,0.863
+1024,538,14,Savings Deposit,Full-time,60-100k,15729.22,2021-01-04,False,0.848
+1025,585,14,Major Purchase,Part-time,30-60k,4805.48,2020-08-08,False,0.467
+1026,797,14,Major Purchase,Full-time,60-100k,10416.73,2021-02-08,False,0.604
+1027,663,14,Investment,Full-time,30-60k,16033.15,2020-07-28,False,0.616
+1028,40,14,Subscription Cancel,Unemployed,<30k,1283.36,2020-04-30,False,0.167
+1029,611,14,Major Purchase,Full-time,60-100k,12305.11,2020-08-26,False,0.595
+1030,651,14,Subscription,Full-time,100k+,11844.05,2021-01-09,False,0.767
+1031,559,14,Savings Deposit,Part-time,30-60k,3074.06,2020-04-10,False,0.645
+1032,448,14,Credit Application,Unemployed,<30k,87.82,2020-05-05,False,0.677
+1033,265,14,Subscription Cancel,Self-employed,30-60k,2957.97,2021-02-09,False,0.433
+1034,26,14,Subscription,Unemployed,30-60k,749.46,2020-08-05,True,0.522
+1035,48,14,Investment,Student,30-60k,1354.45,2021-01-20,False,0.541
+1036,312,14,Subscription,Full-time,100k+,3155.64,2019-12-30,True,0.395
+1037,667,14,Investment,Full-time,100k+,799.18,2020-12-14,False,0.877
+1038,132,14,Loan Repayment,Part-time,100k+,4760.16,2020-01-21,False,0.459
+1039,143,14,Investment,Self-employed,30-60k,374.82,2021-02-08,False,0.154
+1040,250,14,Credit Application,Full-time,100k+,10027.23,2020-06-28,False,0.648
+1041,754,14,Credit Application,Unemployed,30-60k,1012.28,2020-05-01,False,0.471
+1042,136,14,Subscription,Full-time,30-60k,3285.18,2020-12-19,False,0.324
+1043,199,14,Loan Repayment,Part-time,30-60k,218.16,2020-06-12,True,0.514
+1044,75,14,Savings Deposit,Part-time,30-60k,310.79,2020-03-26,False,0.574
+1045,181,14,Major Purchase,Retired,<30k,237.36,2020-08-30,False,0.308
+1046,91,14,Savings Deposit,Full-time,30-60k,3255.32,2020-02-19,False,0.797
+1047,211,14,Major Purchase,Part-time,100k+,3391.57,2020-01-12,False,0.389
+1048,539,14,Major Purchase,Part-time,60-100k,1737.59,2021-01-25,False,0.699
+1049,28,14,Savings Deposit,Unemployed,100k+,1211.86,2020-02-23,True,0.606
+1050,394,14,Major Purchase,Full-time,<30k,1103.02,2021-01-03,False,0.933
+1051,554,14,Loan Repayment,Retired,30-60k,245.32,2020-06-01,False,0.738
+1052,475,14,Investment,Unemployed,<30k,1336.3,2020-01-02,False,0.709
+1053,639,14,Loan Repayment,Part-time,60-100k,3906.11,2020-03-15,False,0.499
+1054,278,14,Major Purchase,Full-time,<30k,7539.54,2020-10-16,False,0.76
+1055,396,14,Major Purchase,Self-employed,30-60k,937.31,2020-12-08,False,0.332
+1056,501,14,Investment,Student,60-100k,584.55,2020-07-30,False,0.401
+1057,213,14,Credit Application,Full-time,60-100k,10570.66,2020-04-16,False,0.349
+1058,796,14,Investment,Full-time,60-100k,17470.5,2020-02-23,False,0.991
+1059,446,14,Subscription,Full-time,30-60k,15083.89,2021-02-02,False,0.549
+1060,87,14,Subscription,Part-time,60-100k,321.87,2020-04-28,False,0.661
+1061,119,14,Subscription Cancel,Retired,60-100k,1222.0,2020-03-13,False,0.354
+1062,331,14,Savings Deposit,Full-time,30-60k,8164.02,2020-08-05,False,0.345
+1063,550,14,Loan Repayment,Unemployed,60-100k,1216.72,2020-06-22,True,0.131
+1064,546,14,Savings Deposit,Part-time,100k+,3126.79,2020-12-02,False,0.491
+1065,395,14,Savings Deposit,Unemployed,30-60k,1143.88,2020-06-06,False,0.372
+1066,524,14,Investment,Full-time,60-100k,7843.57,2020-06-01,False,0.421
+1067,156,14,Investment,Unemployed,<30k,335.92,2020-11-07,True,0.163
+1068,610,14,Subscription Cancel,Self-employed,60-100k,4806.09,2020-01-07,True,0.673
+1069,80,14,Investment,Student,30-60k,506.08,2020-04-07,False,0.149
+1070,143,14,Loan Repayment,Self-employed,30-60k,4717.67,2020-09-29,False,0.302
+1071,352,14,Subscription Cancel,Part-time,60-100k,3636.08,2020-10-02,False,0.546
+1072,415,14,Savings Deposit,Unemployed,<30k,573.46,2020-04-09,False,0.296
+1073,234,15,Credit Application,Retired,60-100k,740.66,2021-08-06,False,0.506
+1074,98,15,Subscription,Full-time,30-60k,14259.75,2021-05-14,False,0.504
+1075,196,15,Subscription Cancel,Self-employed,60-100k,1783.41,2021-05-05,False,0.29
+1076,716,15,Subscription,Student,60-100k,1164.2,2021-07-14,True,0.362
+1077,124,15,Loan Repayment,Part-time,60-100k,558.0,2021-10-17,False,0.392
+1078,718,15,Credit Application,Retired,30-60k,652.38,2021-04-05,False,0.297
+1079,430,15,Subscription Cancel,Unemployed,30-60k,1031.49,2021-10-10,False,0.699
+1080,6,15,Major Purchase,Student,<30k,880.21,2021-03-03,False,0.506
+1081,39,15,Subscription Cancel,Self-employed,60-100k,3145.55,2021-10-01,False,0.536
+1082,1,15,Investment,Part-time,30-60k,517.79,2021-06-08,False,0.731
+1083,669,15,Credit Application,Full-time,30-60k,14740.33,2021-08-21,False,0.564
+1084,207,15,Subscription Cancel,Full-time,100k+,6946.86,2021-03-14,False,0.665
+1085,199,15,Investment,Part-time,30-60k,837.75,2021-08-10,False,0.729
+1086,571,15,Major Purchase,Full-time,60-100k,730.67,2021-04-07,False,0.627
+1087,597,15,Loan Repayment,Full-time,30-60k,11959.11,2021-03-07,False,0.513
+1088,91,15,Subscription,Full-time,30-60k,6356.33,2021-03-06,False,0.906
+1089,174,15,Subscription Cancel,Student,60-100k,1217.6,2021-06-05,False,0.675
+1090,787,15,Savings Deposit,Full-time,30-60k,12290.37,2021-05-11,False,0.657
+1091,78,15,Credit Application,Full-time,<30k,5803.0,2021-02-24,False,0.476
+1092,526,15,Subscription Cancel,Student,30-60k,825.12,2021-05-24,False,0.347
+1093,158,15,Credit Application,Student,60-100k,1246.02,2021-05-10,False,0.64
+1094,618,15,Major Purchase,Unemployed,<30k,1308.15,2021-02-25,False,0.233
+1095,458,15,Loan Repayment,Full-time,30-60k,14604.89,2021-02-22,False,0.437
+1096,200,15,Subscription,Unemployed,30-60k,877.32,2021-08-07,False,0.595
+1097,785,15,Savings Deposit,Unemployed,<30k,905.2,2021-03-03,False,0.312
+1098,590,15,Investment,Full-time,60-100k,1303.78,2021-07-08,False,0.376
+1099,594,15,Major Purchase,Full-time,<30k,14444.94,2021-03-31,False,0.618
+1100,349,15,Credit Application,Part-time,100k+,380.22,2021-05-04,False,0.183
+1101,146,15,Loan Repayment,Unemployed,60-100k,352.29,2021-07-16,True,0.609
+1102,273,15,Investment,Full-time,60-100k,707.57,2021-10-11,False,0.592
+1103,34,15,Credit Application,Unemployed,<30k,233.08,2021-07-25,False,0.307
+1104,123,15,Subscription Cancel,Student,<30k,1159.3,2021-10-14,False,0.334
+1105,578,15,Savings Deposit,Unemployed,<30k,625.6,2021-07-25,False,0.674
+1106,691,15,Loan Repayment,Full-time,60-100k,9630.55,2021-09-24,False,0.972
+1107,568,15,Major Purchase,Full-time,60-100k,6071.31,2021-04-12,False,0.318
+1108,9,15,Subscription Cancel,Part-time,100k+,775.92,2021-03-26,True,0.348
+1109,689,15,Savings Deposit,Unemployed,60-100k,1331.22,2021-07-17,False,0.679
+1110,357,15,Loan Repayment,Full-time,30-60k,7088.29,2021-10-07,False,0.326
+1111,152,15,Subscription Cancel,Unemployed,30-60k,1226.38,2021-04-30,False,0.244
+1112,509,15,Major Purchase,Full-time,100k+,3728.59,2021-07-17,True,0.307
+1113,394,15,Credit Application,Full-time,<30k,8483.64,2021-09-19,False,0.992
+1114,627,15,Subscription Cancel,Unemployed,60-100k,219.31,2021-08-16,False,0.403
+1115,701,15,Subscription Cancel,Part-time,60-100k,4660.24,2021-08-08,False,0.556
+1116,676,15,Subscription Cancel,Part-time,30-60k,4318.84,2021-07-07,False,0.548
+1117,312,15,Credit Application,Full-time,100k+,5534.18,2021-08-12,False,0.614
+1118,706,15,Subscription Cancel,Full-time,30-60k,9137.94,2021-06-24,False,0.834
+1119,222,15,Major Purchase,Part-time,60-100k,5200.47,2021-08-29,False,0.131
+1120,387,15,Loan Repayment,Part-time,30-60k,1669.37,2021-08-08,False,0.666
+1121,255,15,Subscription,Retired,60-100k,165.6,2021-10-13,False,0.102
+1122,362,15,Loan Repayment,Student,<30k,1146.71,2021-10-27,False,0.154
+1123,721,15,Major Purchase,Unemployed,<30k,979.07,2021-03-28,False,0.514
+1124,686,15,Credit Application,Full-time,100k+,2242.23,2021-08-16,False,0.573
+1125,6,15,Savings Deposit,Student,<30k,110.0,2021-09-09,True,0.523
+1126,453,15,Major Purchase,Retired,60-100k,520.18,2021-09-12,False,0.616
+1127,114,15,Savings Deposit,Full-time,100k+,13091.98,2021-10-20,False,0.723
+1128,522,15,Investment,Part-time,100k+,2473.16,2021-07-10,False,0.385
+1129,709,15,Investment,Self-employed,60-100k,4589.87,2021-07-12,False,0.445
+1130,66,15,Subscription,Full-time,60-100k,8926.31,2021-06-20,False,0.634
+1131,526,15,Savings Deposit,Student,30-60k,1286.07,2021-05-19,True,0.483
+1132,533,15,Subscription,Full-time,30-60k,5270.83,2021-08-06,False,0.562
+1133,702,15,Loan Repayment,Part-time,30-60k,4930.76,2021-04-07,False,0.615
+1134,319,15,Credit Application,Part-time,100k+,4415.47,2021-09-22,False,0.168
+1135,761,15,Subscription Cancel,Unemployed,30-60k,1056.3,2021-08-17,True,0.584
+1136,125,15,Savings Deposit,Part-time,<30k,4813.85,2021-03-20,False,0.452
+1137,492,15,Major Purchase,Part-time,30-60k,1076.3,2021-05-17,False,0.694
+1138,537,15,Loan Repayment,Unemployed,<30k,1084.45,2021-09-24,False,0.735
+1139,104,15,Subscription Cancel,Part-time,60-100k,2467.31,2021-07-17,True,0.717
+1140,179,15,Investment,Full-time,60-100k,14021.48,2021-08-08,False,0.89
+1141,749,15,Subscription Cancel,Full-time,60-100k,4425.47,2021-06-06,False,0.79
+1142,784,15,Investment,Part-time,<30k,3972.64,2021-03-21,False,0.12
+1143,378,15,Major Purchase,Self-employed,30-60k,1249.8,2021-06-25,False,0.225
+1144,235,15,Credit Application,Unemployed,60-100k,512.64,2021-09-19,False,0.189
+1145,450,15,Savings Deposit,Full-time,60-100k,16145.75,2021-06-06,False,0.817
+1146,8,15,Savings Deposit,Retired,30-60k,730.92,2021-04-13,False,0.538
+1147,71,15,Investment,Unemployed,30-60k,296.6,2021-03-09,True,0.417
+1148,31,15,Investment,Retired,100k+,62.77,2021-02-25,False,0.422
+1149,96,15,Credit Application,Self-employed,100k+,1855.07,2021-09-28,False,0.333
+1150,796,15,Savings Deposit,Full-time,60-100k,14555.31,2021-10-16,False,0.706
+1151,374,15,Investment,Unemployed,30-60k,1167.21,2021-08-30,False,0.74
+1152,271,15,Credit Application,Full-time,30-60k,1874.75,2021-04-29,False,0.595
+1153,377,15,Subscription,Student,<30k,969.05,2021-06-28,False,0.444
+1154,94,15,Savings Deposit,Retired,100k+,231.43,2021-05-21,False,0.547
+1155,739,15,Savings Deposit,Unemployed,<30k,484.23,2021-04-23,False,0.175
+1156,641,15,Subscription,Part-time,30-60k,4847.47,2021-07-27,False,0.719
+1157,50,15,Credit Application,Unemployed,<30k,1309.75,2021-03-08,False,0.237
+1158,767,15,Credit Application,Student,60-100k,75.12,2021-06-14,False,0.103
+1159,111,15,Credit Application,Part-time,60-100k,1743.24,2021-08-27,False,0.435
+1160,273,16,Savings Deposit,Full-time,60-100k,10869.71,2020-04-16,False,0.501
+1161,352,16,Subscription,Part-time,60-100k,2346.75,2019-08-21,False,0.209
+1162,712,16,Subscription Cancel,Unemployed,60-100k,401.39,2019-12-04,False,0.475
+1163,325,16,Investment,Full-time,30-60k,15151.85,2019-09-21,False,0.429
+1164,470,16,Savings Deposit,Full-time,100k+,7085.09,2020-01-07,False,0.966
+1165,396,16,Loan Repayment,Self-employed,30-60k,3225.08,2019-09-16,False,0.384
+1166,585,16,Credit Application,Part-time,30-60k,3477.2,2020-04-24,False,0.304
+1167,707,16,Major Purchase,Self-employed,30-60k,3729.72,2020-03-14,False,0.145
+1168,292,16,Loan Repayment,Part-time,100k+,2312.82,2019-06-29,True,0.596
+1169,66,16,Major Purchase,Full-time,60-100k,16188.53,2019-12-07,False,0.971
+1170,426,16,Credit Application,Self-employed,100k+,3442.7,2020-01-13,False,0.314
+1171,320,16,Credit Application,Full-time,100k+,6583.1,2019-07-23,False,0.469
+1172,22,16,Major Purchase,Student,30-60k,1228.02,2020-02-15,True,0.406
+1173,631,16,Major Purchase,Student,60-100k,175.73,2019-10-26,False,0.112
+1174,723,16,Credit Application,Full-time,30-60k,8240.69,2019-07-20,True,0.474
+1175,234,16,Subscription,Retired,60-100k,573.09,2019-08-17,False,0.612
+1176,489,16,Major Purchase,Unemployed,<30k,397.42,2020-04-17,False,0.693
+1177,676,16,Savings Deposit,Part-time,30-60k,1186.54,2020-01-08,False,0.492
+1178,399,16,Credit Application,Part-time,30-60k,1245.76,2019-07-19,False,0.169
+1179,62,16,Credit Application,Self-employed,30-60k,3892.91,2020-01-19,False,0.732
+1180,248,16,Savings Deposit,Full-time,100k+,6436.33,2020-01-17,False,0.804
+1181,790,16,Loan Repayment,Self-employed,30-60k,2572.57,2019-09-15,True,0.506
+1182,9,16,Loan Repayment,Part-time,100k+,1350.53,2019-11-28,False,0.421
+1183,320,16,Investment,Full-time,100k+,6688.86,2019-07-09,False,0.637
+1184,597,16,Subscription Cancel,Full-time,30-60k,808.04,2019-05-28,False,0.426
+1185,219,16,Subscription Cancel,Student,30-60k,508.29,2020-03-25,True,0.224
+1186,478,16,Credit Application,Full-time,30-60k,13471.86,2020-04-22,False,0.932
+1187,381,16,Investment,Part-time,100k+,3712.41,2020-02-26,False,0.281
+1188,709,16,Savings Deposit,Self-employed,60-100k,3938.48,2019-10-16,False,0.285
+1189,238,16,Investment,Part-time,30-60k,2068.36,2020-02-20,False,0.693
+1190,458,16,Subscription Cancel,Full-time,30-60k,15981.2,2019-06-03,False,0.31
+1191,80,16,Loan Repayment,Student,30-60k,1178.3,2019-09-18,False,0.327
+1192,219,16,Subscription Cancel,Student,30-60k,438.64,2019-12-12,False,0.478
+1193,731,16,Credit Application,Retired,<30k,90.05,2020-01-15,False,0.347
+1194,624,16,Subscription Cancel,Unemployed,100k+,1189.48,2019-08-25,False,0.489
+1195,334,16,Loan Repayment,Retired,30-60k,612.47,2020-02-06,False,0.546
+1196,72,16,Subscription Cancel,Full-time,30-60k,3728.85,2020-01-06,False,0.56
+1197,189,16,Credit Application,Unemployed,<30k,756.29,2020-02-15,False,0.217
+1198,369,16,Savings Deposit,Student,30-60k,1049.24,2019-10-12,False,0.526
+1199,571,16,Major Purchase,Full-time,60-100k,4350.95,2020-03-27,False,0.812
+1200,522,16,Credit Application,Part-time,100k+,4503.54,2019-07-21,False,0.465
+1201,622,16,Investment,Student,60-100k,142.07,2020-01-30,False,0.416
+1202,518,16,Loan Repayment,Retired,30-60k,957.69,2020-01-01,False,0.49
+1203,66,16,Subscription,Full-time,60-100k,6204.49,2020-02-10,False,0.855
+1204,465,16,Subscription Cancel,Student,<30k,1164.3,2019-10-22,True,0.696
+1205,87,16,Savings Deposit,Part-time,60-100k,4933.11,2019-08-18,False,0.637
+1206,287,16,Subscription Cancel,Full-time,30-60k,7576.06,2020-03-03,False,0.521
+1207,533,16,Savings Deposit,Full-time,30-60k,6419.42,2020-02-11,True,0.908
+1208,614,16,Subscription Cancel,Student,60-100k,576.37,2019-10-26,True,0.552
+1209,139,16,Subscription,Retired,60-100k,173.88,2019-06-12,False,0.208
+1210,520,16,Loan Repayment,Student,30-60k,796.42,2020-03-16,True,0.115
+1211,634,16,Credit Application,Part-time,60-100k,1344.16,2019-11-15,False,0.481
+1212,163,16,Savings Deposit,Full-time,100k+,14625.15,2020-04-10,False,0.668
+1213,685,16,Savings Deposit,Part-time,100k+,5248.07,2019-11-11,False,0.303
+1214,650,16,Investment,Retired,60-100k,1152.13,2019-11-09,True,0.511
+1215,777,16,Investment,Part-time,100k+,940.04,2020-03-15,True,0.705
+1216,243,16,Major Purchase,Full-time,100k+,2070.92,2019-11-19,False,0.569
+1217,417,16,Credit Application,Unemployed,<30k,1117.6,2019-06-04,False,0.182
+1218,336,16,Savings Deposit,Full-time,<30k,8337.87,2019-09-17,False,0.894
+1219,442,16,Major Purchase,Unemployed,30-60k,853.18,2019-06-11,False,0.104
+1220,452,16,Credit Application,Retired,30-60k,635.48,2020-02-10,True,0.472
+1221,492,16,Savings Deposit,Part-time,30-60k,2371.96,2020-04-09,False,0.634
+1222,383,16,Loan Repayment,Unemployed,60-100k,262.08,2019-07-31,False,0.736
+1223,111,16,Savings Deposit,Part-time,60-100k,1160.19,2019-11-10,True,0.155
+1224,118,16,Loan Repayment,Full-time,60-100k,10643.89,2019-12-02,False,0.31
+1225,602,16,Loan Repayment,Part-time,30-60k,890.66,2020-04-10,False,0.478
+1226,270,16,Subscription,Full-time,30-60k,17467.96,2019-10-23,False,0.654
+1227,473,16,Subscription,Full-time,30-60k,11099.0,2020-01-14,False,0.875
+1228,441,16,Loan Repayment,Self-employed,100k+,1085.9,2019-09-30,False,0.606
+1229,181,16,Credit Application,Retired,<30k,166.27,2020-04-08,True,0.501
+1230,66,16,Savings Deposit,Full-time,60-100k,6055.92,2019-09-29,False,0.623
+1231,108,16,Investment,Retired,<30k,915.44,2019-09-21,False,0.747
+1232,790,16,Credit Application,Self-employed,30-60k,2261.16,2019-06-10,False,0.502
+1233,343,16,Investment,Full-time,30-60k,8383.31,2019-11-30,False,0.698
+1234,63,16,Loan Repayment,Self-employed,30-60k,522.92,2020-02-25,False,0.256
+1235,267,16,Major Purchase,Part-time,60-100k,2720.78,2020-01-02,False,0.44
+1236,122,16,Savings Deposit,Part-time,60-100k,1716.21,2019-09-10,False,0.562
+1237,107,16,Savings Deposit,Self-employed,100k+,448.17,2020-03-14,False,0.629
+1238,704,16,Subscription Cancel,Unemployed,30-60k,475.73,2019-12-27,False,0.277
+1239,276,16,Savings Deposit,Full-time,<30k,8984.9,2019-08-12,False,0.677
+1240,285,16,Investment,Student,30-60k,125.02,2019-08-02,False,0.323
+1241,81,16,Credit Application,Full-time,60-100k,1859.98,2020-04-05,False,0.321
+1242,631,16,Subscription Cancel,Student,60-100k,405.04,2020-02-18,False,0.296
+1243,205,17,Major Purchase,Full-time,30-60k,2726.77,2021-03-16,False,0.604
+1244,107,17,Subscription,Self-employed,100k+,3849.8,2020-11-03,False,0.671
+1245,321,17,Subscription Cancel,Student,30-60k,909.21,2020-12-20,False,0.238
+1246,33,17,Credit Application,Unemployed,100k+,330.89,2020-10-26,False,0.282
+1247,643,17,Savings Deposit,Full-time,<30k,9811.69,2021-05-06,False,0.474
+1248,405,17,Major Purchase,Full-time,100k+,10096.28,2021-04-27,False,0.655
+1249,324,17,Loan Repayment,Part-time,60-100k,894.1,2020-09-26,False,0.562
+1250,392,17,Savings Deposit,Part-time,60-100k,3500.62,2020-11-05,False,0.289
+1251,132,17,Major Purchase,Part-time,100k+,2599.47,2020-12-26,True,0.283
+1252,673,17,Subscription Cancel,Unemployed,60-100k,1142.42,2020-09-21,False,0.676
+1253,766,17,Credit Application,Full-time,<30k,2495.42,2020-11-09,False,0.868
+1254,504,17,Subscription Cancel,Student,30-60k,1074.25,2020-08-13,False,0.514
+1255,151,17,Savings Deposit,Unemployed,<30k,44.0,2021-02-23,False,0.501
+1256,135,17,Subscription Cancel,Part-time,30-60k,2653.73,2020-10-03,True,0.517
+1257,583,17,Subscription,Full-time,60-100k,5583.31,2020-09-22,False,0.649
+1258,215,17,Subscription Cancel,Full-time,60-100k,14179.1,2020-10-22,False,0.781
+1259,350,17,Loan Repayment,Retired,100k+,1132.98,2021-04-06,False,0.554
+1260,327,17,Major Purchase,Full-time,60-100k,2115.33,2020-11-14,False,0.489
+1261,577,17,Subscription Cancel,Student,30-60k,215.8,2020-09-14,False,0.703
+1262,449,17,Major Purchase,Unemployed,60-100k,1061.55,2021-01-19,False,0.345
+1263,398,17,Subscription Cancel,Full-time,60-100k,10066.24,2020-11-03,False,0.534
+1264,20,17,Major Purchase,Unemployed,<30k,1129.39,2020-08-22,False,0.373
+1265,784,17,Investment,Part-time,<30k,4885.6,2021-05-05,False,0.374
+1266,209,17,Savings Deposit,Retired,60-100k,55.95,2021-04-07,True,0.417
+1267,594,17,Subscription Cancel,Full-time,<30k,9551.61,2020-09-29,False,0.4
+1268,702,17,Major Purchase,Part-time,30-60k,5155.89,2020-08-31,False,0.204
+1269,136,17,Credit Application,Full-time,30-60k,10115.43,2020-09-25,False,0.535
+1270,219,17,Major Purchase,Student,30-60k,369.42,2021-04-05,False,0.346
+1271,278,17,Investment,Full-time,<30k,14829.52,2020-12-06,False,0.603
+1272,300,17,Subscription,Part-time,30-60k,4434.24,2021-01-24,False,0.615
+1273,175,17,Subscription,Unemployed,30-60k,1184.85,2020-10-13,False,0.657
+1274,727,17,Loan Repayment,Full-time,100k+,13669.52,2021-02-24,False,0.594
+1275,719,17,Savings Deposit,Self-employed,100k+,4013.13,2021-02-08,False,0.218
+1276,452,17,Major Purchase,Retired,30-60k,82.58,2021-01-10,True,0.157
+1277,345,17,Subscription Cancel,Full-time,30-60k,3426.89,2020-09-17,True,0.845
+1278,578,17,Subscription,Unemployed,<30k,889.2,2020-10-07,False,0.341
+1279,666,17,Investment,Full-time,100k+,15880.84,2020-10-18,False,0.551
+1280,399,17,Savings Deposit,Part-time,30-60k,391.05,2020-09-09,True,0.748
+1281,263,17,Subscription Cancel,Part-time,60-100k,972.75,2021-05-02,True,0.472
+1282,781,17,Subscription,Full-time,30-60k,3642.26,2021-01-09,False,0.521
+1283,731,17,Subscription,Retired,<30k,1037.57,2020-09-21,False,0.192
+1284,591,17,Major Purchase,Unemployed,60-100k,41.97,2020-12-11,True,0.558
+1285,131,17,Major Purchase,Full-time,30-60k,3189.84,2021-02-14,False,0.651
+1286,490,17,Credit Application,Retired,<30k,827.34,2020-09-24,False,0.33
+1287,56,17,Subscription Cancel,Unemployed,30-60k,757.42,2020-09-10,False,0.378
+1288,695,17,Major Purchase,Self-employed,100k+,3683.15,2021-03-19,False,0.412
+1289,188,17,Subscription Cancel,Unemployed,60-100k,676.91,2021-01-14,False,0.572
+1290,398,17,Major Purchase,Full-time,60-100k,13060.86,2020-08-14,False,0.4
+1291,398,17,Savings Deposit,Full-time,60-100k,13748.43,2020-12-24,False,0.583
+1292,244,17,Investment,Retired,100k+,411.1,2021-01-18,False,0.272
+1293,356,17,Subscription Cancel,Full-time,30-60k,9924.51,2020-10-25,False,0.894
+1294,525,17,Savings Deposit,Full-time,60-100k,4255.56,2020-10-02,False,0.917
+1295,722,17,Loan Repayment,Retired,100k+,1267.58,2020-10-09,True,0.668
+1296,300,17,Loan Repayment,Part-time,30-60k,3933.97,2020-11-11,False,0.563
+1297,451,17,Loan Repayment,Part-time,100k+,4213.51,2021-02-08,True,0.452
+1298,488,17,Loan Repayment,Retired,60-100k,758.75,2020-11-11,True,0.674
+1299,531,17,Subscription,Full-time,30-60k,15558.43,2020-11-16,False,0.986
+1300,665,17,Savings Deposit,Full-time,60-100k,6979.09,2021-04-28,False,0.912
+1301,184,17,Loan Repayment,Full-time,<30k,16043.56,2020-09-20,False,0.791
+1302,175,17,Major Purchase,Unemployed,30-60k,853.46,2021-03-11,False,0.276
+1303,431,17,Loan Repayment,Self-employed,60-100k,2905.26,2020-10-09,True,0.258
+1304,699,17,Savings Deposit,Part-time,<30k,2591.87,2021-02-22,False,0.149
+1305,32,17,Savings Deposit,Self-employed,30-60k,3459.75,2020-11-26,False,0.355
+1306,466,17,Savings Deposit,Full-time,60-100k,14806.45,2021-03-02,False,0.555
+1307,696,17,Savings Deposit,Full-time,30-60k,2447.14,2020-12-25,False,0.937
+1308,293,17,Subscription,Full-time,30-60k,1850.86,2020-12-22,False,0.542
+1309,464,17,Savings Deposit,Full-time,60-100k,16709.24,2020-09-04,False,0.64
+1310,623,17,Credit Application,Self-employed,60-100k,954.33,2021-04-06,False,0.324
+1311,407,17,Subscription,Unemployed,<30k,1084.83,2020-12-28,False,0.619
+1312,387,17,Investment,Part-time,30-60k,2735.88,2020-12-16,False,0.705
+1313,617,17,Major Purchase,Full-time,30-60k,7305.81,2021-04-11,False,0.845
+1314,361,17,Subscription,Unemployed,60-100k,1115.14,2021-02-03,False,0.739
+1315,120,17,Subscription,Full-time,30-60k,5783.58,2021-03-01,False,0.683
+1316,411,17,Subscription Cancel,Student,100k+,1324.48,2020-09-17,False,0.518
+1317,282,17,Investment,Retired,60-100k,1164.39,2021-01-13,False,0.646
+1318,246,17,Loan Repayment,Part-time,100k+,578.75,2021-01-30,True,0.194
+1319,721,17,Loan Repayment,Unemployed,<30k,1161.64,2020-11-23,False,0.252
+1320,767,17,Major Purchase,Student,60-100k,1320.69,2020-12-24,False,0.208
+1321,183,17,Major Purchase,Self-employed,60-100k,1243.42,2020-09-10,False,0.598
+1322,162,17,Major Purchase,Self-employed,60-100k,411.59,2020-08-05,False,0.162
+1323,686,17,Subscription Cancel,Full-time,100k+,5161.26,2020-10-27,False,0.466
+1324,563,17,Loan Repayment,Full-time,30-60k,16568.39,2020-12-01,False,0.884
+1325,109,17,Major Purchase,Full-time,30-60k,15331.83,2020-08-27,False,0.416
+1326,521,17,Subscription,Full-time,60-100k,9100.97,2020-09-08,False,0.469
+1327,716,17,Investment,Student,60-100k,619.13,2021-02-09,True,0.273
+1328,157,17,Subscription,Full-time,60-100k,10234.33,2020-09-11,False,0.616
+1329,55,17,Savings Deposit,Student,100k+,510.84,2020-10-15,False,0.428
+1330,327,17,Major Purchase,Full-time,60-100k,15372.83,2020-11-29,False,0.884
+1331,290,17,Subscription Cancel,Part-time,60-100k,1355.23,2021-03-21,False,0.739
+1332,179,17,Investment,Full-time,60-100k,16496.87,2020-08-08,False,0.745
+1333,747,17,Savings Deposit,Student,60-100k,879.02,2021-03-20,True,0.552
+1334,148,17,Credit Application,Full-time,60-100k,10115.3,2020-08-24,False,0.473
+1335,160,17,Loan Repayment,Full-time,100k+,2610.68,2020-08-13,False,0.689
+1336,605,17,Major Purchase,Full-time,30-60k,3455.45,2020-12-20,False,0.828
+1337,24,17,Investment,Full-time,60-100k,11648.16,2020-09-26,False,0.439
+1338,573,17,Subscription,Student,30-60k,794.66,2021-02-01,False,0.127
+1339,434,18,Credit Application,Part-time,30-60k,5083.59,2022-12-25,False,0.191
+1340,245,18,Savings Deposit,Full-time,100k+,11762.0,2022-10-29,False,0.328
+1341,518,18,Loan Repayment,Retired,30-60k,481.61,2022-11-16,False,0.469
+1342,134,18,Loan Repayment,Full-time,60-100k,6069.23,2022-11-29,False,0.663
+1343,326,18,Savings Deposit,Self-employed,30-60k,4557.09,2022-10-12,False,0.262
+1344,301,18,Subscription Cancel,Unemployed,30-60k,1086.83,2022-10-30,False,0.667
+1345,439,18,Investment,Retired,<30k,793.57,2022-11-10,False,0.277
+1346,753,18,Subscription Cancel,Full-time,<30k,17334.93,2023-01-10,False,0.936
+1347,152,18,Credit Application,Unemployed,30-60k,106.96,2022-11-12,False,0.525
+1348,673,18,Major Purchase,Unemployed,60-100k,964.24,2023-01-06,False,0.136
+1349,195,18,Subscription,Full-time,60-100k,8213.86,2022-12-13,False,0.423
+1350,238,18,Credit Application,Part-time,30-60k,4587.12,2022-12-09,False,0.181
+1351,367,18,Major Purchase,Full-time,60-100k,15151.57,2022-12-22,False,0.943
+1352,763,18,Subscription,Full-time,30-60k,8502.45,2022-12-22,True,0.836
+1353,254,18,Savings Deposit,Full-time,30-60k,3740.63,2022-11-24,False,0.878
+1354,204,18,Subscription,Part-time,60-100k,3660.81,2022-11-22,False,0.526
+1355,46,18,Major Purchase,Full-time,30-60k,13116.53,2022-11-24,False,0.726
+1356,123,18,Savings Deposit,Student,<30k,268.4,2022-11-30,False,0.313
+1357,78,18,Savings Deposit,Full-time,<30k,12258.13,2022-10-23,False,0.484
+1358,43,18,Investment,Self-employed,60-100k,1802.9,2022-10-28,False,0.705
+1359,224,18,Major Purchase,Full-time,60-100k,6972.37,2022-11-14,False,0.575
+1360,315,18,Savings Deposit,Unemployed,100k+,961.74,2022-11-10,False,0.107
+1361,635,18,Subscription Cancel,Part-time,30-60k,989.36,2022-10-15,False,0.337
+1362,242,18,Subscription,Unemployed,30-60k,1185.64,2022-10-18,True,0.53
+1363,565,18,Investment,Unemployed,30-60k,43.29,2022-11-13,True,0.219
+1364,199,18,Credit Application,Part-time,30-60k,4290.2,2023-01-08,False,0.45
+1365,149,18,Subscription Cancel,Unemployed,30-60k,1104.73,2022-10-26,True,0.206
+1366,785,18,Subscription,Unemployed,<30k,402.89,2022-11-25,False,0.279
+1367,436,18,Major Purchase,Part-time,60-100k,3286.06,2022-10-21,False,0.613
+1368,587,18,Subscription,Self-employed,30-60k,712.73,2023-01-01,False,0.251
+1369,272,18,Subscription,Full-time,60-100k,7978.78,2022-12-18,False,0.839
+1370,132,18,Major Purchase,Part-time,100k+,1159.62,2023-01-05,False,0.478
+1371,483,18,Subscription,Full-time,100k+,10710.46,2023-01-01,False,0.506
+1372,674,18,Savings Deposit,Student,60-100k,865.87,2022-11-25,False,0.64
+1373,347,18,Subscription Cancel,Unemployed,60-100k,297.15,2022-12-27,False,0.678
+1374,467,18,Credit Application,Student,<30k,447.3,2022-10-24,False,0.117
+1375,383,18,Subscription,Unemployed,60-100k,626.67,2022-10-26,False,0.591
+1376,745,18,Subscription Cancel,Full-time,100k+,3581.3,2022-11-24,False,0.61
+1377,170,18,Savings Deposit,Part-time,30-60k,2674.39,2023-01-01,False,0.603
+1378,115,18,Investment,Student,100k+,918.14,2022-12-13,False,0.605
+1379,174,18,Major Purchase,Student,60-100k,1370.79,2022-12-01,False,0.705
+1380,59,18,Investment,Full-time,30-60k,4734.45,2023-01-10,False,0.675
+1381,354,18,Credit Application,Retired,100k+,390.95,2022-10-17,True,0.392
+1382,425,18,Subscription Cancel,Full-time,<30k,5822.69,2023-01-12,False,0.344
+1383,523,18,Subscription,Unemployed,30-60k,240.51,2022-10-23,False,0.511
+1384,728,18,Subscription,Student,60-100k,781.88,2022-11-03,False,0.602
+1385,677,18,Major Purchase,Self-employed,60-100k,4456.33,2022-11-02,True,0.518
+1386,544,18,Credit Application,Full-time,60-100k,1237.84,2022-11-11,False,0.778
+1387,396,18,Subscription,Self-employed,30-60k,1008.6,2022-11-18,False,0.605
+1388,765,18,Investment,Full-time,100k+,12817.53,2022-11-14,False,0.61
+1389,772,18,Major Purchase,Self-employed,60-100k,2166.67,2022-10-12,False,0.13
+1390,445,18,Investment,Unemployed,30-60k,538.87,2022-10-19,False,0.667
+1391,358,18,Credit Application,Full-time,30-60k,9989.67,2022-12-11,False,0.858
+1392,229,18,Subscription Cancel,Full-time,<30k,15372.64,2022-12-04,False,0.826
+1393,302,18,Investment,Retired,<30k,875.25,2022-11-02,True,0.409
+1394,575,18,Savings Deposit,Self-employed,30-60k,1084.53,2022-10-19,False,0.441
+1395,220,18,Major Purchase,Part-time,60-100k,4336.24,2022-10-27,False,0.122
+1396,710,18,Loan Repayment,Part-time,100k+,2381.01,2022-12-03,False,0.153
+1397,229,18,Savings Deposit,Full-time,<30k,6441.44,2022-10-17,False,0.894
+1398,552,18,Subscription,Unemployed,100k+,494.93,2022-10-29,False,0.313
+1399,604,18,Subscription,Student,<30k,469.98,2022-12-14,False,0.726
+1400,468,18,Investment,Self-employed,60-100k,5092.57,2022-10-23,False,0.154
+1401,422,18,Subscription,Unemployed,30-60k,756.88,2023-01-07,False,0.5
+1402,38,18,Subscription Cancel,Part-time,100k+,1594.77,2022-12-05,False,0.323
+1403,194,18,Credit Application,Full-time,60-100k,1367.49,2022-11-05,False,0.896
+1404,471,18,Subscription Cancel,Full-time,100k+,6788.73,2022-10-27,False,0.581
+1405,119,18,Savings Deposit,Retired,60-100k,943.31,2022-10-31,False,0.641
+1406,646,18,Savings Deposit,Part-time,30-60k,2959.35,2022-12-20,False,0.502
+1407,459,18,Loan Repayment,Unemployed,60-100k,1153.88,2022-10-31,False,0.393
+1408,179,18,Subscription Cancel,Full-time,60-100k,16174.91,2022-12-30,False,0.858
+1409,746,18,Investment,Full-time,100k+,11933.65,2022-11-15,False,0.37
+1410,1,18,Major Purchase,Part-time,30-60k,2522.63,2022-12-03,False,0.472
+1411,67,18,Subscription,Retired,30-60k,110.32,2022-10-19,False,0.402
+1412,461,18,Credit Application,Unemployed,30-60k,523.83,2022-10-29,True,0.481
+1413,265,18,Investment,Self-employed,30-60k,682.66,2022-11-07,False,0.291
+1414,639,18,Subscription,Part-time,60-100k,2874.04,2022-12-11,False,0.154
+1415,369,18,Subscription,Student,30-60k,192.21,2022-12-13,False,0.685
+1416,389,18,Credit Application,Self-employed,100k+,1039.9,2022-11-09,False,0.508
+1417,490,18,Savings Deposit,Retired,<30k,624.88,2022-11-12,False,0.27
+1418,378,18,Major Purchase,Self-employed,30-60k,5104.09,2022-11-19,False,0.54
+1419,403,18,Loan Repayment,Part-time,30-60k,4391.12,2022-12-18,True,0.274
+1420,657,18,Investment,Full-time,30-60k,7709.25,2022-10-23,False,0.52
+1421,141,18,Subscription,Part-time,60-100k,2967.22,2022-11-20,False,0.679
+1422,640,18,Savings Deposit,Unemployed,<30k,697.54,2022-11-12,False,0.719
+1423,756,18,Savings Deposit,Part-time,100k+,156.73,2023-01-01,False,0.497
+1424,249,18,Subscription,Full-time,60-100k,13901.2,2022-12-05,False,0.962
+1425,21,18,Loan Repayment,Unemployed,<30k,71.52,2022-12-29,False,0.354
+1426,736,18,Investment,Part-time,60-100k,1842.57,2022-11-29,False,0.199
+1427,562,18,Subscription Cancel,Self-employed,60-100k,4722.07,2022-12-09,False,0.363
+1428,327,18,Investment,Full-time,60-100k,2017.01,2022-11-04,False,0.469
+1429,420,19,Loan Repayment,Retired,60-100k,1398.93,2020-02-14,True,0.423
+1430,659,19,Loan Repayment,Self-employed,<30k,4873.66,2019-11-29,False,0.593
+1431,783,19,Loan Repayment,Full-time,30-60k,14689.87,2019-09-25,False,0.443
+1432,697,19,Investment,Unemployed,<30k,601.29,2019-12-14,False,0.742
+1433,127,19,Subscription Cancel,Full-time,60-100k,6699.46,2019-10-26,False,0.865
+1434,655,19,Subscription Cancel,Student,30-60k,703.29,2019-07-03,False,0.62
+1435,231,19,Major Purchase,Full-time,100k+,9158.41,2019-10-12,False,0.615
+1436,606,19,Loan Repayment,Full-time,60-100k,15616.96,2019-08-12,False,0.659
+1437,247,19,Subscription Cancel,Part-time,60-100k,4629.7,2019-07-07,False,0.505
+1438,276,19,Major Purchase,Full-time,<30k,9412.27,2019-12-29,False,0.327
+1439,499,19,Savings Deposit,Retired,30-60k,87.78,2019-06-10,True,0.747
+1440,667,19,Savings Deposit,Full-time,100k+,9838.72,2019-09-20,False,0.3
+1441,42,19,Subscription,Full-time,30-60k,12733.1,2019-09-05,True,0.825
+1442,165,19,Savings Deposit,Full-time,<30k,1882.16,2019-10-22,False,0.985
+1443,7,19,Subscription Cancel,Unemployed,<30k,696.94,2019-07-23,False,0.745
+1444,780,19,Loan Repayment,Full-time,30-60k,15355.75,2019-11-19,False,0.539
+1445,228,19,Major Purchase,Unemployed,<30k,376.13,2019-08-15,False,0.703
+1446,316,19,Savings Deposit,Full-time,30-60k,15044.88,2019-11-02,False,0.766
+1447,365,19,Credit Application,Unemployed,100k+,782.62,2019-07-03,False,0.385
+1448,144,19,Credit Application,Full-time,100k+,4203.86,2020-02-03,False,0.689
+1449,297,19,Subscription Cancel,Part-time,60-100k,1243.65,2019-07-28,False,0.531
+1450,737,19,Investment,Full-time,60-100k,4086.14,2019-10-22,False,0.309
+1451,55,19,Subscription,Student,100k+,998.26,2020-02-15,False,0.273
+1452,793,19,Major Purchase,Self-employed,30-60k,3540.4,2020-01-29,False,0.491
+1453,275,19,Major Purchase,Self-employed,60-100k,2641.57,2019-11-26,True,0.318
+1454,488,19,Credit Application,Retired,60-100k,1101.46,2019-07-30,True,0.241
+1455,511,19,Subscription Cancel,Unemployed,30-60k,292.2,2019-10-08,True,0.199
+1456,236,19,Savings Deposit,Full-time,60-100k,1302.45,2019-05-23,False,0.612
+1457,425,19,Savings Deposit,Full-time,<30k,3400.59,2020-01-26,False,0.53
+1458,292,19,Subscription,Part-time,100k+,4087.39,2019-08-05,False,0.728
+1459,691,19,Subscription,Full-time,60-100k,3175.89,2019-09-29,False,0.78
+1460,460,19,Credit Application,Unemployed,60-100k,746.26,2019-10-29,False,0.725
+1461,402,19,Subscription Cancel,Part-time,30-60k,468.78,2019-07-23,False,0.102
+1462,137,19,Subscription,Part-time,30-60k,3305.7,2020-01-31,True,0.261
+1463,338,19,Credit Application,Unemployed,<30k,855.09,2019-10-15,False,0.39
+1464,646,19,Major Purchase,Part-time,30-60k,4400.12,2019-08-06,False,0.264
+1465,530,19,Investment,Student,60-100k,679.33,2019-08-06,False,0.136
+1466,585,19,Savings Deposit,Part-time,30-60k,4192.08,2020-01-05,False,0.623
+1467,319,19,Savings Deposit,Part-time,100k+,5085.26,2020-02-12,True,0.41
+1468,162,19,Major Purchase,Self-employed,60-100k,1268.81,2019-06-04,False,0.624
+1469,19,19,Loan Repayment,Unemployed,<30k,456.82,2019-07-31,False,0.474
+1470,290,19,Credit Application,Part-time,60-100k,1185.77,2019-09-22,True,0.166
+1471,605,19,Subscription Cancel,Full-time,30-60k,3302.4,2019-10-27,False,0.754
+1472,781,19,Loan Repayment,Full-time,30-60k,10997.84,2019-08-02,False,0.573
+1473,338,19,Savings Deposit,Unemployed,<30k,269.68,2019-08-29,False,0.553
+1474,232,19,Investment,Student,60-100k,122.35,2020-01-27,True,0.489
+1475,387,19,Subscription,Part-time,30-60k,4449.71,2019-12-01,False,0.353
+1476,793,19,Subscription,Self-employed,30-60k,3486.41,2020-01-17,False,0.383
+1477,71,19,Loan Repayment,Unemployed,30-60k,883.69,2019-07-06,False,0.309
+1478,795,19,Investment,Part-time,30-60k,773.19,2019-07-01,False,0.295
+1479,164,19,Major Purchase,Part-time,100k+,4307.29,2019-06-26,False,0.507
+1480,366,19,Loan Repayment,Part-time,30-60k,2154.67,2019-12-02,True,0.26
+1481,161,19,Investment,Self-employed,30-60k,3601.6,2020-02-02,False,0.122
+1482,246,19,Subscription,Part-time,100k+,5160.87,2020-01-27,False,0.688
+1483,356,19,Investment,Full-time,30-60k,10898.37,2019-09-24,False,0.626
+1484,251,19,Major Purchase,Student,60-100k,432.39,2020-01-31,False,0.151
+1485,569,19,Savings Deposit,Full-time,60-100k,14098.95,2019-07-01,False,0.804
+1486,665,19,Investment,Full-time,60-100k,16194.92,2019-05-18,False,0.866
+1487,90,19,Loan Repayment,Self-employed,<30k,3204.57,2019-10-20,False,0.417
+1488,32,19,Credit Application,Self-employed,30-60k,1485.72,2019-06-07,False,0.274
+1489,274,19,Credit Application,Full-time,30-60k,7448.12,2019-06-20,False,0.874
+1490,39,19,Loan Repayment,Self-employed,60-100k,974.17,2019-07-19,False,0.66
+1491,207,19,Major Purchase,Full-time,100k+,9411.66,2019-12-29,False,0.311
+1492,502,19,Savings Deposit,Student,<30k,347.63,2020-01-24,True,0.385
+1493,40,19,Credit Application,Unemployed,<30k,125.91,2019-06-14,False,0.351
+1494,575,19,Savings Deposit,Self-employed,30-60k,408.22,2020-01-04,False,0.266
+1495,583,19,Investment,Full-time,60-100k,3818.49,2019-05-29,False,0.681
+1496,131,19,Subscription,Full-time,30-60k,3734.15,2019-11-14,False,0.63
+1497,199,19,Savings Deposit,Part-time,30-60k,4273.97,2019-10-15,False,0.522
+1498,685,19,Investment,Part-time,100k+,486.9,2019-12-12,False,0.306
+1499,478,19,Credit Application,Full-time,30-60k,9245.8,2020-01-04,False,0.647
+1500,75,19,Subscription,Part-time,30-60k,2502.67,2019-09-17,False,0.689
+1501,720,19,Savings Deposit,Retired,60-100k,1003.13,2019-08-05,False,0.186
+1502,120,19,Subscription,Full-time,30-60k,6425.19,2020-01-19,False,0.831
+1503,15,19,Major Purchase,Part-time,30-60k,4686.98,2019-07-14,False,0.542
+1504,492,19,Credit Application,Part-time,30-60k,328.16,2019-09-18,False,0.679
+1505,263,19,Savings Deposit,Part-time,60-100k,4225.51,2019-10-28,True,0.293
+1506,185,19,Credit Application,Retired,30-60k,464.98,2019-07-11,False,0.596
+1507,134,19,Subscription,Full-time,60-100k,5750.22,2019-08-26,False,0.517
+1508,409,19,Credit Application,Student,60-100k,1392.33,2019-09-29,False,0.188
+1509,399,19,Subscription,Part-time,30-60k,3727.5,2020-01-09,False,0.69
+1510,300,19,Major Purchase,Part-time,30-60k,600.36,2019-07-31,False,0.111
+1511,20,19,Subscription Cancel,Unemployed,<30k,1200.31,2019-10-21,True,0.668
+1512,589,19,Subscription,Full-time,60-100k,6542.27,2019-06-21,False,0.4
+1513,398,19,Major Purchase,Full-time,60-100k,2812.18,2019-11-26,False,0.483
+1514,557,19,Major Purchase,Part-time,60-100k,5015.94,2020-02-10,False,0.74
+1515,127,19,Subscription,Full-time,60-100k,10575.45,2020-01-29,False,0.389
+1516,165,19,Investment,Full-time,<30k,2795.31,2019-11-18,False,0.655
+1517,53,19,Subscription Cancel,Full-time,30-60k,773.42,2019-09-22,False,0.779
+1518,259,19,Major Purchase,Full-time,60-100k,9590.39,2019-08-01,False,0.928
+1519,764,19,Investment,Unemployed,30-60k,299.07,2019-07-10,False,0.272
+1520,25,20,Credit Application,Full-time,100k+,16386.33,2022-11-10,False,0.359
+1521,376,20,Investment,Student,60-100k,778.12,2023-01-05,False,0.62
+1522,120,20,Subscription,Full-time,30-60k,15029.56,2022-12-04,False,0.542
+1523,19,20,Savings Deposit,Unemployed,<30k,652.11,2023-04-03,False,0.36
+1524,465,20,Loan Repayment,Student,<30k,652.8,2022-11-05,True,0.325
+1525,457,20,Subscription,Unemployed,30-60k,610.97,2023-03-26,False,0.59
+1526,609,20,Subscription,Student,60-100k,983.51,2022-11-12,False,0.127
+1527,380,20,Loan Repayment,Unemployed,100k+,605.68,2023-03-23,False,0.672
+1528,683,20,Investment,Student,30-60k,297.5,2023-03-17,False,0.58
+1529,497,20,Major Purchase,Retired,30-60k,1008.8,2022-12-28,True,0.455
+1530,662,20,Loan Repayment,Full-time,30-60k,849.65,2022-12-01,False,0.391
+1531,756,20,Credit Application,Part-time,100k+,1733.51,2023-03-24,False,0.157
+1532,127,20,Subscription Cancel,Full-time,60-100k,11468.47,2023-02-12,False,0.854
+1533,135,20,Savings Deposit,Part-time,30-60k,1247.64,2022-12-27,False,0.532
+1534,793,20,Subscription Cancel,Self-employed,30-60k,2280.92,2023-01-22,False,0.403
+1535,342,20,Credit Application,Student,<30k,547.49,2022-12-22,False,0.565
+1536,209,20,Savings Deposit,Retired,60-100k,794.69,2023-03-07,False,0.452
+1537,666,20,Subscription Cancel,Full-time,100k+,5339.44,2022-12-05,False,0.599
+1538,355,20,Credit Application,Self-employed,30-60k,4769.14,2022-12-31,True,0.368
+1539,601,20,Subscription Cancel,Retired,100k+,761.78,2022-11-12,False,0.328
+1540,2,20,Subscription Cancel,Self-employed,100k+,4452.22,2023-04-15,False,0.349
+1541,238,20,Subscription Cancel,Part-time,30-60k,1488.95,2023-01-26,False,0.329
+1542,551,20,Investment,Part-time,100k+,2529.8,2023-01-11,True,0.57
+1543,617,20,Credit Application,Full-time,30-60k,4661.24,2022-11-28,False,0.639
+1544,580,20,Loan Repayment,Retired,30-60k,676.73,2023-01-09,True,0.706
+1545,13,20,Major Purchase,Student,30-60k,1333.37,2023-05-03,False,0.164
+1546,585,20,Investment,Part-time,30-60k,554.19,2023-04-06,True,0.253
+1547,62,20,Subscription,Self-employed,30-60k,3655.68,2023-03-02,False,0.311
+1548,210,20,Investment,Unemployed,30-60k,479.67,2022-12-06,True,0.132
+1549,96,20,Credit Application,Self-employed,100k+,3561.05,2023-03-01,False,0.584
+1550,32,20,Investment,Self-employed,30-60k,2281.63,2023-04-25,False,0.475
+1551,282,20,Subscription,Retired,60-100k,541.44,2022-11-08,False,0.427
+1552,273,20,Investment,Full-time,60-100k,15272.08,2023-04-21,False,0.418
+1553,334,20,Major Purchase,Retired,30-60k,503.41,2023-05-02,False,0.411
+1554,208,20,Credit Application,Student,30-60k,651.53,2023-02-05,False,0.545
+1555,683,20,Subscription Cancel,Student,30-60k,1062.75,2023-02-11,False,0.606
+1556,306,20,Credit Application,Full-time,60-100k,5889.37,2023-01-20,False,0.814
+1557,149,20,Major Purchase,Unemployed,30-60k,980.69,2023-03-29,False,0.594
+1558,167,20,Major Purchase,Student,30-60k,737.31,2023-05-10,False,0.312
+1559,39,20,Major Purchase,Self-employed,60-100k,1625.67,2023-04-09,False,0.53
+1560,499,20,Investment,Retired,30-60k,147.56,2023-01-26,False,0.134
+1561,130,20,Savings Deposit,Self-employed,30-60k,2397.19,2023-01-31,False,0.223
+1562,43,20,Major Purchase,Self-employed,60-100k,4454.98,2023-04-09,False,0.231
+1563,670,20,Major Purchase,Part-time,<30k,1340.0,2022-12-04,False,0.317
+1564,381,20,Subscription,Part-time,100k+,2456.81,2023-02-17,False,0.237
+1565,641,20,Savings Deposit,Part-time,30-60k,2883.45,2023-01-16,False,0.316
+1566,706,20,Investment,Full-time,30-60k,15743.91,2022-12-04,False,0.664
+1567,713,20,Savings Deposit,Retired,30-60k,814.4,2023-02-19,False,0.348
+1568,379,20,Subscription Cancel,Student,30-60k,561.49,2023-01-22,False,0.109
+1569,237,20,Loan Repayment,Full-time,60-100k,12484.4,2023-03-22,False,0.434
+1570,533,20,Savings Deposit,Full-time,30-60k,4143.57,2023-05-11,False,0.78
+1571,91,20,Savings Deposit,Full-time,30-60k,16598.8,2023-04-18,False,0.335
+1572,377,20,Subscription Cancel,Student,<30k,1098.04,2023-03-17,True,0.512
+1573,511,20,Major Purchase,Unemployed,30-60k,566.32,2023-01-25,False,0.458
+1574,379,20,Investment,Student,30-60k,755.19,2023-02-13,True,0.525
+1575,495,20,Investment,Self-employed,30-60k,3235.15,2022-12-28,False,0.632
+1576,53,20,Credit Application,Full-time,30-60k,4839.1,2023-02-02,False,0.936
+1577,473,20,Savings Deposit,Full-time,30-60k,3998.83,2022-12-09,False,0.327
+1578,8,20,Major Purchase,Retired,30-60k,908.15,2023-03-23,False,0.705
+1579,289,20,Subscription Cancel,Student,100k+,64.88,2023-03-18,False,0.709
+1580,172,20,Investment,Retired,60-100k,539.91,2023-05-07,False,0.202
+1581,615,20,Loan Repayment,Unemployed,30-60k,642.45,2023-02-21,True,0.454
+1582,542,20,Subscription,Part-time,60-100k,2389.93,2022-11-09,False,0.566
+1583,182,20,Loan Repayment,Unemployed,30-60k,748.73,2023-04-07,False,0.72
+1584,44,20,Savings Deposit,Full-time,30-60k,16128.01,2023-01-12,False,0.375
+1585,766,20,Investment,Full-time,<30k,14062.32,2022-11-23,False,0.909
+1586,138,20,Subscription Cancel,Full-time,100k+,10515.27,2023-03-31,False,0.502
+1587,222,20,Savings Deposit,Part-time,60-100k,1993.62,2023-05-02,True,0.51
+1588,246,20,Loan Repayment,Part-time,100k+,1111.44,2023-01-15,False,0.675
+1589,601,20,Subscription Cancel,Retired,100k+,1212.23,2022-12-18,False,0.561
+1590,158,20,Investment,Student,60-100k,1111.14,2022-12-25,False,0.703
+1591,523,20,Investment,Unemployed,30-60k,92.95,2023-04-30,True,0.16
+1592,3,20,Loan Repayment,Full-time,100k+,13668.21,2022-12-23,False,0.368
+1593,478,20,Major Purchase,Full-time,30-60k,8091.61,2022-12-05,False,0.969
+1594,18,20,Savings Deposit,Student,60-100k,509.76,2023-01-31,False,0.62
+1595,219,20,Investment,Student,30-60k,576.5,2023-03-22,True,0.237
+1596,362,20,Savings Deposit,Student,<30k,853.4,2023-01-23,False,0.47

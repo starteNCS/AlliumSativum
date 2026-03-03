@@ -1,0 +1,21 @@
+benchmark_id,name,task_type,dataset_id,train_split_pct,eval_metric,created_at,notes
+1,Recommendation on Notice v3,Recommendation,7,75.0,Precision,2023-01-16,Chair for then wife almost.
+2,Classification on More v2,Classification,25,60.0,BLEU,2022-02-18,Station media become.
+3,NLP on Generation v4,NLP,2,75.0,F1,2021-05-28,Trip radio control fine still fall church participant.
+4,NLP on Success v1,NLP,29,75.0,MAE,2020-04-29,On value house situation more that.
+5,NLP on Note v2,NLP,11,80.0,Precision,2023-03-05,Behind long particularly other partner let.
+6,Clustering on Affect v1,Clustering,23,70.0,Precision,2023-12-05,Story deal laugh current service common movie no.
+7,NLP on Sea v1,NLP,1,70.0,AUC,2021-07-11,Newspaper visit civil memory activity.
+8,Regression on Lay v3,Regression,15,80.0,AUC,2021-05-02,Medical question way figure theory stay somebody series.
+9,Recommendation on Federal v1,Recommendation,21,80.0,Accuracy,2020-11-30,Project science wife tough it.
+10,NLP on Gun v3,NLP,10,80.0,BLEU,2022-09-28,His carry as anything actually big human.
+11,Recommendation on Near v3,Recommendation,12,60.0,F1,2023-04-01,Five live the customer treatment return evening official.
+12,Classification on Purpose v2,Classification,9,60.0,Accuracy,2021-01-03,A team investment agree college practice.
+13,Regression on Low v4,Regression,20,75.0,Accuracy,2021-07-11,Century statement few.
+14,Recommendation on Well v3,Recommendation,29,70.0,MAE,2022-07-15,Or work arrive build go.
+15,NLP on Security v3,NLP,12,80.0,Precision,2023-02-25,Child learn war bank measure young social case.
+16,Classification on Trip v4,Classification,24,75.0,RMSE,2020-12-21,Class American happy treatment moment.
+17,Classification on Wear v2,Classification,13,80.0,Accuracy,2022-05-21,Meeting already nor quality line.
+18,NLP on Big v1,NLP,7,75.0,Recall,2023-06-30,Central number garden really.
+19,Classification on There v2,Classification,24,80.0,MAE,2023-11-13,Take born current wide reason song drive ever.
+20,Regression on Foot v4,Regression,19,75.0,BLEU,2021-04-29,Spend parent than treatment have enter factor movie.
