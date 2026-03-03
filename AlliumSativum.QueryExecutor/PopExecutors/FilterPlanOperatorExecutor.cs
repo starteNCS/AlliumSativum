@@ -24,7 +24,7 @@ public sealed class FilterPlanOperatorExecutor : IPlanOperatorExecutor<FilterPla
         {
             Materialized = true,
             ActualCardinality = result.Count,
-            ActualCost = stopwatch.ElapsedMilliseconds,
+            ActualCost = stopwatch.Elapsed.TotalMilliseconds,
             Data = result
         };
         pop.ExecutionData = executionData;

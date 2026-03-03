@@ -78,33 +78,6 @@ app.MapPost("execute-return-plan", async (QueryCompiler compiler, QueryExecutor 
     return executionPlan.RootOperator.ToPrettyString(html: true, includeActual: true);
 });
 
-app.MapPost("compare-selectivity", async (QueryCompiler compiler, QueryExecutor queryExecutor, [FromBody] CompileInput query) =>
-{
-    var executionPlan = await compiler.CompileAsync(query.Query);
-    
-    var parallelPlan = QueryExecutor.ToParallelStacks(executionPlan.RootOperator);
-
-    var sw = Stopwatch.StartNew();
-    var result = await queryExecutor.ExecuteAsync(parallelPlan);
-    sw.Stop();
-
-    return new
-    {
-        Cardinality = new
-        {
-            Expected = executionPlan.RootOperator.ExpectedCardinality,
-            Actual = result.Count,
-            Precision = (double) result.Count / executionPlan.RootOperator.ExpectedCardinality
-        },
-        Cost = new
-        {
-            Expected = executionPlan.RootOperator.Cost,
-            Actual = sw.ElapsedMilliseconds,
-            Precision = sw.ElapsedMilliseconds / executionPlan.RootOperator.Cost
-        }
-    };
-});
-
 app.MapGet("selectivity-performance",
     async (JoinSelectivityPerformanceChecker performanceChecker) => await performanceChecker.ExecuteJoinSelectivityPerformanceCheckerAsync());
 

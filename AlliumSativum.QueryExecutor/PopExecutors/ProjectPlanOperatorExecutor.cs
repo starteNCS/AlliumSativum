@@ -30,7 +30,7 @@ public sealed class ProjectPlanOperatorExecutor : IPlanOperatorExecutor<ProjectP
         {
             Materialized = true,
             ActualCardinality = result.Count,
-            ActualCost = stopwatch.ElapsedMilliseconds,
+            ActualCost = stopwatch.Elapsed.TotalMilliseconds,
             Data = result
         };
         pop.ExecutionData = executionData;

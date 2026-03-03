@@ -34,7 +34,7 @@ public sealed class NestedLoopJoinPlanOperatorExecutor : IPlanOperatorExecutor<N
             Data = result,
             Materialized = true,
             ActualCardinality = result.Count,
-            ActualCost = stopwatch.ElapsedMilliseconds,
+            ActualCost = stopwatch.Elapsed.TotalMilliseconds,
         };
 
         return Task.FromResult<PlanOperator>(pop);

@@ -5,7 +5,7 @@ namespace AlliumSativum.Shared.Models.ExecutionPlan;
 
 public abstract partial class PlanOperator
 {
-    public string ToPrettyString(bool html = false, bool includeActual = true)
+    public string ToPrettyString(bool html = false, bool includeActual = false)
     {
         var sb = new StringBuilder();
         if (html)
@@ -44,7 +44,7 @@ public abstract partial class PlanOperator
         }
     }
     
-    protected void BuildStringHtml(StringBuilder sb, string prefix, bool isLast, bool includeActual = true)
+    protected void BuildStringHtml(StringBuilder sb, string prefix, bool isLast, bool includeActual = false)
     {
         sb.Append(prefix);
         sb.Append(isLast ? "└── " : "├── ");
@@ -62,14 +62,14 @@ public abstract partial class PlanOperator
         for (var i = 0; i < Children.Count; i++)
         {
             var childIsLast = (i == Children.Count - 1);
-            Children[i].BuildStringHtml(sb, childPrefix, childIsLast);
+            Children[i].BuildStringHtml(sb, childPrefix, childIsLast, includeActual);
         }
     }
 
     protected abstract string GetNodeInfo();
     protected abstract string GetNodeInfoHtml();
     private string GetBaseNodeInfo() => $"ED: {Cost:F2}ms, C: {ExpectedCardinality}, S: {Selectivity}";
-    private string GetHtmlBaseNodeInfo(bool includeActual = true)
+    private string GetHtmlBaseNodeInfo(bool includeActual = false)
     {
         var sb = new StringBuilder();
         sb.Append("ED: ")

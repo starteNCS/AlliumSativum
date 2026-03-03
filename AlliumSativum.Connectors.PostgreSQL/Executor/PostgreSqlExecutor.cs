@@ -37,7 +37,7 @@ public sealed class PostgreSqlExecutor : IWorkerExecutor
             PlanOperator = @operator,
             Result = result,
             FactualCardinality = result.Count,
-            FactualCost = stopwatch.ElapsedMilliseconds
+            FactualCost = stopwatch.Elapsed.TotalMilliseconds,
         };
     }
 }

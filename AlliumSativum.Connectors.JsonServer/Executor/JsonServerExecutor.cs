@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AlliumSativum.Connectors.Shared.Interfaces;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Enums;
@@ -47,7 +48,10 @@ public sealed class JsonServerExecutor : IWorkerExecutor
         var response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
         var responseContent = await response.Content.ReadAsStringAsync();
-        var jsonResult = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(responseContent);
+        var jsonResult = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(responseContent, new JsonSerializerOptions
+        {
+            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+        });
         stopwatch.Stop();
         
         return new ExecutorWrapper
@@ -55,7 +59,7 @@ public sealed class JsonServerExecutor : IWorkerExecutor
             PlanOperator = @operator,
             Result = jsonResult ?? [],
             FactualCardinality = jsonResult?.Count ?? 0,
-            FactualCost = stopwatch.ElapsedMilliseconds,
+            FactualCost = stopwatch.Elapsed.TotalMilliseconds,
         };
     }
 }

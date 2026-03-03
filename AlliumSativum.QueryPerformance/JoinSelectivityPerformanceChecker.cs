@@ -21,8 +21,8 @@ public sealed class JoinSelectivityPerformanceChecker
     {
         List<string> queries =
         [
-            "SELECT h.hotel_name FROM economics->hotels h INNER JOIN geography->electricity_access ea ON ea.country = h.country",
-            "SELECT u.user_id FROM economics->users u INNER JOIN geography->electricity_access ea ON ea.country = u.country"
+            "SELECT er.status, a.name FROM cs->experiment_run er INNER JOIN cs->algorithm a ON er.algorithm_id = a.id",
+            "SELECT er.status, b.name FROM cs->experiment_run er INNER JOIN cs->benchmark b ON er.benchmark_id = b.id",
         ];
 
         List<PerformanceCheckResult> resultSet = [];
@@ -97,6 +97,11 @@ public sealed class JoinSelectivityPerformanceChecker
             {
                 Expected = joinPop.ExpectedCardinality,
                 Actual = joinPop.ExecutionData.ActualCardinality
+            },
+            Cost = new PerformanceCheckResult.PerformanceCheckResultCost
+            {
+                Expected = queryPlan.Cost,
+                Actual = queryPlan.ExecutionData.ActualCost
             }
         };
     }
@@ -107,6 +112,7 @@ public sealed class JoinSelectivityPerformanceChecker
         public string Query { get; set; }
         public PerformanceCheckResultSelectivity Selectivity { get; set; }
         public PerformanceCheckResultCardinality Cardinality { get; set; }
+        public PerformanceCheckResultCost Cost { get; set; }
 
         public class PerformanceCheckResultSelectivity
         {
@@ -116,6 +122,13 @@ public sealed class JoinSelectivityPerformanceChecker
         }
         
         public class PerformanceCheckResultCardinality
+        {
+            public double Expected { get; set; }
+            public double Actual { get; set; }
+            public double Precision => Math.Abs(Expected - Actual) / Actual;
+        }
+        
+        public class PerformanceCheckResultCost
         {
             public double Expected { get; set; }
             public double Actual { get; set; }
