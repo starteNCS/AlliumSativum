@@ -1,25 +1,49 @@
 using AlliumSativum.Shared.Database.Entities;
+using AlliumSativum.Shared.Utils;
 
 namespace AlliumSativum.Connectors.Shared;
 
 public sealed class DistributionUtils
 {
-    public static AttributeEntity CalculateDistribution(List<double?> values, AttributeEntity attribute)
+    
+    // todo: metrics over the bins, not over the values itself, as the values themselves are not really representative of the distribution, but the bins are
+    public static AttributeEntity CalculateDistribution(List<double?> values, AttributeEntity attribute, bool isBinned = false)
     {
-        if (values.Count == 0)
+        var nonNullValues = values.Where(x => x.HasValue).Select(x => x!.Value).ToList();
+        
+        var frequencies = isBinned
+            ? values
+                .Where(x => x.HasValue)
+                .Select(x => x!.Value)
+                .ToList()
+            : values.GroupBy(x => x)
+                .Select(double (g) => g.Count())
+                .ToList();
+        
+        if (frequencies.Count == 0)
         {
             return attribute;
         }
 
         attribute.Mean = values.Average() ?? 0;
         attribute.Range = (values.Max() - values.Min()) ?? 0;
-        attribute.Variance = (1.0/values.Count) * values.Select(value => Math.Pow((value - attribute.Mean) ?? 0, 2)).Sum();
+        attribute.Variance = (1.0/values.Count) * values.Select(value => Math.Pow(value - attribute.Mean ?? 0, 2)).Sum();
         attribute.StandardDeviation = Math.Sqrt(attribute.Variance);
-        attribute.Skewness = (1.0/values.Count) * values.Select(value => Math.Pow(
-            ((value - attribute.Mean) / attribute.StandardDeviation) ?? 0, 3)).Sum();
-        attribute.Kurtosis = (1.0/values.Count) * values.Select(value => Math.Pow(
-            ((value - attribute.Mean) / attribute.StandardDeviation) ?? 0, 4)).Sum();
-        attribute.KellySkewness = CalculateKellySkewness(values);
+
+        double n = values.Count;
+        attribute.Skewness = attribute.StandardDeviation == 0
+            ? null
+            : (n / ((n - 1) * (n - 2))) * values
+                .Select(value => Math.Pow((value ?? 0 - attribute.Mean) / attribute.StandardDeviation, 3))
+                .Sum();
+        attribute.Kurtosis = attribute.StandardDeviation == 0
+            ? null
+            : (n / ((n - 1) * (n - 2))) * values
+                .Select(value => Math.Pow((value ?? 0 - attribute.Mean) / attribute.StandardDeviation, 4))
+                .Sum();
+        attribute.KellySkewness = CalculateKellySkewness(frequencies);
+
+        attribute.DistributionType = DistributionDetector.Detect(nonNullValues, attribute);
         
         return attribute;
     }
@@ -30,10 +54,10 @@ public sealed class DistributionUtils
             .Select(double? (g) => (double)g.Count())
             .ToList();
 
-        return CalculateDistribution(frequencies, attribute);
+        return CalculateDistribution(frequencies, attribute, isBinned: true);
     }
     
-    private static double CalculateKellySkewness(List<double?> data)
+    private static double CalculateKellySkewness(List<double> data)
     {
         if (data is null || data.Count < 2)
         {
@@ -42,8 +66,6 @@ public sealed class DistributionUtils
 
         // not really clean solution, as we just throw away the nulls which also contribute to the skewness theoretically
         var sortedData = data
-            .Where(x => x is not null)
-            .Select(x => x!.Value)
             .OrderBy(x => x)
             .ToList();
 
@@ -75,5 +97,7 @@ public sealed class DistributionUtils
         
         return sortedData[index];
     }
+    
+    
 }
 

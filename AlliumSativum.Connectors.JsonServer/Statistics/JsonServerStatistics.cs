@@ -113,7 +113,8 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
                                                 Skewness = @Skewness,
                                                 Kurtosis = @Kurtosis,
                                                 KellySkewness = @KellySkewness,
-                                                DataType = @DataType
+                                                DataType = @DataType,
+                                                DistributionType = @DistributionType
                                                 WHERE Id = @Id
                                             """, relationAttributeWithDistribution);
             }

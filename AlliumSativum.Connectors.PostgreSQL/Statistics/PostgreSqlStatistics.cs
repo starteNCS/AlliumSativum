@@ -73,8 +73,8 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                             """,  relationMetrics);
         
         await _catalogDatabase.ExecuteAsync("""
-                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate, Min, Max, DataType, Mean, Range, Variance, StandardDeviation, Skewness, Kurtosis, KellySkewness)
-                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate, @Min, @Max, @DataType, @Mean, @Range, @Variance, @StandardDeviation, @Skewness, @Kurtosis, @KellySkewness)
+                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate, Min, Max, DataType, Mean, Range, Variance, StandardDeviation, Skewness, Kurtosis, KellySkewness, DistributionType)
+                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate, @Min, @Max, @DataType, @Mean, @Range, @Variance, @StandardDeviation, @Skewness, @Kurtosis, @KellySkewness, @DistributionType)
                                             ON CONFLICT (Id)
                                             DO UPDATE SET 
                                                           DistinctCardinality = EXCLUDED.DistinctCardinality,
@@ -88,7 +88,8 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                                           StandardDeviation = EXCLUDED.StandardDeviation,
                                                           Skewness = EXCLUDED.Skewness,
                                                           Kurtosis = EXCLUDED.Kurtosis,
-                                                          KellySkewness = EXCLUDED.KellySkewness
+                                                          KellySkewness = EXCLUDED.KellySkewness,
+                                                          DistributionType = EXCLUDED.DistributionType
                                             """,  attributeMetrics);
     }
 

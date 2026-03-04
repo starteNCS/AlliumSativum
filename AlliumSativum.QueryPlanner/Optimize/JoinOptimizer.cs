@@ -2,12 +2,10 @@ using System.Numerics;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
-using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Join;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
-using AlliumSativum.Shared.Utils;
 
 namespace AlliumSativum.Optimize;
 
@@ -31,6 +29,11 @@ public sealed class JoinOptimizer
     /// <param name="popLookupTable"></param>
     public async Task<List<PlanOperator>> ConstructJoinPopTreeFromIntermediateJoinTreeAsync(List<JoinBaseModel> joins, PopLookupTable popLookupTable)
     {
+        if(joins.Count == 0)
+        {
+            return [popLookupTable.Single()];
+        }
+        
         // 1. Identify all unique tables involved
         var allTables = joins.SelectMany(j => j.AffectedTables).Distinct().ToList();
 

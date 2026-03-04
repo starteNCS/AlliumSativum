@@ -1,0 +1,6 @@
+task_type_id,name
+1,Classification
+2,Regression
+3,Clustering
+4,NLP
+5,Recommendation
