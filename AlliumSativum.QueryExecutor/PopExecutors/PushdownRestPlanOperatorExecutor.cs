@@ -3,16 +3,21 @@ using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.Executor;
 using AlliumSativum.Worker.Sdk;
+using Microsoft.Extensions.Logging;
 
 namespace AlliumSativum.QueryExecutor.PopExecutors;
 
 public sealed class PushdownRestPlanOperatorExecutor : IPlanOperatorExecutor<PushdownRestCallPlanOperator>
 {
     private readonly IExecutorApi _executorApi;
+    private readonly ILogger<PushdownRestPlanOperatorExecutor> _logger;
 
-    public PushdownRestPlanOperatorExecutor(IExecutorApi executorApi)
+    public PushdownRestPlanOperatorExecutor(
+        IExecutorApi executorApi,
+        ILogger<PushdownRestPlanOperatorExecutor> logger)
     {
         _executorApi = executorApi;
+        _logger = logger;
     }
     
     public async Task<PlanOperator> ExecuteAsync(PushdownRestCallPlanOperator pop)
@@ -22,6 +27,8 @@ public sealed class PushdownRestPlanOperatorExecutor : IPlanOperatorExecutor<Pus
         {
             throw new AsSQLExecuteException("Execution of pushdown SQL plan operator failed.");
         }
+        
+        _logger.LogDebug("Successfully executed rest pushdown in {resultMs}ms (Pushdown content: {Content}", result.FactualCost, pop.Url);
         
         var executionData = new PlanOperatorExecutionData
         {

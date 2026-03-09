@@ -121,10 +121,8 @@ public sealed class JoinOptimizer
         
         foreach (var join in joins)
         {
-            var joinTables = join.Expression.GetTablesOfExpression();
-
             var joinSelects = tablePlans
-                .Where(x => joinTables.Contains(x.From!))
+                .Where(x =>  join.AffectedTables.Any(at => x.AffectedTables.Contains(at)))
                 .ToList();
 
             if (joinSelects.Exists(x => x.From!.DataSourceName != joinSelects[0].From!.DataSourceName))
@@ -134,7 +132,7 @@ public sealed class JoinOptimizer
                 continue;
             }
 
-            if (joinTables.Count != 2)
+            if (join.AffectedTables.Count != 2)
             {
                 throw new AsSqlOptimizeException("Currently, only joins with parameters from exactly two tables are supported");
             }

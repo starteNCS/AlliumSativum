@@ -8,7 +8,10 @@ public static class ServiceCollectionExtension
     // todo: somehow add multiple workers
     public static IServiceCollection AddAlliumSativumWorkerGrpcSdk(this IServiceCollection services, string workerUrl)
     {
-        var channel = GrpcChannel.ForAddress(workerUrl);
+        var channel = GrpcChannel.ForAddress(workerUrl, new GrpcChannelOptions
+        {
+            MaxReceiveMessageSize = null
+        });
         services.AddSingleton(new Metrics.MetricsClient(channel));
         services.AddSingleton(new Planner.PlannerClient(channel));
         services.AddSingleton(new Executor.ExecutorClient(channel));
