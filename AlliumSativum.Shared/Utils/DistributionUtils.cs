@@ -8,7 +8,6 @@ public enum DistributionType
     Constant,
     Uniform,
     PowerLaw,
-    Skewed,
     UniModal,
     MultiModal,
     Unknown
@@ -16,33 +15,32 @@ public enum DistributionType
 
 public static class DistributionDetector
 {
-    public static DistributionType Detect(Dictionary<double, int> orderedBinnedValues, AttributeEntity attribute)
+    public static (DistributionType distributionType, List<AttributePeakEntity> peaks) Detect(Dictionary<double, int> orderedBinnedValues, AttributeEntity attribute)
     {
         var normalized = Normalize(orderedBinnedValues);
-
-        if (IsConstant(normalized))
-        {
-            return DistributionType.Constant;
-        }
-
-        if (IsPowerLaw(normalized))
-        {
-            return DistributionType.PowerLaw;
-        }
-        
         var modes = FindModes(orderedBinnedValues, attribute);
 
-        if (IsSkewed(modes, attribute))
+        if (IsConstant(normalized, modes))
         {
-            return DistributionType.Skewed;
+            return (DistributionType.Constant, modes);
+        }
+
+        if (IsPowerLaw(normalized, modes))
+        {
+            return (DistributionType.PowerLaw, modes);
+        }
+
+        if (IsUniModal(modes))
+        {
+            return (DistributionType.UniModal, modes);
         }
         
-        if (IsMultiModal(modes))
+        if (IsMultiModal(modes, attribute))
         {
-            return DistributionType.MultiModal;
+            return (DistributionType.MultiModal, modes);
         }
         
-        return DistributionType.Uniform;
+        return (DistributionType.Uniform, []);
     }
     
     /// <summary>
@@ -67,9 +65,9 @@ public static class DistributionDetector
     /// </summary>
     /// <param name="values"></param>
     /// <returns></returns>
-    private static bool IsConstant(Dictionary<double, double> values)
+    private static bool IsConstant(Dictionary<double, double> values, List<AttributePeakEntity> modes)
     {
-        return values.Any(x => x.Value > 0.9);
+        return modes.Count == 1 && values.Any(x => x.Value > 0.9);
     }
 
     /// <summary>
@@ -77,21 +75,33 @@ public static class DistributionDetector
     /// </summary>
     /// <param name="values"></param>
     /// <returns></returns>
-    private static bool IsPowerLaw(Dictionary<double, double> values)
+    private static bool IsPowerLaw(Dictionary<double, double> values, List<AttributePeakEntity> modes, bool reverse = false)
     {
-        if (values.First().Value < 0.4)
+        if (modes.Count != 1)
         {
             return false;
         }
+        
+        var items = values.Values.ToList();
+        if (reverse)
+        {
+            items = [..items.ToList()];
+            items.Reverse();
+        }
+        
+        if (values.First().Value < 0.4)
+        {
+            return reverse ? false : IsPowerLaw(values, modes, reverse: true);
+        }
 
         var wasPreviousHigher = false;
-        var previous = values.First().Value;
-        foreach (var value in values.Skip(1).Select(x => x.Value))
+        var previous = items.First();
+        foreach (var value in items.Skip(1))
         {
             // the next item may be a little higher than the previous one, but if it is way more than 10% higher, then it is not a power law distribution
             if (value > previous * 1.1)
             {
-                return false;
+                return reverse ? false : IsPowerLaw(values, modes, reverse: true);
             }
 
             if (value > previous && value < previous * 1.1)
@@ -99,7 +109,7 @@ public static class DistributionDetector
                 if (wasPreviousHigher)
                 {
                     // if we have already seen a value that is higher than the previous one, and we see another one, then it is not a power law distribution
-                    return false;
+                    return reverse ? false : IsPowerLaw(values, modes, reverse: true);
                 }
                 wasPreviousHigher = true;
             }
@@ -115,22 +125,19 @@ public static class DistributionDetector
         return true;
     }
 
-    private static bool IsSkewed(List<Peak> peaks, AttributeEntity attribute)
+    private static bool IsUniModal(List<AttributePeakEntity> peaks)
     {
-        if (peaks.Count != 1 || attribute.Skewness is null)
-        {
-            return false;
-        }
-
-        return Math.Abs(attribute.Skewness.Value) > 0.5;
+        return peaks.Count == 1;
     }
     
-    private static bool IsMultiModal(List<Peak> peaks)
+    private static bool IsMultiModal(List<AttributePeakEntity> peaks, AttributeEntity attribute)
     {
-        return peaks.Count > 1;
+        var coefficientOfVariance = attribute.StandardDeviation / attribute.Mean;
+        var peakRatio = (double) peaks.Count / attribute.DistinctCardinality;
+        return peaks.Count > 1 && coefficientOfVariance > 0.2 && peakRatio < 0.15;
     }
     
-    private static List<Peak> FindModes(Dictionary<double, int> data, AttributeEntity attribute)
+    private static List<AttributePeakEntity> FindModes(Dictionary<double, int> data, AttributeEntity attribute)
     {
         if (data.Count == 0)
         {
@@ -152,7 +159,7 @@ public static class DistributionDetector
         double minStep = GetMinDataGap(data);
         h = Math.Max(h, minStep * 1.5);
 
-        var curve = GenerateDensityCurve(data, h);
+        var curve = GenerateDensityCurve(data, h, attribute);
         var candidates = GetLocalMaxima(curve);
 
         // We only keep peaks that are at least 20% as tall as the absolute highest peak.
@@ -183,14 +190,14 @@ public static class DistributionDetector
         return minGap == double.MaxValue ? 1.0 : minGap;
     }
 
-    private static List<Peak> GenerateDensityCurve(Dictionary<double, int> data, double h)
+    private static List<AttributePeakEntity> GenerateDensityCurve(Dictionary<double, int> data, double h, AttributeEntity attribute)
     {
-        var curve = new List<Peak>();
-        double minX = data.Keys.Min() - (h * 3);
-        double maxX = data.Keys.Max() + (h * 3);
-        double step = h / 4.0; // Resolution of the scan
+        var curve = new List<AttributePeakEntity>();
+        var minX = data.Keys.Min() - (h * 3);
+        var maxX = data.Keys.Max() + (h * 3);
+        var step = h / 4.0; // Resolution of the scan
 
-        for (double x = minX; x <= maxX; x += step)
+        for (var x = minX; x <= maxX; x += step)
         {
             double density = 0;
             foreach (var entry in data)
@@ -199,14 +206,21 @@ public static class DistributionDetector
                 // Gaussian Kernel
                 density += entry.Value * (1.0 / (h * Math.Sqrt(2 * Math.PI))) * Math.Exp(-0.5 * u * u);
             }
-            curve.Add(new Peak { Location = x, Density = density });
+            curve.Add(new AttributePeakEntity
+            {
+                Id = Guid.NewGuid(),
+                AttributeId = attribute.Id,
+                Position = x, 
+                Density = density,
+                Height = data.OrderBy(kv => Math.Abs(kv.Key - x)).First().Value // Height is the count of the closest bin
+            });
         }
         return curve;
     }
 
-    private static List<Peak> GetLocalMaxima(List<Peak> curve)
+    private static List<AttributePeakEntity> GetLocalMaxima(List<AttributePeakEntity> curve)
     {
-        var maxima = new List<Peak>();
+        var maxima = new List<AttributePeakEntity>();
         for (int i = 1; i < curve.Count - 1; i++)
         {
             if (curve[i].Density > curve[i - 1].Density && curve[i].Density > curve[i + 1].Density)
@@ -215,11 +229,5 @@ public static class DistributionDetector
             }
         }
         return maxima;
-    }
-    
-    private class Peak
-    {
-        public double Location { get; set; }
-        public double Density { get; set; }
     }
 }

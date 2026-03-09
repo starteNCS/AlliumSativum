@@ -53,10 +53,12 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
 
         var relationMetrics = new List<RelationEntity>();
         var attributeMetrics = new List<AttributeEntity>();
-        
-        foreach (var table in tables)
+
+        var tasks = tables.Select(table =>
+            GetTableMetricsAsync(dataSource, columns, table, existingRelations, existingAttributes));
+        var results = await Task.WhenAll(tasks);
+        foreach (var (relMetrics, attrMetrics) in results)
         {
-            var (relMetrics, attrMetrics) = await GetTableMetricsAsync(dataSource, columns, table, existingRelations, existingAttributes);
             relationMetrics.AddRange(relMetrics);
             attributeMetrics.AddRange(attrMetrics);
         }
@@ -73,8 +75,8 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                             """,  relationMetrics);
         
         await _catalogDatabase.ExecuteAsync("""
-                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate, Min, Max, DataType, Mean, Range, Variance, StandardDeviation, Skewness, Kurtosis, KellySkewness, DistributionType)
-                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate, @Min, @Max, @DataType, @Mean, @Range, @Variance, @StandardDeviation, @Skewness, @Kurtosis, @KellySkewness, @DistributionType)
+                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate, Min, Max, DataType, Mean, Range, Variance, StandardDeviation, Skewness, Kurtosis, DistributionType)
+                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate, @Min, @Max, @DataType, @Mean, @Range, @Variance, @StandardDeviation, @Skewness, @Kurtosis, @DistributionType)
                                             ON CONFLICT (Id)
                                             DO UPDATE SET 
                                                           DistinctCardinality = EXCLUDED.DistinctCardinality,
@@ -88,11 +90,11 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                                           StandardDeviation = EXCLUDED.StandardDeviation,
                                                           Skewness = EXCLUDED.Skewness,
                                                           Kurtosis = EXCLUDED.Kurtosis,
-                                                          KellySkewness = EXCLUDED.KellySkewness,
                                                           DistributionType = EXCLUDED.DistributionType
                                             """,  attributeMetrics);
     }
 
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
     private async Task<(List<RelationEntity> relationEntities, List<AttributeEntity> attributeEntities)> GetTableMetricsAsync(
         Guid dataSource, 
         IList<PostgresColumnsModel> columns, 
@@ -100,6 +102,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         List<RelationEntity> existingRelations, 
         List<AttributeEntity> existingAttributes)
     {
+        _logger.LogInformation("Start scraping metrics for table {TableSchema}.{TableName}", table.TableSchema, table.TableName);
         var relationMetrics = new List<RelationEntity>();
         var attributeMetrics = new List<AttributeEntity>();
 
@@ -165,6 +168,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                     Max = max,
                     DataType = column.DataType,
                 };
+                List<AttributePeakEntity> modes = [];
 
                 var data = await _dataSource.QueryAsync(dataSource, $"SELECT {attributeEntity.Name} FROM {table.TableSchema}.{table.TableName}");
                 if (attributeEntity.IsNumeric)
@@ -172,17 +176,35 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                     var items = data
                         .Select(double? (x) => x.TryGetValue(attributeEntity.Name, out var value) ? Convert.ToDouble(value) : null)
                         .ToList();
-                    attributeEntity = DistributionUtils.CalculateDistribution(items, attributeEntity);
+                    (attributeEntity, modes) = DistributionUtils.CalculateDistribution(items, attributeEntity);
                 }
                 else
                 {
                     var items = data
                         .Select(x => Convert.ToString(x.GetValueOrDefault(attributeEntity.Name)) ?? string.Empty)
                         .ToList();
-                    attributeEntity = DistributionUtils.CalculateDistribution(items, attributeEntity);
+                    (attributeEntity, modes) = DistributionUtils.CalculateDistribution(items, attributeEntity);
                 }
-                
-                attributeMetrics.Add(attributeEntity);
+
+                await _semaphore.WaitAsync();
+                try
+                {
+                    attributeMetrics.Add(attributeEntity);
+                    _logger.LogWarning("Get lock for {Relation} {Attribute}", relationId, attributeEntity.Name);
+                    await _catalogDatabase.ExecuteAsync("DELETE FROM Catalog.AttributePeaks WHERE AttributeId = @AttributeId", new { AttributeId = attributeId });
+                    foreach (var mode in modes)
+                    {
+                        await _catalogDatabase.ExecuteAsync("""
+                                                            INSERT INTO Catalog.AttributePeaks (Id, AttributeId, Position, Height)
+                                                            VALUES (@Id, @AttributeId, @Position, @Height)
+                                                            """, mode);
+                    }
+                }
+                finally
+                {
+                    _semaphore.Release();
+                    _logger.LogWarning("Lock released from {Relation} {Attribute}", relationId, attributeEntity.Name);
+                }
             }
         }
         

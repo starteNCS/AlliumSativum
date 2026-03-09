@@ -7,7 +7,7 @@ public sealed class DistributionUtils
 {
     
     // todo: metrics over the bins, not over the values itself, as the values themselves are not really representative of the distribution, but the bins are
-    public static AttributeEntity CalculateDistribution(List<double?> values, AttributeEntity attribute, bool isBinned = false)
+    public static (AttributeEntity attribute, List<AttributePeakEntity> modes) CalculateDistribution(List<double?> values, AttributeEntity attribute, bool isBinned = false)
     {
         var binnedDistribution = values
             .Select(x => x ?? double.NaN)
@@ -17,7 +17,7 @@ public sealed class DistributionUtils
         
         if (binnedDistribution.Count == 0)
         {
-            return attribute;
+            return (attribute, []);
         }
 
         attribute.Mean = binnedDistribution.Values.Average();
@@ -36,13 +36,12 @@ public sealed class DistributionUtils
             : (n / ((n - 1) * (n - 2))) * binnedDistribution.Values
                 .Select(value => Math.Pow((value - attribute.Mean) / attribute.StandardDeviation, 4))
                 .Sum();
-        attribute.KellySkewness = CalculateKellySkewness(binnedDistribution.Values.ToList());
-        attribute.DistributionType = DistributionDetector.Detect(binnedDistribution, attribute);
+        (attribute.DistributionType, var modes) = DistributionDetector.Detect(binnedDistribution, attribute);
         
-        return attribute;
+        return (attribute, modes);
     }
     
-    public static AttributeEntity CalculateDistribution(List<string> data, AttributeEntity attribute)
+    public static (AttributeEntity attribute, List<AttributePeakEntity> modes) CalculateDistribution(List<string> data, AttributeEntity attribute)
     {
         var frequencies = data.GroupBy(x => x)
             .Select(double? (g) => (double)g.Count())
@@ -50,48 +49,5 @@ public sealed class DistributionUtils
 
         return CalculateDistribution(frequencies, attribute, isBinned: true);
     }
-    
-    private static double CalculateKellySkewness(List<int> data)
-    {
-        if (data is null || data.Count < 2)
-        {
-            return 0;
-        }
-
-        // not really clean solution, as we just throw away the nulls which also contribute to the skewness theoretically
-        var sortedData = data
-            .OrderBy(x => x)
-            .ToList();
-
-        var p90 = GetPercentile(sortedData, 0.90);
-        var p50 = GetPercentile(sortedData, 0.50); // Median
-        var p10 = GetPercentile(sortedData, 0.10);
-
-        var denominator = p90 - p10;
-
-        // avoid division by zero if data is uniform
-        if (Math.Abs(denominator) < 1e-9)
-        {
-            return 0;
-        }
-
-        return (p90 + p10 - 2 * p50) / denominator;
-    }
-    
-    private static double GetPercentile(List<int> sortedData, double percentile)
-    {
-        var rank = percentile * (sortedData.Count - 1);
-        var index = (int)Math.Floor(rank);
-        var fraction = rank - index;
-
-        if (index + 1 < sortedData.Count)
-        {
-            return sortedData[index] + fraction * (sortedData[index + 1] - sortedData[index]);
-        }
-        
-        return sortedData[index];
-    }
-    
-    
 }
 

@@ -98,7 +98,7 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
 
                         return jsonElement;
                     }).ToList();
-                var relationAttributeWithDistribution = CalculateDistribution(values, relationAttribute);
+                var (relationAttributeWithDistribution, modes) = CalculateDistribution(values, relationAttribute);
                 
                 await _catalog.ExecuteAsync("""
                                             UPDATE Catalog.Attributes
@@ -112,11 +112,19 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
                                                 Range = @Range,
                                                 Skewness = @Skewness,
                                                 Kurtosis = @Kurtosis,
-                                                KellySkewness = @KellySkewness,
                                                 DataType = @DataType,
                                                 DistributionType = @DistributionType
                                                 WHERE Id = @Id
                                             """, relationAttributeWithDistribution);
+
+                await _catalog.ExecuteAsync("DELETE FROM Catalog.AttributePeaks WHERE AttributeId = @AttributeId", new { AttributeId = relationAttribute.Id });
+                foreach (var mode in modes)
+                {
+                    await _catalog.ExecuteAsync("""
+                                                INSERT INTO Catalog.AttributePeaks (Id, AttributeId, Position, Height)
+                                                VALUES (@Id, @AttributeId, @Position, @Height)
+                                                """, mode);
+                }
             }
             
             await _catalog.ExecuteAsync("""
@@ -132,7 +140,7 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
         await _catalog.CommitTransactionAsync();
     }
 
-    private static AttributeEntity CalculateDistribution(List<JsonElement> values, AttributeEntity attribute)
+    private static (AttributeEntity attribute, List<AttributePeakEntity> modes) CalculateDistribution(List<JsonElement> values, AttributeEntity attribute)
     {
         var type = values.FirstOrDefault(x => x.ValueKind != JsonValueKind.Null).ValueKind;
         switch (type)

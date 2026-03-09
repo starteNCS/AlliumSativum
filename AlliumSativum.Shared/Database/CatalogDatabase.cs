@@ -8,19 +8,21 @@ namespace AlliumSativum.Shared.Database;
 
 public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
 {
-    private readonly NpgsqlConnection _connection;
+    private readonly string _connectionString;
+    // Only used when a transaction is active
+    private NpgsqlConnection? _txConnection;
     private NpgsqlTransaction? _transaction;
-    
     
     public CatalogDatabase(CatalogDatabaseSettings settings)
     {
-        _connection = new NpgsqlConnection(settings.ConnectionString);
-        _connection.Open();
+        _connectionString = settings.ConnectionString;
     }
 
     public async Task BeginTransactionAsync()
     {
-        _transaction = await _connection.BeginTransactionAsync();
+        _txConnection = new NpgsqlConnection(_connectionString);
+        await _txConnection.OpenAsync();
+        _transaction = await _txConnection.BeginTransactionAsync();
     }
     
     public async Task CommitTransactionAsync() {
@@ -30,19 +32,37 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
         }
         
         await _transaction.CommitAsync();
+        await _transaction.DisposeAsync();
         _transaction = null;
+        await _txConnection!.CloseAsync();
+        await _txConnection.DisposeAsync();
+        _txConnection = null;
     }
 
     public async Task<List<T>> QueryAsync<T>(string query, object? parameters = null) where T : new()
     {
-        var result = await _connection.QueryAsync<T>(query, parameters, _transaction);
-        return result.ToList();
+        // If inside a transaction, reuse the dedicated connection
+        if (_transaction != null)
+        {
+            var result = await _txConnection!.QueryAsync<T>(query, parameters, _transaction);
+            return result.ToList();
+        }
+        // Otherwise open a fresh pooled connection (Npgsql pools automatically)
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+        var pooledResult = await connection.QueryAsync<T>(query, parameters);
+        return pooledResult.ToList();
     }
 
     public async Task<int> ExecuteAsync(string query, object? parameters = null)
     {
-        var result = await _connection.ExecuteAsync(query, parameters, _transaction);
-        return result;
+        if (_transaction != null)
+        {
+            return await _txConnection!.ExecuteAsync(query, parameters, _transaction);
+        }
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+        return await connection.ExecuteAsync(query, parameters);
     }
     
     public async Task<DataSourceEntity?> GetDataSourceAsync(Guid dataSource)
@@ -173,15 +193,18 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
 
     public void Dispose()
     {
-        _connection.Close();
-        _connection.Dispose();
         _transaction?.Dispose();
+        _txConnection?.Close();
+        _txConnection?.Dispose();
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _connection.CloseAsync();
-        await _connection.DisposeAsync();
         if (_transaction != null) await _transaction.DisposeAsync();
+        if (_txConnection != null)
+        {
+            await _txConnection.CloseAsync();
+            await _txConnection.DisposeAsync();
+        }
     }
 }

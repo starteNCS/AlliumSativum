@@ -141,6 +141,9 @@ app.MapGet("histogram/{datasource}/{relationName}/{attributeName}", async (Catal
         .Append(svg)
         .Append("<ul>")
         .Append($"<p>Distribution Type: {attribute.Single().DistributionType.ToString()} </p>")
+        .Append($"<p>Mean: {attribute.Single().Mean} </p>")
+        .Append($"<p>Standard Deviation: {attribute.Single().StandardDeviation} </p>")
+        .Append($"<p>Coefficient of Variance: {attribute.Single().StandardDeviation / attribute.Single().Mean} </p>")
         .Append($"<p>Skewness: {attribute.Single().Skewness}</p>")
         .Append($"<p>Kurtosis: {attribute.Single().Kurtosis} </p>");
 

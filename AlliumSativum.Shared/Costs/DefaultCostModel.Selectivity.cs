@@ -19,7 +19,7 @@ public partial class DefaultCostModel
             case DistributionType.Constant:
                 return (1.0 / attr.DistinctCardinality);
             case DistributionType.PowerLaw:
-            case DistributionType.Skewed:
+            case DistributionType.UniModal:
                 return Math.Abs(attr.KellySkewness);
         }
 
@@ -43,7 +43,7 @@ public partial class DefaultCostModel
 
                 return uniformSelectivity * constantSelectivity;
             case (DistributionType.Uniform, DistributionType.PowerLaw):
-            case (DistributionType.Uniform, DistributionType.Skewed):
+            case (DistributionType.Uniform, DistributionType.UniModal):
                 return Math.Abs(rightAttribute.KellySkewness);
             case (DistributionType.Uniform, DistributionType.MultiModal):
                 return 0.1;
@@ -51,7 +51,7 @@ public partial class DefaultCostModel
             case (DistributionType.Constant, DistributionType.Constant):
                 return (1.0 / Math.Max(leftAttribute.DistinctCardinality, rightAttribute.DistinctCardinality)) * _settings.SelectivityEstimation.PenaltyForConstant;
             case (DistributionType.Constant, DistributionType.PowerLaw):
-            case (DistributionType.Constant, DistributionType.Skewed):
+            case (DistributionType.Constant, DistributionType.UniModal):
                 return (1.0/leftAttribute.DistinctCardinality) * _settings.SelectivityEstimation.PenaltyForConstant * Math.Abs(rightAttribute.KellySkewness);
             case (DistributionType.Constant, DistributionType.MultiModal):
                 return 0.1;
@@ -65,13 +65,13 @@ public partial class DefaultCostModel
                 
                 return BinWidth(leftAttribute, rightAttribute) *
                        (3 * Sigmoid(Math.Max(leftAttribute.Skewness!.Value, rightAttribute.Skewness!.Value), 5) + 1);
-            case (DistributionType.PowerLaw, DistributionType.Skewed):
-            case (DistributionType.Skewed, DistributionType.Skewed):
+            case (DistributionType.PowerLaw, DistributionType.UniModal):
+            case (DistributionType.UniModal, DistributionType.UniModal):
                 return Math.Max(
                     Math.Abs(leftAttribute.KellySkewness),
                     Math.Abs(rightAttribute.KellySkewness));
             case (DistributionType.PowerLaw, DistributionType.MultiModal):
-            case (DistributionType.Skewed, DistributionType.MultiModal):
+            case (DistributionType.UniModal, DistributionType.MultiModal):
                 return 0.1;
                 throw new NotImplementedException();
             case (DistributionType.MultiModal, DistributionType.MultiModal):

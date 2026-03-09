@@ -1,6 +1,6 @@
 experiment_run -> algorithm: skewed
 
-benchmark -> dataset_id: uniform
+benchmark -> dataset_id: bi modal
 benchmark -> task_type: powerlaw
 
 user_study -> algorithm_id: uniform
