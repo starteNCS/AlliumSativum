@@ -30,7 +30,7 @@ public static class DistributionDetector
             return DistributionType.PowerLaw;
         }
         
-        var modes = FindModes(normalized, attribute);
+        var modes = FindModes(orderedBinnedValues, attribute);
 
         if (IsSkewed(modes, attribute))
         {
@@ -122,7 +122,7 @@ public static class DistributionDetector
             return false;
         }
 
-        return Math.Abs(attribute.Skewness.Value) > 1.5 && attribute is { Kurtosis: > 3 };
+        return Math.Abs(attribute.Skewness.Value) > 0.5;
     }
     
     private static bool IsMultiModal(List<Peak> peaks)
@@ -130,63 +130,91 @@ public static class DistributionDetector
         return peaks.Count > 1;
     }
     
-    /// <summary>
-    /// Finds all local maxima (modes) in a discrete distribution using Gaussian KDE.
-    /// </summary>
-    /// <param name="data">Dictionary of Value -> Frequency</param>
-    /// <param name="bandwidth">Smoothing factor (higher = smoother, lower = more sensitive)</param>
-    /// <param name="threshold">Minimum density required to be considered a 'peak'</param>
-    private static List<Peak> FindModes(Dictionary<double, double> data, AttributeEntity attributeEntity, double threshold = 0.01)
+    private static List<Peak> FindModes(Dictionary<double, int> data, AttributeEntity attribute)
     {
-        var peaks = new List<Peak>();
         if (data.Count == 0)
         {
-            return peaks;
+            return [];
         }
-        
-        var bandwidth = Math.Pow((4 * Math.Pow(attributeEntity.StandardDeviation, 5)) / (3 * data.Count), 1.0 / 5.0);
 
-        var minX = data.Keys.Min() - (bandwidth * 3);
-        var maxX = data.Keys.Max() + (bandwidth * 3);
-        var step = bandwidth / 10.0; // Dynamic resolution based on bandwidth
+        double n = data.Values.Sum();
 
-        var lastDensity = CalculateDensity(minX, data, bandwidth);
-        var currentDensity = CalculateDensity(minX + step, data, bandwidth);
-
-        for (var x = minX + (2 * step); x <= maxX; x += step)
+        if (attribute.StandardDeviation <= 0e-6)
         {
-            var nextDensity = CalculateDensity(x, data, bandwidth);
-
-            // Check for local maximum (Peak: Point is higher than both neighbors)
-            if (currentDensity > lastDensity && currentDensity > nextDensity)
-            {
-                if (currentDensity > threshold)
-                {
-                    peaks.Add(new Peak { 
-                        Location = x - step, 
-                        Density = currentDensity 
-                    });
-                }
-            }
-
-            lastDensity = currentDensity;
-            currentDensity = nextDensity;
+            // All data points are the same
+            return [];
         }
 
-        return peaks;
+        // Adaptive Bandwidth (Silverman's Rule with a 0.6 sensitivity 'tightener')
+        double h = (1.06 * attribute.StandardDeviation * Math.Pow(n, -0.2)) * 0.6;
+
+        // Ensure h isn't smaller than the bin resolution to avoid "spiky" artifacts
+        double minStep = GetMinDataGap(data);
+        h = Math.Max(h, minStep * 1.5);
+
+        var curve = GenerateDensityCurve(data, h);
+        var candidates = GetLocalMaxima(curve);
+
+        // We only keep peaks that are at least 20% as tall as the absolute highest peak.
+        if (candidates.Count == 0)
+        {
+            return [];
+        }
+        var maxDensity = candidates.Max(p => p.Density);
+        
+        return candidates
+            .Where(p => p.Density >= maxDensity * 0.2)
+            .OrderByDescending(p => p.Density)
+            .ToList();
     }
 
-    private static double CalculateDensity(double x, Dictionary<double, double> data, double sigma)
+    private static double GetMinDataGap(Dictionary<double, int> data)
     {
-        double totalDensity = 0;
-        foreach (var entry in data)
+        var sortedKeys = data.Keys.OrderBy(k => k).ToList();
+        var minGap = double.MaxValue;
+        for (int i = 0; i < sortedKeys.Count - 1; i++)
         {
-            var diff = x - entry.Key;
-            var exponent = -0.5 * Math.Pow(diff / sigma, 2);
-            var gaussian = (1.0 / (sigma * Math.Sqrt(2 * Math.PI))) * Math.Exp(exponent);
-            totalDensity += entry.Value * gaussian;
+            var gap = sortedKeys[i + 1] - sortedKeys[i];
+            if (gap > 0 && gap < minGap)
+            {
+                minGap = gap;
+            }
         }
-        return totalDensity;
+        return minGap == double.MaxValue ? 1.0 : minGap;
+    }
+
+    private static List<Peak> GenerateDensityCurve(Dictionary<double, int> data, double h)
+    {
+        var curve = new List<Peak>();
+        double minX = data.Keys.Min() - (h * 3);
+        double maxX = data.Keys.Max() + (h * 3);
+        double step = h / 4.0; // Resolution of the scan
+
+        for (double x = minX; x <= maxX; x += step)
+        {
+            double density = 0;
+            foreach (var entry in data)
+            {
+                double u = (x - entry.Key) / h;
+                // Gaussian Kernel
+                density += entry.Value * (1.0 / (h * Math.Sqrt(2 * Math.PI))) * Math.Exp(-0.5 * u * u);
+            }
+            curve.Add(new Peak { Location = x, Density = density });
+        }
+        return curve;
+    }
+
+    private static List<Peak> GetLocalMaxima(List<Peak> curve)
+    {
+        var maxima = new List<Peak>();
+        for (int i = 1; i < curve.Count - 1; i++)
+        {
+            if (curve[i].Density > curve[i - 1].Density && curve[i].Density > curve[i + 1].Density)
+            {
+                maxima.Add(curve[i]);
+            }
+        }
+        return maxima;
     }
     
     private class Peak

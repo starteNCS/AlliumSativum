@@ -1,26 +1,26 @@
 algorithm_id,name,family,task_type,paper_doi,repo_url,version
 1,XGBoost 1.7,Gradient Boosting,1,10.1000/Ppf.4068,https://davis.com/,2.2.7
 2,LightGBM 3.3,Gradient Boosting,1,10.1000/vkY.7501,http://www.schneider.biz/,1.0.1
-3,CatBoost 1.2,Gradient Boosting,3,10.1000/pVR.7507,http://www.orozco.org/,2.8.5
+3,CatBoost 1.2,Gradient Boosting,2,10.1000/pVR.7507,http://www.orozco.org/,2.8.5
 4,Random Forest (sklearn),Random Forest,1,10.1000/doU.1709,http://mcintyre.com/,2.4.1
 5,Extra Trees (sklearn),Random Forest,1,10.1000/zAQ.6200,http://jones.net/,2.6.0
-6,Linear SVM (C=1),SVM,2,10.1000/tUr.6203,https://williams-smith.com/,3.3.7
-7,RBF SVM (C=10),SVM,3,10.1000/xxY.4976,https://riddle-liu.com/,2.1.0
-8,Logistic Regression (L2),Logistic Regression,1,10.1000/zFT.5878,http://www.marks.com/,2.8.9
-9,BERT-base-uncased,Transformer,2,10.1000/mef.6547,http://www.smith.com/,3.0.1
+6,Linear SVM (C=1),SVM,1,10.1000/tUr.6203,https://williams-smith.com/,3.3.7
+7,RBF SVM (C=10),SVM,2,10.1000/xxY.4976,https://riddle-liu.com/,2.1.0
+8,Logistic Regression (L2),Logistic Regression,3,10.1000/zFT.5878,http://www.marks.com/,2.8.9
+9,BERT-base-uncased,Transformer,1,10.1000/mef.6547,http://www.smith.com/,3.0.1
 10,RoBERTa-large,Transformer,1,10.1000/nba.5956,http://www.brewer.com/,2.7.5
-11,DistilBERT,Transformer,1,10.1000/djk.9026,http://www.bowen-blake.info/,1.7.9
-12,GPT2-fine-tuned,Transformer,3,10.1000/hse.6846,http://jackson.biz/,3.2.4
+11,DistilBERT,Transformer,5,10.1000/djk.9026,http://www.bowen-blake.info/,1.7.9
+12,GPT2-fine-tuned,Transformer,4,10.1000/hse.6846,http://jackson.biz/,3.2.4
 13,ResNet-50,Neural Network,1,10.1000/Wck.0860,https://smith.com/,3.2.8
-14,EfficientNet-B3,Neural Network,1,10.1000/Opx.8431,http://richards.com/,2.2.8
-15,MLP-3layer (ReLU),Neural Network,4,10.1000/zJX.1221,https://www.sparks.com/,3.4.5
-16,TabNet v2,Neural Network,1,10.1000/mvT.4127,https://bell.net/,2.6.8
+14,EfficientNet-B3,Neural Network,3,10.1000/Opx.8431,http://richards.com/,2.2.8
+15,MLP-3layer (ReLU),Neural Network,2,10.1000/zJX.1221,https://www.sparks.com/,3.4.5
+16,TabNet v2,Neural Network,4,10.1000/mvT.4127,https://bell.net/,2.6.8
 17,"KNN (k=5, cosine)",KNN,1,10.1000/cpU.3392,https://jones.com/,3.3.3
 18,"KNN (k=15, euclidean)",KNN,1,10.1000/bWi.5210,https://jenkins-fowler.com/,2.3.9
-19,Decision Tree (max_depth=8),Gradient Boosting,2,10.1000/WTi.1287,https://www.lee.net/,1.7.7
+19,Decision Tree (max_depth=8),Gradient Boosting,1,10.1000/WTi.1287,https://www.lee.net/,1.7.7
 20,AdaBoost (n=100),Gradient Boosting,1,10.1000/phf.4606,https://www.dougherty.com/,3.3.3
 21,Ridge Regression (α=1.0),Logistic Regression,2,10.1000/lQa.5120,https://fisher.org/,3.0.6
-22,Lasso Regression (α=0.01),Logistic Regression,4,10.1000/UQX.1615,https://bowman-austin.net/,1.6.8
-23,Gaussian Naive Bayes,Logistic Regression,2,10.1000/nVj.2395,http://bishop-robles.com/,3.5.6
+22,Lasso Regression (α=0.01),Logistic Regression,1,10.1000/UQX.1615,https://bowman-austin.net/,1.6.8
+23,Gaussian Naive Bayes,Logistic Regression,1,10.1000/nVj.2395,http://bishop-robles.com/,3.5.6
 24,Isolation Forest (outlier),Neural Network,1,10.1000/AyG.9094,http://rollins.com/,2.8.4
-25,DBSCAN (ε=0.3),KNN,3,10.1000/kKI.2983,https://www.mack.biz/,2.3.1
+25,DBSCAN (ε=0.3),KNN,2,10.1000/kKI.2983,https://www.mack.biz/,2.3.1

@@ -117,12 +117,14 @@ app.MapGet("histogram/{datasource}/{relationName}/{attributeName}", async (Catal
         })
         .ToList();
     
-    var attribute = await catalog.QueryAsync<AttributeEntity>($"SELECT * FROM catalog.attributes a INNER JOIN catalog.relations r ON r.id = a.relationid  WHERE a.name = '{attributeName}' AND r.name = '{relationName}' LIMIT 1");
+    var attribute = await catalog.QueryAsync<AttributeEntity>($"SELECT a.* FROM catalog.attributes a INNER JOIN catalog.relations r ON r.id = a.relationid  WHERE a.name = '{attributeName}' AND r.name LIKE '%{relationName}' LIMIT 1");
     
     var map = parsed
         .GroupBy(x => x)
         .OrderBy(x => x.Key)
         .ToDictionary(g => g.Key, g => g.Count());
+    
+    var distribution = DistributionDetector.Detect(map, attribute.Single());
     
     var plt = new ScottPlot.Plot();
     var hist = ScottPlot.Statistics.Histogram.WithBinCount(map.Count, parsed);
