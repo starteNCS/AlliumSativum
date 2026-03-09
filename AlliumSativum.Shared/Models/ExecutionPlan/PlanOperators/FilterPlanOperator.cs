@@ -14,6 +14,7 @@ public class FilterPlanOperator : PlanOperator
     
     protected override string GetNodeInfo() => $"FILTER: {Expression}";
     protected override string GetNodeInfoHtml() => $"{HtmlClasses.Bold(HtmlClasses.Colored("FILTER", color: "crimson"))}: {HtmlClasses.Italic(Expression?.ToString())}";
+    protected override double GetActualSelectivityInfo() => (double) ExecutionData.ActualCardinality / Children.Single().ExecutionData.ActualCardinality;
     
     public override int GetHashCode()
     {

@@ -5,3 +5,7 @@ benchmark -> task_type: powerlaw
 
 user_study -> algorithm_id: uniform
 user_study -> instrument_id: uniform
+
+SELECT er.status, a.name FROM cs->experiment_run er INNER JOIN cs->algorithm a ON er.algorithm_id = a.id -- selectivity = 1/CD_ALGORITHM
+SELECT b.task_type FROM cs->benchmark b INNER JOIN cs->task_type tt ON b.task_type = tt.id -- selectivity = 1/CD_TASK_TYPE
+SELECT b.task_type FROM cs->benchmark b INNER JOIN shared->open_dataset od ON od.dataset_id = b.dataset_id -- selectivity = 1/CD_DATASET

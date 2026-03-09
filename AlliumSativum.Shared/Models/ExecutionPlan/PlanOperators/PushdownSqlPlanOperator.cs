@@ -17,6 +17,7 @@ public class PushdownSqlPlanOperator : PlanOperator
 
     protected override string GetNodeInfo() => $"PUSH-DOWN SQL [{DataSource}]: '{SqlStatement}'";
     protected override string GetNodeInfoHtml() => $"{HtmlClasses.Bold(HtmlClasses.Colored("PUSH-DOWN SQL"))} [{HtmlClasses.Italic(HtmlClasses.Colored(DataSource.ToString(), color: "gray"))}]: '{SqlStatement}'";
+    protected override double GetActualSelectivityInfo() => 1;
 
     public override int GetHashCode()
     {

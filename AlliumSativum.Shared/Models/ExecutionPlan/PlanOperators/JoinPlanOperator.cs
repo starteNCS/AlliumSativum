@@ -23,6 +23,7 @@ public class JoinPlanOperator : PlanOperator
     
     protected override string GetNodeInfo() => $"JOIN: {Expression} INCOMPLETE! MISSING JOIN ALGORITHM INFO";
     protected override string GetNodeInfoHtml() => $"{HtmlClasses.Bold(HtmlClasses.Colored("JOIN", color: "green"))}: {Expression} {HtmlClasses.Bold(HtmlClasses.Colored("INCOMPLETE! MISSING JOIN ALGORITHM INFO", color: "red"))}";
+    protected override double GetActualSelectivityInfo() => (double) ExecutionData.ActualCardinality / (Left.ExecutionData.ActualCardinality * Right.ExecutionData.ActualCardinality);
     
     public override int GetHashCode()
     {

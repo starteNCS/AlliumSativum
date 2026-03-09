@@ -21,6 +21,7 @@ public class PushdownRestCallPlanOperator : PlanOperator
 
     protected override string GetNodeInfo() => $"PUSH-DOWN REST [{DataSource}]: '{HttpMethod} {Url}'";
     protected override string GetNodeInfoHtml() => $"{HtmlClasses.Bold(HtmlClasses.Colored("PUSH-DOWN REST"))} [{HtmlClasses.Italic(HtmlClasses.Colored(DataSource.ToString(), color: "gray"))}]: '{HttpMethod} {Url}'";
+    protected override double GetActualSelectivityInfo() => 1;
     
     public override int GetHashCode()
     {

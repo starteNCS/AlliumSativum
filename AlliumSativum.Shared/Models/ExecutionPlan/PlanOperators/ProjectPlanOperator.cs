@@ -26,6 +26,7 @@ public class ProjectPlanOperator : PlanOperator
             .Append(x.AttributeName)
             .Append(x.IsHidden ? "}" : "").ToString()
     ))}";
+    protected override double GetActualSelectivityInfo() => 1;
     
     public override int GetHashCode()
     {

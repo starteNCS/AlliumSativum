@@ -94,6 +94,14 @@ public abstract partial class PlanOperator
         sb.Append(", S: ")
             .Append(HtmlClasses.Colored(Selectivity.ToString("F5"), color: "olive"));
         
+        if (includeActual)
+        {
+            sb.Append(" (actual ")
+                .Append(GetActualSelectivityInfo())
+                .Append(')');
+        }
+        
         return sb.ToString();
     }
+    protected abstract double GetActualSelectivityInfo();
 }
