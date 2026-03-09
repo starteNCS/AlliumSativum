@@ -104,12 +104,20 @@ app.MapGet("histogram/{datasource}/{relationName}/{attributeName}", async (Catal
     var plan = await compiler.CompileAsync(query);
     var result = await queryExecutor.ExecuteAsync(plan.RootOperator);
     var parsed = result
-        .Select(x => (JsonElement) x[$"{datasource}->{relationName}.{attributeName}"])
-        .Where(x => x.ValueKind == JsonValueKind.Number)
-        .Select(x => x.GetDouble())
+        .Select(x => (JsonElement?) x[$"{datasource}->{relationName}.{attributeName}"])
+        .Where(x => x is null || x.Value.ValueKind == JsonValueKind.Number)
+        .Select(x =>
+        {
+            if (x is null || !x.Value.TryGetDouble(out var value))
+            {
+                return double.NaN;
+            }
+
+            return value;
+        })
         .ToList();
     
-    var attribute = await catalog.QueryAsync<AttributeEntity>($"SELECT * FROM catalog.attributes a INNER JOIN catalog.relations r ON r.id = a.relationid  WHERE a.name = '{attributeName}' LIMIT 1");
+    var attribute = await catalog.QueryAsync<AttributeEntity>($"SELECT * FROM catalog.attributes a INNER JOIN catalog.relations r ON r.id = a.relationid  WHERE a.name = '{attributeName}' AND r.name = '{relationName}' LIMIT 1");
     
     var map = parsed
         .GroupBy(x => x)

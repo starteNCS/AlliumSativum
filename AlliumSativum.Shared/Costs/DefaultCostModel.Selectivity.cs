@@ -45,7 +45,7 @@ public partial class DefaultCostModel
             case (DistributionType.Uniform, DistributionType.PowerLaw):
             case (DistributionType.Uniform, DistributionType.Skewed):
                 return Math.Abs(rightAttribute.KellySkewness);
-            case (DistributionType.Uniform, DistributionType.BiModal):
+            case (DistributionType.Uniform, DistributionType.MultiModal):
                 return 0.1;
                 throw new NotImplementedException();
             case (DistributionType.Constant, DistributionType.Constant):
@@ -53,7 +53,7 @@ public partial class DefaultCostModel
             case (DistributionType.Constant, DistributionType.PowerLaw):
             case (DistributionType.Constant, DistributionType.Skewed):
                 return (1.0/leftAttribute.DistinctCardinality) * _settings.SelectivityEstimation.PenaltyForConstant * Math.Abs(rightAttribute.KellySkewness);
-            case (DistributionType.Constant, DistributionType.BiModal):
+            case (DistributionType.Constant, DistributionType.MultiModal):
                 return 0.1;
                 throw new NotImplementedException();
             case (DistributionType.PowerLaw, DistributionType.PowerLaw):
@@ -70,11 +70,11 @@ public partial class DefaultCostModel
                 return Math.Max(
                     Math.Abs(leftAttribute.KellySkewness),
                     Math.Abs(rightAttribute.KellySkewness));
-            case (DistributionType.PowerLaw, DistributionType.BiModal):
-            case (DistributionType.Skewed, DistributionType.BiModal):
+            case (DistributionType.PowerLaw, DistributionType.MultiModal):
+            case (DistributionType.Skewed, DistributionType.MultiModal):
                 return 0.1;
                 throw new NotImplementedException();
-            case (DistributionType.BiModal, DistributionType.BiModal):
+            case (DistributionType.MultiModal, DistributionType.MultiModal):
                 return 0.1;
                 throw new NotImplementedException();
             case (DistributionType.Unknown, _):

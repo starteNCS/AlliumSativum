@@ -9,8 +9,6 @@ public sealed class DistributionUtils
     // todo: metrics over the bins, not over the values itself, as the values themselves are not really representative of the distribution, but the bins are
     public static AttributeEntity CalculateDistribution(List<double?> values, AttributeEntity attribute, bool isBinned = false)
     {
-        var nonNullValues = values.Where(x => x.HasValue).Select(x => x!.Value).ToList();
-        
         var frequencies = isBinned
             ? values
                 .Where(x => x.HasValue)
@@ -43,7 +41,12 @@ public sealed class DistributionUtils
                 .Sum();
         attribute.KellySkewness = CalculateKellySkewness(frequencies);
 
-        attribute.DistributionType = DistributionDetector.Detect(nonNullValues, attribute);
+        var binnedDistribution = values
+            .Select(x => x ?? double.NaN)
+            .GroupBy(x => x)
+            .OrderBy(x => x.Key)
+            .ToDictionary(g => g.Key, g => g.Count());
+        attribute.DistributionType = DistributionDetector.Detect(binnedDistribution, attribute);
         
         return attribute;
     }
