@@ -3,6 +3,7 @@ using System.Dynamic;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 using AlliumSativum.Shared.Models.Executor;
 
 namespace AlliumSativum.QueryExecutor.PopExecutors;

@@ -17,5 +17,5 @@ FROM shared->respondent r
 INNER JOIN cs->study_observation cso ON cso.respondent_id = r.respondent_id     -- selectivity =
 INNER JOIN cs->user_study cus ON cus.id = cso.user_study_id                     -- selectivity =
 INNER JOIN cs->experiment_run cer ON cer.algorithm_id = cus.algorithm_id        -- selectivity = nix
-INNER JOIN  cs->run_metric rm ON rm.run_id = cer.id                             -- selectivity = 1/CD_EXPERIMENT_RUN
+INNER JOIN cs->run_metric rm ON rm.run_id = cer.id                             -- selectivity = 1/CD_EXPERIMENT_RUN
 WHERE rm.metric_name = 'F1'

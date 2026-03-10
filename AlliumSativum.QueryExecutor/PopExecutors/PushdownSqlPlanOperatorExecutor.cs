@@ -1,6 +1,7 @@
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 using AlliumSativum.Shared.Models.Executor;
 using AlliumSativum.Worker.Sdk;
 using Microsoft.Extensions.Logging;

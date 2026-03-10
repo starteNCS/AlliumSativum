@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 
 namespace AlliumSativum.QueryExecutor.PopExecutors;
 

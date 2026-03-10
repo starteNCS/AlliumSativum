@@ -1,11 +1,14 @@
 using System.Text.Json;
+using AlliumSativum.Shared.Constants;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 using AlliumSativum.Shared.Models.Executor;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Shared.Utils;
+using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 
 namespace AlliumSativum.Worker.Sdk.Extensions;
@@ -104,7 +107,12 @@ public static class ModelExtensions
 
     public static GPlanOperator? ToGrpcModel(this PlanOperator? planOperator)
     {
-        return planOperator switch
+        if (planOperator is null)
+        {
+            return null;
+        }
+        
+        var pop = planOperator switch
         {
             PushdownSqlPlanOperator psql => new GPlanOperator
             {
@@ -139,6 +147,27 @@ public static class ModelExtensions
             },
             _ => new GPlanOperator()
         };
+
+        foreach (var data in planOperator.DistributionData)
+        {
+            var distribution = new GPlanOperatorDistributionData
+            {
+                DistributionType = (int)data.Value.DistributionType,
+                Min = data.Value.Min,
+                Max = data.Value.Max,
+            };
+            distribution.Peaks.Add(data.Value.Peaks.Select(x => new GPlanOperatorDistributionDataPeak
+            {
+                Position = x.Position,
+                Height = x.Height
+            }));
+            
+            pop.OutputDistribution.Add(
+                AttributeToString(data.Key),
+                distribution);
+        }
+
+        return pop;
     }
 
     public static GExecutorWrapper? ToGrpcModel(this ExecutorWrapper? executor)
@@ -257,7 +286,8 @@ public static class ModelExtensions
                 Cost = proto.Cost,
                 ExpectedCardinality = proto.ExpectedCardinality,
                 Selectivity = 1,
-                Self = new TableSpecifier(proto.PushdownSql.Self.DataSource, proto.PushdownSql.Self.TableName)
+                Self = new TableSpecifier(proto.PushdownSql.Self.DataSource, proto.PushdownSql.Self.TableName),
+                DistributionData = proto.OutputDistribution.FromGrpcModel()
             },
             GPlanOperator.OperatorTypeOneofCase.PushdownRestCall => new PushdownRestCallPlanOperator(
                 Guid.Parse(proto.PushdownRestCall.DatasourceId),
@@ -268,7 +298,8 @@ public static class ModelExtensions
                 Cost = proto.Cost,
                 ExpectedCardinality = proto.ExpectedCardinality,
                 Selectivity = 1,
-                Self = new TableSpecifier(proto.PushdownRestCall.Self.DataSource, proto.PushdownRestCall.Self.TableName)
+                Self = new TableSpecifier(proto.PushdownRestCall.Self.DataSource, proto.PushdownRestCall.Self.TableName),
+                DistributionData = proto.OutputDistribution.FromGrpcModel()
             },
             _ => throw new ArgumentException("Expected some plan operator"),
         };
@@ -295,5 +326,34 @@ public static class ModelExtensions
         };
 
         return wrapper;
+    }
+
+    public static Dictionary<AttributeSpecifier, PlanOperatorDistributionData> FromGrpcModel(this MapField<string, GPlanOperatorDistributionData> distributionData)
+    {
+        return distributionData.Select(x => new KeyValuePair<AttributeSpecifier, PlanOperatorDistributionData>(
+            AttributeFromString(x.Key),
+            new PlanOperatorDistributionData
+            {
+                DistributionType = (DistributionType)x.Value.DistributionType,
+                Min = x.Value.Min,
+                Max = x.Value.Max,
+                Peaks = x.Value.Peaks.Select(p => new PlanOperatorDistributionData.Peak
+                {
+                    Position = p.Position,
+                    Height = p.Height
+                }).ToList()
+            })).ToDictionary(x => x.Key, x => x.Value);
+    }
+    
+    private static AttributeSpecifier AttributeFromString(string specifier)
+    {
+        var firstSplit = specifier.Split(AsSqlParameters.Attribute.DataSourceSeparator);
+        var secondSplit = firstSplit[1].Split(AsSqlParameters.Attribute.TableSeparator);
+        return new AttributeSpecifier(firstSplit[0], secondSplit[0], secondSplit[1]);
+    }
+    
+    private static string AttributeToString(AttributeSpecifier specifier)
+    {
+        return $"{specifier.DataSourceName}{AsSqlParameters.Attribute.DataSourceSeparator}{specifier.TableName}{AsSqlParameters.Attribute.TableSeparator}{specifier.AttributeName}";
     }
 }

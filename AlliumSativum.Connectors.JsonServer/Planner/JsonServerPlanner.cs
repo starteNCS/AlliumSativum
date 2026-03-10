@@ -1,9 +1,11 @@
 using System.Text;
+using AlliumSativum.Connectors.Shared.CatalogUtils;
 using AlliumSativum.Connectors.Shared.Interfaces;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
@@ -12,10 +14,14 @@ namespace AlliumSativum.Connectors.JsonServer.Planner;
 public sealed class JsonServerPlanner : IPlanner
 {
     private readonly CatalogDatabase _catalogDatabase;
+    private readonly CatalogDistributionUtils _distributionUtils;
 
-    public JsonServerPlanner(CatalogDatabase catalogDatabase)
+    public JsonServerPlanner(
+        CatalogDatabase catalogDatabase,
+        CatalogDistributionUtils distributionUtils)
     {
         _catalogDatabase = catalogDatabase;
+        _distributionUtils = distributionUtils;
     }
     
     public async Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanAsync(Guid dataSourceId, SelectBaseModel selectModel)
@@ -31,10 +37,16 @@ public sealed class JsonServerPlanner : IPlanner
         {
             return ([], null);
         }
+        
+        var distribution = await _distributionUtils.GetAttributeDistributionsAsync(selectModel.Select.Select(x => (AttributeSpecifier)x).ToList());
 
         var unplanned = selectModel;
         List<PlanContainer> planOperators = [
-            BuildPushDown(dataSource, fromRelation, selectModel.From)
+            BuildPushDown(
+                dataSource,
+                fromRelation,
+                selectModel.From,
+                distribution.Where(x => x.Key.IsInTable(selectModel.From)).ToDictionary(x => x.Key, x => x.Value))
         ];
         foreach (var join in selectModel.Join)
         {
@@ -43,7 +55,13 @@ public sealed class JsonServerPlanner : IPlanner
             {
                 return ([], null);
             }
-            planOperators.Add(BuildPushDown(dataSource, joinRelation, join.Inner));
+            planOperators.Add(
+                BuildPushDown(
+                    dataSource,
+                    joinRelation,
+                    join.Inner,
+                    distribution.Where(x => x.Key.IsInTable(selectModel.From)).ToDictionary(x => x.Key, x => x.Value))
+                );
 
             var joinAttributes = join.Expression.GetAttributesOfExpression();
             var whereAttributes = unplanned.Where?.GetAttributesOfExpression() ?? [];
@@ -57,7 +75,7 @@ public sealed class JsonServerPlanner : IPlanner
             unplanned);
     }
 
-    private PlanContainer BuildPushDown(DataSourceEntity dataSource, RelationEntity relation, TableSpecifier from)
+    private PlanContainer BuildPushDown(DataSourceEntity dataSource, RelationEntity relation, TableSpecifier from, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         var urlBuilder = new StringBuilder();
         urlBuilder.Append(dataSource.ConnectionString);
@@ -72,7 +90,8 @@ public sealed class JsonServerPlanner : IPlanner
             {
                 Cost = cost,
                 ExpectedCardinality = relation.Cardinality,
-                Self = from
+                Self = from,
+                DistributionData = distributionData
             },
             PlannedItems = new SelectBaseModel { From = from },
         };

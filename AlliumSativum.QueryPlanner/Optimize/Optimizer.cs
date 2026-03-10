@@ -153,7 +153,8 @@ public sealed class Optimizer
             planRoot = new ProjectPlanOperator(projections.Where(x => !x.IsHidden).ToList())
             {
                 Children = [planRoot],
-                ExpectedCardinality = planRoot.ExpectedCardinality
+                ExpectedCardinality = planRoot.ExpectedCardinality,
+                DistributionData = planRoot.DistributionData
             };
             planRoot.Cost = _costModel.CalculateCost(planRoot);
         }

@@ -73,7 +73,8 @@ message GPlanOperator {
   oneof operator_type {
     GPushdownSqlPlanOperator pushdown_sql = 3;
     GPushdownRestCallPlanOperator pushdown_rest_call = 4;
-  }
+  };
+  map<string, GPlanOperatorDistributionData> outputDistribution = 5;
 }
 
 message GPushdownSqlPlanOperator {
@@ -87,6 +88,18 @@ message GPushdownRestCallPlanOperator {
   string httpMethod = 2;
   string url = 3;
   GTableSpecifier self = 4;
+}
+
+message GPlanOperatorDistributionData {
+    int32 distributionType = 1;
+    double min = 2;
+    double max = 3;
+    repeated GPlanOperatorDistributionDataPeak peaks = 4;
+}
+
+message GPlanOperatorDistributionDataPeak {
+  double position = 1;
+  double height = 2;
 }
 
 // Executor

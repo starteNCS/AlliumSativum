@@ -2,6 +2,7 @@ using System.Diagnostics;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Join;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 namespace AlliumSativum.QueryExecutor.PopExecutors.Join;

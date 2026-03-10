@@ -1,5 +1,5 @@
 
-namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 
 public sealed class PlanOperatorExecutionData
 {
