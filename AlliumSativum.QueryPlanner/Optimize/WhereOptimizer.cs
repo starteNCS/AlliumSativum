@@ -84,6 +84,9 @@ public sealed class WhereOptimizer
             ExpectedCardinality = cardinality,
             Selectivity = selectivity
         };
+        filterPop.DistributionData =
+            _costModel.GetDistributionOfExpression((BinaryOperatorExpressionNode)mergedExpr,
+                scan.Plan.DistributionData);
         filterPop.Cost = _costModel.CalculateCost(filterPop);
 
         return filterPop;

@@ -65,7 +65,9 @@ public sealed class SelectOptimizer
             Children = [pop],
             ExpectedCardinality = pop.ExpectedCardinality,
             Selectivity = pop.Selectivity,
-            DistributionData = pop.DistributionData,
+            DistributionData = pop.DistributionData
+                .Where(x => projected.Contains(x.Key))
+                .ToDictionary(x => x.Key, x => x.Value),
         };
         projectPop.Cost = _costModel.CalculateCost(projectPop);
 

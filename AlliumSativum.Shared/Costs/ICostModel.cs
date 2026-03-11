@@ -1,7 +1,9 @@
 using AlliumSativum.Shared.Costs.Settings;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
+using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,6 +42,8 @@ public interface ICostModel
     /// <param name="planOperator"></param>
     /// <returns></returns>
     double TotalCost(PlanOperator planOperator);
+
+    Dictionary<AttributeSpecifier, PlanOperatorDistributionData> GetDistributionOfExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData);
 }
 
 public static class CostModelExtensions

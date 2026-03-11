@@ -3,6 +3,7 @@ using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Join;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
@@ -81,7 +82,17 @@ public sealed class JoinOptimizer
                     
                     if (expression != null)
                     {
-                        var join = new NestedLoopJoinPlanOperator(left, expression, right);
+                        // since we cannot join a table into itself, we can be sure that the distribution data of left and right do not have overlapping keys
+                        var distributions = ((List<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>)[left.DistributionData, right.DistributionData])
+                            .SelectMany(d => d)
+                            .ToDictionary(kv => kv.Key, kv => kv.Value);
+
+                        var join = new NestedLoopJoinPlanOperator(left, expression, right)
+                        {
+                            DistributionData =
+                                _costModel.GetDistributionOfExpression((BinaryOperatorExpressionNode)expression,
+                                    distributions)
+                        };
                         (join.ExpectedCardinality, join.Selectivity) = await _costModel.CalculateExpectedCardinalityAsync(join);
                         join.Cost = _costModel.CalculateCost(join);
                         results.Add(join);

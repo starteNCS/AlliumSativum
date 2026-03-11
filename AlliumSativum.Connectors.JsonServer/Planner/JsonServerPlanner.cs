@@ -38,7 +38,7 @@ public sealed class JsonServerPlanner : IPlanner
             return ([], null);
         }
         
-        var distribution = await _distributionUtils.GetAttributeDistributionsAsync(selectModel.Select.Select(x => (AttributeSpecifier)x).ToList());
+        var distribution = await _distributionUtils.GetAttributeDistributionsAsync(selectModel.GetAffectedAttributes());
 
         var unplanned = selectModel;
         List<PlanContainer> planOperators = [
@@ -46,7 +46,9 @@ public sealed class JsonServerPlanner : IPlanner
                 dataSource,
                 fromRelation,
                 selectModel.From,
-                distribution.Where(x => x.Key.IsInTable(selectModel.From)).ToDictionary(x => x.Key, x => x.Value))
+                distribution
+                    .Where(x => x.Key.IsInTable(selectModel.From))
+                    .ToDictionary(x => x.Key, x => x.Value))
         ];
         foreach (var join in selectModel.Join)
         {
@@ -55,12 +57,15 @@ public sealed class JsonServerPlanner : IPlanner
             {
                 return ([], null);
             }
+            
             planOperators.Add(
                 BuildPushDown(
                     dataSource,
                     joinRelation,
                     join.Inner,
-                    distribution.Where(x => x.Key.IsInTable(selectModel.From)).ToDictionary(x => x.Key, x => x.Value))
+                    distribution
+                        .Where(x => x.Key.IsInTable(join.Inner) || x.Key.IsInTable(join.GetJoinExpressionTable()))
+                        .ToDictionary(x => x.Key, x => x.Value))
                 );
 
             var joinAttributes = join.Expression.GetAttributesOfExpression();

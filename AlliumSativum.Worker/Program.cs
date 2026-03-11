@@ -2,6 +2,7 @@ using System.Reflection;
 using AlliumSativum.Connectors.JsonServer.Extensions;
 using AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 using AlliumSativum.Connectors.PostgreSQL.Extensions;
+using AlliumSativum.Connectors.Shared;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Migrations;
 using AlliumSativum.Worker.Services;
@@ -25,6 +26,7 @@ builder.Services
     .AddScoped<DatasourceDatabase>();
 
 builder.Services
+    .AddConnectorSharedServices()
     .AddPostgreSqlConnector()
     .AddJsonServerConnector();
 

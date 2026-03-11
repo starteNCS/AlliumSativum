@@ -13,6 +13,15 @@ public sealed class SelectBaseModel
     public List<JoinBaseModel> Join { get; set; } = [];
 
     public List<TableSpecifier> AffectedTables => [From, ..Join.Select(x => x.Inner)];
+    public List<AttributeSpecifier> GetAffectedAttributes()
+    {
+        List<AttributeSpecifier> attributes = [
+            ..Select.OfType<AttributeSpecifier>(),
+            ..Where?.GetAttributesOfExpression() ?? [],
+            ..Join.SelectMany(j => j.Expression.GetAttributesOfExpression())
+        ];
+        return attributes.Distinct().ToList();
+    }
 
     public string ToPostgreSqlString()
     {

@@ -144,17 +144,21 @@ public sealed class Optimizer
                 ExpectedCardinality = cardinality,
                 Selectivity = selectivity
             };
+            planRoot.DistributionData = _costModel.GetDistributionOfExpression((BinaryOperatorExpressionNode) onPremise.Where, planRoot.DistributionData);
             planRoot.Cost = _costModel.CalculateCost(planRoot);
         }
 
         // if there is any Hidden attribute, get rid of it here by projecting to only non-Hidden attributes
         if (projections.Any(p => p.IsHidden))
         {
-            planRoot = new ProjectPlanOperator(projections.Where(x => !x.IsHidden).ToList())
+            var applyProjections = projections.Where(x => !x.IsHidden).ToList();
+            planRoot = new ProjectPlanOperator(applyProjections)
             {
                 Children = [planRoot],
                 ExpectedCardinality = planRoot.ExpectedCardinality,
                 DistributionData = planRoot.DistributionData
+                    .Where(x => applyProjections.Contains(x.Key))
+                    .ToDictionary(x => x.Key, x => x.Value)
             };
             planRoot.Cost = _costModel.CalculateCost(planRoot);
         }

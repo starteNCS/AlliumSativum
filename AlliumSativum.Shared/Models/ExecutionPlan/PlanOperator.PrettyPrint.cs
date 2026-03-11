@@ -50,15 +50,15 @@ public abstract partial class PlanOperator
         sb.Append(isLast ? "└── " : "├── ");
         sb.AppendLine(GetNodeInfoHtml());
 
-        // Add second line for POP's string aligned under the branch
         sb.Append(prefix);
         sb.Append(isLast ? "    " : "│   ");
         sb.AppendLine(GetHtmlBaseNodeInfo(includeActual));
+        
+        sb.Append(prefix);
+        sb.Append(isLast ? "    " : "│   ");
+        sb.AppendLine(GetDistributionDataInfo());
 
-        // 2. Prepare prefix for children
         var childPrefix = prefix + (isLast ? "    " : "│   ");
-
-        // 3. Recurse
         for (var i = 0; i < Children.Count; i++)
         {
             var childIsLast = (i == Children.Count - 1);
@@ -97,11 +97,27 @@ public abstract partial class PlanOperator
         if (includeActual)
         {
             sb.Append(" (actual ")
-                .Append(GetActualSelectivityInfo())
+                .Append(GetActualSelectivityInfo().ToString("F5"))
                 .Append(')');
         }
         
         return sb.ToString();
+    }
+    private string GetDistributionDataInfo()
+    {
+        if (DistributionData.Count == 0)
+        {
+            return string.Empty;
+        }
+        
+        var sb = new StringBuilder();
+        sb.Append("Distribution Data: ");
+        foreach (var kvp in DistributionData)
+        {
+            sb.Append($"{kvp.Key}: {kvp.Value}, ");
+        }
+
+        return sb.ToString().TrimEnd(' ', ',');
     }
     protected abstract double GetActualSelectivityInfo();
 }

@@ -41,10 +41,18 @@ public sealed class CatalogDistributionUtils
             AttributeIds = attributeEntities.Select(a => a.Id).ToArray()
         });
         
+        var relations = await _catalog.QueryAsync<RelationEntity>("SELECT r.* FROM catalog.relations r JOIN catalog.datasources d ON d.id = r.datasourceid WHERE r.name LIKE ANY(@TableNames) AND d.name = ANY(@DatasourceNames)", new
+        {
+            TableNames = attributes.Select(a => $"%{a.TableName}").Distinct().ToArray(),
+            DatasourceNames = attributes.Select(a => a.DataSourceName).Distinct().ToArray(),
+        });
+        
         var distributions = new Dictionary<AttributeSpecifier, PlanOperatorDistributionData>();
         foreach (var attribute in attributes)
         {
-            var attributeEntity = attributeEntities.SingleOrDefault(a => a.Name == attribute.AttributeName);
+            var attributeEntity = attributeEntities.FirstOrDefault(a => 
+                a.Name == attribute.AttributeName
+                && a.RelationId == relations.Single(r => r.Name.EndsWith(attribute.TableName)).Id);
             if (attributeEntity is null)
             {
                 continue;
