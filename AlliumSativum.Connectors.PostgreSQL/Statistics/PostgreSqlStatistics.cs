@@ -75,8 +75,8 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                             """,  relationMetrics);
         
         await _catalogDatabase.ExecuteAsync("""
-                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate, Min, Max, DataType, Mean, Range, Variance, StandardDeviation, Skewness, Kurtosis, DistributionType)
-                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate, @Min, @Max, @DataType, @Mean, @Range, @Variance, @StandardDeviation, @Skewness, @Kurtosis, @DistributionType)
+                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate, Min, Max, DataType, Mean, MeanBinHeight, Range, Variance, StandardDeviation, Skewness, Kurtosis, DistributionType)
+                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate, @Min, @Max, @DataType, @Mean, @MeanBinHeight, @Range, @Variance, @StandardDeviation, @Skewness, @Kurtosis, @DistributionType)
                                             ON CONFLICT (Id)
                                             DO UPDATE SET 
                                                           DistinctCardinality = EXCLUDED.DistinctCardinality,
@@ -85,6 +85,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                                           Max = EXCLUDED.Max,
                                                           DataType = EXCLUDED.DataType,
                                                           Mean = EXCLUDED.Mean,
+                                                          MeanBinHeight = EXCLUDED.MeanBinHeight,
                                                           Range = EXCLUDED.Range,
                                                           Variance = EXCLUDED.Variance,
                                                           StandardDeviation = EXCLUDED.StandardDeviation,

@@ -86,7 +86,7 @@ public sealed class JoinOptimizer
                         var distributions = ((List<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>)[left.DistributionData, right.DistributionData])
                             .SelectMany(d => d)
                             .ToDictionary(kv => kv.Key, kv => kv.Value);
-                        var (newDistribution, selectivity) = _costModel.GetDistributionOfExpression((BinaryOperatorExpressionNode) expression, distributions);
+                        var (newDistribution, selectivity) = await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode) expression, distributions);
 
 
                         var join = new NestedLoopJoinPlanOperator(left, expression, right)

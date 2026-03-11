@@ -8,30 +8,30 @@ namespace AlliumSativum.Shared.Costs;
 
 public sealed partial class DefaultCostModel
 {
-    public (Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity) GetDistributionOfExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
+    public async Task<(Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity)> GetDistributionOfExpressionAsync(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         switch (node)
         {
             case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: "=", Left: ValueExpressionNode }:
-                return GetDistributionOfEqualsValueExpression(node, distributionData);
+                return await GetDistributionOfEqualsValueExpression(node, distributionData);
             case { Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Left: ValueExpressionNode }:
-                return GetDistributionOfLessGreaterValueExpression(node, distributionData);
+                return await GetDistributionOfLessGreaterValueExpression(node, distributionData);
             case { Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Right: FullySpecifiedColumnExpressionNode }:
             {
                 throw new NotImplementedException();
             }
             case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: FullySpecifiedColumnExpressionNode }:
-                return GetDistributionOfEqualsAttributeExpression(node, distributionData);
+                return await GetDistributionOfEqualsAttributeExpression(node, distributionData);
             case {Left : BinaryOperatorExpressionNode, Operation: "OR", Right: BinaryOperatorExpressionNode}:
             {
-                var left = GetDistributionOfExpression((BinaryOperatorExpressionNode)node.Left, distributionData);
-                var right = GetDistributionOfExpression((BinaryOperatorExpressionNode)node.Right, distributionData);
+                var left = GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Left, distributionData);
+                var right = GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Right, distributionData);
                 return (null!, 0);
             }
             case {Left : BinaryOperatorExpressionNode, Operation: "AND", Right: BinaryOperatorExpressionNode}:
             {
-                var left = GetDistributionOfExpression((BinaryOperatorExpressionNode)node.Left, distributionData);
-                var right = GetDistributionOfExpression((BinaryOperatorExpressionNode)node.Right, distributionData);
+                var left = GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Left, distributionData);
+                var right = GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Right, distributionData);
                 return (null!, 0);
             }
             default:
@@ -39,7 +39,7 @@ public sealed partial class DefaultCostModel
         }
     }
 
-    private static (Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity) GetDistributionOfEqualsAttributeExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
+    private async Task<(Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity)> GetDistributionOfEqualsAttributeExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         var leftAttribute = ((FullySpecifiedColumnExpressionNode)node.Left).Attribute;
         var rightAttribute = ((FullySpecifiedColumnExpressionNode)node.Right).Attribute;
@@ -48,7 +48,10 @@ public sealed partial class DefaultCostModel
             throw new ArgumentException($"Expected distribution data for attributes {leftAttribute} and {rightAttribute}");
         }
 
-        var previousIntegral = ReconstructDistribution(leftData.CrossJoin(rightData)).Values.Sum();
+        var leftRelation = await _catalog.GetRelationAsync(leftAttribute.DataSourceName, leftAttribute.TableName);
+        var rightRelation = await _catalog.GetRelationAsync(rightAttribute.DataSourceName, rightAttribute.TableName);
+
+        var previousCount = leftRelation.Cardinality * rightRelation.Cardinality;
         
         var joinMin = Math.Max(leftData.Min, rightData.Min);
         var joinMax = Math.Min(leftData.Max, rightData.Max);
@@ -63,14 +66,14 @@ public sealed partial class DefaultCostModel
         };
 
         var nowIntegral = ReconstructDistribution(distributionData[leftAttribute]).Values.Sum();
-        var selectivity = nowIntegral / previousIntegral;
+        var selectivity = nowIntegral / previousCount;
         
         distributionData = ScaleDistribution(distributionData, selectivity, skipAttributes: [leftAttribute, rightAttribute]);
         
         return (distributionData, selectivity);
     }
 
-    private static (Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity) GetDistributionOfEqualsValueExpression(BinaryOperatorExpressionNode node,
+    private async Task<(Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity)> GetDistributionOfEqualsValueExpression(BinaryOperatorExpressionNode node,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         var attribute = (node.Left as FullySpecifiedColumnExpressionNode ?? (FullySpecifiedColumnExpressionNode)node.Right).Attribute;
@@ -88,7 +91,7 @@ public sealed partial class DefaultCostModel
             throw new ArgumentException($"Expected distribution data for attribute {attribute}");
         }
         
-        var previousIntegral = ReconstructDistribution(distributionData[attribute]).Values.Sum();
+        var relation = await _catalog.GetRelationAsync(attribute.DataSourceName, attribute.TableName);
 
         var value = double.Parse(valueNode.Value);
         var (min, max) = GetValueRange(data, node.Operation, value);
@@ -102,14 +105,14 @@ public sealed partial class DefaultCostModel
         };
 
         var nowIntegral = ReconstructDistribution(distributionData[attribute]).Values.Sum();
-        var selectivity = nowIntegral / previousIntegral;
+        var selectivity = nowIntegral / relation.Cardinality;
         
         distributionData = ScaleDistribution(distributionData, selectivity, skipAttributes: [attribute]);
         
         return (distributionData, selectivity);
     }
 
-    private static (Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity) GetDistributionOfLessGreaterValueExpression(BinaryOperatorExpressionNode node,
+    private async Task<(Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity)> GetDistributionOfLessGreaterValueExpression(BinaryOperatorExpressionNode node,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         var attribute = (node.Left as FullySpecifiedColumnExpressionNode ?? (FullySpecifiedColumnExpressionNode)node.Right).Attribute;
@@ -128,7 +131,7 @@ public sealed partial class DefaultCostModel
             throw new ArgumentException($"Expected distribution data for attribute {attribute}");
         }
         
-        var previousIntegral = ReconstructDistribution(data).Values.Sum();
+        var relation = await _catalog.GetRelationAsync(attribute.DataSourceName, attribute.TableName);
 
         var peaksLeft = data.Peaks.Where(peak => CheckPeak(peak, node.Operation, value)).ToList();
         var (min, max) = GetValueRange(data, node.Operation, value);
@@ -142,7 +145,7 @@ public sealed partial class DefaultCostModel
         };
         
         var nowIntegral = ReconstructDistribution(distributionData[attribute]).Values.Sum();
-        var selectivity = nowIntegral / previousIntegral;
+        var selectivity = nowIntegral / relation.Cardinality;
         
         distributionData = ScaleDistribution(distributionData, selectivity, skipAttributes: [attribute]);
 

@@ -172,7 +172,6 @@ public static class DistributionDetector
             .OrderByDescending(p => p.Density)
             .ToList();
 
-        // --- NEW: Calculate Standard Deviation for each peak ---
         var valleys = GetLocalMinima(curve);
 
         foreach (var peak in validPeaks)

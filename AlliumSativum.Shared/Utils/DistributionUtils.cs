@@ -22,6 +22,7 @@ public sealed class DistributionUtils
         }
 
         attribute.Mean = nonNullValues.Average();
+        attribute.MeanBinHeight = binnedDistribution.Values.Average();
         attribute.Range = nonNullValues.Max() - nonNullValues.Min();
         attribute.Variance = (1.0/nonNullValues.Count) * nonNullValues.Select(value => Math.Pow(value - attribute.Mean, 2)).Sum();
         attribute.StandardDeviation = Math.Sqrt(attribute.Variance);

@@ -1,0 +1,201 @@
+using System.Text;
+using System.Text.Json;
+using AlliumSativum.Compiler;
+using AlliumSativum.Connectors.Shared;
+using AlliumSativum.Shared.Costs;
+using AlliumSativum.Shared.Database;
+using AlliumSativum.Shared.Database.Entities;
+using AlliumSativum.Shared.Models.ExecutionPlan;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using Microsoft.AspNetCore.Mvc;
+using ScottPlot;
+
+namespace AlliumSativum.QueryServer.Controllers;
+
+[Controller]
+[Route("[controller]")]
+public class HistogramController : Controller
+{
+    private readonly CatalogDatabase _catalog;
+    private readonly QueryCompiler _compiler;
+    private readonly QueryExecutor.QueryExecutor _queryExecutor;
+    private readonly ICostModel _costModel;
+
+    public HistogramController(
+        CatalogDatabase catalog,
+        QueryCompiler compiler,
+        QueryExecutor.QueryExecutor queryExecutor,
+        ICostModel costModel)
+    {
+        _catalog = catalog;
+        _compiler = compiler;
+        _queryExecutor = queryExecutor;
+        _costModel = costModel;
+    }
+
+    [HttpPost("reconstructed")]
+    public async Task<IResult> GetReconstructedHistogram([FromBody] CompileInput query)
+    {
+        List<Color> colors =
+        [
+            Color.FromHex("#6CD4FF"),
+            Color.FromHex("#FE938C"),
+        ];
+        var plt = new ScottPlot.Plot();
+
+        var plan = await _compiler.CompileAsync(query.Query);
+        if (plan.RootOperator is not ProjectPlanOperator pop)
+        {
+            return Results.Content("<html><body><p>Only simple select queries are supported</p></body></html>", "text/html");
+        }
+        if (pop.Attributes.Count != 1)
+        {
+            return Results.Content("<html><body><p>You need to project to one operator here</p></body></html>", "text/html");
+        }
+    
+        var parsed = await LoadDataAsync(plan);
+        var map = parsed
+            .GroupBy(x => x)
+            .OrderBy(x => x.Key)
+            .ToDictionary(g => g.Key, g => g.Count());
+        double barWidth = 0.4;
+        double offset = barWidth / 2;
+
+        double[] originalPlotPositions = map.Keys.Select(k => k - offset).ToArray();
+        double[] originalPlotHeights = map.Values.Select(x => (double)x).ToArray();
+        var originalPlot = plt.Add.Bars(originalPlotPositions, originalPlotHeights);
+        originalPlot.LegendText = "Original";
+
+        foreach (var bar in originalPlot.Bars)
+        {
+            bar.Size = barWidth;
+        }
+
+        var distributionData = plan.RootOperator.DistributionData.Single().Value;
+        var reconstructed = _costModel.ReconstructDistribution(distributionData);
+
+        double[] reconstructedPlotPositions = reconstructed.Keys.Select(k => k + offset).ToArray();
+        double[] reconstructedPlotHeights = reconstructed.Values.ToArray();
+        var reconstructedPlot = plt.Add.Bars(reconstructedPlotPositions, reconstructedPlotHeights);
+        reconstructedPlot.LegendText = "Reconstructed";
+
+        foreach (var bar in reconstructedPlot.Bars)
+        {
+            bar.Size = barWidth;
+        }
+        
+        plt.Axes.Margins(bottom: 0);
+        plt.Title("Original vs Reconstructed Distribution");
+        var legend = plt.ShowLegend();
+        legend.Alignment = Alignment.UpperLeft;
+        legend.FontName = "Arial";
+        legend.FontSize = 14;
+        
+        var svg = plt.GetSvgXml(1200, 800);
+        var stringBuilder = new StringBuilder();
+        stringBuilder.Append("<html><body>")
+            .Append(svg)
+            .Append("</body></html>");
+        
+        return Results.Content(stringBuilder.ToString(), "text/html");
+    }
+
+    [HttpPost]
+    public async Task<IResult> GetHistogram([FromBody] List<CompileInput> queries)
+    {
+        List<Color> colors =
+        [
+            Color.FromHex("#6CD4FF"),
+            Color.FromHex("#FE938C"),
+        ];
+        var plt = new ScottPlot.Plot();
+
+        List<AttributeEntity> attributes = [];
+        List<Dictionary<double, int>> maps = [];
+        double min = 0, max = 0;
+        
+        int index = 0;
+        foreach (var query in queries)
+        {
+            var plan = await _compiler.CompileAsync(query.Query);
+            if (plan.RootOperator is not ProjectPlanOperator pop)
+            {
+                return Results.Content("<html><body><p>Only simple select queries are supported</p></body></html>", "text/html");
+            }
+            if (pop.Attributes.Count != 1)
+            {
+                return Results.Content("<html><body><p>You need to project to one operator here</p></body></html>", "text/html");
+            }
+        
+            var parsed = await LoadDataAsync(plan);
+
+            var (attribute, modes) = DistributionUtils.CalculateDistribution(parsed.Select(x => (double?)x).ToList(), new AttributeEntity());
+            attributes.Add(attribute);
+            
+            var map = parsed
+                .GroupBy(x => x)
+                .OrderBy(x => x.Key)
+                .ToDictionary(g => g.Key, g => g.Count());
+            min = map.Keys.Min() < min ? map.Keys.Min() : min;
+            max = map.Keys.Max() > max ? map.Keys.Max() : max;
+            maps.Add(map);
+        
+            var hist = ScottPlot.Statistics.Histogram.WithBinCount(map.Count, parsed);
+            var histPlot = plt.Add.Histogram(hist, colors[index]);
+            histPlot.BarWidthFraction = 0.8;
+
+            index++;
+        }
+        
+        plt.Axes.Margins(bottom: 0);
+        plt.Axes.Bottom.Min = min;
+        plt.Axes.Bottom.Max = min;
+        
+        var svg = plt.GetSvgXml(600, 400);
+        var stringBuilder = new StringBuilder();
+        stringBuilder.Append("<html><body>")
+            .Append(svg)
+            .Append("<table><tr><th>Key</th>");
+        
+            for (int i = 0; i < maps.Count; i++)
+            {
+                stringBuilder.Append("<th>Query " + (i + 1) + "</th>");
+            }
+            stringBuilder.Append("</tr>");
+            
+        for (double i = min; i < max; i++)
+        {
+            stringBuilder.Append($"<tr><td>{i}</td> ");
+            foreach (var map in maps)
+            {
+                var entry = map.Where(kv => kv.Key >= i).OrderBy(kv => kv.Key).FirstOrDefault();
+                stringBuilder.Append($"<td>{entry.Value}</td>");
+            }
+            stringBuilder.Append("</tr>");
+        }
+        
+        stringBuilder
+            .Append("</body></html>");
+        
+        return Results.Content(stringBuilder.ToString(), "text/html");
+    }
+
+    private async Task<List<double>> LoadDataAsync(QueryExecutionPlan plan)
+    {
+        var result = await _queryExecutor.ExecuteAsync(plan.RootOperator);
+        var parsed = result
+            .Select(x => (JsonElement?) x.Single().Value)
+            .Where(x => x is null || x.Value.ValueKind == JsonValueKind.Number)
+            .Select(x =>
+            {
+                if (x is null || !x.Value.TryGetDouble(out var value))
+                {
+                    return double.NaN;
+                }
+
+                return value;
+            })
+            .ToList();
+        return parsed;
+    }
+}

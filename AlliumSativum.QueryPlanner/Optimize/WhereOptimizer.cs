@@ -77,7 +77,7 @@ public sealed class WhereOptimizer
 
         var previousCardinality = scan.Plan.ExpectedCardinality;
         var (cardinality, _) = await _costModel.CalculateExpectedCardinalityAsync((BinaryOperatorExpressionNode)mergedExpr, previousCardinality);
-        var (distribution, selectivity) = _costModel.GetDistributionOfExpression((BinaryOperatorExpressionNode)mergedExpr,
+        var (distribution, selectivity) = await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)mergedExpr,
             scan.Plan.DistributionData);
         
         var filterPop = new FilterPlanOperator(mergedExpr)

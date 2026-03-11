@@ -139,7 +139,7 @@ public sealed class Optimizer
                 await _costModel.CalculateExpectedCardinalityAsync((BinaryOperatorExpressionNode)onPremise.Where,
                     planRoot.ExpectedCardinality);
             var (distribution, selectivity) =
-                _costModel.GetDistributionOfExpression((BinaryOperatorExpressionNode)onPremise.Where,
+                await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)onPremise.Where,
                     planRoot.DistributionData);
             planRoot = new FilterPlanOperator(onPremise.Where)
             {

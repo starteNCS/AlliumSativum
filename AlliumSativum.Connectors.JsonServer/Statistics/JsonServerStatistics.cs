@@ -107,6 +107,7 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
                                                 Min = @Min,
                                                 Max = @Max,
                                                 Mean = @Mean,
+                                                MeanBinHeight = @MeanBinHeight,
                                                 Variance = @Variance,
                                                 StandardDeviation = @StandardDeviation,
                                                 Range = @Range,
