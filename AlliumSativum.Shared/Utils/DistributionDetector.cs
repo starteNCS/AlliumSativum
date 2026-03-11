@@ -82,7 +82,7 @@ public static class DistributionDetector
             return false;
         }
         
-        var items = values.Values.ToList();
+        var items = values.OrderBy(kv => kv.Key).Select(kv => kv.Value).ToList();
         if (reverse)
         {
             items = [..items.ToList()];
@@ -144,13 +144,15 @@ public static class DistributionDetector
             return [];
         }
 
-        double n = data.Values.Sum();
-
-        if (attribute.StandardDeviation <= 0e-6)
+        // check if distribution is flat, as KDE places a bell over each datapoint, one peak is guaranteed
+        var maxCount = data.Values.Max();
+        var minCount = data.Values.Min();
+        if (maxCount == minCount || (double)(maxCount - minCount) / maxCount < 0.05)
         {
-            // All data points are the same
             return [];
         }
+        
+        double n = data.Values.Sum();
 
         // Adaptive Bandwidth (Silverman's Rule with a 0.6 sensitivity 'tightener')
         double h = (1.06 * attribute.StandardDeviation * Math.Pow(n, -0.2)) * 0.6;

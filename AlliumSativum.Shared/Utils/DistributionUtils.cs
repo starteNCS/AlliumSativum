@@ -9,6 +9,7 @@ public sealed class DistributionUtils
     // todo: metrics over the bins, not over the values itself, as the values themselves are not really representative of the distribution, but the bins are
     public static (AttributeEntity attribute, List<AttributePeakEntity> modes) CalculateDistribution(List<double?> values, AttributeEntity attribute)
     {
+        var nonNullValues = values.Where(x => x.HasValue).Select(x => x.Value).ToList();
         var binnedDistribution = values
             .Select(x => x ?? double.NaN)
             .GroupBy(x => x)
@@ -20,20 +21,20 @@ public sealed class DistributionUtils
             return (attribute, []);
         }
 
-        attribute.Mean = binnedDistribution.Values.Average();
-        attribute.Range = binnedDistribution.Values.Max() - binnedDistribution.Values.Min();
-        attribute.Variance = (1.0/binnedDistribution.Values.Count) * binnedDistribution.Values.Select(value => Math.Pow(value - attribute.Mean, 2)).Sum();
+        attribute.Mean = nonNullValues.Average();
+        attribute.Range = nonNullValues.Max() - nonNullValues.Min();
+        attribute.Variance = (1.0/nonNullValues.Count) * nonNullValues.Select(value => Math.Pow(value - attribute.Mean, 2)).Sum();
         attribute.StandardDeviation = Math.Sqrt(attribute.Variance);
 
-        double n = binnedDistribution.Count;
+        double n = nonNullValues.Count;
         attribute.Skewness = attribute.StandardDeviation == 0
             ? null
-            : (n / ((n - 1) * (n - 2))) * binnedDistribution.Values
+            : (n / ((n - 1) * (n - 2))) * nonNullValues
                 .Select(value => Math.Pow((value - attribute.Mean) / attribute.StandardDeviation, 3))
                 .Sum();
         attribute.Kurtosis = attribute.StandardDeviation == 0
             ? null
-            : (n / ((n - 1) * (n - 2))) * binnedDistribution.Values
+            : (n / ((n - 1) * (n - 2))) * nonNullValues
                 .Select(value => Math.Pow((value - attribute.Mean) / attribute.StandardDeviation, 4))
                 .Sum();
         (attribute.DistributionType, var modes) = DistributionDetector.Detect(binnedDistribution, attribute);
