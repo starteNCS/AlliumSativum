@@ -164,17 +164,29 @@ public static class DistributionDetector
         var curve = GenerateDensityCurve(data, h, attribute);
         var candidates = GetLocalMaxima(curve);
 
-        // We only keep peaks that are at least 20% as tall as the absolute highest peak.
-        if (candidates.Count == 0)
-        {
-            return [];
-        }
+        if (candidates.Count == 0) return [];
+    
         var maxDensity = candidates.Max(p => p.Density);
-        
-        return candidates
+        var validPeaks = candidates
             .Where(p => p.Density >= maxDensity * 0.2)
             .OrderByDescending(p => p.Density)
             .ToList();
+
+        // --- NEW: Calculate Standard Deviation for each peak ---
+        var valleys = GetLocalMinima(curve);
+
+        foreach (var peak in validPeaks)
+        {
+            // closest valley to the left of the peak
+            var leftBound = valleys.Where(v => v < peak.Position).DefaultIfEmpty(double.MinValue).Max();
+            // closest valley to the right of the peak
+            var rightBound = valleys.Where(v => v > peak.Position).DefaultIfEmpty(double.MaxValue).Min();
+
+            var peakData = data.Where(kv => kv.Key >= leftBound && kv.Key <= rightBound);
+            peak.StandardDeviation = CalculatePeakStandardDeviation(peakData);
+        }
+
+        return validPeaks;
     }
 
     private static double GetMinDataGap(Dictionary<double, int> data)
@@ -220,6 +232,20 @@ public static class DistributionDetector
         return curve;
     }
 
+    private static List<double> GetLocalMinima(List<AttributePeakEntity> curve)
+    {
+        var minima = new List<double>();
+        for (int i = 1; i < curve.Count - 1; i++)
+        {
+            // If it's lower than both its neighbors, it's a valley
+            if (curve[i].Density < curve[i - 1].Density && curve[i].Density < curve[i + 1].Density)
+            {
+                minima.Add(curve[i].Position);
+            }
+        }
+        return minima;
+    }
+    
     private static List<AttributePeakEntity> GetLocalMaxima(List<AttributePeakEntity> curve)
     {
         var maxima = new List<AttributePeakEntity>();
@@ -231,5 +257,19 @@ public static class DistributionDetector
             }
         }
         return maxima;
+    }
+    
+    private static double CalculatePeakStandardDeviation(IEnumerable<KeyValuePair<double, int>> dataSlice)
+    {
+        var sliceList = dataSlice.ToList();
+        if (sliceList.Count == 0) return 0;
+    
+        double totalCount = sliceList.Sum(kv => kv.Value);
+        if (totalCount <= 1) return 0;
+
+        double mean = sliceList.Sum(kv => kv.Key * kv.Value) / totalCount;
+        double variance = sliceList.Sum(kv => kv.Value * Math.Pow(kv.Key - mean, 2)) / totalCount; 
+    
+        return Math.Sqrt(variance);
     }
 }

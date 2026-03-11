@@ -7,4 +7,5 @@ public sealed class AttributePeakEntity
     public double Position { get; set; }
     public int Height { get; set; }
     public double Density { get; set; }
+    public double StandardDeviation { get; set; }
 }
