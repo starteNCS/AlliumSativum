@@ -195,8 +195,8 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                     foreach (var mode in modes)
                     {
                         await _catalogDatabase.ExecuteAsync("""
-                                                            INSERT INTO Catalog.AttributePeaks (Id, AttributeId, Position, Height, StandardDeviation)
-                                                            VALUES (@Id, @AttributeId, @Position, @Height, @StandardDeviation)
+                                                            INSERT INTO Catalog.AttributePeaks (Id, AttributeId, Position, Height, StandardDeviation, Mean)
+                                                            VALUES (@Id, @AttributeId, @Position, @Height, @StandardDeviation, @Mean)
                                                             """, mode);
                     }
                 }

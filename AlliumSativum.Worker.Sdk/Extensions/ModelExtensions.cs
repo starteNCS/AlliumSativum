@@ -155,11 +155,14 @@ public static class ModelExtensions
                 DistributionType = (int)data.Value.DistributionType,
                 Min = data.Value.Min,
                 Max = data.Value.Max,
+                Mean = data.Value.Mean
             };
             distribution.Peaks.Add(data.Value.Peaks.Select(x => new GPlanOperatorDistributionDataPeak
             {
                 Position = x.Position,
-                Height = x.Height
+                Height = x.Height,
+                Mean = x.Mean,
+                StandardDeviation = x.StandardDeviation
             }));
             
             pop.OutputDistribution.Add(
@@ -337,10 +340,13 @@ public static class ModelExtensions
                 DistributionType = (DistributionType)x.Value.DistributionType,
                 Min = x.Value.Min,
                 Max = x.Value.Max,
+                Mean = x.Value.Mean,
                 Peaks = x.Value.Peaks.Select(p => new PlanOperatorDistributionData.Peak
                 {
                     Position = p.Position,
-                    Height = p.Height
+                    Height = p.Height,
+                    Mean = p.Mean,
+                    StandardDeviation = p.StandardDeviation
                 }).ToList()
             })).ToDictionary(x => x.Key, x => x.Value);
     }

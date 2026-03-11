@@ -64,10 +64,13 @@ public sealed class CatalogDistributionUtils
                 DistributionType =  attributeEntity.DistributionType,
                 Min = attributeEntity.Min ?? double.NaN,
                 Max = attributeEntity.Max ?? double.NaN,
+                Mean = attributeEntity.Mean,
                 Peaks = attributePeaks.Select(ap => new PlanOperatorDistributionData.Peak
                 {
                     Position = ap.Position,
                     Height = ap.Height,
+                    Mean = ap.Mean,
+                    StandardDeviation = ap.StandardDeviation
                 }).ToList(),
             });
         }

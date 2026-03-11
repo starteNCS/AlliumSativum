@@ -94,12 +94,15 @@ message GPlanOperatorDistributionData {
     int32 distributionType = 1;
     double min = 2;
     double max = 3;
-    repeated GPlanOperatorDistributionDataPeak peaks = 4;
+    double mean = 4;
+    repeated GPlanOperatorDistributionDataPeak peaks = 5;
 }
 
 message GPlanOperatorDistributionDataPeak {
   double position = 1;
   double height = 2;
+  double mean = 3;
+  double standardDeviation = 4;
 }
 
 // Executor

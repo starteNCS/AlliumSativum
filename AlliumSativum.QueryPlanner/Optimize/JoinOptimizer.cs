@@ -86,14 +86,15 @@ public sealed class JoinOptimizer
                         var distributions = ((List<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>)[left.DistributionData, right.DistributionData])
                             .SelectMany(d => d)
                             .ToDictionary(kv => kv.Key, kv => kv.Value);
+                        var (newDistribution, selectivity) = _costModel.GetDistributionOfExpression((BinaryOperatorExpressionNode) expression, distributions);
+
 
                         var join = new NestedLoopJoinPlanOperator(left, expression, right)
                         {
-                            DistributionData =
-                                _costModel.GetDistributionOfExpression((BinaryOperatorExpressionNode)expression,
-                                    distributions)
+                            DistributionData = newDistribution,
+                            Selectivity = selectivity,
                         };
-                        (join.ExpectedCardinality, join.Selectivity) = await _costModel.CalculateExpectedCardinalityAsync(join);
+                        (join.ExpectedCardinality, _) = await _costModel.CalculateExpectedCardinalityAsync(join);
                         join.Cost = _costModel.CalculateCost(join);
                         results.Add(join);
                     }

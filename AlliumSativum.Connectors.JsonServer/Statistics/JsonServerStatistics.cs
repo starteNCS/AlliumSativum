@@ -121,8 +121,8 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
                 foreach (var mode in modes)
                 {
                     await _catalog.ExecuteAsync("""
-                                                INSERT INTO Catalog.AttributePeaks (Id, AttributeId, Position, Height, StandardDeviation)
-                                                VALUES (@Id, @AttributeId, @Position, @Height, @StandardDeviation)
+                                                INSERT INTO Catalog.AttributePeaks (Id, AttributeId, Position, Height, StandardDeviation, Mean)
+                                                VALUES (@Id, @AttributeId, @Position, @Height, @StandardDeviation, @Mean)
                                                 """, mode);
                 }
             }

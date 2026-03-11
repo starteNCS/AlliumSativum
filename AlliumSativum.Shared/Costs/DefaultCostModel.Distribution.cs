@@ -8,7 +8,7 @@ namespace AlliumSativum.Shared.Costs;
 
 public sealed partial class DefaultCostModel
 {
-    public Dictionary<AttributeSpecifier, PlanOperatorDistributionData> GetDistributionOfExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
+    public (Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity) GetDistributionOfExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         switch (node)
         {
@@ -26,20 +26,20 @@ public sealed partial class DefaultCostModel
             {
                 var left = GetDistributionOfExpression((BinaryOperatorExpressionNode)node.Left, distributionData);
                 var right = GetDistributionOfExpression((BinaryOperatorExpressionNode)node.Right, distributionData);
-                return null!;
+                return (null!, 0);
             }
             case {Left : BinaryOperatorExpressionNode, Operation: "AND", Right: BinaryOperatorExpressionNode}:
             {
                 var left = GetDistributionOfExpression((BinaryOperatorExpressionNode)node.Left, distributionData);
                 var right = GetDistributionOfExpression((BinaryOperatorExpressionNode)node.Right, distributionData);
-                return null!;
+                return (null!, 0);
             }
             default:
                 throw new ArgumentException("Unsupported expression node for selectivity estimation");
         }
     }
 
-    private Dictionary<AttributeSpecifier, PlanOperatorDistributionData> GetDistributionOfEqualsAttributeExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
+    private static (Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity) GetDistributionOfEqualsAttributeExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         var leftAttribute = ((FullySpecifiedColumnExpressionNode)node.Left).Attribute;
         var rightAttribute = ((FullySpecifiedColumnExpressionNode)node.Right).Attribute;
@@ -47,6 +47,8 @@ public sealed partial class DefaultCostModel
         {
             throw new ArgumentException($"Expected distribution data for attributes {leftAttribute} and {rightAttribute}");
         }
+
+        var previousIntegral = ReconstructDistribution(leftData.CrossJoin(rightData)).Values.Sum();
         
         var joinMin = Math.Max(leftData.Min, rightData.Min);
         var joinMax = Math.Min(leftData.Max, rightData.Max);
@@ -59,10 +61,16 @@ public sealed partial class DefaultCostModel
             Peaks = peaks,
             DistributionType = PeakCountToDistributionType(peaks)
         };
-        return distributionData;
+
+        var nowIntegral = ReconstructDistribution(distributionData[leftAttribute]).Values.Sum();
+        var selectivity = nowIntegral / previousIntegral;
+        
+        distributionData = ScaleDistribution(distributionData, selectivity, skipAttributes: [leftAttribute, rightAttribute]);
+        
+        return (distributionData, selectivity);
     }
 
-    private static Dictionary<AttributeSpecifier, PlanOperatorDistributionData> GetDistributionOfEqualsValueExpression(BinaryOperatorExpressionNode node,
+    private static (Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity) GetDistributionOfEqualsValueExpression(BinaryOperatorExpressionNode node,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         var attribute = (node.Left as FullySpecifiedColumnExpressionNode ?? (FullySpecifiedColumnExpressionNode)node.Right).Attribute;
@@ -71,7 +79,7 @@ public sealed partial class DefaultCostModel
         {
             // if not a number, we cannot really infer anything about the distribution for now
             // just return as is
-            return distributionData;
+            return (distributionData, 1);
         }
         
         var data = distributionData.FirstOrDefault(x => x.Key == attribute).Value;
@@ -79,7 +87,9 @@ public sealed partial class DefaultCostModel
         {
             throw new ArgumentException($"Expected distribution data for attribute {attribute}");
         }
-                
+        
+        var previousIntegral = ReconstructDistribution(distributionData[attribute]).Values.Sum();
+
         var value = double.Parse(valueNode.Value);
         var (min, max) = GetValueRange(data, node.Operation, value);
         
@@ -90,10 +100,16 @@ public sealed partial class DefaultCostModel
             Max = max,
             Peaks = []
         };
-        return distributionData;
+
+        var nowIntegral = ReconstructDistribution(distributionData[attribute]).Values.Sum();
+        var selectivity = nowIntegral / previousIntegral;
+        
+        distributionData = ScaleDistribution(distributionData, selectivity, skipAttributes: [attribute]);
+        
+        return (distributionData, selectivity);
     }
 
-    private Dictionary<AttributeSpecifier, PlanOperatorDistributionData> GetDistributionOfLessGreaterValueExpression(BinaryOperatorExpressionNode node,
+    private static (Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity) GetDistributionOfLessGreaterValueExpression(BinaryOperatorExpressionNode node,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         var attribute = (node.Left as FullySpecifiedColumnExpressionNode ?? (FullySpecifiedColumnExpressionNode)node.Right).Attribute;
@@ -102,7 +118,7 @@ public sealed partial class DefaultCostModel
         {
             // if not a number, we cannot really infer anything about the distribution for now
             // just return as is
-            return distributionData;
+            return (distributionData, 1);
         }
                 
         var value = double.Parse(valueNode.Value);
@@ -111,6 +127,8 @@ public sealed partial class DefaultCostModel
         {
             throw new ArgumentException($"Expected distribution data for attribute {attribute}");
         }
+        
+        var previousIntegral = ReconstructDistribution(data).Values.Sum();
 
         var peaksLeft = data.Peaks.Where(peak => CheckPeak(peak, node.Operation, value)).ToList();
         var (min, max) = GetValueRange(data, node.Operation, value);
@@ -122,7 +140,13 @@ public sealed partial class DefaultCostModel
             Peaks = peaksLeft,
             DistributionType = PeakCountToDistributionType(peaksLeft)
         };
-        return distributionData;
+        
+        var nowIntegral = ReconstructDistribution(distributionData[attribute]).Values.Sum();
+        var selectivity = nowIntegral / previousIntegral;
+        
+        distributionData = ScaleDistribution(distributionData, selectivity, skipAttributes: [attribute]);
+
+        return (distributionData, selectivity); 
     }
 
     private static DistributionType PeakCountToDistributionType(List<PlanOperatorDistributionData.Peak> peaksLeft)
@@ -136,6 +160,29 @@ public sealed partial class DefaultCostModel
         };
     }
 
+    private static Dictionary<AttributeSpecifier, PlanOperatorDistributionData> ScaleDistribution(
+        Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData,
+        double scalingFactor,
+        List<AttributeSpecifier> skipAttributes)
+    {
+        foreach (var data in distributionData)
+        {
+            if (skipAttributes.Contains(data.Key))
+            {
+                continue;
+            }
+            
+            data.Value.Mean *= scalingFactor;
+            foreach (var peak in data.Value.Peaks)
+            {
+                peak.Mean *= scalingFactor;
+                peak.Height *= scalingFactor;
+            }
+        }
+        
+        return distributionData;
+    }
+    
     private static (double min, double max) GetValueRange(PlanOperatorDistributionData data, string operation, double value)
     {
         if (operation == ">")

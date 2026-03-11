@@ -183,7 +183,7 @@ public static class DistributionDetector
             var rightBound = valleys.Where(v => v > peak.Position).DefaultIfEmpty(double.MaxValue).Min();
 
             var peakData = data.Where(kv => kv.Key >= leftBound && kv.Key <= rightBound);
-            peak.StandardDeviation = CalculatePeakStandardDeviation(peakData);
+            (peak.Mean, peak.StandardDeviation) = CalculatePeakStandardDeviation(peakData);
         }
 
         return validPeaks;
@@ -259,17 +259,23 @@ public static class DistributionDetector
         return maxima;
     }
     
-    private static double CalculatePeakStandardDeviation(IEnumerable<KeyValuePair<double, int>> dataSlice)
+    private static (double mean, double standardDeviation) CalculatePeakStandardDeviation(IEnumerable<KeyValuePair<double, int>> dataSlice)
     {
         var sliceList = dataSlice.ToList();
-        if (sliceList.Count == 0) return 0;
+        if (sliceList.Count == 0)
+        {
+            return (0, 0);
+        }
     
         double totalCount = sliceList.Sum(kv => kv.Value);
-        if (totalCount <= 1) return 0;
+        if (totalCount <= 1)
+        {
+            return (0, 0);
+        }
 
         double mean = sliceList.Sum(kv => kv.Key * kv.Value) / totalCount;
         double variance = sliceList.Sum(kv => kv.Value * Math.Pow(kv.Key - mean, 2)) / totalCount; 
     
-        return Math.Sqrt(variance);
+        return (mean, Math.Sqrt(variance));
     }
 }

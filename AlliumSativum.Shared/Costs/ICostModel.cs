@@ -43,7 +43,7 @@ public interface ICostModel
     /// <returns></returns>
     double TotalCost(PlanOperator planOperator);
 
-    Dictionary<AttributeSpecifier, PlanOperatorDistributionData> GetDistributionOfExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData);
+    (Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity) GetDistributionOfExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData);
 }
 
 public static class CostModelExtensions
