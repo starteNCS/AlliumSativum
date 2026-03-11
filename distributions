@@ -12,10 +12,4 @@ SELECT b.task_type FROM cs->benchmark b INNER JOIN cs->task_type tt ON b.task_ty
 
 SELECT b.task_type FROM cs->benchmark b INNER JOIN shared->open_dataset od ON od.dataset_id = b.dataset_id -- selectivity = 1/CD_DATASET
 
-SELECT r.employment_status, r.income_bracket, rm.metric_name 
-FROM shared->respondent r 
-INNER JOIN cs->study_observation cso ON cso.respondent_id = r.respondent_id     -- selectivity =
-INNER JOIN cs->user_study cus ON cus.id = cso.user_study_id                     -- selectivity =
-INNER JOIN cs->experiment_run cer ON cer.algorithm_id = cus.algorithm_id        -- selectivity = nix
-INNER JOIN cs->run_metric rm ON rm.run_id = cer.id                             -- selectivity = 1/CD_EXPERIMENT_RUN
-WHERE rm.metric_name = 'F1'
+SELECT r.employment_status, r.income_bracket, rm.metric_name FROM shared->respondent r INNER JOIN cs->study_observation cso ON cso.respondent_id = r.respondent_id INNER JOIN cs->user_study cus ON cus.id = cso.user_study_id INNER JOIN cs->experiment_run cer ON cer.algorithm_id = cus.algorithm_id INNER JOIN cs->run_metric rm ON rm.run_id = cer.id WHERE rm.metric_name = 'F1'

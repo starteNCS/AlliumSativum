@@ -111,10 +111,23 @@ public abstract partial class PlanOperator
         }
         
         var sb = new StringBuilder();
-        sb.Append("Distribution Data: ");
+        sb
+            .Append(HtmlClasses.Bold("Distribution Data"))
+            .Append(": ");
         foreach (var kvp in DistributionData)
         {
-            sb.Append($"{kvp.Key}: {kvp.Value}, ");
+            sb.Append($"{kvp.Key}: {kvp.Value.DistributionType}");
+
+            if (kvp.Value.Peaks.Count > 0)
+            {
+                sb.Append(" (peaks ");
+                foreach (var str in kvp.Value.Peaks.Select(x => $"[{x.Height} at {x.Position}]"))
+                {
+                    sb.Append(str);
+                }
+            
+                sb.Append("), ");
+            }
         }
 
         return sb.ToString().TrimEnd(' ', ',');

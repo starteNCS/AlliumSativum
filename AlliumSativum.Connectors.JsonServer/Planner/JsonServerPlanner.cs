@@ -64,7 +64,7 @@ public sealed class JsonServerPlanner : IPlanner
                     joinRelation,
                     join.Inner,
                     distribution
-                        .Where(x => x.Key.IsInTable(join.Inner) || x.Key.IsInTable(join.GetJoinExpressionTable()))
+                        .Where(x => x.Key.IsInTable(join.Inner))
                         .ToDictionary(x => x.Key, x => x.Value))
                 );
 
