@@ -53,10 +53,6 @@ public abstract partial class PlanOperator
         sb.Append(prefix);
         sb.Append(isLast ? "    " : "│   ");
         sb.AppendLine(GetHtmlBaseNodeInfo(includeActual));
-        
-        sb.Append(prefix);
-        sb.Append(isLast ? "    " : "│   ");
-        sb.AppendLine(GetDistributionDataInfo());
 
         var childPrefix = prefix + (isLast ? "    " : "│   ");
         for (var i = 0; i < Children.Count; i++)
@@ -99,6 +95,9 @@ public abstract partial class PlanOperator
             sb.Append(" (actual ")
                 .Append(GetActualSelectivityInfo().ToString("F5"))
                 .Append(')');
+            
+            sb.Append(", Target Error: ")
+                .Append(GetTargetErrorHtmlString(Selectivity, GetActualSelectivityInfo()));
         }
         
         return sb.ToString();
@@ -133,4 +132,21 @@ public abstract partial class PlanOperator
         return sb.ToString().TrimEnd(' ', ',');
     }
     protected abstract double GetActualSelectivityInfo();
+
+    private string GetTargetErrorHtmlString(double target, double actual)
+    {
+        var error = GetTargetError(target, actual);
+        var color = error switch
+        {
+            >= 90 => "green",
+            >= 70 => "orange",
+            _ => "red"
+        };
+        return HtmlClasses.Colored($"{error:F2}%", color: color);
+    }
+    
+    private double GetTargetError(double target, double actual)
+    {
+        return (1 - (Math.Abs(target - actual) / target)) * 100;
+    }
 }
