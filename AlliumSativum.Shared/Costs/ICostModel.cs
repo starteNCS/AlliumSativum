@@ -12,29 +12,6 @@ namespace AlliumSativum.Shared.Costs;
 
 public interface ICostModel
 {
-    /// <summary>
-    /// Uses selinger style selectivity estimation, which is very basic, but should be good enough for most cases
-    /// </summary>
-    /// <param name="node"></param>
-    /// <returns></returns>
-    Task<double> GetSelectivityAsync(BinaryOperatorExpressionNode node);
-
-    /// <summary>
-    /// Caclualtes the expected cardinality after applying a given filter
-    /// </summary>
-    /// <param name="node"></param>
-    /// <param name="previousCardinality"></param>
-    /// <returns></returns>
-    Task<(long Cardinality, double Selectivity)> CalculateExpectedCardinalityAsync(BinaryOperatorExpressionNode node, long previousCardinality);
-
-    /// <summary>
-    /// Caclualtes the expected cardinality after applying a given filter
-    /// </summary>
-    /// <param name="join"></param>
-    /// <param name="previousCardinality"></param>
-    /// <returns></returns>
-    Task<(long Cardinality, double Selectivity)> CalculateExpectedCardinalityAsync(JoinPlanOperator join);
-
     double CalculateCost(PlanOperator op);
 
     /// <summary>
@@ -44,7 +21,7 @@ public interface ICostModel
     /// <returns></returns>
     double TotalCost(PlanOperator planOperator);
 
-    Task<PlanOperatorDistributionCost> GetDistributionOfExpressionAsync(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData);
+    Task<PlanOperatorDistributionCost> GetDistributionOfExpressionAsync(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData, List<PlanOperator> children);
     Dictionary<double, double> ReconstructDistribution(PlanOperatorDistributionData distributionData);
 }
 

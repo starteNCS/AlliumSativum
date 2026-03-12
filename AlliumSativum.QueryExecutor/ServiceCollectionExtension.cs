@@ -15,7 +15,8 @@ public static class ServiceCollectionExtension
             .AddScoped<FilterPlanOperatorExecutor>()
             .AddScoped<PushdownSqlPlanOperatorExecutor>()
             .AddScoped<PushdownRestPlanOperatorExecutor>()
-            .AddScoped<NestedLoopJoinPlanOperatorExecutor>();
+            .AddScoped<NestedLoopJoinPlanOperatorExecutor>()
+            .AddScoped<HashJoinPlanOperatorExecutor>();
         
         
         return services;

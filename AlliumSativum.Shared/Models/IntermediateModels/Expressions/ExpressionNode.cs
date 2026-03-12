@@ -104,4 +104,10 @@ public abstract class ExpressionNode
 
     public abstract object? ResolveValue(Dictionary<string, object> row);
     public abstract bool EvaluatePredicate(Dictionary<string, object> row);
+
+    public bool IsEquiJoin()
+    {
+        return this is BinaryOperatorExpressionNode binary &&
+               binary is { Operation: "=", Left: FullySpecifiedColumnExpressionNode, Right: FullySpecifiedColumnExpressionNode };
+    }
 }

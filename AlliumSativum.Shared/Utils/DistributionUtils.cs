@@ -5,8 +5,6 @@ namespace AlliumSativum.Connectors.Shared;
 
 public sealed class DistributionUtils
 {
-    
-    // todo: metrics over the bins, not over the values itself, as the values themselves are not really representative of the distribution, but the bins are
     public static (AttributeEntity attribute, List<AttributePeakEntity> modes) CalculateDistribution(List<double?> values, AttributeEntity attribute)
     {
         var nonNullValues = values.Where(x => x.HasValue).Select(x => x.Value).ToList();

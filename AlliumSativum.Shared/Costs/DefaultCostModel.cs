@@ -3,6 +3,7 @@ using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Join;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
@@ -74,86 +75,6 @@ public sealed partial class DefaultCostModel : ICostModel
             _ => -1
         };
     }
-    
-    /// <summary>
-    /// Caclualtes the expected cardinality after applying a given filter
-    /// </summary>
-    /// <param name="node"></param>
-    /// <param name="previousCardinality"></param>
-    /// <returns></returns>
-    public async Task<(long Cardinality, double Selectivity)> CalculateExpectedCardinalityAsync(BinaryOperatorExpressionNode node, long previousCardinality)
-    {
-        var selectivity = await GetSelectivityAsync(node);
-        var cardinality = Math.Max(1, (long)(selectivity * previousCardinality));
-        return (cardinality, selectivity);
-    }
-    
-    /// <summary>
-    /// Caclualtes the expected cardinality after applying a given filter
-    /// </summary>
-    /// <param name="join"></param>
-    /// <returns></returns>
-    public async Task<(long Cardinality, double Selectivity)> CalculateExpectedCardinalityAsync(JoinPlanOperator join)
-    {
-        var selectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)join.Expression);
-        var cardinality = Math.Max(1.0, (join.Left.ExpectedCardinality * join.Right.ExpectedCardinality) *
-                          selectivity);
-        return ((long) cardinality, selectivity);
-    }
-    
-    /// <summary>
-    /// Uses selinger style selectivity estimation, which is very basic, but should be good enough for most cases
-    /// </summary>
-    /// <param name="node"></param>
-    /// <returns></returns>
-    public async Task<double> GetSelectivityAsync(BinaryOperatorExpressionNode node)
-    {
-        switch (node)
-        {
-            case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: "=", Left: ValueExpressionNode }:
-                return await CalculateEqualsSelectivityAsync(node);
-            case { Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Right: ValueExpressionNode } or { Right: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Left: ValueExpressionNode }:
-            {
-                var valueNode = node.Left as ValueExpressionNode ?? (ValueExpressionNode)node.Right;
-                var attributeNode = node.Left as FullySpecifiedColumnExpressionNode ?? (FullySpecifiedColumnExpressionNode)node.Right;
-                var attribute = await _catalog.GetAttributeAsync(attributeNode);
-            
-                if (attribute.IsNumeric && valueNode.Type == ValueExpressionNode.ValueExpressionType.Numeric)
-                {
-                    var result = (attribute.Max - double.Parse(valueNode.Value)) / (attribute.Max - attribute.Min);
-                    if (result is not null)
-                    {
-                        return result.Value;
-                    }
-                }
-            
-                return 0.33;
-            }
-            
-            case { Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=", Right: FullySpecifiedColumnExpressionNode }:
-            {
-                // TODO: selinger has not proposed this case - therefore we need to do some here
-                return 0.5;
-            }
-            case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: FullySpecifiedColumnExpressionNode }:
-                return await CalculateEquiJoinSelectivityAsync(node);
-            case {Left : BinaryOperatorExpressionNode, Operation: "OR", Right: BinaryOperatorExpressionNode}:
-            {
-                var leftSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Left);
-                var rightSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Right);
-                return leftSelectivity + rightSelectivity - leftSelectivity * rightSelectivity;
-            }
-            case {Left : BinaryOperatorExpressionNode, Operation: "AND", Right: BinaryOperatorExpressionNode}:
-            {
-                var leftSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Left);
-                var rightSelectivity = await GetSelectivityAsync((BinaryOperatorExpressionNode)node.Right);
-                return leftSelectivity * rightSelectivity;
-            }
-            default:
-                throw new ArgumentException("Unsupported expression node for selectivity estimation");
-        }
-    }
-
 
     private double CalculateProjectCost(ProjectPlanOperator project)
     {
@@ -183,8 +104,17 @@ public sealed partial class DefaultCostModel : ICostModel
     
     private double CalculateJoinCost(JoinPlanOperator join)
     {
-        // For simplicity, we assume a nested loop join, which has a cost of O(n*m), where n and m are the cardinalities of the left and right branches
-        return 0.5 
-               + (join.Left.ExpectedCardinality * join.Right.ExpectedCardinality) * 0.001;
+        return join switch
+        {
+            NestedLoopJoinPlanOperator nlj => 
+                _settings.Join.NestedLoop.BaseCost 
+                + (nlj.Left.ExpectedCardinality * nlj.Right.ExpectedCardinality) * _settings.Filter.PerAttributeCostNumeric,
+            HashJoinPlanOperator hj => 
+                _settings.Join.Hash.BaseCost
+                + Math.Min(hj.Left.ExpectedCardinality, hj.Right.ExpectedCardinality) * _settings.Join.Hash.PerAttributeHashTableInitiation
+                + Math.Max(hj.Left.ExpectedCardinality, hj.Right.ExpectedCardinality) * (_settings.Join.Hash.PerAttributeHashTableLookup + _settings.Filter.PerAttributeCostNumeric),
+            MergeSortJoinPlanOperator mj => double.MaxValue,
+            _ => throw new ArgumentException("Unsupported join in cost calculation")
+        };
     }
 }

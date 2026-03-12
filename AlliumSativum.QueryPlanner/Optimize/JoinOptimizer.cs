@@ -45,66 +45,116 @@ public sealed class JoinOptimizer
     }
 
     private async Task<List<PlanOperator>> BuildSubtreesAsync(int mask, List<TableSpecifier> tables, List<JoinBaseModel> joins, Dictionary<int, List<PlanOperator>> memo, PopLookupTable popLookupTable)
+{
+    // 1. Check Memoization Table
+    if (memo.TryGetValue(mask, out var subtrees))
     {
-        if (memo.TryGetValue(mask, out var subtrees))
+        return subtrees;
+    }
+
+    var results = new List<PlanOperator>();
+
+    // 2. Base Case: Only one table in the set, return the access plan
+    if ((mask & (mask - 1)) == 0) 
+    {
+        int index = BitOperations.TrailingZeroCount(mask);
+        results.Add(popLookupTable.Get(tables[index]));
+        memo[mask] = results; // Memoize the base case too
+        return results;
+    }
+
+    // --- PRUNING STATE ---
+    // Track the absolute best plan we can find for this specific subset of tables
+    PlanOperator cheapestPlanForMask = null;
+    double minCost = double.MaxValue;
+
+    // 3. Iterate through all possible binary splits of the current mask
+    for (int submask = (mask - 1) & mask; submask > 0; submask = (submask - 1) & mask)
+    {
+        int leftMask = submask;
+        int rightMask = mask ^ submask;
+
+        var leftPlans = await BuildSubtreesAsync(leftMask, tables, joins, memo, popLookupTable);
+        var rightPlans = await BuildSubtreesAsync(rightMask, tables, joins, memo, popLookupTable);
+
+        foreach (var left in leftPlans)
         {
-            return subtrees;
-        }
-
-        var results = new List<PlanOperator>();
-
-        // Base Case: Only one table in the set, return the access plan
-        if ((mask & (mask - 1)) == 0) 
-        {
-            int index = BitOperations.TrailingZeroCount(mask);
-            results.Add(popLookupTable.Get(tables[index]));
-            return results;
-        }
-
-        // Iterate through all possible binary splits of the current mask
-        // This generates the "bushy" permutations
-        for (int submask = (mask - 1) & mask; submask > 0; submask = (submask - 1) & mask)
-        {
-            int leftMask = submask;
-            int rightMask = mask ^ submask;
-
-            // To avoid redundant permutations (Left join Right vs Right join Left), 
-            // we can enforce an ordering, but since you asked for ALL permuted trees, we process both.
-            var leftPlans = await BuildSubtreesAsync(leftMask, tables, joins, memo, popLookupTable);
-            var rightPlans = await BuildSubtreesAsync(rightMask, tables, joins, memo, popLookupTable);
-
-            foreach (var left in leftPlans)
+            foreach (var right in rightPlans)
             {
-                foreach (var right in rightPlans)
+                // Find the expression that connects the 'left' set and 'right' set
+                var expression = FindExpressionForSets(leftMask, rightMask, tables, joins);
+                
+                if (expression != null)
                 {
-                    // Find the expression that connects the 'left' set and 'right' set
-                    var expression = FindExpressionForSets(leftMask, rightMask, tables, joins);
+                    // Merge distribution data
+                    var distributions = ((List<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>)[left.DistributionData, right.DistributionData])
+                        .SelectMany(d => d)
+                        .ToDictionary(kv => kv.Key, kv => kv.Value);
                     
-                    if (expression != null)
+                    var distributionData = await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode) expression, distributions, [left, right]);
+
+                    // --- Evaluate Nested Loop Join ---
+                    var nlj = new NestedLoopJoinPlanOperator(left, expression, right)
                     {
-                        // since we cannot join a table into itself, we can be sure that the distribution data of left and right do not have overlapping keys
-                        var distributions = ((List<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>)[left.DistributionData, right.DistributionData])
-                            .SelectMany(d => d)
-                            .ToDictionary(kv => kv.Key, kv => kv.Value);
-                        var cost = await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode) expression, distributions);
+                        DistributionData = distributionData.Distribution,
+                        Selectivity = distributionData.Selectivity,
+                        ExpectedCardinality = distributionData.Cardinality
+                    };
+                    nlj.Cost = _costModel.CalculateCost(nlj);
+                    
+                    if (nlj.Cost < minCost)
+                    {
+                        minCost = nlj.Cost;
+                        cheapestPlanForMask = nlj;
+                    }
 
-
-                        var join = new NestedLoopJoinPlanOperator(left, expression, right)
+                    if (expression.IsEquiJoin())
+                    {
+                        // --- Evaluate Hash Join ---
+                        var hj = new HashJoinPlanOperator(left, expression, right)
                         {
-                            DistributionData = cost.Distribution,
-                            Selectivity = cost.Selectivity,
-                            ExpectedCardinality = cost.Cardinality
+                            DistributionData = distributionData.Distribution,
+                            Selectivity = distributionData.Selectivity,
+                            ExpectedCardinality = distributionData.Cardinality
                         };
-                        join.Cost = _costModel.CalculateCost(join);
-                        results.Add(join);
+                        hj.Cost = _costModel.CalculateCost(hj);
+                        
+                        if (hj.Cost < minCost)
+                        {
+                            minCost = hj.Cost;
+                            cheapestPlanForMask = hj;
+                        }
+
+                        // --- Evaluate Merge Sort Join ---
+                        var msj = new MergeSortJoinPlanOperator(left, expression, right)
+                        {
+                            DistributionData = distributionData.Distribution,
+                            Selectivity = distributionData.Selectivity,
+                            ExpectedCardinality = distributionData.Cardinality
+                        };
+                        msj.Cost = _costModel.CalculateCost(msj);
+                        
+                        if (msj.Cost < minCost)
+                        {
+                            minCost = msj.Cost;
+                            cheapestPlanForMask = msj;
+                        }
                     }
                 }
             }
         }
-
-        memo[mask] = results;
-        return results;
     }
+
+    // 4. Finalize and Memoize
+    // Instead of adding dozens of permutations, we only add the absolute cheapest one
+    if (cheapestPlanForMask != null)
+    {
+        results.Add(cheapestPlanForMask);
+    }
+
+    memo[mask] = results;
+    return results;
+}
 
     private ExpressionNode? FindExpressionForSets(int mask1, int mask2, List<TableSpecifier> tables, List<JoinBaseModel> joins)
     {

@@ -13,19 +13,22 @@ public sealed class QueryExecutor
     private readonly PushdownSqlPlanOperatorExecutor _pushdownSqlPlanOperatorExecutor;
     private readonly PushdownRestPlanOperatorExecutor _pushdownRestPlanOperatorExecutor;
     private readonly NestedLoopJoinPlanOperatorExecutor _nestedLoopJoinPlanOperatorExecutor;
+    private readonly HashJoinPlanOperatorExecutor _hashJoinPlanOperatorExecutor;
 
     public QueryExecutor(
         ProjectPlanOperatorExecutor projectPlanOperatorExecutor,
         FilterPlanOperatorExecutor filterPlanOperatorExecutor,
         PushdownSqlPlanOperatorExecutor pushdownSqlPlanOperatorExecutor,
         PushdownRestPlanOperatorExecutor pushdownRestPlanOperatorExecutor,
-        NestedLoopJoinPlanOperatorExecutor nestedLoopJoinPlanOperatorExecutor)
+        NestedLoopJoinPlanOperatorExecutor nestedLoopJoinPlanOperatorExecutor,
+        HashJoinPlanOperatorExecutor hashJoinPlanOperatorExecutor)
     {
         _projectPlanOperatorExecutor = projectPlanOperatorExecutor;
         _filterPlanOperatorExecutor = filterPlanOperatorExecutor;
         _pushdownSqlPlanOperatorExecutor = pushdownSqlPlanOperatorExecutor;
         _pushdownRestPlanOperatorExecutor = pushdownRestPlanOperatorExecutor;
         _nestedLoopJoinPlanOperatorExecutor = nestedLoopJoinPlanOperatorExecutor;
+        _hashJoinPlanOperatorExecutor = hashJoinPlanOperatorExecutor;
     }
     
     public async Task<List<Dictionary<string, object>>> ExecuteAsync(ParallelQueryExecutionPlan root)
@@ -48,6 +51,7 @@ public sealed class QueryExecutor
                 PushdownSqlPlanOperator pushdown => _pushdownSqlPlanOperatorExecutor.ExecuteAsync(pushdown),
                 PushdownRestCallPlanOperator pushdown => _pushdownRestPlanOperatorExecutor.ExecuteAsync(pushdown), 
                 NestedLoopJoinPlanOperator join => _nestedLoopJoinPlanOperatorExecutor.ExecuteAsync(join),
+                HashJoinPlanOperator join => _hashJoinPlanOperatorExecutor.ExecuteAsync(join),
                 _ => throw new NotSupportedException($"Unsupported plan operator: {latestPop.GetType().Name}")
             });
             

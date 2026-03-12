@@ -4,7 +4,7 @@ public sealed class CostModelSettings
 {
     public ProjectCost Project { get; set; }
     public FilterCost Filter { get; set; }
-    public SelectivityEstimationSettings SelectivityEstimation { get; set; }
+    public JoinCost Join { get; set; }
 }
 
 public sealed class ProjectCost
@@ -20,7 +20,20 @@ public sealed class FilterCost
     public double PerAttributeCostString { get; set; }
 }
 
-public sealed class SelectivityEstimationSettings
+public sealed class JoinCost
 {
-    public double PenaltyForConstant { get; set; }
-}
+    public NestedLoopJoinCost NestedLoop { get; set; }
+    public HashJoinCost Hash { get; set; }
+    
+    public sealed class NestedLoopJoinCost
+    {
+        public double BaseCost { get; set; }
+    }
+
+    public sealed class HashJoinCost
+    {
+        public double BaseCost { get; set; }
+        public double PerAttributeHashTableInitiation { get; set; }
+        public double PerAttributeHashTableLookup { get; set; }
+    }
+} 

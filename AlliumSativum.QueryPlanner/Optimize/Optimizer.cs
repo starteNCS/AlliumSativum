@@ -137,7 +137,8 @@ public sealed class Optimizer
         {
             var distributionCost =
                 await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)onPremise.Where,
-                    planRoot.DistributionData);
+                    planRoot.DistributionData,
+                    planRoot.Children);
             planRoot = new FilterPlanOperator(onPremise.Where)
             {
                 Children = [planRoot],

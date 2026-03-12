@@ -76,7 +76,8 @@ public sealed class WhereOptimizer
         }
 
         var distributionCost = await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)mergedExpr,
-            scan.Plan.DistributionData);
+            scan.Plan.DistributionData,
+            scan.Plan.Children);
         
         var filterPop = new FilterPlanOperator(mergedExpr)
         {
