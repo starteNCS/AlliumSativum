@@ -173,7 +173,7 @@ public sealed class Optimizer
 
     private async Task<PlanContainer> WrapPlanProposalWithMissingPopsAsync(PlanContainer planContainer, SelectBaseModel onPremise, SelectBaseModel? unplanned)
     {
-        // check if there are any pops, that are now exclusive to this proposal (TODO: PUSH DOWN AGAIN?)
+        // check if there are any pops, that are now exclusive to this proposal
         planContainer.Plan = _selectOptimizer.HandleProjection(planContainer.Plan, planContainer.PlannedItems.From, unplanned);
         planContainer.Plan = await _whereOptimizer.DistributeWhereToProposalsAsync(planContainer, onPremise, unplanned);
 

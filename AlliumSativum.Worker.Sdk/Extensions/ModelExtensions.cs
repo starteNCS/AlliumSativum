@@ -96,7 +96,7 @@ public static class ModelExtensions
                     ValueExpressionNode v => new GExpressionNode { Value = new GValueNode { Value = v.Value, Type = (int)v.Type} },
                     VariableMappingExpressionNode v => new GExpressionNode { VariableMapping = new GVariableMappingNode { AttributeName = v.VariableMapping.AttributeName, AliasName = v.VariableMapping.VariableName} },
                     FullySpecifiedColumnExpressionNode v => new GExpressionNode { FullySpecified = new GFullySpecifiedColumnNode { DataSourceName = v.Attribute.DataSourceName, TableName =  v.Attribute.TableName, AttributeName = v.Attribute.AttributeName } },
-                    _ => throw new System.NotImplementedException()
+                    _ => throw new NotSupportedException()
                 };
             }
             stack.Pop();
@@ -265,7 +265,7 @@ public static class ModelExtensions
                     {
                         VariableMapping = new VariableMappingSpecifier(current.VariableMapping.AliasName, current.VariableMapping.AttributeName)
                     },
-                    _ => throw new NotImplementedException()
+                    _ => throw new NotSupportedException()
                 };
             }
             stack.Pop();

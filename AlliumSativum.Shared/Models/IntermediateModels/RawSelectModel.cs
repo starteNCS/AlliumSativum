@@ -39,7 +39,7 @@ public sealed class RawSelectModel
                 Where.Add(value);
                 break;
             default:
-                throw new NotImplementedException($"{type} not implemented");
+                throw new NotSupportedException($"{type} not supported");
         }
     }
 }

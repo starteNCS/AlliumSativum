@@ -198,7 +198,7 @@ public sealed partial class DefaultCostModel
             DistributionType = DistributionType.Uniform,
             Min = min,
             Max = max,
-            MeanBinHeight = GetMeanBinHeight([distributionData[attribute]]), // TODO
+            MeanBinHeight = GetMeanBinHeight([distributionData[attribute]]),
             Peaks = []
         };
 

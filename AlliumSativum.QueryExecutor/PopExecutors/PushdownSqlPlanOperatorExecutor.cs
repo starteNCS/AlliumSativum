@@ -35,7 +35,7 @@ public sealed class PushdownSqlPlanOperatorExecutor : IPlanOperatorExecutor<Push
         {
             Materialized = true,
             ActualCardinality = result.FactualCardinality,
-            ActualCost = result.FactualCost, // TODO: get actual cost from worker
+            ActualCost = result.FactualCost,
             Data = result.Result
         };
         pop.ExecutionData = executionData;
