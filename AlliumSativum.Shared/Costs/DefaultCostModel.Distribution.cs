@@ -57,16 +57,19 @@ public sealed partial class DefaultCostModel
         var joinMin = Math.Max(leftData.Min, rightData.Min);
         var joinMax = Math.Min(leftData.Max, rightData.Max);
         var peaks = leftData.Peaks.Where(peak => peak.Position >= joinMin && peak.Position <= joinMax).ToList();
+        var meanBinHeight = Math.Max(leftData.MeanBinHeight, rightData.MeanBinHeight);
         
         distributionData[rightAttribute] = distributionData[leftAttribute] = new PlanOperatorDistributionData
         {
             Min = joinMin,
             Max = joinMax,
             Peaks = peaks,
+            MeanBinHeight = meanBinHeight,
             DistributionType = PeakCountToDistributionType(peaks)
         };
 
-        var nowIntegral = ReconstructDistribution(distributionData[leftAttribute]).Values.Sum();
+        var distribution = ReconstructDistribution(distributionData[leftAttribute]);
+        var nowIntegral = distribution.Values.Sum();
         var selectivity = nowIntegral / previousCount;
         
         distributionData = ScaleDistribution(distributionData, selectivity, skipAttributes: [leftAttribute, rightAttribute]);
@@ -112,6 +115,7 @@ public sealed partial class DefaultCostModel
             DistributionType = DistributionType.Constant,
             Min = min,
             Max = max,
+            MeanBinHeight = 0, // TODO
             Peaks = []
         };
 
@@ -163,6 +167,7 @@ public sealed partial class DefaultCostModel
             Min = min,
             Max = max,
             Peaks = peaksLeft,
+            MeanBinHeight = 0, // TODO
             DistributionType = PeakCountToDistributionType(peaksLeft)
         };
         

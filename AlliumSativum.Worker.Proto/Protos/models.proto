@@ -95,7 +95,8 @@ message GPlanOperatorDistributionData {
     double min = 2;
     double max = 3;
     double mean = 4;
-    repeated GPlanOperatorDistributionDataPeak peaks = 5;
+    double meanBinHeight = 5;
+    repeated GPlanOperatorDistributionDataPeak peaks = 6;
 }
 
 message GPlanOperatorDistributionDataPeak {

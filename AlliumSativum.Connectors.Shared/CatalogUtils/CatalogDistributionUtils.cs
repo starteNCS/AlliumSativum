@@ -65,6 +65,7 @@ public sealed class CatalogDistributionUtils
                 Min = attributeEntity.Min ?? double.NaN,
                 Max = attributeEntity.Max ?? double.NaN,
                 Mean = attributeEntity.MeanBinHeight,
+                MeanBinHeight = attributeEntity.MeanBinHeight,
                 Peaks = attributePeaks.Select(ap => new PlanOperatorDistributionData.Peak
                 {
                     Position = ap.Position,

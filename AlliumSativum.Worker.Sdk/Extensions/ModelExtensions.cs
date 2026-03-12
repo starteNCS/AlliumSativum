@@ -155,7 +155,8 @@ public static class ModelExtensions
                 DistributionType = (int)data.Value.DistributionType,
                 Min = data.Value.Min,
                 Max = data.Value.Max,
-                Mean = data.Value.Mean
+                Mean = data.Value.Mean,
+                MeanBinHeight = data.Value.MeanBinHeight
             };
             distribution.Peaks.Add(data.Value.Peaks.Select(x => new GPlanOperatorDistributionDataPeak
             {
@@ -341,6 +342,7 @@ public static class ModelExtensions
                 Min = x.Value.Min,
                 Max = x.Value.Max,
                 Mean = x.Value.Mean,
+                MeanBinHeight = x.Value.MeanBinHeight,
                 Peaks = x.Value.Peaks.Select(p => new PlanOperatorDistributionData.Peak
                 {
                     Position = p.Position,

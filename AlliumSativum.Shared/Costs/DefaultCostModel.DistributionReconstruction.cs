@@ -9,13 +9,13 @@ public sealed partial class DefaultCostModel
     {
         if (distributionData.DistributionType == DistributionType.Uniform)
         {
-            return ReconstructConstantDistribution(distributionData);
+            return ReconstructUniformDistribution(distributionData);
         }
         
         return ReconstructGaussDistribution(distributionData);
     }
     
-        private static Dictionary<double, double> ReconstructConstantDistribution(PlanOperatorDistributionData distributionData)
+        private static Dictionary<double, double> ReconstructUniformDistribution(PlanOperatorDistributionData distributionData)
     {
         if (distributionData.DistributionType != DistributionType.Uniform)
         {
@@ -25,7 +25,7 @@ public sealed partial class DefaultCostModel
         var dictionary = new Dictionary<double, double>();
         for (var i = distributionData.Min; i <= distributionData.Max; i++)
         {
-            dictionary[i] = distributionData.Mean;
+            dictionary[i] = distributionData.MeanBinHeight;
         }
         
         return dictionary;
