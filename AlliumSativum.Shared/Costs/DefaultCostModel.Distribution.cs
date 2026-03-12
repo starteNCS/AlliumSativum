@@ -24,20 +24,103 @@ public sealed partial class DefaultCostModel
             case { Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: FullySpecifiedColumnExpressionNode }:
                 return await GetDistributionOfEqualsAttributeExpression(node, distributionData, children);
             case {Left : BinaryOperatorExpressionNode, Operation: "OR", Right: BinaryOperatorExpressionNode}:
-            {
-                var left = GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Left, distributionData, children);
-                var right = GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Right, distributionData, children);
-                return null!;
-            }
+                return await GetDistributionsOfOrExpression(node, distributionData, children);
             case {Left : BinaryOperatorExpressionNode, Operation: "AND", Right: BinaryOperatorExpressionNode}:
-            {
-                var left = GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Left, distributionData, children);
-                var right = GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Right, distributionData, children);
-                return null!;
-            }
+                return await GetDistributionsOfAndExpression(node, distributionData, children);
             default:
                 throw new ArgumentException("Unsupported expression node for selectivity estimation");
         }
+    }
+
+    private async Task<PlanOperatorDistributionCost> GetDistributionsOfAndExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData,
+        List<PlanOperator> children)
+    {
+        var left = await GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Left, distributionData, children);
+        var right = await GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Right, distributionData, children);
+        
+        
+        var newSelectivity = left.Selectivity * right.Selectivity; // from selinger optimizer
+        return new PlanOperatorDistributionCost
+        {
+            Distribution = AndMergeDistributions(left.Distribution, right.Distribution),
+            Selectivity = newSelectivity,
+            Cardinality = (long)((left.Cardinality + right.Cardinality) * newSelectivity)
+        };
+    }
+
+    private static Dictionary<AttributeSpecifier, PlanOperatorDistributionData> AndMergeDistributions(Dictionary<AttributeSpecifier, PlanOperatorDistributionData> left, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> right)
+    {
+        var newDistribution = new Dictionary<AttributeSpecifier, PlanOperatorDistributionData>(left);
+        foreach (var distri in right)
+        {
+            if (newDistribution.TryGetValue(distri.Key, out var existingData))
+            {
+                var min = Math.Max(existingData.Min, distri.Value.Min);
+                var max = Math.Min(existingData.Max, distri.Value.Max);
+                var peaks = ((List<PlanOperatorDistributionData.Peak>)[..existingData.Peaks, ..distri.Value.Peaks])
+                    .Where(peak => peak.Position >= min && peak.Position <= max)
+                    .ToList();
+
+                newDistribution[distri.Key] = new PlanOperatorDistributionData
+                {
+                    DistributionType = PeakCountToDistributionType(peaks),
+                    Min = min,
+                    Max = max,
+                    Peaks = peaks,
+                    Mean = (existingData.Mean + distri.Value.Mean) / 2,
+                    MeanBinHeight = (existingData.MeanBinHeight + distri.Value.MeanBinHeight) / 2
+                };
+                continue;
+            }
+            
+            newDistribution[distri.Key] = distri.Value;
+        }
+        
+        return newDistribution;
+    }
+
+    private async Task<PlanOperatorDistributionCost> GetDistributionsOfOrExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData,
+        List<PlanOperator> children)
+    {
+        var left = await GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Left, distributionData, children);
+        var right = await GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)node.Right, distributionData, children);
+
+        var newSelectivity = left.Selectivity + right.Selectivity - left.Selectivity * right.Selectivity; // from selinger optimizer
+        return new PlanOperatorDistributionCost
+        {
+            Distribution = OrMergeDistributions(left.Distribution, right.Distribution),
+            Selectivity = newSelectivity,
+            Cardinality = (long)((left.Cardinality + right.Cardinality) * newSelectivity)
+        };
+    }
+    
+    private static Dictionary<AttributeSpecifier, PlanOperatorDistributionData> OrMergeDistributions(Dictionary<AttributeSpecifier, PlanOperatorDistributionData> left, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> right)
+    {
+        var newDistribution = new Dictionary<AttributeSpecifier, PlanOperatorDistributionData>(left);
+        foreach (var distri in right)
+        {
+            if (newDistribution.TryGetValue(distri.Key, out var existingData))
+            {
+                var min = Math.Min(existingData.Min, distri.Value.Min);
+                var max = Math.Max(existingData.Max, distri.Value.Max);
+                List<PlanOperatorDistributionData.Peak> peaks = [..existingData.Peaks, ..distri.Value.Peaks];
+
+                newDistribution[distri.Key] = new PlanOperatorDistributionData
+                {
+                    DistributionType = PeakCountToDistributionType(peaks),
+                    Min = min,
+                    Max = max,
+                    Peaks = peaks,
+                    Mean = (existingData.Mean + distri.Value.Mean) / 2,
+                    MeanBinHeight = (existingData.MeanBinHeight + distri.Value.MeanBinHeight) / 2
+                };
+                continue;
+            }
+            
+            newDistribution[distri.Key] = distri.Value;
+        }
+
+        return newDistribution;
     }
 
     private async Task<PlanOperatorDistributionCost> GetDistributionOfEqualsAttributeExpression(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData, List<PlanOperator> children)
@@ -59,20 +142,19 @@ public sealed partial class DefaultCostModel
         var peaks = ((List<PlanOperatorDistributionData.Peak>)[..leftData.Peaks, ..rightData.Peaks])
             .Where(peak => peak.Position >= joinMin && peak.Position <= joinMax)
             .ToList();
-        var meanBinHeight = Math.Max(leftData.MeanBinHeight, rightData.MeanBinHeight);
         
         distributionData[rightAttribute] = distributionData[leftAttribute] = new PlanOperatorDistributionData
         {
             Min = joinMin,
             Max = joinMax,
             Peaks = peaks,
-            MeanBinHeight = meanBinHeight,
+            MeanBinHeight = GetMeanBinHeight([leftData, rightData]),
             DistributionType = PeakCountToDistributionType(peaks)
         };
 
         var distribution = ReconstructDistribution(distributionData[leftAttribute]);
         var nowIntegral = distribution.Values.Sum();
-        var selectivity = nowIntegral / crossJoinCount;
+        var selectivity = Math.Min(1, nowIntegral / crossJoinCount);
 
         var childrenCrossJoinCount = children.Select(x => x.ExpectedCardinality).Aggregate((a, b) => a * b);
         var cardinality = (long)(childrenCrossJoinCount * selectivity);
@@ -103,27 +185,25 @@ public sealed partial class DefaultCostModel
             };
         }
         
-        var data = distributionData.FirstOrDefault(x => x.Key == attribute).Value;
-        if (data is null)
+        if (!distributionData.TryGetValue(attribute, out var data))
         {
             throw new ArgumentException($"Expected distribution data for attribute {attribute}");
         }
         
-
         var value = double.Parse(valueNode.Value);
         var (min, max) = GetValueRange(data, node.Operation, value);
         
         distributionData[attribute] = new PlanOperatorDistributionData
         {
-            DistributionType = DistributionType.Constant,
+            DistributionType = DistributionType.Uniform,
             Min = min,
             Max = max,
-            MeanBinHeight = 0, // TODO
+            MeanBinHeight = GetMeanBinHeight([distributionData[attribute]]), // TODO
             Peaks = []
         };
 
         var nowIntegral = ReconstructDistribution(distributionData[attribute]).Values.Sum();
-        var selectivity = nowIntegral / relation.Cardinality;
+        var selectivity = Math.Min(1, nowIntegral / relation.Cardinality);
         
 
         return new PlanOperatorDistributionCost
@@ -154,8 +234,7 @@ public sealed partial class DefaultCostModel
         }
                 
         var value = double.Parse(valueNode.Value);
-        var data = distributionData.FirstOrDefault(x => x.Key == attribute).Value;
-        if (data is null)
+        if (!distributionData.TryGetValue(attribute, out var data))
         {
             throw new ArgumentException($"Expected distribution data for attribute {attribute}");
         }
@@ -169,12 +248,14 @@ public sealed partial class DefaultCostModel
             Min = min,
             Max = max,
             Peaks = peaksLeft,
-            MeanBinHeight = 0, // TODO
+            MeanBinHeight = GetMeanBinHeight([distributionData[attribute]]), 
             DistributionType = PeakCountToDistributionType(peaksLeft)
         };
-        
+
         var nowIntegral = ReconstructDistribution(distributionData[attribute]).Values.Sum();
-        var selectivity = nowIntegral / relation.Cardinality;
+        
+        // clamp to 1, as the nowIntegral may be higher than the relation (happens especially for skewed and/or sparse data)
+        var selectivity = Math.Min(1, nowIntegral / relation.Cardinality);
 
 
         return new PlanOperatorDistributionCost
@@ -185,6 +266,20 @@ public sealed partial class DefaultCostModel
         };
     }
 
+    private double GetMeanBinHeight(List<PlanOperatorDistributionData> distributionData)
+    {
+        var heights = 0.0;
+        var bins = 0;
+        foreach (var data in distributionData)
+        {
+            var reconstruction = ReconstructDistribution(data);
+            bins += reconstruction.Count;
+            heights += reconstruction.Values.Sum();
+        }
+        
+        return bins == 0 ? 0 : heights / bins;
+    }
+    
     private static DistributionType PeakCountToDistributionType(List<PlanOperatorDistributionData.Peak> peaksLeft)
     {
         return peaksLeft.Count switch

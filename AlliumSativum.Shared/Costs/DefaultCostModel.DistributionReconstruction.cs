@@ -23,6 +23,12 @@ public sealed partial class DefaultCostModel
         }
         
         var dictionary = new Dictionary<double, double>();
+        if (Math.Abs(distributionData.Min - distributionData.Max) < 0e-3)
+        {
+            dictionary[distributionData.Min] = distributionData.MeanBinHeight;
+            return dictionary;
+        }
+        
         for (var i = distributionData.Min; i <= distributionData.Max; i++)
         {
             dictionary[i] = distributionData.MeanBinHeight;
@@ -39,16 +45,31 @@ public sealed partial class DefaultCostModel
         }
         
         var dictionary = new Dictionary<double, double>();
+        
         for (var i = distributionData.Min; i <= distributionData.Max; i++)
         {
             dictionary[i] = 0;
         }
 
+        var isSingleBin = Math.Abs(distributionData.Min - distributionData.Max) < 0e-3;
         foreach (var peak in distributionData.Peaks)
         {
+            if (isSingleBin)
+            {
+                var value = NormalizedNormalDistribution(distributionData.Min, peak) * peak.Height;
+                if (double.IsNaN(value) || double.IsInfinity(value))
+                {
+                    continue;
+                }
+                
+                if(dictionary[distributionData.Min] < value)
+                {
+                    dictionary[distributionData.Min] = value;
+                }
+            }
+            
             for (var i = distributionData.Min; i <= distributionData.Max; i++)
             {
-                var bell = NormalizedNormalDistribution(i, peak);
                 var value = NormalizedNormalDistribution(i, peak) * peak.Height;
                 if (double.IsNaN(value) || double.IsInfinity(value))
                 {

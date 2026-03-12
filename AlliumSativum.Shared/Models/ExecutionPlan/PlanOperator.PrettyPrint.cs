@@ -96,8 +96,8 @@ public abstract partial class PlanOperator
                 .Append(GetActualSelectivityInfo().ToString("F5"))
                 .Append(')');
             
-            sb.Append(", Target Error: ")
-                .Append(GetTargetErrorHtmlString(Selectivity, GetActualSelectivityInfo()));
+            sb.Append(", Target Precision: ")
+                .Append(GetTargetPrecisionHtmlString(ExecutionData.ActualCardinality, ExpectedCardinality));
         }
         
         return sb.ToString();
@@ -133,9 +133,9 @@ public abstract partial class PlanOperator
     }
     protected abstract double GetActualSelectivityInfo();
 
-    private string GetTargetErrorHtmlString(double target, double actual)
+    private string GetTargetPrecisionHtmlString(double target, double actual)
     {
-        var error = GetTargetError(target, actual);
+        var error = GetTargetPrecision(target, actual);
         var color = error switch
         {
             >= 90 => "green",
@@ -145,8 +145,13 @@ public abstract partial class PlanOperator
         return HtmlClasses.Colored($"{error:F2}%", color: color);
     }
     
-    private double GetTargetError(double target, double actual)
+    private double GetTargetPrecision(double target, double actual)
     {
+        if (target == 0)
+        {
+            return 100;
+        }
+        
         return (1 - (Math.Abs(target - actual) / target)) * 100;
     }
 }

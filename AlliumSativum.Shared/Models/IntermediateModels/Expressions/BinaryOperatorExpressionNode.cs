@@ -43,17 +43,16 @@ public class BinaryOperatorExpressionNode : ExpressionNode
     {
         var left = Left.ResolveValue(row);
         var right = Right.ResolveValue(row);
-        return Equals(left, right);
+        return Equals(left?.ToString(), right?.ToString());
     }
 
     public int EvaluateComparison(Dictionary<string, object> row)
     {
-        var left = Left.ResolveValue(row);
-        var right = Right.ResolveValue(row);
-
-        if (left is IComparable lc && right is IComparable rc)
-            return lc.CompareTo(rc);
-
-        throw new InvalidOperationException($"Cannot compare {left?.GetType()} and {right?.GetType()}");
+        if(!double.TryParse(Left.ResolveValue(row)?.ToString(), out var leftNum) || !double.TryParse(Right.ResolveValue(row)?.ToString(), out var rightNum))
+        {
+            return -1;
+        }
+        
+        return leftNum.CompareTo(rightNum);
     }
 }

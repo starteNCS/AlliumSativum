@@ -93,7 +93,7 @@ public static class ModelExtensions
                 // Leaf Nodes
                 nodeMap[current] = current switch
                 {
-                    ValueExpressionNode v => new GExpressionNode { Value = new GValueNode { Value = v.Value } },
+                    ValueExpressionNode v => new GExpressionNode { Value = new GValueNode { Value = v.Value, Type = (int)v.Type} },
                     VariableMappingExpressionNode v => new GExpressionNode { VariableMapping = new GVariableMappingNode { AttributeName = v.VariableMapping.AttributeName, AliasName = v.VariableMapping.VariableName} },
                     FullySpecifiedColumnExpressionNode v => new GExpressionNode { FullySpecified = new GFullySpecifiedColumnNode { DataSourceName = v.Attribute.DataSourceName, TableName =  v.Attribute.TableName, AttributeName = v.Attribute.AttributeName } },
                     _ => throw new System.NotImplementedException()
@@ -256,7 +256,7 @@ public static class ModelExtensions
             {
                 nodeMap[current] = current.NodeTypeCase switch
                 {
-                    GExpressionNode.NodeTypeOneofCase.Value => new ValueExpressionNode { Value = current.Value.Value },
+                    GExpressionNode.NodeTypeOneofCase.Value => new ValueExpressionNode { Value = current.Value.Value, Type = (ValueExpressionNode.ValueExpressionType)current.Value.Type},
                     GExpressionNode.NodeTypeOneofCase.FullySpecified => new FullySpecifiedColumnExpressionNode
                     {
                         Attribute = new AttributeSpecifier(current.FullySpecified.DataSourceName, current.FullySpecified.TableName, current.FullySpecified.AttributeName), 

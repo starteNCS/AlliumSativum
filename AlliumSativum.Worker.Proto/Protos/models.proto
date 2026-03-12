@@ -53,6 +53,7 @@ message GFullySpecifiedColumnNode {
 
 message GValueNode {
   string value = 1;
+  int32 type = 2;
 }
 
 message GBinaryOperatorNode {

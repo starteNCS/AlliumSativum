@@ -129,8 +129,6 @@ public sealed class Optimizer
         }
         
         var joinPlans = await _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTreeAsync(onPremiseJoins, plans);
-        var asdfasdf = joinPlans.Select(y => _costModel.TotalCost(y)).ToList();
-        
         var planRoot = joinPlans[0];
 
         if (onPremise.Where is not null)
