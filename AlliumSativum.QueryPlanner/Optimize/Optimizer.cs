@@ -135,18 +135,15 @@ public sealed class Optimizer
 
         if (onPremise.Where is not null)
         {
-            var (cardinality, _) =
-                await _costModel.CalculateExpectedCardinalityAsync((BinaryOperatorExpressionNode)onPremise.Where,
-                    planRoot.ExpectedCardinality);
-            var (distribution, selectivity) =
+            var distributionCost =
                 await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)onPremise.Where,
                     planRoot.DistributionData);
             planRoot = new FilterPlanOperator(onPremise.Where)
             {
                 Children = [planRoot],
-                ExpectedCardinality = cardinality,
-                Selectivity = selectivity,
-                DistributionData = distribution,
+                ExpectedCardinality = distributionCost.Cardinality,
+                Selectivity = distributionCost.Selectivity,
+                DistributionData = distributionCost.Distribution,
             };
             planRoot.Cost = _costModel.CalculateCost(planRoot);
         }

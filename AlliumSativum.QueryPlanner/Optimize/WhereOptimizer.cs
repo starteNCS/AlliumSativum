@@ -75,17 +75,15 @@ public sealed class WhereOptimizer
             return scan.Plan;
         }
 
-        var previousCardinality = scan.Plan.ExpectedCardinality;
-        var (cardinality, _) = await _costModel.CalculateExpectedCardinalityAsync((BinaryOperatorExpressionNode)mergedExpr, previousCardinality);
-        var (distribution, selectivity) = await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)mergedExpr,
+        var distributionCost = await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)mergedExpr,
             scan.Plan.DistributionData);
         
         var filterPop = new FilterPlanOperator(mergedExpr)
         {
             Children = [scan.Plan],
-            ExpectedCardinality = cardinality,
-            Selectivity = selectivity,
-            DistributionData = distribution
+            ExpectedCardinality = distributionCost.Cardinality,
+            Selectivity = distributionCost.Selectivity,
+            DistributionData = distributionCost.Distribution,
         };
             
         filterPop.Cost = _costModel.CalculateCost(filterPop);

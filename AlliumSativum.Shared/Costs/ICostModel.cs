@@ -1,3 +1,4 @@
+using AlliumSativum.Shared.Costs.Models;
 using AlliumSativum.Shared.Costs.Settings;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
@@ -43,7 +44,7 @@ public interface ICostModel
     /// <returns></returns>
     double TotalCost(PlanOperator planOperator);
 
-    Task<(Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution, double selectivity)> GetDistributionOfExpressionAsync(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData);
+    Task<PlanOperatorDistributionCost> GetDistributionOfExpressionAsync(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData);
     Dictionary<double, double> ReconstructDistribution(PlanOperatorDistributionData distributionData);
 }
 
