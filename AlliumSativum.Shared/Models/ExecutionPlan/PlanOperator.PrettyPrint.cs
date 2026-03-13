@@ -75,7 +75,9 @@ public abstract partial class PlanOperator
         {
             sb.Append(" (actual ")
                 .Append(ExecutionData.ActualCost.ToString("F3"))
-                .Append("ms)");
+                .Append("ms, precision: ")
+                .Append(GetTargetPrecisionHtmlString(ExecutionData.ActualCost, Cost))
+                .Append(')');
         }
         sb.Append(", C: ")
             .Append(HtmlClasses.Colored(ExpectedCardinality.ToString(), color: "yellowgreen"));
@@ -96,7 +98,7 @@ public abstract partial class PlanOperator
                 .Append(GetActualSelectivityInfo().ToString("F5"))
                 .Append(')');
             
-            sb.Append(", Target Precision: ")
+            sb.Append(", Selectivity Precision: ")
                 .Append(GetTargetPrecisionHtmlString(ExecutionData.ActualCardinality, ExpectedCardinality));
         }
         

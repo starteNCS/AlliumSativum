@@ -1,3 +1,5 @@
+using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
+using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using BenchmarkDotNet.Attributes;
 
 namespace AlliumSativum.Performance.Utils;
@@ -7,16 +9,46 @@ namespace AlliumSativum.Performance.Utils;
 [CsvMeasurementsExporter]
 public class SingleFilterDoublePerformanceTest
 {
-    [Params(100, 1_000, 10_000, 20_000, 30_000)]
+    private List<Dictionary<string, object>> _data;
+    
+    [Params(1, 10, 100, 1000)]
     public double N;
+
+    public static readonly BinaryOperatorExpressionNode expression = new BinaryOperatorExpressionNode
+    {
+        Left = new FullySpecifiedColumnExpressionNode
+        {
+            Attribute = new AttributeSpecifier("cs", "experiment_run", "benchmark_id")
+        },
+        Operation = "replace in test",
+        Right = new ValueExpressionNode
+        {
+            Value = "500",
+            Type = ValueExpressionNode.ValueExpressionType.Numeric
+        }
+    };
+
+    [GlobalSetup]
+    public void Setup()
+    {
+        _data = [];
+        for (double i = 0; i < N; i++)
+        {
+            _data.Add(new Dictionary<string, object>
+            {
+                ["cs->experiment_run.benchmark_id"] = i
+            });
+        }
+    }
     
     [Benchmark]
     public int IsEqual()
     {
+        expression.Operation = "=";
         var counter = 0;
-        for(double i = 0; i < N; i++)
+        foreach (var item in _data)
         {
-            if(i == 500)
+            if (expression.EvaluatePredicate(item))
             {
                 counter++;
             }
@@ -27,10 +59,11 @@ public class SingleFilterDoublePerformanceTest
     [Benchmark]
     public int IsNotEqual()
     {
+        expression.Operation = "!=";
         var counter = 0;
-        for(double i = 0; i < N; i++)
+        foreach (var item in _data)
         {
-            if(i != 500)
+            if (expression.EvaluatePredicate(item))
             {
                 counter++;
             }
@@ -41,10 +74,11 @@ public class SingleFilterDoublePerformanceTest
     [Benchmark]
     public int IsGreater()
     {
+        expression.Operation = ">";
         var counter = 0;
-        for(double i = 0; i < N; i++)
+        foreach (var item in _data)
         {
-            if(i > 500)
+            if (expression.EvaluatePredicate(item))
             {
                 counter++;
             }
@@ -55,10 +89,11 @@ public class SingleFilterDoublePerformanceTest
     [Benchmark]
     public int IsGreaterOrEqual()
     {
+        expression.Operation = ">=";
         var counter = 0;
-        for(double i = 0; i < N; i++)
+        foreach (var item in _data)
         {
-            if(i >= 500)
+            if (expression.EvaluatePredicate(item))
             {
                 counter++;
             }
@@ -69,10 +104,11 @@ public class SingleFilterDoublePerformanceTest
     [Benchmark]
     public int IsLower()
     {
+        expression.Operation = "<";
         var counter = 0;
-        for(double i = 0; i < N; i++)
+        foreach (var item in _data)
         {
-            if(i < 500)
+            if (expression.EvaluatePredicate(item))
             {
                 counter++;
             }
@@ -83,15 +119,15 @@ public class SingleFilterDoublePerformanceTest
     [Benchmark]
     public int IsLowerOrEqual()
     {
+        expression.Operation = "<=";
         var counter = 0;
-        for(double i = 0; i < N; i++)
+        foreach (var item in _data)
         {
-            if (i <= 500)
+            if (expression.EvaluatePredicate(item))
             {
                 counter++;
             }
         }
-
         return counter;
     }
 }

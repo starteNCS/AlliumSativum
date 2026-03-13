@@ -180,7 +180,7 @@ public sealed partial class DefaultCostModel
             return new PlanOperatorDistributionCost
             {
                 Distribution = distributionData,
-                Selectivity = 1,
+                Selectivity = 0.1, // as per selinger optimizer, we assume a default selectivity of 0.1 for non-numeric equality predicates
                 Cardinality = relation.Cardinality
             };
         }
@@ -228,7 +228,7 @@ public sealed partial class DefaultCostModel
             return new PlanOperatorDistributionCost
             {
                 Distribution = distributionData,
-                Selectivity = 1,
+                Selectivity = 1/3.0,
                 Cardinality = relation.Cardinality
             };
         }
