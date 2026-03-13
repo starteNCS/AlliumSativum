@@ -35,6 +35,21 @@ public class QueryCompiler
         // TODO: semantic checker (check attributes etc.)
         var executionPlan = await _optimizer.OptimizeAsync(selectModel);
         
+        return executionPlan.Single();
+    }
+    
+    public async Task<List<QueryExecutionPlan>> CompileNoPruningAsync(string query)
+    {
+        var tokens = _tokenizer.Tokenize(query);
+        var selectModel = _parser.Parse(tokens);
+        if (selectModel is null)
+        {
+            throw new AsSqlException("Failed to parse query.");
+        }
+        _semanticTransformer.Transform(selectModel);
+        // TODO: semantic checker (check attributes etc.)
+        var executionPlan = await _optimizer.OptimizeAsync(selectModel, prune: false);
+        
         return executionPlan;
     }
 }

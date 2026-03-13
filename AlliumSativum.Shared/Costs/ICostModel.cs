@@ -18,8 +18,9 @@ public interface ICostModel
     /// Iterates through the POP-tree and calculates the total cost of the plan, by summing up the cost of each operator
     /// </summary>
     /// <param name="planOperator"></param>
+    /// <param name="fromActualCost"></param>
     /// <returns></returns>
-    double TotalCost(PlanOperator planOperator);
+    double TotalCost(PlanOperator? planOperator, bool fromActualCost = false);
 
     Task<PlanOperatorDistributionCost> GetDistributionOfExpressionAsync(BinaryOperatorExpressionNode node, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData, List<PlanOperator> children);
     Dictionary<double, double> ReconstructDistribution(PlanOperatorDistributionData distributionData);

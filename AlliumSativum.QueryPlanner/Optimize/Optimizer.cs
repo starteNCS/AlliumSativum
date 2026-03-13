@@ -59,7 +59,7 @@ public sealed class Optimizer
     /// <param name="model"></param>
     /// <returns></returns>
     /// <exception cref="AsSqlOptimizeException"></exception>
-    public async Task<QueryExecutionPlan> OptimizeAsync(SelectBaseModel model)
+    public async Task<List<QueryExecutionPlan>> OptimizeAsync(SelectBaseModel model, bool prune = true)
     {
         var stopwatch = Stopwatch.StartNew();
         var projections = new HashSet<AttributeSpecifier>();
@@ -128,47 +128,51 @@ public sealed class Optimizer
             }
         }
         
-        var joinPlans = await _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTreeAsync(onPremiseJoins, plans);
-        var planRoot = joinPlans[0];
-
-        if (onPremise.Where is not null)
+        var joinPlans = await _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTreeAsync(onPremiseJoins, plans, prune);
+        
+        for (var i = 0; i < joinPlans.Count; i++)
         {
-            var distributionCost =
-                await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)onPremise.Where,
-                    planRoot.DistributionData,
-                    planRoot.Children);
-            planRoot = new FilterPlanOperator(onPremise.Where)
+            var joinPlanRoot = joinPlans[i];
+            if (onPremise.Where is not null)
             {
-                Children = [planRoot],
-                ExpectedCardinality = distributionCost.Cardinality,
-                Selectivity = distributionCost.Selectivity,
-                DistributionData = distributionCost.Distribution,
-            };
-            planRoot.Cost = _costModel.CalculateCost(planRoot);
-        }
+                var distributionCost =
+                    await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)onPremise.Where,
+                        joinPlanRoot.DistributionData,
+                        joinPlanRoot.Children);
+                joinPlanRoot = new FilterPlanOperator(onPremise.Where)
+                {
+                    Children = [joinPlanRoot],
+                    ExpectedCardinality = distributionCost.Cardinality,
+                    Selectivity = distributionCost.Selectivity,
+                    DistributionData = distributionCost.Distribution,
+                };
+                joinPlanRoot.Cost = _costModel.CalculateCost(joinPlanRoot);
+            }
 
-        // if there is any Hidden attribute, get rid of it here by projecting to only non-Hidden attributes
-        if (projections.Any(p => p.IsHidden))
-        {
-            var applyProjections = projections.Where(x => !x.IsHidden).ToList();
-            planRoot = new ProjectPlanOperator(applyProjections)
+            // if there is any Hidden attribute, get rid of it here by projecting to only non-Hidden attributes
+            if (projections.Any(p => p.IsHidden))
             {
-                Children = [planRoot],
-                ExpectedCardinality = planRoot.ExpectedCardinality,
-                DistributionData = planRoot.DistributionData
-                    .Where(x => applyProjections.Contains(x.Key))
-                    .ToDictionary(x => x.Key, x => x.Value)
-            };
-            planRoot.Cost = _costModel.CalculateCost(planRoot);
+                var applyProjections = projections.Where(x => !x.IsHidden).ToList();
+                joinPlanRoot = new ProjectPlanOperator(applyProjections)
+                {
+                    Children = [joinPlanRoot],
+                    ExpectedCardinality = joinPlanRoot.ExpectedCardinality,
+                    DistributionData = joinPlanRoot.DistributionData
+                        .Where(x => applyProjections.Contains(x.Key))
+                        .ToDictionary(x => x.Key, x => x.Value)
+                };
+                joinPlanRoot.Cost = _costModel.CalculateCost(joinPlanRoot);
+            }
         }
         
         stopwatch.Stop();
-        return new QueryExecutionPlan()
-        {
-            TotalCost = _costModel.TotalCost(planRoot),
-            OptimizeTimeMs = stopwatch.ElapsedMilliseconds,
-            RootOperator = planRoot
-        };
+        return joinPlans
+            .Select(x => new QueryExecutionPlan
+            {
+                TotalCost = _costModel.TotalCost(x),
+                OptimizeTimeMs = stopwatch.ElapsedMilliseconds,
+                RootOperator = x
+            }).ToList();
     }
 
     private async Task<PlanContainer> WrapPlanProposalWithMissingPopsAsync(PlanContainer planContainer, SelectBaseModel onPremise, SelectBaseModel? unplanned)

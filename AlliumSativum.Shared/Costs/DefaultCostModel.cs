@@ -34,25 +34,30 @@ public sealed partial class DefaultCostModel : ICostModel
     /// </summary>
     /// <param name="planOperator"></param>
     /// <returns></returns>
-    public double TotalCost(PlanOperator planOperator)
+    public double TotalCost(PlanOperator? planOperator, bool fromActualCost = false)
     {
-        // todo: only max of both child branches, not the sum, as they can be executed in parallel
-        var stack = new Stack<PlanOperator>();
-        stack.Push(planOperator);
-        double totalCost = 0;
-
-        while (stack.Count > 0)
+        if (planOperator == null)
         {
-            var item = stack.Pop();
-            totalCost += item.Cost;
-
-            foreach (var child in item.Children)
-            {
-                stack.Push(child);
-            }
+            return 0;
         }
 
-        return totalCost;
+        // If there are no children, the cost is just this node's cost
+        if (planOperator.Children.Count == 0)
+        {
+            return fromActualCost 
+                ? planOperator.ExecutionData.ActualCost 
+                : planOperator.Cost;
+        }
+
+        // Recursively find the total cost of each child's branch
+        // and pick the maximum (the "more expensive" parallel path)
+        double maxChildBranchCost = planOperator.Children
+            .Select(child => TotalCost(child))
+            .Max();
+
+        return (fromActualCost
+            ? planOperator.ExecutionData.ActualCost
+            : planOperator.Cost) + maxChildBranchCost;
     }
 
     /// <summary>
