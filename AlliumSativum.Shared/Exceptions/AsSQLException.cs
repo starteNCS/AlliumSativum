@@ -8,4 +8,9 @@ public class AsSqlException : Exception
     {
         AsMessage = asMessage;
     }
+
+    public override string ToString()
+    {
+        return AsMessage;
+    }
 }

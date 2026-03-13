@@ -52,7 +52,7 @@ public sealed partial class DefaultCostModel : ICostModel
         // Recursively find the total cost of each child's branch
         // and pick the maximum (the "more expensive" parallel path)
         double maxChildBranchCost = planOperator.Children
-            .Select(child => TotalCost(child))
+            .Select(child => TotalCost(child, fromActualCost))
             .Max();
 
         return (fromActualCost

@@ -26,59 +26,51 @@ public sealed class BenchmarkController
     }
 
     [HttpPost("winning-plan-accuracy")]
-    public async Task<dynamic> GetWinningPlanAccuracy([FromQuery] int repetitionCount, [FromBody] List<string> queries)
+    public async Task<dynamic> GetWinningPlanAccuracy([FromBody] List<string> queries)
     {
-        var repetitions = Enumerable.Range(0, repetitionCount)
-            .Select(async x =>
-            {
-                var queryTasks = queries.Select(async query =>
+        var queryTasks = queries.Select(async query =>
+        {
+            var plans = await _compiler.CompileNoPruningAsync(query);
+
+            var tasks = plans
+                .Select(async plan =>
                 {
-                    var plans = await _compiler.CompileNoPruningAsync(query);
-
-                    var tasks = plans
-                        .Select(async plan =>
-                        {
-                            await _queryExecutor.ExecuteAsync(plan.RootOperator);
-                            return new BenchmarkPredictCorrectPlanSingleResult
-                            {
-                                ActualCost = _costModel.TotalCost(plan.RootOperator, fromActualCost: true),
-                                EstimatedCost = plan.TotalCost,
-                                WasWinningPlan = plan == plans.MinBy(x => x.TotalCost)
-                            };
-                        });
-                    var results = await Task.WhenAll(tasks);
-
-                    var orderedResults = results.OrderBy(x => x.ActualCost).ToList();
-
-                    var winningPlan = orderedResults.First(x => x.WasWinningPlan);
-                    return new BenchmarkPredictCorrectPlanResult
+                    await _queryExecutor.ExecuteAsync(plan.RootOperator);
+                    return new BenchmarkPredictCorrectPlanSingleResult
                     {
-                        ChoseWinningPlan = orderedResults[0].WasWinningPlan,
-                        WinningPlanLocation = orderedResults.FindIndex(x => x.WasWinningPlan) + 1,
-                        PlanCount = orderedResults.Count,
-                        Query = query,
-                        OffByMs = winningPlan.ActualCost - orderedResults[0].ActualCost,
-                        OffByPercent = (winningPlan.ActualCost - orderedResults[0].ActualCost) /
-                                       winningPlan.ActualCost *
-                                       100
+                        ActualCost = _costModel.TotalCost(plan.RootOperator, fromActualCost: true),
+                        EstimatedCost = plan.TotalCost,
+                        WasWinningPlan = plan == plans.MinBy(x => x.TotalCost)
                     };
                 });
+            var results = await Task.WhenAll(tasks);
 
-                return await Task.WhenAll(queryTasks);
-            });
-        
-        var finalRepetitionResults = await Task.WhenAll(repetitions);
+            var orderedResults = results.OrderBy(x => x.ActualCost).ToList();
 
-        return new { Hallo = true };
-        // finalRepetitionResults.
-        //
-        // return new
-        // {
-        //     ChoseWinningPlanCount = finalResults.Count(x => x.ChoseWinningPlan),
-        //     AverageWinningPlanLocation = finalResults.Average(x => x.WinningPlanLocation),
-        //     OfAveragePlanCount = finalResults.Average(x => x.PlanCount),
-        //     Results = finalResults
-        // };
+            var winningPlan = orderedResults.First(x => x.WasWinningPlan);
+            return new BenchmarkPredictCorrectPlanResult
+            {
+                ChoseWinningPlan = orderedResults[0].WasWinningPlan,
+                WinningPlanLocation = orderedResults.FindIndex(x => x.WasWinningPlan) + 1,
+                PlanCount = orderedResults.Count,
+                Query = query,
+                OffByMs = winningPlan.ActualCost - orderedResults[0].ActualCost,
+                OffByPercent = (winningPlan.ActualCost - orderedResults[0].ActualCost) /
+                               winningPlan.ActualCost *
+                               100,
+                DurationAscendingMs = orderedResults.Select(x => x.ActualCost).ToList()
+            };
+        });
+
+        var finalResults = await Task.WhenAll(queryTasks);
+
+        return new
+        {
+            ChoseWinningPlanCount = finalResults.Count(x => x.ChoseWinningPlan),
+            AverageWinningPlanLocation = finalResults.Average(x => x.WinningPlanLocation),
+            OfAveragePlanCount = finalResults.Average(x => x.PlanCount),
+            Results = finalResults
+        };
     }
 }
 
@@ -89,6 +81,7 @@ public class BenchmarkPredictCorrectPlanResult
     public int PlanCount { get; set; }
     public double OffByMs { get; set; }
     public double OffByPercent { get; set; }
+    public List<double> DurationAscendingMs { get; set; }
     public string Query { get; set; } = string.Empty;
 }
 

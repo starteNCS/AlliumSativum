@@ -9,6 +9,7 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 
     public sealed class DatasourceDatabase
 {
+    private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 99);
     private static Dictionary<Guid, string> _sConnections = new ();
     
     
@@ -136,24 +137,31 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 
     private async Task<NpgsqlConnection?> GetConnectionStringForDataSource(Guid dataSource) 
     {
-        if (!_sConnections.TryGetValue(dataSource, out var connectionString))
+        await _semaphoreSlim.WaitAsync();
+        try
         {
-            var dataSources = await _catalogDatabase.QueryAsync<DataSourceConnectionStringModel>(
-                "SELECT ConnectionString, Connector FROM Catalog.DataSources WHERE Id = @DataSource FETCH FIRST 1 ROW ONLY", 
-                new { DataSource = dataSource }
-            );
-            var c = dataSources.FirstOrDefault();
-            if (c is not { Connector: ConnectorType.Postgres })
+            if (!_sConnections.TryGetValue(dataSource, out var connectionString))
             {
-                _logger.LogError("DataSource '{DataSource}' is misconfigured", dataSource);
-                return null;
-            }
-            
-            _sConnections[dataSource] = c.ConnectionString;
-            connectionString = c.ConnectionString;
-        }
+                var dataSources = await _catalogDatabase.QueryAsync<DataSourceConnectionStringModel>(
+                    "SELECT ConnectionString, Connector FROM Catalog.DataSources WHERE Id = @DataSource FETCH FIRST 1 ROW ONLY",
+                    new { DataSource = dataSource }
+                );
+                var c = dataSources.FirstOrDefault();
+                if (c is not { Connector: ConnectorType.Postgres })
+                {
+                    _logger.LogError("DataSource '{DataSource}' is misconfigured", dataSource);
+                    return null;
+                }
 
-        return new NpgsqlConnection(connectionString);
+                _sConnections[dataSource] = c.ConnectionString;
+                connectionString = c.ConnectionString;
+            }
+
+            return new NpgsqlConnection(connectionString);
+        }finally
+        {
+            _semaphoreSlim.Release();
+        }
     }
 }
 

@@ -12,6 +12,7 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
     // Only used when a transaction is active
     private NpgsqlConnection? _txConnection;
     private NpgsqlTransaction? _transaction;
+    private static SemaphoreSlim _semaphoreSlim = new(1, 99);
     
     public CatalogDatabase(CatalogDatabaseSettings settings)
     {
@@ -41,6 +42,7 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
 
     public async Task<List<T>> QueryAsync<T>(string query, object? parameters = null) where T : new()
     {
+        await _semaphoreSlim.WaitAsync();
         // If inside a transaction, reuse the dedicated connection
         if (_transaction != null)
         {
@@ -51,6 +53,7 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
         var pooledResult = await connection.QueryAsync<T>(query, parameters);
+        _semaphoreSlim.Release();
         return pooledResult.ToList();
     }
 

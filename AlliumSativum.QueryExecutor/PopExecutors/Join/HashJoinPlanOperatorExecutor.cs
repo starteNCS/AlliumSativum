@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Join;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
@@ -32,8 +33,16 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
 
         var joinKeys = pop.Expression.GetAttributesOfExpression();
 
-        var minJoinKey = joinKeys.Single(aSpec => minData[0].ContainsKey(aSpec.ToDictKey()));
-        var maxJoinKey = joinKeys.Single(aSpec => maxData[0].ContainsKey(aSpec.ToDictKey()));
+        var minJoinKey = joinKeys.FirstOrDefault(aSpec => minData[0].TryGetValue(aSpec.ToDictKey(), out _));
+        if (minJoinKey is null)
+        {
+            throw new AsSQLExecuteException("Did not find a valid join key for the hash join operator. Join keys: " + string.Join(", ", joinKeys.Select(k => k.ToDictKey())) + ". Data keys: " + string.Join(", ", minData[0].Keys));
+        }
+        var maxJoinKey = joinKeys.FirstOrDefault(aSpec => maxData[0].TryGetValue(aSpec.ToDictKey(), out var _));
+        if (maxJoinKey is null)
+        {
+            throw new AsSQLExecuteException("Did not find a valid join key for the hash join operator. Join keys: " + string.Join(", ", joinKeys.Select(k => k.ToDictKey())) + ". Data keys: " + string.Join(", ", maxData[0].Keys));
+        }
 
         var result = new List<Dictionary<string, object>>();
 
