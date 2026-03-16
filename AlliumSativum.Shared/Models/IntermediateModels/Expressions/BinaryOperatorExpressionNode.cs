@@ -5,16 +5,21 @@ public class BinaryOperatorExpressionNode : ExpressionNode
     public string Operation { get; set; } = string.Empty;
     public required ExpressionNode Left { get; set; }
     public required ExpressionNode Right { get; set; }
-    public override string ToString() => $"({Left} {Operation} {Right})";
-    public override string ToSqlQueryString() => $"({Left.ToSqlQueryString()} {Operation} {Right.ToSqlQueryString()})";
-    
+
+    public override string ToString()
+    {
+        return $"({Left} {Operation} {Right})";
+    }
+
+    public override string ToSqlQueryString()
+    {
+        return $"({Left.ToSqlQueryString()} {Operation} {Right.ToSqlQueryString()})";
+    }
+
     public override bool Equals(object? obj)
     {
-        if (obj is not BinaryOperatorExpressionNode other)
-        {
-            return false;
-        }
-        
+        if (obj is not BinaryOperatorExpressionNode other) return false;
+
         return other.Operation == Operation && other.Left.Equals(Left) && other.Right.Equals(Right);
     }
 
@@ -48,11 +53,9 @@ public class BinaryOperatorExpressionNode : ExpressionNode
 
     public int EvaluateComparison(Dictionary<string, object> row)
     {
-        if(!double.TryParse(Left.ResolveValue(row)?.ToString(), out var leftNum) || !double.TryParse(Right.ResolveValue(row)?.ToString(), out var rightNum))
-        {
-            return -1;
-        }
-        
+        if (!double.TryParse(Left.ResolveValue(row)?.ToString(), out var leftNum) ||
+            !double.TryParse(Right.ResolveValue(row)?.ToString(), out var rightNum)) return -1;
+
         return leftNum.CompareTo(rightNum);
     }
 }

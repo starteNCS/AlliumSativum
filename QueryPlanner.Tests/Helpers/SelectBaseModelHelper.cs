@@ -18,33 +18,23 @@ public static class SelectBaseModelHelper
         return select;
     }
 
-    public static void ShouldBeSelect(this SelectBaseModel selectBaseModel, TableSpecifier? from = null, List<AttributeSpecifier>? select = null, List<JoinBaseModel>? join = null, ExpressionNode? where = null)
+    public static void ShouldBeSelect(this SelectBaseModel selectBaseModel, TableSpecifier? from = null,
+        List<AttributeSpecifier>? select = null, List<JoinBaseModel>? join = null, ExpressionNode? where = null)
     {
-        if (from is not null)
-        {
-            selectBaseModel.From.ShouldBeTable(from);
-        }
+        if (from is not null) selectBaseModel.From.ShouldBeTable(from);
 
         if (select is not null)
-        {
             foreach (var item in select)
-            {
                 selectBaseModel.Select.ShouldContainAttributeSpecifier(item);
-            }
-        }
 
-        if (join is not null)
-        {
-            selectBaseModel.Join.Should().Contain(join);
-        }
+        if (join is not null) selectBaseModel.Join.Should().Contain(join);
 
-        if (where is not null)
-        {
-            selectBaseModel.Where.Should().Be(where);
-        }
+        if (where is not null) selectBaseModel.Where.Should().Be(where);
     }
-    
-    public static void ShouldContainSelect(this List<SelectBaseModel> selectBaseModels, TableSpecifier? expectedFrom = null, List<AttributeSpecifier>? expectedSelect = null, List<JoinBaseModel>? expectedJoin = null, ExpressionNode? expectedWhere = null)
+
+    public static void ShouldContainSelect(this List<SelectBaseModel> selectBaseModels,
+        TableSpecifier? expectedFrom = null, List<AttributeSpecifier>? expectedSelect = null,
+        List<JoinBaseModel>? expectedJoin = null, ExpressionNode? expectedWhere = null)
     {
         if (expectedFrom is not null)
         {
@@ -54,16 +44,14 @@ public static class SelectBaseModelHelper
 
         if (expectedSelect is not null)
         {
-            selectBaseModels = selectBaseModels.Where(
-                model => expectedSelect.TrueForAll(
-                    s => model.Select.Exists(
-                        x => x is AttributeSpecifier attr &&
-                             attr.DataSourceName == s.DataSourceName &&
-                             attr.TableName == s.TableName &&
-                             attr.AttributeName == s.AttributeName
-                        )
+            selectBaseModels = selectBaseModels.Where(model => expectedSelect.TrueForAll(s => model.Select.Exists(x =>
+                        x is AttributeSpecifier attr &&
+                        attr.DataSourceName == s.DataSourceName &&
+                        attr.TableName == s.TableName &&
+                        attr.AttributeName == s.AttributeName
                     )
-                ).ToList();
+                )
+            ).ToList();
             selectBaseModels.Should().NotBeEmpty("could not match SELECT");
         }
 
@@ -88,7 +76,7 @@ public static class SelectBaseModelHelper
 
         selectBaseModels.Count.Should().Be(1, "this methods expects exactly one select");
     }
-    
+
     public static void ShouldBeEmpty(this SelectBaseModel onPremise)
     {
         // FROM cannot be empty, as the field is not logically nullable

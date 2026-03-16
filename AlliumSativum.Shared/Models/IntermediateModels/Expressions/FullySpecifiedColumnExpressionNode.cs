@@ -6,18 +6,23 @@ namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 public class FullySpecifiedColumnExpressionNode : ExpressionNode
 {
     public required AttributeSpecifier Attribute { get; set; }
-    public override string ToString() => $"[{Attribute.DataSourceName}{AsSqlParameters.Attribute.DataSourceSeparator}{Attribute.TableName}{AsSqlParameters.Attribute.TableSeparator}{Attribute.AttributeName}]";
-    
+
+    public override string ToString()
+    {
+        return
+            $"[{Attribute.DataSourceName}{AsSqlParameters.Attribute.DataSourceSeparator}{Attribute.TableName}{AsSqlParameters.Attribute.TableSeparator}{Attribute.AttributeName}]";
+    }
+
     // currently discards the data source attribute
-    public override string ToSqlQueryString() => $"{Attribute.TableName}.{Attribute.AttributeName}";
-    
+    public override string ToSqlQueryString()
+    {
+        return $"{Attribute.TableName}.{Attribute.AttributeName}";
+    }
+
     public override bool Equals(object? obj)
     {
-        if (obj is not FullySpecifiedColumnExpressionNode other)
-        {
-            return false;
-        }
-        
+        if (obj is not FullySpecifiedColumnExpressionNode other) return false;
+
         return other.Attribute.Equals(Attribute);
     }
 

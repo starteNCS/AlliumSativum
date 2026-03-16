@@ -13,12 +13,12 @@ public sealed class CatalogDistributionUtils
     {
         _catalog = catalog;
     }
-    
-    public async Task<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>> GetAttributeDistributionsAsync(List<AttributeSpecifier> attributes)
+
+    public async Task<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>> GetAttributeDistributionsAsync(
+        List<AttributeSpecifier> attributes)
     {
         List<Task<List<AttributeEntity>>> tasks = [];
-        foreach (var group in attributes.GroupBy(x => new {x.DataSourceName, x.TableName}))
-        {
+        foreach (var group in attributes.GroupBy(x => new { x.DataSourceName, x.TableName }))
             tasks.Add(_catalog.QueryAsync<AttributeEntity>("""
                                                            SELECT a.* 
                                                            FROM catalog.attributes a 
@@ -27,41 +27,40 @@ public sealed class CatalogDistributionUtils
                                                            WHERE d.name = @DataSourceName AND r.name LIKE @TableName AND a.name = ANY(@AttributeNames)
                                                            """, new
             {
-                DataSourceName = group.Key.DataSourceName,
+                group.Key.DataSourceName,
                 TableName = $"%{group.Key.TableName}",
                 AttributeNames = group.Select(a => a.AttributeName).ToArray()
             }));
-        }
 
         var attributeEntityResolvedTasks = await Task.WhenAll(tasks);
         var attributeEntities = attributeEntityResolvedTasks.SelectMany(t => t).ToList();
-        
-        var peaks = await _catalog.QueryAsync<AttributePeakEntity>("SELECT ap.* FROM catalog.attributepeaks ap WHERE ap.attributeid = ANY(@AttributeIds)", new
-        {
-            AttributeIds = attributeEntities.Select(a => a.Id).ToArray()
-        });
-        
-        var relations = await _catalog.QueryAsync<RelationEntity>("SELECT r.* FROM catalog.relations r JOIN catalog.datasources d ON d.id = r.datasourceid WHERE r.name LIKE ANY(@TableNames) AND d.name = ANY(@DatasourceNames)", new
-        {
-            TableNames = attributes.Select(a => $"%{a.TableName}").Distinct().ToArray(),
-            DatasourceNames = attributes.Select(a => a.DataSourceName).Distinct().ToArray(),
-        });
-        
+
+        var peaks = await _catalog.QueryAsync<AttributePeakEntity>(
+            "SELECT ap.* FROM catalog.attributepeaks ap WHERE ap.attributeid = ANY(@AttributeIds)", new
+            {
+                AttributeIds = attributeEntities.Select(a => a.Id).ToArray()
+            });
+
+        var relations = await _catalog.QueryAsync<RelationEntity>(
+            "SELECT r.* FROM catalog.relations r JOIN catalog.datasources d ON d.id = r.datasourceid WHERE r.name LIKE ANY(@TableNames) AND d.name = ANY(@DatasourceNames)",
+            new
+            {
+                TableNames = attributes.Select(a => $"%{a.TableName}").Distinct().ToArray(),
+                DatasourceNames = attributes.Select(a => a.DataSourceName).Distinct().ToArray()
+            });
+
         var distributions = new Dictionary<AttributeSpecifier, PlanOperatorDistributionData>();
         foreach (var attribute in attributes)
         {
-            var attributeEntity = attributeEntities.FirstOrDefault(a => 
+            var attributeEntity = attributeEntities.FirstOrDefault(a =>
                 a.Name == attribute.AttributeName
                 && a.RelationId == relations.Single(r => r.Name.EndsWith(attribute.TableName)).Id);
-            if (attributeEntity is null)
-            {
-                continue;
-            }
-            
+            if (attributeEntity is null) continue;
+
             var attributePeaks = peaks.Where(p => p.AttributeId == attributeEntity.Id).ToList();
             distributions.Add(attribute, new PlanOperatorDistributionData
             {
-                DistributionType =  attributeEntity.DistributionType,
+                DistributionType = attributeEntity.DistributionType,
                 Min = attributeEntity.Min ?? double.NaN,
                 Max = attributeEntity.Max ?? double.NaN,
                 Mean = attributeEntity.MeanBinHeight,
@@ -72,10 +71,10 @@ public sealed class CatalogDistributionUtils
                     Height = ap.Height,
                     Mean = ap.Mean,
                     StandardDeviation = ap.StandardDeviation
-                }).ToList(),
+                }).ToList()
             });
         }
-        
+
         return distributions;
     }
 }

@@ -5,26 +5,39 @@ namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 
 public class JoinPlanOperator : PlanOperator
 {
-    public PlanOperator Left { get; }
-    public ExpressionNode Expression { get; }
-    public PlanOperator Right { get;  }
-
     public JoinPlanOperator(PlanOperator left, ExpressionNode expression, PlanOperator right)
     {
         Left = left;
         Expression = expression;
         Right = right;
-        
+
         base.Children.AddRange(left, right);
     }
-    
+
+    public PlanOperator Left { get; }
+    public ExpressionNode Expression { get; }
+    public PlanOperator Right { get; }
+
     // override to avoid some outer class to add more children
     public new IReadOnlyList<PlanOperator> Children => base.Children;
-    
-    protected override string GetNodeInfo() => $"JOIN: {Expression} INCOMPLETE! MISSING JOIN ALGORITHM INFO";
-    protected override string GetNodeInfoHtml() => $"{HtmlClasses.Bold(HtmlClasses.Colored("JOIN", color: "green"))}: {Expression} {HtmlClasses.Bold(HtmlClasses.Colored("INCOMPLETE! MISSING JOIN ALGORITHM INFO", color: "red"))}";
-    protected override double GetActualSelectivityInfo() => (double) ExecutionData.ActualCardinality / (Left.ExecutionData.ActualCardinality * Right.ExecutionData.ActualCardinality);
-    
+
+    protected override string GetNodeInfo()
+    {
+        return $"JOIN: {Expression} INCOMPLETE! MISSING JOIN ALGORITHM INFO";
+    }
+
+    protected override string GetNodeInfoHtml()
+    {
+        return
+            $"{HtmlClasses.Bold(HtmlClasses.Colored("JOIN", "green"))}: {Expression} {HtmlClasses.Bold(HtmlClasses.Colored("INCOMPLETE! MISSING JOIN ALGORITHM INFO", "red"))}";
+    }
+
+    protected override double GetActualSelectivityInfo()
+    {
+        return (double)ExecutionData.ActualCardinality /
+               (Left.ExecutionData.ActualCardinality * Right.ExecutionData.ActualCardinality);
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Left, Expression, Right);
@@ -32,11 +45,8 @@ public class JoinPlanOperator : PlanOperator
 
     public override bool Equals(object? obj)
     {
-        if (obj is not JoinPlanOperator other)
-        {
-            return false;
-        }
-        
+        if (obj is not JoinPlanOperator other) return false;
+
         return other.Left.Equals(Left) && other.Right.Equals(Right) && other.Expression.Equals(Expression);
     }
 }

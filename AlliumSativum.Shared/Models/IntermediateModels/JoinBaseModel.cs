@@ -10,20 +10,19 @@ public sealed class JoinBaseModel
     public TableSpecifier Inner { get; init; }
     public ExpressionNode Expression { get; set; }
 
+    public List<TableSpecifier> AffectedTables => [Inner, GetJoinExpressionTable()];
+
     public override bool Equals(object? obj)
     {
-        if (obj is not JoinBaseModel join)
-        {
-            return false;
-        }
+        if (obj is not JoinBaseModel join) return false;
 
         return JoinType.Equals(join.JoinType)
                && Inner.Equals(join.Inner)
                && Expression.Equals(join.Expression);
     }
-    
+
     /// <summary>
-    /// Returns the "other" table from a join (the table needed for the expression, rather than the newly joined table)
+    ///     Returns the "other" table from a join (the table needed for the expression, rather than the newly joined table)
     /// </summary>
     /// <param name="join"></param>
     /// <returns></returns>
@@ -34,9 +33,7 @@ public sealed class JoinBaseModel
             .Where(x => !x.Equals(Inner))
             .Distinct()
             .Single();
-    } 
-    
-    public List<TableSpecifier> AffectedTables => [Inner, GetJoinExpressionTable()];
+    }
 }
 
 public enum JoinType

@@ -12,10 +12,7 @@ public class ListComparer<T> : IEqualityComparer<List<T>>
     public int GetHashCode(List<T> obj)
     {
         var hash = new HashCode();
-        foreach (var item in obj)
-        {
-            hash.Add(item);
-        }
+        foreach (var item in obj) hash.Add(item);
         return hash.ToHashCode();
     }
 }

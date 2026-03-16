@@ -1,4 +1,3 @@
-using System.Reflection;
 using AlliumSativum.Connectors.JsonServer.Extensions;
 using AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 using AlliumSativum.Connectors.PostgreSQL.Extensions;
@@ -40,10 +39,7 @@ builder.Services
 
 builder.Services
     .AddHttpClient("connector")
-    .AddStandardResilienceHandler(options =>
-    {
-        options.TotalRequestTimeout.Timeout = new TimeSpan(0, 5, 0);
-    });
+    .AddStandardResilienceHandler(options => { options.TotalRequestTimeout.Timeout = new TimeSpan(0, 5, 0); });
 
 var app = builder.Build();
 
@@ -57,6 +53,3 @@ app.MapGet("/",
         "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
 app.Run();
-
-return;
-

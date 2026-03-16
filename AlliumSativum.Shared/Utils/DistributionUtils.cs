@@ -5,7 +5,8 @@ namespace AlliumSativum.Connectors.Shared;
 
 public sealed class DistributionUtils
 {
-    public static (AttributeEntity attribute, List<AttributePeakEntity> modes) CalculateDistribution(List<double?> values, AttributeEntity attribute)
+    public static (AttributeEntity attribute, List<AttributePeakEntity> modes) CalculateDistribution(
+        List<double?> values, AttributeEntity attribute)
     {
         var nonNullValues = values.Where(x => x.HasValue).Select(x => x.Value).ToList();
         var binnedDistribution = values
@@ -13,37 +14,36 @@ public sealed class DistributionUtils
             .GroupBy(x => x)
             .OrderBy(x => x.Key)
             .ToDictionary(g => g.Key, g => g.Count());
-        
-        if (binnedDistribution.Count == 0)
-        {
-            return (attribute, []);
-        }
+
+        if (binnedDistribution.Count == 0) return (attribute, []);
 
         attribute.Min = nonNullValues.Min();
         attribute.Max = nonNullValues.Max();
         attribute.Mean = nonNullValues.Average();
         attribute.MeanBinHeight = binnedDistribution.Values.Average();
         attribute.Range = nonNullValues.Max() - nonNullValues.Min();
-        attribute.Variance = (1.0/nonNullValues.Count) * nonNullValues.Select(value => Math.Pow(value - attribute.Mean, 2)).Sum();
+        attribute.Variance = 1.0 / nonNullValues.Count *
+                             nonNullValues.Select(value => Math.Pow(value - attribute.Mean, 2)).Sum();
         attribute.StandardDeviation = Math.Sqrt(attribute.Variance);
 
         double n = nonNullValues.Count;
         attribute.Skewness = attribute.StandardDeviation == 0
             ? null
-            : (n / ((n - 1) * (n - 2))) * nonNullValues
+            : n / ((n - 1) * (n - 2)) * nonNullValues
                 .Select(value => Math.Pow((value - attribute.Mean) / attribute.StandardDeviation, 3))
                 .Sum();
         attribute.Kurtosis = attribute.StandardDeviation == 0
             ? null
-            : (n / ((n - 1) * (n - 2))) * nonNullValues
+            : n / ((n - 1) * (n - 2)) * nonNullValues
                 .Select(value => Math.Pow((value - attribute.Mean) / attribute.StandardDeviation, 4))
                 .Sum();
         (attribute.DistributionType, var modes) = DistributionDetector.Detect(binnedDistribution, attribute);
-        
+
         return (attribute, modes);
     }
-    
-    public static (AttributeEntity attribute, List<AttributePeakEntity> modes) CalculateDistribution(List<string> data, AttributeEntity attribute)
+
+    public static (AttributeEntity attribute, List<AttributePeakEntity> modes) CalculateDistribution(List<string> data,
+        AttributeEntity attribute)
     {
         var frequencies = data.GroupBy(x => x)
             .Select(double? (g) => (double)g.Count())
@@ -52,4 +52,3 @@ public sealed class DistributionUtils
         return CalculateDistribution(frequencies, attribute);
     }
 }
-

@@ -2,7 +2,6 @@ using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
-using AlliumSativum.Shared.Models.Executor;
 using AlliumSativum.Worker.Sdk;
 using Microsoft.Extensions.Logging;
 
@@ -20,17 +19,15 @@ public sealed class PushdownRestPlanOperatorExecutor : IPlanOperatorExecutor<Pus
         _executorApi = executorApi;
         _logger = logger;
     }
-    
+
     public async Task<PlanOperator> ExecuteAsync(PushdownRestCallPlanOperator pop)
     {
         var result = await _executorApi.ExecutePlanAsync(pop);
-        if (result == null)
-        {
-            throw new AsSQLExecuteException("Execution of pushdown SQL plan operator failed.");
-        }
-        
-        _logger.LogDebug("Successfully executed rest pushdown in {resultMs}ms (Pushdown content: {Content}", result.FactualCost, pop.Url);
-        
+        if (result == null) throw new AsSQLExecuteException("Execution of pushdown SQL plan operator failed.");
+
+        _logger.LogDebug("Successfully executed rest pushdown in {resultMs}ms (Pushdown content: {Content}",
+            result.FactualCost, pop.Url);
+
         var executionData = new PlanOperatorExecutionData
         {
             Materialized = true,

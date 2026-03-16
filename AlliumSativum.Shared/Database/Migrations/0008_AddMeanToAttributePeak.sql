@@ -1,1 +1,2 @@
-ALTER TABLE Catalog.AttributePeaks ADD COLUMN Mean double precision;
+ALTER TABLE Catalog.AttributePeaks
+    ADD COLUMN Mean double precision;

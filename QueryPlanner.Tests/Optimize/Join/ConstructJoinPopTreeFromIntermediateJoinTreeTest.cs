@@ -1,5 +1,4 @@
 using AlliumSativum.Optimize;
-using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
@@ -32,8 +31,10 @@ public sealed class ConstructJoinPopTreeFromIntermediateJoinTreeTest
     public void Should_Throw_If_No_JoinTree_And_Multiple_Plans()
     {
         var plans = new PopLookupTable();
-        plans.Add(new TableSpecifier("ticket", "tickets"), new PushdownSqlPlanOperator(Guid.NewGuid(), "SELECT * FROM tickets") { Cost = 1 });
-        plans.Add(new TableSpecifier("erp", "employee"), new PushdownSqlPlanOperator(Guid.NewGuid(), "SELECT * FROM employee") { Cost = 1 });
+        plans.Add(new TableSpecifier("ticket", "tickets"),
+            new PushdownSqlPlanOperator(Guid.NewGuid(), "SELECT * FROM tickets") { Cost = 1 });
+        plans.Add(new TableSpecifier("erp", "employee"),
+            new PushdownSqlPlanOperator(Guid.NewGuid(), "SELECT * FROM employee") { Cost = 1 });
 
         Action act = () => JoinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTree(null, plans);
         act.ShouldThrowOptimizeException("Expected a intermediate join tree, as there are more than one plans");

@@ -13,7 +13,7 @@ public static class ServiceCollectionExtension
             .AddScoped<JsonServerStatistics>()
             .AddScoped<JsonServerPlanner>()
             .AddScoped<JsonServerExecutor>();
-        
+
         return services;
     }
 }

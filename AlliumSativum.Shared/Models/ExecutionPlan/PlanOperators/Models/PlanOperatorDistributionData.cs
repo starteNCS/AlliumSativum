@@ -10,7 +10,7 @@ public sealed class PlanOperatorDistributionData
     public double Mean { get; set; }
     public double MeanBinHeight { get; set; }
     public List<Peak> Peaks { get; set; } = [];
-    
+
     public class Peak
     {
         public double Position { get; set; }

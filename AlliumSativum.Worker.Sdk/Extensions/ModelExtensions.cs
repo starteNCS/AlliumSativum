@@ -22,7 +22,7 @@ public static class ModelExtensions
             From = new GTableSpecifier
             {
                 TableName = model.From!.TableName,
-                DataSource = model.From!.DataSourceName,
+                DataSource = model.From!.DataSourceName
             },
             Where = model.Where.ToGrpcModel()
         };
@@ -40,12 +40,12 @@ public static class ModelExtensions
                 IsHidden = aSpec.IsHidden
             };
         }));
-        payload.Joins.AddRange(model.Join.Select(j => new GJoinBaseModel()
+        payload.Joins.AddRange(model.Join.Select(j => new GJoinBaseModel
         {
-            Inner = new GTableSpecifier()
+            Inner = new GTableSpecifier
             {
                 TableName = j.Inner.TableName,
-                DataSource = j.Inner.DataSourceName,
+                DataSource = j.Inner.DataSourceName
             },
             Expression = j.Expression.ToGrpcModel()
         }));
@@ -55,10 +55,7 @@ public static class ModelExtensions
 
     public static GExpressionNode? ToGrpcModel(this ExpressionNode? root)
     {
-        if (root == null)
-        {
-            return null;
-        }
+        if (root == null) return null;
 
         // Map to keep track of processed nodes for reconstruction
         var nodeMap = new Dictionary<ExpressionNode, GExpressionNode>();
@@ -93,12 +90,27 @@ public static class ModelExtensions
                 // Leaf Nodes
                 nodeMap[current] = current switch
                 {
-                    ValueExpressionNode v => new GExpressionNode { Value = new GValueNode { Value = v.Value, Type = (int)v.Type} },
-                    VariableMappingExpressionNode v => new GExpressionNode { VariableMapping = new GVariableMappingNode { AttributeName = v.VariableMapping.AttributeName, AliasName = v.VariableMapping.VariableName} },
-                    FullySpecifiedColumnExpressionNode v => new GExpressionNode { FullySpecified = new GFullySpecifiedColumnNode { DataSourceName = v.Attribute.DataSourceName, TableName =  v.Attribute.TableName, AttributeName = v.Attribute.AttributeName } },
+                    ValueExpressionNode v => new GExpressionNode
+                        { Value = new GValueNode { Value = v.Value, Type = (int)v.Type } },
+                    VariableMappingExpressionNode v => new GExpressionNode
+                    {
+                        VariableMapping = new GVariableMappingNode
+                        {
+                            AttributeName = v.VariableMapping.AttributeName, AliasName = v.VariableMapping.VariableName
+                        }
+                    },
+                    FullySpecifiedColumnExpressionNode v => new GExpressionNode
+                    {
+                        FullySpecified = new GFullySpecifiedColumnNode
+                        {
+                            DataSourceName = v.Attribute.DataSourceName, TableName = v.Attribute.TableName,
+                            AttributeName = v.Attribute.AttributeName
+                        }
+                    },
                     _ => throw new NotSupportedException()
                 };
             }
+
             stack.Pop();
         }
 
@@ -107,11 +119,8 @@ public static class ModelExtensions
 
     public static GPlanOperator? ToGrpcModel(this PlanOperator? planOperator)
     {
-        if (planOperator is null)
-        {
-            return null;
-        }
-        
+        if (planOperator is null) return null;
+
         var pop = planOperator switch
         {
             PushdownSqlPlanOperator psql => new GPlanOperator
@@ -122,12 +131,12 @@ public static class ModelExtensions
                     DatasourceId = psql.DataSource.ToString(),
                     Self = new GTableSpecifier
                     {
-                        DataSource =  psql.Self.DataSourceName,
+                        DataSource = psql.Self.DataSourceName,
                         TableName = psql.Self.TableName
                     }
                 },
                 Cost = planOperator.Cost,
-                ExpectedCardinality = planOperator.ExpectedCardinality,
+                ExpectedCardinality = planOperator.ExpectedCardinality
             },
             PushdownRestCallPlanOperator prest => new GPlanOperator
             {
@@ -138,7 +147,7 @@ public static class ModelExtensions
                     Url = prest.Url,
                     Self = new GTableSpecifier
                     {
-                        DataSource =  prest.Self.DataSourceName,
+                        DataSource = prest.Self.DataSourceName,
                         TableName = prest.Self.TableName
                     }
                 },
@@ -165,7 +174,7 @@ public static class ModelExtensions
                 Mean = x.Mean,
                 StandardDeviation = x.StandardDeviation
             }));
-            
+
             pop.OutputDistribution.Add(
                 AttributeToString(data.Key),
                 distribution);
@@ -176,30 +185,27 @@ public static class ModelExtensions
 
     public static GExecutorWrapper? ToGrpcModel(this ExecutorWrapper? executor)
     {
-        if (executor is null)
-        {
-            return null;
-        }
+        if (executor is null) return null;
 
         var wrapper = new GExecutorWrapper
         {
             PlanOperator = executor.PlanOperator.ToGrpcModel(),
             FactualCardinality = executor.FactualCardinality,
-            FactualCost = executor.FactualCost,
+            FactualCost = executor.FactualCost
         };
-        
+
         var resultStruct = executor.Result.Select(x =>
         {
             var json = JsonSerializer.Serialize(x);
             return Struct.Parser.ParseJson(json);
         });
-        
+
         wrapper.Result.Add(resultStruct);
 
         return wrapper;
     }
-    
-    
+
+
     public static SelectBaseModel FromGrpcModel(this GSelectBaseModel model)
     {
         return new SelectBaseModel
@@ -222,11 +228,8 @@ public static class ModelExtensions
 
     public static ExpressionNode? FromGrpcModel(this GExpressionNode? root)
     {
-        if (root is null)
-        {
-            return null;
-        }
-        
+        if (root is null) return null;
+
         var nodeMap = new Dictionary<GExpressionNode, ExpressionNode>();
         var stack = new Stack<GExpressionNode>();
         stack.Push(root);
@@ -250,37 +253,40 @@ public static class ModelExtensions
                     Operation = bin.Operation,
                     Left = nodeMap[bin.Left],
                     Right = nodeMap[bin.Right]
-                } ;
+                };
             }
             else
             {
                 nodeMap[current] = current.NodeTypeCase switch
                 {
-                    GExpressionNode.NodeTypeOneofCase.Value => new ValueExpressionNode { Value = current.Value.Value, Type = (ValueExpressionNode.ValueExpressionType)current.Value.Type},
+                    GExpressionNode.NodeTypeOneofCase.Value => new ValueExpressionNode
+                    {
+                        Value = current.Value.Value, Type = (ValueExpressionNode.ValueExpressionType)current.Value.Type
+                    },
                     GExpressionNode.NodeTypeOneofCase.FullySpecified => new FullySpecifiedColumnExpressionNode
                     {
-                        Attribute = new AttributeSpecifier(current.FullySpecified.DataSourceName, current.FullySpecified.TableName, current.FullySpecified.AttributeName), 
+                        Attribute = new AttributeSpecifier(current.FullySpecified.DataSourceName,
+                            current.FullySpecified.TableName, current.FullySpecified.AttributeName)
                     },
                     GExpressionNode.NodeTypeOneofCase.VariableMapping => new VariableMappingExpressionNode
                     {
-                        VariableMapping = new VariableMappingSpecifier(current.VariableMapping.AliasName, current.VariableMapping.AttributeName)
+                        VariableMapping = new VariableMappingSpecifier(current.VariableMapping.AliasName,
+                            current.VariableMapping.AttributeName)
                     },
                     _ => throw new NotSupportedException()
                 };
             }
+
             stack.Pop();
         }
 
         return nodeMap[root];
     }
-    
+
     public static PlanOperator? FromGrpcModel(this GPlanOperator? proto)
     {
-        if (proto is null)
-        {
-            return null;
-        }
-        
+        if (proto is null) return null;
+
         return proto.OperatorTypeCase switch
         {
             GPlanOperator.OperatorTypeOneofCase.PushdownSql => new PushdownSqlPlanOperator(
@@ -302,19 +308,17 @@ public static class ModelExtensions
                 Cost = proto.Cost,
                 ExpectedCardinality = proto.ExpectedCardinality,
                 Selectivity = 1,
-                Self = new TableSpecifier(proto.PushdownRestCall.Self.DataSource, proto.PushdownRestCall.Self.TableName),
+                Self = new TableSpecifier(proto.PushdownRestCall.Self.DataSource,
+                    proto.PushdownRestCall.Self.TableName),
                 DistributionData = proto.OutputDistribution.FromGrpcModel()
             },
-            _ => throw new ArgumentException("Expected some plan operator"),
+            _ => throw new ArgumentException("Expected some plan operator")
         };
     }
-    
+
     public static ExecutorWrapper? FromGrpcModel(this GExecutorWrapper? executor)
     {
-        if (executor is null)
-        {
-            return null;
-        }
+        if (executor is null) return null;
 
         var wrapper = new ExecutorWrapper
         {
@@ -332,7 +336,8 @@ public static class ModelExtensions
         return wrapper;
     }
 
-    public static Dictionary<AttributeSpecifier, PlanOperatorDistributionData> FromGrpcModel(this MapField<string, GPlanOperatorDistributionData> distributionData)
+    public static Dictionary<AttributeSpecifier, PlanOperatorDistributionData> FromGrpcModel(
+        this MapField<string, GPlanOperatorDistributionData> distributionData)
     {
         return distributionData.Select(x => new KeyValuePair<AttributeSpecifier, PlanOperatorDistributionData>(
             AttributeFromString(x.Key),
@@ -352,16 +357,17 @@ public static class ModelExtensions
                 }).ToList()
             })).ToDictionary(x => x.Key, x => x.Value);
     }
-    
+
     private static AttributeSpecifier AttributeFromString(string specifier)
     {
         var firstSplit = specifier.Split(AsSqlParameters.Attribute.DataSourceSeparator);
         var secondSplit = firstSplit[1].Split(AsSqlParameters.Attribute.TableSeparator);
         return new AttributeSpecifier(firstSplit[0], secondSplit[0], secondSplit[1]);
     }
-    
+
     private static string AttributeToString(AttributeSpecifier specifier)
     {
-        return $"{specifier.DataSourceName}{AsSqlParameters.Attribute.DataSourceSeparator}{specifier.TableName}{AsSqlParameters.Attribute.TableSeparator}{specifier.AttributeName}";
+        return
+            $"{specifier.DataSourceName}{AsSqlParameters.Attribute.DataSourceSeparator}{specifier.TableName}{AsSqlParameters.Attribute.TableSeparator}{specifier.AttributeName}";
     }
 }

@@ -1,4 +1,3 @@
-using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
@@ -7,7 +6,7 @@ namespace AlliumSativum.Optimize;
 public sealed class ExpressionNodeOptimizer
 {
     /// <summary>
-    /// Extracts the tree for a specific table
+    ///     Extracts the tree for a specific table
     /// </summary>
     /// <remarks>Tree must be in conjunctive normal form</remarks>
     /// <param name="node">The root node</param>
@@ -21,9 +20,9 @@ public sealed class ExpressionNodeOptimizer
     {
         return ExtractExpression(node, [table]);
     }
-    
+
     /// <summary>
-    /// Extracts the tree for a specific table
+    ///     Extracts the tree for a specific table
     /// </summary>
     /// <remarks>Tree must be in conjunctive normal form</remarks>
     /// <param name="node">The root node</param>
@@ -35,11 +34,8 @@ public sealed class ExpressionNodeOptimizer
     public (ExpressionNode? @base, ExpressionNode? split) ExtractExpression(ExpressionNode? node,
         List<TableSpecifier> table)
     {
-        if (node is null)
-        {
-            return (null, null);
-        }
-        
+        if (node is null) return (null, null);
+
         if (node is BinaryOperatorExpressionNode binary &&
             binary.Operation.Equals("AND", StringComparison.OrdinalIgnoreCase))
         {
@@ -48,81 +44,57 @@ public sealed class ExpressionNodeOptimizer
 
             ExpressionNode? finalSplit;
             if (leftSplit is not null && rightSplit is not null)
-            {
                 finalSplit = new BinaryOperatorExpressionNode
                     { Operation = "AND", Left = leftSplit, Right = rightSplit };
-            }
             else
-            {
                 finalSplit = leftSplit ?? rightSplit;
-            }
 
             ExpressionNode? finalBase;
             if (leftBase is not null && rightBase is not null)
-            {
                 finalBase = new BinaryOperatorExpressionNode { Operation = "AND", Left = leftBase, Right = rightBase };
-            }
             else
-            {
                 finalBase = leftBase ?? rightBase;
-            }
-                
+
             return (finalBase, finalSplit);
         }
 
-        if (node.IsPurelyTables(table))
-        {
-            return (null, node); 
-        }
+        if (node.IsPurelyTables(table)) return (null, node);
 
-        return (node, null); 
+        return (node, null);
     }
-    
 
 
     /// <summary>
-    /// Merges two expressions (which need to already be in CNF!) into a new singular expression (which also is in CNF)
+    ///     Merges two expressions (which need to already be in CNF!) into a new singular expression (which also is in CNF)
     /// </summary>
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns></returns>
     public ExpressionNode? MergeCnfExpressions(ExpressionNode? left, ExpressionNode? right)
     {
-        if (left is null && right is null)
-        {
-            return null;
-        }
+        if (left is null && right is null) return null;
 
-        if (left is null)
-        {
-            return right;
-        }
+        if (left is null) return right;
 
-        if (right is null)
-        {
-            return left;
-        }
+        if (right is null) return left;
 
-        return new BinaryOperatorExpressionNode()
+        return new BinaryOperatorExpressionNode
         {
             Left = left,
             Operation = "AND",
-            Right = right,
+            Right = right
         };
     }
-    
+
     /// <summary>
-    /// Get the sub-trees (all AND combined clauses) of an expression that already is in CNF
+    ///     Get the sub-trees (all AND combined clauses) of an expression that already is in CNF
     /// </summary>
     /// <param name="root"></param>
     /// <returns></returns>
     public List<ExpressionNode> GetCnfSubTrees(ExpressionNode? root)
     {
         var clauses = new List<ExpressionNode>();
-        if (root == null)
-        {
-            return clauses;
-        }
+        if (root == null) return clauses;
 
         var stack = new Stack<ExpressionNode>();
         stack.Push(root);
@@ -131,7 +103,7 @@ public sealed class ExpressionNodeOptimizer
         {
             var current = stack.Pop();
 
-            if (current is BinaryOperatorExpressionNode binary && 
+            if (current is BinaryOperatorExpressionNode binary &&
                 binary.Operation.Equals("AND", StringComparison.OrdinalIgnoreCase))
             {
                 stack.Push(binary.Right);
@@ -155,21 +127,16 @@ public sealed class ExpressionNodeOptimizer
 
     public ExpressionNode? RebuildAndTree(List<ExpressionNode> clauses)
     {
-        if (clauses.Count == 0)
-        {
-            return null;
-        }
+        if (clauses.Count == 0) return null;
 
         var root = clauses[0];
         foreach (var clause in clauses)
-        {
             root = new BinaryOperatorExpressionNode
             {
                 Operation = "AND",
                 Left = root,
                 Right = clause
             };
-        }
 
         return root;
     }

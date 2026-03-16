@@ -8,16 +8,13 @@ public partial class TokenQueryParser
     public SelectBaseModel? Parse(Stack<string> tokens)
     {
         var select = new SelectBaseModel();
-        
-        while (tokens.Count > 0)
-        {
-            HandleTopStatement(tokens, select);
-        }
-        
-        
+
+        while (tokens.Count > 0) HandleTopStatement(tokens, select);
+
+
         return select;
     }
-    
+
     private void HandleTopStatement(Stack<string> tokens, SelectBaseModel model)
     {
         switch (tokens.Peek())
@@ -32,9 +29,9 @@ public partial class TokenQueryParser
                 HandleWhereStatement(tokens, model);
                 break;
             case AsSqlKeywords.JoinType.INNER:
-            // case AsSqlKeywords.JoinType.OUTER:
-            // case AsSqlKeywords.JoinType.LEFT:
-            // case AsSqlKeywords.JoinType.RIGHT:
+                // case AsSqlKeywords.JoinType.OUTER:
+                // case AsSqlKeywords.JoinType.LEFT:
+                // case AsSqlKeywords.JoinType.RIGHT:
                 HandleJoinStatement(tokens, model);
                 break;
             default:
@@ -42,5 +39,4 @@ public partial class TokenQueryParser
                 break;
         }
     }
-    
 }

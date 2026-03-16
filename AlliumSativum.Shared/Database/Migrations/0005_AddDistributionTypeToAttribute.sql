@@ -1,1 +1,2 @@
-ALTER TABLE Catalog.Attributes ADD COLUMN DistributionType int NULL;
+ALTER TABLE Catalog.Attributes
+    ADD COLUMN DistributionType int NULL;

@@ -17,7 +17,7 @@ public sealed class ExecutorApi : IExecutorApi
     {
         _executorClient = executorClient;
     }
-    
+
     public async Task<ExecutorWrapper?> ExecutePlanAsync(PlanOperator plan)
     {
         var response = await _executorClient.ExecuteAsync(plan.ToGrpcModel());

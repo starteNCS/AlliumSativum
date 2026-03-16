@@ -7,8 +7,8 @@ namespace AlliumSativum.Performance.Utils;
 [CsvMeasurementsExporter]
 public class SingleFilterStringPerformanceTest
 {
+    private readonly string _target = "SearchTarget_500"; // Mid-list target
     private List<string> _data;
-    private string _target = "SearchTarget_500"; // Mid-list target
 
     [Params(100, 1_000, 10_000, 20_000, 30_000)]
     public int N;
@@ -26,29 +26,21 @@ public class SingleFilterStringPerformanceTest
     public int EqualsOrdinal()
     {
         var counter = 0;
-        for (int i = 0; i < _data.Count; i++)
-        {
+        for (var i = 0; i < _data.Count; i++)
             if (string.Equals(_data[i], _target, StringComparison.Ordinal))
-            {
                 counter++;
-            }
-        }
 
         return counter;
     }
-    
+
     [Benchmark]
     public int NotEqualsOrdinal()
     {
         var counter = 0;
-        for (int i = 0; i < _data.Count; i++)
-        {
-            if(!string.Equals(_data[i], _target, StringComparison.Ordinal))
-            {
+        for (var i = 0; i < _data.Count; i++)
+            if (!string.Equals(_data[i], _target, StringComparison.Ordinal))
                 counter++;
-            }
-        }
-        
+
         return counter;
     }
 }

@@ -7,8 +7,8 @@ namespace AlliumSativum.Worker.Strategies;
 
 public sealed class PlannerStrategy
 {
-    private readonly PostgreSqlPlanner _postgresPlanner;
     private readonly JsonServerPlanner _jsonServerPlanner;
+    private readonly PostgreSqlPlanner _postgresPlanner;
 
     public PlannerStrategy(
         PostgreSqlPlanner postgresPlanner,
@@ -24,7 +24,8 @@ public sealed class PlannerStrategy
         {
             ConnectorType.Postgres => _postgresPlanner,
             ConnectorType.JsonServer => _jsonServerPlanner,
-            _ => throw new ArgumentException("Invalid connector type. Did you forget to add it to the strategy?", nameof(connectorType))
+            _ => throw new ArgumentException("Invalid connector type. Did you forget to add it to the strategy?",
+                nameof(connectorType))
         };
     }
 }

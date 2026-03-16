@@ -13,7 +13,7 @@ public static class ServiceCollectionExtension
             .AddScoped<PostgreSqlStatistics>()
             .AddScoped<PostgreSqlPlanner>()
             .AddScoped<PostgreSqlExecutor>();
-        
+
         return services;
     }
 }

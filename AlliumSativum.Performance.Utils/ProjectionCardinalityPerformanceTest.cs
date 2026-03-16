@@ -7,21 +7,19 @@ namespace AlliumSativum.Performance.Utils;
 [CsvMeasurementsExporter]
 public class ProjectionCardinalityPerformanceTest
 {
-    private List<SourceTable> _data;
     private List<SourceTable> _cardData;
-    
-    [Params(1000)] 
-    public int N;
-    
+    private List<SourceTable> _data;
+
     [Params(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1000)]
     public int Card;
-    
+
+    [Params(1000)] public int N;
+
     [GlobalSetup]
     public void Setup()
     {
         _data = new List<SourceTable>(N);
-        for (int i = 0; i < N; i++)
-        {
+        for (var i = 0; i < N; i++)
             _data.Add(new SourceTable
             {
                 Field1 = i, Field2 = i, Field3 = i, Field4 = i, Field5 = i,
@@ -35,7 +33,6 @@ public class ProjectionCardinalityPerformanceTest
                 Field41 = i, Field42 = i, Field43 = i, Field44 = i, Field45 = i,
                 Field46 = i, Field47 = i, Field48 = i, Field49 = i, Field50 = i
             });
-        }
     }
 
     [IterationSetup]
@@ -43,7 +40,7 @@ public class ProjectionCardinalityPerformanceTest
     {
         _cardData = _data.Take(Card).ToList();
     }
-    
+
     [Benchmark]
     public object LinqSelect()
     {
@@ -61,7 +58,7 @@ public class ProjectionCardinalityPerformanceTest
             Field10 = x.Field10
         }).ToList();
     }
-    
+
     private class Projection10
     {
         public int Field1 { get; set; }
@@ -75,7 +72,7 @@ public class ProjectionCardinalityPerformanceTest
         public int Field9 { get; set; }
         public int Field10 { get; set; }
     }
-    
+
     private class SourceTable
     {
         public int Field1 { get; set; }

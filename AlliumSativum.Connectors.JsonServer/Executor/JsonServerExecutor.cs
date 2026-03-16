@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using AlliumSativum.Connectors.Shared.Interfaces;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Enums;
@@ -24,27 +23,23 @@ public sealed class JsonServerExecutor : IWorkerExecutor
         _catalog = catalog;
         _httpClientFactory = httpClientFactory;
     }
-    
+
     public async Task<ExecutorWrapper> ExecuteAsync(PlanOperator @operator)
     {
         if (@operator is not PushdownRestCallPlanOperator pushdown)
-        {
-            throw new AsSQLExecuteException("Invalid plan operator type for TicketSystemExecutor. Expected PushdownRestCallPlanOperator.", ConnectorType.JsonServer);
-        }
-        
-        var dataSource = await _catalog.GetDataSourceAsync(@pushdown.DataSource);
+            throw new AsSQLExecuteException(
+                "Invalid plan operator type for TicketSystemExecutor. Expected PushdownRestCallPlanOperator.",
+                ConnectorType.JsonServer);
+
+        var dataSource = await _catalog.GetDataSourceAsync(pushdown.DataSource);
         if (dataSource is null)
-        {
-            throw new AsSQLExecuteException($"Data source with id {@pushdown.DataSource} not found", ConnectorType.JsonServer);
-        }
+            throw new AsSQLExecuteException($"Data source with id {pushdown.DataSource} not found",
+                ConnectorType.JsonServer);
 
         var httpClient = _httpClientFactory.CreateClient("connector");
         httpClient.Timeout = new TimeSpan(0, 5, 0);
-        var request = new HttpRequestMessage(new HttpMethod(@pushdown.HttpMethod), @pushdown.Url);
-        if(@pushdown.Body is not null)
-        {
-            request.Content = new StringContent(JsonSerializer.Serialize(@pushdown.Body));
-        }
+        var request = new HttpRequestMessage(new HttpMethod(pushdown.HttpMethod), pushdown.Url);
+        if (pushdown.Body is not null) request.Content = new StringContent(JsonSerializer.Serialize(pushdown.Body));
 
         var stopwatch = Stopwatch.StartNew();
         var response = await httpClient.SendAsync(request);
@@ -52,16 +47,16 @@ public sealed class JsonServerExecutor : IWorkerExecutor
         var responseContent = await response.Content.ReadAsStringAsync();
         var jsonResult = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(responseContent);
         jsonResult = jsonResult?
-            .Select(x => x.PrefixKeys(pushdown.Self.ToString() + "."))
+            .Select(x => x.PrefixKeys(pushdown.Self + "."))
             .ToList();
         stopwatch.Stop();
-        
+
         return new ExecutorWrapper
         {
             PlanOperator = @operator,
             Result = jsonResult ?? [],
             FactualCardinality = jsonResult?.Count ?? 0,
-            FactualCost = stopwatch.Elapsed.TotalMilliseconds,
+            FactualCost = stopwatch.Elapsed.TotalMilliseconds
         };
     }
 }

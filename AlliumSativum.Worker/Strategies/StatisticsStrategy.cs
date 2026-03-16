@@ -7,11 +7,11 @@ namespace AlliumSativum.Worker.Strategies;
 
 public sealed class StatisticsStrategy
 {
-    private readonly PostgreSqlStatistics _postgreSqlStatistics;
     private readonly JsonServerStatistics _jsonServerStatistics;
+    private readonly PostgreSqlStatistics _postgreSqlStatistics;
 
     public StatisticsStrategy(
-        PostgreSqlStatistics  postgreSqlStatistics,
+        PostgreSqlStatistics postgreSqlStatistics,
         JsonServerStatistics jsonServerStatistics)
     {
         _postgreSqlStatistics = postgreSqlStatistics;
@@ -24,7 +24,8 @@ public sealed class StatisticsStrategy
         {
             ConnectorType.Postgres => _postgreSqlStatistics,
             ConnectorType.JsonServer => _jsonServerStatistics,
-            _ => throw new ArgumentException("Invalid connector type. Did you forget to add it to the strategy?", nameof(connectorType))
+            _ => throw new ArgumentException("Invalid connector type. Did you forget to add it to the strategy?",
+                nameof(connectorType))
         };
     }
 }

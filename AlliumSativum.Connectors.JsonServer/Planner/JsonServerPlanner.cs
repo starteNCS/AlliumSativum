@@ -23,25 +23,21 @@ public sealed class JsonServerPlanner : IPlanner
         _catalogDatabase = catalogDatabase;
         _distributionUtils = distributionUtils;
     }
-    
-    public async Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanAsync(Guid dataSourceId, SelectBaseModel selectModel)
+
+    public async Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanAsync(Guid dataSourceId,
+        SelectBaseModel selectModel)
     {
         var dataSource = await _catalogDatabase.GetDataSourceAsync(dataSourceId);
-        if (dataSource is null)
-        {
-            return ([], null);
-        }
-        
+        if (dataSource is null) return ([], null);
+
         var fromRelation = await _catalogDatabase.GetRelationAsync(dataSourceId, selectModel.From!.TableName);
-        if (fromRelation is null)
-        {
-            return ([], null);
-        }
-        
+        if (fromRelation is null) return ([], null);
+
         var distribution = await _distributionUtils.GetAttributeDistributionsAsync(selectModel.GetAffectedAttributes());
 
         var unplanned = selectModel;
-        List<PlanContainer> planOperators = [
+        List<PlanContainer> planOperators =
+        [
             BuildPushDown(
                 dataSource,
                 fromRelation,
@@ -53,11 +49,8 @@ public sealed class JsonServerPlanner : IPlanner
         foreach (var join in selectModel.Join)
         {
             var joinRelation = await _catalogDatabase.GetRelationAsync(dataSourceId, join.Inner.TableName);
-            if (joinRelation is null)
-            {
-                return ([], null);
-            }
-            
+            if (joinRelation is null) return ([], null);
+
             planOperators.Add(
                 BuildPushDown(
                     dataSource,
@@ -66,27 +59,28 @@ public sealed class JsonServerPlanner : IPlanner
                     distribution
                         .Where(x => x.Key.IsInTable(join.Inner))
                         .ToDictionary(x => x.Key, x => x.Value))
-                );
+            );
 
             var joinAttributes = join.Expression.GetAttributesOfExpression();
             var whereAttributes = unplanned.Where?.GetAttributesOfExpression() ?? [];
             unplanned.AppendHiddenAttribute(joinAttributes);
             unplanned.AppendHiddenAttribute(whereAttributes);
         }
-        
-        return (planOperators, 
+
+        return (planOperators,
             // technically, the "FROM" (and so the from from the joins) has been proposed. But that is always the case as a pushdown is proposed, we
             // keep it in this model to better map between proposed and unplanned
             unplanned);
     }
 
-    private PlanContainer BuildPushDown(DataSourceEntity dataSource, RelationEntity relation, TableSpecifier from, Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
+    private PlanContainer BuildPushDown(DataSourceEntity dataSource, RelationEntity relation, TableSpecifier from,
+        Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         var urlBuilder = new StringBuilder();
         urlBuilder.Append(dataSource.ConnectionString);
         urlBuilder.Append('/');
         urlBuilder.Append(relation.AccessPath);
-        
+
         var cost = relation.ConnectionOpenMs + relation.Transfer100Ms * (relation.Cardinality / 100);
 
         return new PlanContainer
@@ -98,7 +92,7 @@ public sealed class JsonServerPlanner : IPlanner
                 Self = from,
                 DistributionData = distributionData
             },
-            PlannedItems = new SelectBaseModel { From = from },
+            PlannedItems = new SelectBaseModel { From = from }
         };
     }
 }

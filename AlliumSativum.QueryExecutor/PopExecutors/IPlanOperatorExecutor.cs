@@ -1,5 +1,4 @@
 using AlliumSativum.Shared.Models.ExecutionPlan;
-using AlliumSativum.Shared.Models.Executor;
 
 namespace AlliumSativum.QueryExecutor.PopExecutors;
 

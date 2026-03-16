@@ -10,13 +10,15 @@ public sealed class SelectBaseModel
     public List<VariableMapping> VariableMappings { get; set; } = [];
     public List<ISpecifier> Select { get; set; } = [];
     public TableSpecifier From { get; set; } = null!;
-    public ExpressionNode? Where { get; set; } 
+    public ExpressionNode? Where { get; set; }
     public List<JoinBaseModel> Join { get; set; } = [];
 
     public List<TableSpecifier> AffectedTables => [From, ..Join.Select(x => x.Inner)];
+
     public List<AttributeSpecifier> GetAffectedAttributes()
     {
-        List<AttributeSpecifier> attributes = [
+        List<AttributeSpecifier> attributes =
+        [
             ..Select.OfType<AttributeSpecifier>(),
             ..Where?.GetAttributesOfExpression() ?? [],
             ..Join.SelectMany(j => j.Expression.GetAttributesOfExpression())
@@ -33,10 +35,7 @@ public sealed class SelectBaseModel
         AppendAsAttributeString(stringBuilder, first);
         foreach (var specifier in Select.Skip(1))
         {
-            if (specifier is not AttributeSpecifier select)
-            {
-                continue;
-            }
+            if (specifier is not AttributeSpecifier select) continue;
 
             stringBuilder
                 .Append($", {select.TableName}.{select.AttributeName}");
@@ -58,7 +57,7 @@ public sealed class SelectBaseModel
             stringBuilder.Append(" WHERE ");
             stringBuilder.Append(Where.ToSqlQueryString());
         }
-        
+
         return stringBuilder.ToString();
     }
 
@@ -73,7 +72,7 @@ public sealed class SelectBaseModel
             .Append(attribute.AttributeName)
             .Append('"');
     }
-    
+
     public override string ToString()
     {
         return ToPostgreSqlString();
@@ -81,8 +80,8 @@ public sealed class SelectBaseModel
 
 
     /// <summary>
-    /// Appends the given attributes either as hidden, when not existing
-    /// or leave the attribute as is, when already existing (i.e. not hidden)
+    ///     Appends the given attributes either as hidden, when not existing
+    ///     or leave the attribute as is, when already existing (i.e. not hidden)
     /// </summary>
     /// <param name="select"></param>
     /// <param name="hiddenAttributes"></param>
@@ -92,13 +91,11 @@ public sealed class SelectBaseModel
         foreach (var attribute in hiddenAttributes)
         {
             if (Select.Any(s => s is AttributeSpecifier aSpec && aSpec.Equals(attribute)))
-            {
                 // model already contains specific select
                 continue;
-            }
 
             attribute.IsHidden = true;
             Select.Add(attribute);
         }
-    } 
+    }
 }

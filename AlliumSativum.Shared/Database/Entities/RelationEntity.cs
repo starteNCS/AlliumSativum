@@ -1,5 +1,3 @@
-using AlliumSativum.Shared.Enums;
-
 namespace AlliumSativum.Shared.Database.Entities;
 
 public sealed class RelationEntity

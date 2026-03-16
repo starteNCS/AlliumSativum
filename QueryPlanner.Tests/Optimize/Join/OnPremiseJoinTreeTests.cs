@@ -25,7 +25,7 @@ public sealed class OnPremiseJoinTreeTests
         selectNeeded.Should().NotBeEmpty();
 
         joinTree.Should().BeOfType<IntermediateJoinNode>();
-        var joinTreeNode =  (IntermediateJoinNode)joinTree;
+        var joinTreeNode = (IntermediateJoinNode)joinTree;
         joinTreeNode.Left.Should().BeOfType<IntermediateJoinTreeTableSpecifier>();
         var left = (IntermediateJoinTreeTableSpecifier)joinTreeNode.Left;
         left.ToTableSpecifier().ShouldBeTable("erp", "customers");
@@ -37,7 +37,7 @@ public sealed class OnPremiseJoinTreeTests
         selectNeeded.ShouldContainAttributeSpecifier("ticket", "tickets", "customer_id");
         selectNeeded.ShouldContainAttributeSpecifier("erp", "customers", "id");
     }
-    
+
     [Test]
     public void Should_Generated_Join_Tree_Two_Joins()
     {
@@ -57,11 +57,11 @@ public sealed class OnPremiseJoinTreeTests
         var joinTreeNode = (IntermediateJoinNode)joinTree;
         joinTreeNode.Left.Should().BeOfType<IntermediateJoinNode>();
         var leftJoinTreeNode = (IntermediateJoinNode)joinTreeNode.Left;
-        
+
         leftJoinTreeNode.Left.Should().BeOfType<IntermediateJoinTreeTableSpecifier>();
         var leftleft = (IntermediateJoinTreeTableSpecifier)leftJoinTreeNode.Left;
         leftleft.ToTableSpecifier().ShouldBeTable("erp", "customers");
-        
+
         leftJoinTreeNode.Right.Should().BeOfType<IntermediateJoinTreeTableSpecifier>();
         var rightright = (IntermediateJoinTreeTableSpecifier)leftJoinTreeNode.Right;
         rightright.ToTableSpecifier().ShouldBeTable("ticket", "tickets");
@@ -74,7 +74,7 @@ public sealed class OnPremiseJoinTreeTests
         selectNeeded.ShouldContainAttributeSpecifier("erp", "customers", "id");
         selectNeeded.ShouldContainAttributeSpecifier("hr", "employees", "id");
     }
-    
+
     [Test]
     public void Should_Not_Generate_For_One_Datasource()
     {
@@ -89,7 +89,7 @@ public sealed class OnPremiseJoinTreeTests
         joinTree.Should().BeNull();
         selectNeeded.Should().BeEmpty();
     }
-    
+
     [Test]
     public void Should_Generate_Only_For_Mixed_Not_For_Same_Datasource()
     {
@@ -104,9 +104,9 @@ public sealed class OnPremiseJoinTreeTests
 
         joinTree.Should().NotBeNull();
         selectNeeded.Should().NotBeEmpty();
-        
+
         joinTree.Should().BeOfType<IntermediateJoinNode>();
-        var joinTreeNode =  (IntermediateJoinNode)joinTree;
+        var joinTreeNode = (IntermediateJoinNode)joinTree;
         joinTreeNode.Left.Should().BeOfType<IntermediateJoinTreeTableSpecifier>();
         var left = (IntermediateJoinTreeTableSpecifier)joinTreeNode.Left;
         left.ToTableSpecifier().ShouldBeTable("erp", "customers");
@@ -119,7 +119,7 @@ public sealed class OnPremiseJoinTreeTests
         selectNeeded.ShouldContainAttributeSpecifier("ticket", "tickets", "customer_id");
         selectNeeded.ShouldContainAttributeSpecifier("erp", "customers", "id");
     }
-    
+
     [Test]
     public void Should_Generate_Only_Across_Datasource_Border_Once()
     {
@@ -140,9 +140,9 @@ public sealed class OnPremiseJoinTreeTests
 
         joinTree.Should().NotBeNull();
         selectNeeded.Should().NotBeEmpty();
-        
+
         joinTree.Should().BeOfType<IntermediateJoinNode>();
-        var joinTreeNode =  (IntermediateJoinNode)joinTree;
+        var joinTreeNode = (IntermediateJoinNode)joinTree;
         joinTreeNode.Left.Should().BeOfType<IntermediateJoinTreeTableSpecifier>();
         var left = (IntermediateJoinTreeTableSpecifier)joinTreeNode.Left;
         left.ToTableSpecifier().ShouldBeTable("erp", "employees");

@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj" />
-      <ProjectReference Include="..\AlliumSativum.Worker.Sdk\AlliumSativum.Worker.Sdk.csproj" />
+        <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj"/>
+        <ProjectReference Include="..\AlliumSativum.Worker.Sdk\AlliumSativum.Worker.Sdk.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Performance\" />
+        <Folder Include="Performance\"/>
     </ItemGroup>
 
 </Project>

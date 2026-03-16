@@ -15,16 +15,17 @@ public sealed class CombineTablesByJoinPushDownTests
     private static readonly WhereOptimizer WhereOptimizer = new(ExpressionOptimizer);
     private static readonly SelectOptimizer SelectOptimizer = new();
 
-    private static readonly Optimizer Optimizer = new(null!, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
+    private static readonly Optimizer Optimizer = new(null!, ExpressionOptimizer, JoinOptimizer, SelectOptimizer,
+        WhereOptimizer);
 
     [Test]
     public void Should_Combine_Tables_Same_Datasource()
     {
         var select = SelectBaseModelHelper.FromAsSql("""
-            SELECT t.subject, tc.body 
-            FROM ticket->tickets t 
-            INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id
-            """);
+                                                     SELECT t.subject, tc.body 
+                                                     FROM ticket->tickets t 
+                                                     INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id
+                                                     """);
         var (onPremise, tablePlans) = Optimizer.SplitIntoTables(select);
 
         var (joinsLeft, joinedTablePlans) = JoinOptimizer.CombineTablesByJoinPushDown(onPremise.Join, tablePlans);
@@ -33,20 +34,22 @@ public sealed class CombineTablesByJoinPushDownTests
         joinedTablePlans.Should().HaveCount(1);
 
         joinedTablePlans.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("ticket", "tickets"),
-            expectedSelect: [
+            new TableSpecifier("ticket", "tickets"),
+            [
                 new AttributeSpecifier("ticket", "tickets", "subject"),
                 new AttributeSpecifier("ticket", "ticket_comments", "body")
             ],
-            expectedJoin: [ 
+            [
                 new JoinBaseModel
                 {
                     Inner = new TableSpecifier("ticket", "ticket_comments"),
                     Expression = new BinaryOperatorExpressionNode
                     {
-                        Left = new FullySpecifiedColumnExpressionNode { Attribute = new AttributeSpecifier("ticket", "ticket_comments", "ticket_id") },
+                        Left = new FullySpecifiedColumnExpressionNode
+                            { Attribute = new AttributeSpecifier("ticket", "ticket_comments", "ticket_id") },
                         Operation = "=",
-                        Right = new FullySpecifiedColumnExpressionNode { Attribute = new AttributeSpecifier("ticket", "tickets", "id") }
+                        Right = new FullySpecifiedColumnExpressionNode
+                            { Attribute = new AttributeSpecifier("ticket", "tickets", "id") }
                     }
                 }
             ]
@@ -71,12 +74,12 @@ public sealed class CombineTablesByJoinPushDownTests
 
         // Both original table plans should still exist
         joinedTablePlans.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("ticket", "tickets"),
-            expectedSelect: [ new AttributeSpecifier("ticket", "tickets", "subject") ]
+            new TableSpecifier("ticket", "tickets"),
+            [new AttributeSpecifier("ticket", "tickets", "subject")]
         );
         joinedTablePlans.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("erp", "employee"),
-            expectedSelect: [ new AttributeSpecifier("erp", "employee", "name") ]
+            new TableSpecifier("erp", "employee"),
+            [new AttributeSpecifier("erp", "employee", "name")]
         );
     }
 

@@ -11,7 +11,7 @@ public static class ServiceCollectionExtension
         var channel = GrpcChannel.ForAddress(workerUrl, new GrpcChannelOptions
         {
             MaxReceiveMessageSize = null,
-            HttpClient =  new HttpClient
+            HttpClient = new HttpClient
             {
                 Timeout = TimeSpan.FromMinutes(6)
             }
@@ -19,12 +19,12 @@ public static class ServiceCollectionExtension
         services.AddSingleton(new Metrics.MetricsClient(channel));
         services.AddSingleton(new Planner.PlannerClient(channel));
         services.AddSingleton(new Executor.ExecutorClient(channel));
-        
+
         services.AddScoped<MetricsApi>();
         services.AddScoped<IPlannerApi, PlannerApi>();
         services.AddScoped<IExecutorApi, ExecutorApi>();
-        
-        
+
+
         return services;
     }
 }

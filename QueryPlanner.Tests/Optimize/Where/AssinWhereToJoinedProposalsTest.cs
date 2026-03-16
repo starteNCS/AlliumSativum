@@ -12,7 +12,9 @@ public sealed class AssinWhereToJoinedProposalsTest
     private static readonly JoinOptimizer JoinOptimizer = new(ExpressionOptimizer);
     private static readonly WhereOptimizer WhereOptimizer = new(ExpressionOptimizer);
     private static readonly SelectOptimizer SelectOptimizer = new();
-    private static readonly Optimizer Optimizer = new(null!, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
+
+    private static readonly Optimizer Optimizer = new(null!, ExpressionOptimizer, JoinOptimizer, SelectOptimizer,
+        WhereOptimizer);
 
     [Test]
     public void Should_Push_Down_Single_Table_Clauses_To_Proposals()
@@ -32,7 +34,7 @@ public sealed class AssinWhereToJoinedProposalsTest
         onPremise.Where.Should().BeNull();
 
         joinedTableSelect.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("ticket", "tickets"),
+            new TableSpecifier("ticket", "tickets"),
             expectedWhere: new BinaryOperatorExpressionNode
             {
                 Left = new FullySpecifiedColumnExpressionNode
@@ -49,7 +51,7 @@ public sealed class AssinWhereToJoinedProposalsTest
         );
 
         joinedTableSelect.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("erp", "employee"),
+            new TableSpecifier("erp", "employee"),
             expectedWhere: new BinaryOperatorExpressionNode
             {
                 Left = new FullySpecifiedColumnExpressionNode
@@ -98,7 +100,7 @@ public sealed class AssinWhereToJoinedProposalsTest
         );
 
         joinedTableSelect.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("ticket", "tickets"),
+            new TableSpecifier("ticket", "tickets"),
             expectedWhere: new BinaryOperatorExpressionNode
             {
                 Left = new FullySpecifiedColumnExpressionNode
@@ -114,7 +116,7 @@ public sealed class AssinWhereToJoinedProposalsTest
             }
         );
         joinedTableSelect.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("erp", "employee"),
+            new TableSpecifier("erp", "employee"),
             expectedWhere: new BinaryOperatorExpressionNode
             {
                 Left = new FullySpecifiedColumnExpressionNode
@@ -148,10 +150,10 @@ public sealed class AssinWhereToJoinedProposalsTest
 
         onPremise.Where.Should().BeNull();
         joinedTableSelect.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("ticket", "tickets")
+            new TableSpecifier("ticket", "tickets")
         );
         joinedTableSelect.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("erp", "employee")
+            new TableSpecifier("erp", "employee")
         );
     }
 }

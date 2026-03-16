@@ -1,8 +1,6 @@
 using AlliumSativum.Shared.Models.ExecutionPlan;
-using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Worker.Sdk.Extensions;
-using static AlliumSativum.Worker.GPlanOperator.OperatorTypeOneofCase;
 
 namespace AlliumSativum.Worker.Sdk;
 
@@ -23,10 +21,7 @@ public class PlannerApi : IPlannerApi
     public async Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanQueryAsync(SelectBaseModel model)
     {
         var response = await _client.PlanAsync(model.ToGrpcModel());
-        if (response == null)
-        {
-            return ([], null);
-        }
+        if (response == null) return ([], null);
 
         return (
             response.Plans.Select(plan => new PlanContainer

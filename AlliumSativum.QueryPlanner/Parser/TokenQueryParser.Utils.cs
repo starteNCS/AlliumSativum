@@ -14,7 +14,7 @@ public partial class TokenQueryParser
             builder.Append(' ');
             tokens.Pop();
         }
-        
+
         return builder.ToString();
     }
 
@@ -23,11 +23,9 @@ public partial class TokenQueryParser
         var intermediateStack = new List<string>();
 
         while (tokens.TryPeek(out var token) && !AsSqlKeywords.Keywords.Contains(token))
-        {
             intermediateStack.Add(tokens.Pop());
-        }
-        
+
         intermediateStack.Reverse();
-        return new  Stack<string>(intermediateStack);
+        return new Stack<string>(intermediateStack);
     }
 }

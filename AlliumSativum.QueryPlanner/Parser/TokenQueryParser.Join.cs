@@ -8,7 +8,7 @@ namespace AlliumSativum.Parser;
 public partial class TokenQueryParser
 {
     /// <summary>
-    /// Expects token of format (LEFT|RIGHT|INNER|OUTER) JOIN tableSpec varName ON expr
+    ///     Expects token of format (LEFT|RIGHT|INNER|OUTER) JOIN tableSpec varName ON expr
     /// </summary>
     /// <param name="tokens"></param>
     /// <param name="model"></param>
@@ -16,46 +16,39 @@ public partial class TokenQueryParser
     private void HandleJoinStatement(Stack<string> tokens, SelectBaseModel model)
     {
         if (!tokens.TryPeek(out var joinType) || !AsSqlKeywords.JoinType.Types.Contains(joinType))
-        {
-            throw new AsSqlParseException($"{joinType}", $"Tried to parse {AsSqlKeywords.JOIN} with one of {string.Join(',', AsSqlKeywords.JoinType.Types)}, found {joinType}");
-        }
+            throw new AsSqlParseException($"{joinType}",
+                $"Tried to parse {AsSqlKeywords.JOIN} with one of {string.Join(',', AsSqlKeywords.JoinType.Types)}, found {joinType}");
         tokens.Pop();
-        
+
         if (!tokens.TryPeek(out var joinKeyword) || joinKeyword != AsSqlKeywords.JOIN)
-        {
-            throw new AsSqlParseException($"{joinType} {joinKeyword}", $"Tried to parse {AsSqlKeywords.JOIN}, found {joinKeyword}");
-        }
+            throw new AsSqlParseException($"{joinType} {joinKeyword}",
+                $"Tried to parse {AsSqlKeywords.JOIN}, found {joinKeyword}");
         tokens.Pop();
-        
+
         var tableSpecifier = GetTableSpecifier(tokens);
         if (!tokens.TryPop(out var variableName))
-        {
             throw new AsSqlParseException($"{joinType} {joinKeyword}", "Unexpected end of stream");
-        }
 
         if (variableName == AsSqlKeywords.ON)
-        {
-            throw new AsSqlParseException($"{joinType} {joinKeyword} {variableName}", "Expected an variable name, not an ON yet");
-        }
-        
+            throw new AsSqlParseException($"{joinType} {joinKeyword} {variableName}",
+                "Expected an variable name, not an ON yet");
+
         if (!tokens.TryPop(out var onKeyword) || onKeyword != AsSqlKeywords.ON)
-        {
             throw new AsSqlParseException($"{joinType} {joinKeyword}", "Expected ON expr");
-        }
 
         var expressionTokens = ReadTokensToNextKeyword(tokens);
         var joinExpression = BooleanExpressionParser.Parse(expressionTokens);
-        
-        
+
+
         model.VariableMappings.Add(new VariableMapping
         {
             Alias = variableName,
-            Table = tableSpecifier,
+            Table = tableSpecifier
         });
-        
+
         model.Join.Add(new JoinBaseModel
         {
-            Expression =  joinExpression,
+            Expression = joinExpression,
             Inner = tableSpecifier,
             JoinType = joinType switch
             {
@@ -64,7 +57,7 @@ public partial class TokenQueryParser
                 // AsSqlKeywords.JoinType.LEFT => JoinType.Left,
                 // AsSqlKeywords.JoinType.RIGHT => JoinType.Right,
                 _ => throw new AsSqlParseException($"{joinType}", $"Unknown join type {joinType}")
-            },
+            }
         });
     }
 }

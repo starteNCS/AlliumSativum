@@ -8,10 +8,11 @@ namespace QueryPlanner.Tests.Parser;
 
 public sealed class SimpleSelectQueries
 {
-    private static readonly Tokenizer Tokenizer = new Tokenizer();
-    private static readonly TokenQueryParser TokenQueryParser = new TokenQueryParser();
-    
+    private static readonly Tokenizer Tokenizer = new();
+    private static readonly TokenQueryParser TokenQueryParser = new();
+
     #region PositiveTests
+
     [Test]
     public void ShouldParse_SingleAttribute()
     {
@@ -27,7 +28,8 @@ public sealed class SimpleSelectQueries
     [Test]
     public void ShouldParse_MultipleAttributes()
     {
-        var tokens = Tokenizer.Tokenize("SELECT erp->customers.name, erp->customers.customer_number FROM erp->customers");
+        var tokens =
+            Tokenizer.Tokenize("SELECT erp->customers.name, erp->customers.customer_number FROM erp->customers");
         var result = TokenQueryParser.Parse(tokens);
         result.Should().NotBeNull();
 
@@ -36,31 +38,35 @@ public sealed class SimpleSelectQueries
         result.Select.ShouldContainAttributeSpecifier("erp", "customers", "name");
         result.Select.ShouldContainAttributeSpecifier("erp", "customers", "customer_number");
     }
+
     #endregion
 
     #region NegativeTests
+
     [Test]
     public void ShouldNotParse_Select_InvalidDataSourceSeparator()
     {
         var tokens = Tokenizer.Tokenize("SELECT erp.customers.name FROM erp->customers");
         Action action = () => TokenQueryParser.Parse(tokens);
-        action.ShouldThrowParseException("erp.customers.", $"invalid table name separator ({AsSqlParameters.Attribute.TableSeparator}), are you sure you didn't mean 'erp{AsSqlParameters.Attribute.DataSourceSeparator}customers{AsSqlParameters.Attribute.TableSeparator}name'?");
+        action.ShouldThrowParseException("erp.customers.",
+            $"invalid table name separator ({AsSqlParameters.Attribute.TableSeparator}), are you sure you didn't mean 'erp{AsSqlParameters.Attribute.DataSourceSeparator}customers{AsSqlParameters.Attribute.TableSeparator}name'?");
     }
-    
+
     [Test]
     public void ShouldNotParse_Select_InvalidTableNameSeparator()
     {
         var tokens = Tokenizer.Tokenize("SELECT erp->customersname FROM erp->customers");
         Action action = () => TokenQueryParser.Parse(tokens);
-        action.ShouldThrowParseException("erp->customersnameFROM", $"expected table name separator, got 'FROM'");
+        action.ShouldThrowParseException("erp->customersnameFROM", "expected table name separator, got 'FROM'");
     }
-    
+
     [Test]
     public void ShouldNotParse_From_InvalidDataSourceSeparator()
     {
         var tokens = Tokenizer.Tokenize("SELECT erp->customers.name FROM erp.customers");
         Action action = () => TokenQueryParser.Parse(tokens);
-        action.ShouldThrowParseException("erp.", $"expected datasource separator, got '.'");
+        action.ShouldThrowParseException("erp.", "expected datasource separator, got '.'");
     }
+
     #endregion
 }

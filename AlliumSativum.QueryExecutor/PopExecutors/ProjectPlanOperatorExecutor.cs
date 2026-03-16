@@ -1,10 +1,7 @@
 using System.Diagnostics;
-using System.Dynamic;
-using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
-using AlliumSativum.Shared.Models.Executor;
 
 namespace AlliumSativum.QueryExecutor.PopExecutors;
 
@@ -18,13 +15,11 @@ public sealed class ProjectPlanOperatorExecutor : IPlanOperatorExecutor<ProjectP
         var result = new List<Dictionary<string, object>>(childData.Count);
         foreach (var item in childData)
         {
-            var projected = new  Dictionary<string, object>(pop.Attributes.Count);
-            foreach (var propName in pop.Attributes.Select(x => x.ToDictKey()))
-            {
-                projected[propName] = item[propName];
-            }
+            var projected = new Dictionary<string, object>(pop.Attributes.Count);
+            foreach (var propName in pop.Attributes.Select(x => x.ToDictKey())) projected[propName] = item[propName];
             result.Add(projected);
         }
+
         stopwatch.Stop();
 
         var executionData = new PlanOperatorExecutionData

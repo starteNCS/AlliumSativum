@@ -6,16 +6,22 @@ namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 public class VariableMappingExpressionNode : ExpressionNode
 {
     public required VariableMappingSpecifier VariableMapping { get; set; }
-    public override string ToString() => $"[{VariableMapping.VariableName}{AsSqlParameters.Attribute.TableSeparator}{VariableMapping.AttributeName}]";
-    public override string ToSqlQueryString() => $"{VariableMapping.VariableName}.{VariableMapping.AttributeName}";
-    
+
+    public override string ToString()
+    {
+        return
+            $"[{VariableMapping.VariableName}{AsSqlParameters.Attribute.TableSeparator}{VariableMapping.AttributeName}]";
+    }
+
+    public override string ToSqlQueryString()
+    {
+        return $"{VariableMapping.VariableName}.{VariableMapping.AttributeName}";
+    }
+
     public override bool Equals(object? obj)
     {
-        if (obj is not VariableMappingExpressionNode other)
-        {
-            return false;
-        }
-        
+        if (obj is not VariableMappingExpressionNode other) return false;
+
         return other.VariableMapping.Equals(VariableMapping);
     }
 

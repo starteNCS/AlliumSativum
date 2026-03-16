@@ -1,9 +1,6 @@
 using System.Diagnostics;
-using System.Diagnostics.Tracing;
 using System.Net;
-using System.Net.Security;
 using System.Net.Sockets;
-using System.Security.Authentication;
 using System.Text.Json;
 
 namespace AlliumSativum.Connectors.Shared.HttpUtils;
@@ -11,7 +8,7 @@ namespace AlliumSativum.Connectors.Shared.HttpUtils;
 public sealed class HttpMetrics<T> where T : new()
 {
     public T? Response { get; set; }
-    
+
     // Connection Phase
     public long DnsLookupMs { get; internal set; }
     public long TcpConnectMs { get; internal set; }
@@ -51,7 +48,7 @@ public sealed class HttpMetricsScraper
                 metrics.TcpConnectMs = stepSw.ElapsedMilliseconds;
 
                 // Return raw TCP stream - SocketsHttpHandler will do TLS
-                return new NetworkStream(socket, ownsSocket: true);
+                return new NetworkStream(socket, true);
             }
         };
 
@@ -61,12 +58,12 @@ public sealed class HttpMetricsScraper
         stepSw.Restart();
         var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
         var elapsed = stepSw.ElapsedMilliseconds;
-    
+
         // TLS time = total time - (DNS + TCP)
         metrics.TlsHandshakeMs = totalSw.ElapsedMilliseconds - metrics.DnsLookupMs - metrics.TcpConnectMs - elapsed;
         metrics.RequestSendMs = elapsed;
         metrics.TotalElapsed = totalSw.ElapsedMilliseconds;
-    
+
         var parsedString = await response.Content.ReadAsStringAsync();
         metrics.Response = JsonSerializer.Deserialize<T>(parsedString);
         return metrics;

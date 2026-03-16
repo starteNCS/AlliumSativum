@@ -17,8 +17,8 @@ public static class ServiceCollectionExtension
             .AddScoped<PushdownRestPlanOperatorExecutor>()
             .AddScoped<NestedLoopJoinPlanOperatorExecutor>()
             .AddScoped<HashJoinPlanOperatorExecutor>();
-        
-        
+
+
         return services;
     }
 }

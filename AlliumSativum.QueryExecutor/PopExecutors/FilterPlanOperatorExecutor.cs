@@ -13,13 +13,9 @@ public sealed class FilterPlanOperatorExecutor : IPlanOperatorExecutor<FilterPla
 
         List<Dictionary<string, object>> result = [];
         foreach (var item in pop.Children.Single().ExecutionData.Data)
-        {
             if (pop.Expression.EvaluatePredicate(item))
-            {
                 result.Add(item);
-            }
-        }
-        
+
         stopwatch.Stop();
         var executionData = new PlanOperatorExecutionData
         {

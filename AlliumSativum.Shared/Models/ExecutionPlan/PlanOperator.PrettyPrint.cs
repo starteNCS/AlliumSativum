@@ -18,7 +18,7 @@ public abstract partial class PlanOperator
         {
             BuildString(sb, "", true);
         }
-        
+
         return sb.ToString();
     }
 
@@ -39,11 +39,11 @@ public abstract partial class PlanOperator
         // 3. Recurse
         for (var i = 0; i < Children.Count; i++)
         {
-            var childIsLast = (i == Children.Count - 1);
+            var childIsLast = i == Children.Count - 1;
             Children[i].BuildString(sb, childPrefix, childIsLast);
         }
     }
-    
+
     protected void BuildStringHtml(StringBuilder sb, string prefix, bool isLast, bool includeActual = false)
     {
         sb.Append(prefix);
@@ -57,60 +57,59 @@ public abstract partial class PlanOperator
         var childPrefix = prefix + (isLast ? "    " : "│   ");
         for (var i = 0; i < Children.Count; i++)
         {
-            var childIsLast = (i == Children.Count - 1);
+            var childIsLast = i == Children.Count - 1;
             Children[i].BuildStringHtml(sb, childPrefix, childIsLast, includeActual);
         }
     }
 
     protected abstract string GetNodeInfo();
     protected abstract string GetNodeInfoHtml();
-    private string GetBaseNodeInfo() => $"ED: {Cost:F2}ms, C: {ExpectedCardinality}, S: {Selectivity}";
+
+    private string GetBaseNodeInfo()
+    {
+        return $"ED: {Cost:F2}ms, C: {ExpectedCardinality}, S: {Selectivity}";
+    }
+
     private string GetHtmlBaseNodeInfo(bool includeActual = false)
     {
         var sb = new StringBuilder();
         sb.Append("ED: ")
-            .Append(HtmlClasses.Colored(Cost.ToString("F3"), color: "coral"))
+            .Append(HtmlClasses.Colored(Cost.ToString("F3"), "coral"))
             .Append("ms");
         if (includeActual)
-        {
             sb.Append(" (actual ")
                 .Append(ExecutionData.ActualCost.ToString("F3"))
                 .Append("ms, precision: ")
                 .Append(GetTargetPrecisionHtmlString(ExecutionData.ActualCost, Cost))
                 .Append(')');
-        }
         sb.Append(", C: ")
-            .Append(HtmlClasses.Colored(ExpectedCardinality.ToString(), color: "yellowgreen"));
-            
+            .Append(HtmlClasses.Colored(ExpectedCardinality.ToString(), "yellowgreen"));
+
         if (includeActual)
-        {
             sb.Append(" (actual ")
                 .Append(ExecutionData.ActualCardinality)
                 .Append(')');
-        }
-        
+
         sb.Append(", S: ")
-            .Append(HtmlClasses.Colored(Selectivity.ToString("F5"), color: "olive"));
-        
+            .Append(HtmlClasses.Colored(Selectivity.ToString("F5"), "olive"));
+
         if (includeActual)
         {
             sb.Append(" (actual ")
                 .Append(GetActualSelectivityInfo().ToString("F5"))
                 .Append(')');
-            
+
             sb.Append(", Selectivity Precision: ")
                 .Append(GetTargetPrecisionHtmlString(ExecutionData.ActualCardinality, ExpectedCardinality));
         }
-        
+
         return sb.ToString();
     }
+
     private string GetDistributionDataInfo()
     {
-        if (DistributionData.Count == 0)
-        {
-            return string.Empty;
-        }
-        
+        if (DistributionData.Count == 0) return string.Empty;
+
         var sb = new StringBuilder();
         sb
             .Append(HtmlClasses.Bold("Distribution Data"))
@@ -122,17 +121,16 @@ public abstract partial class PlanOperator
             if (kvp.Value.Peaks.Count > 0)
             {
                 sb.Append("(peaks ");
-                foreach (var str in kvp.Value.Peaks.OrderBy(x => x.Position).Select(x => $"[{x.Height} at {x.Position}]"))
-                {
-                    sb.Append(str);
-                }
-            
+                foreach (var str in kvp.Value.Peaks.OrderBy(x => x.Position)
+                             .Select(x => $"[{x.Height} at {x.Position}]")) sb.Append(str);
+
                 sb.Append("), ");
             }
         }
 
         return sb.ToString().TrimEnd(' ', ',');
     }
+
     protected abstract double GetActualSelectivityInfo();
 
     private string GetTargetPrecisionHtmlString(double target, double actual)
@@ -144,16 +142,13 @@ public abstract partial class PlanOperator
             >= 70 => "orange",
             _ => "red"
         };
-        return HtmlClasses.Colored($"{error:F2}%", color: color);
+        return HtmlClasses.Colored($"{error:F2}%", color);
     }
-    
+
     private double GetTargetPrecision(double target, double actual)
     {
-        if (target == 0)
-        {
-            return 100;
-        }
-        
-        return (1 - (Math.Abs(target - actual) / target)) * 100;
+        if (target == 0) return 100;
+
+        return (1 - Math.Abs(target - actual) / target) * 100;
     }
 }

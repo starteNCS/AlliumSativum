@@ -26,16 +26,16 @@ public sealed class SplitIntoTableTests
         var (onPremise, dataSources) = Optimizer.SplitIntoTables(select);
 
         onPremise.ShouldBeEmpty();
-        
+
         dataSources.Should().NotBeEmpty();
         dataSources.Count.Should().Be(1);
 
         var dataSourceSelect = dataSources.Single();
         dataSourceSelect.ShouldBeSelect(
-            from: new TableSpecifier("ticket", "tickets"),
-            select: [new AttributeSpecifier("ticket", "tickets", "subject")]);
+            new TableSpecifier("ticket", "tickets"),
+            [new AttributeSpecifier("ticket", "tickets", "subject")]);
     }
-    
+
     [Test]
     public void Should_Split_Tables_Two_Tables_One_Datasource()
     {
@@ -47,18 +47,18 @@ public sealed class SplitIntoTableTests
         var (onPremise, dataSources) = Optimizer.SplitIntoTables(select);
 
         onPremise.ShouldBeSelect(join: select.Join);
-        
+
         dataSources.Should().NotBeEmpty();
         dataSources.Count.Should().Be(2);
 
         dataSources.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("ticket", "tickets"),
-            expectedSelect: [new AttributeSpecifier("ticket", "tickets", "subject")]);    
+            new TableSpecifier("ticket", "tickets"),
+            [new AttributeSpecifier("ticket", "tickets", "subject")]);
         dataSources.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("ticket", "ticket_comments"),
-            expectedSelect: [new AttributeSpecifier("ticket", "ticket_comments", "body")]);       
+            new TableSpecifier("ticket", "ticket_comments"),
+            [new AttributeSpecifier("ticket", "ticket_comments", "body")]);
     }
-    
+
     [Test]
     public void Should_Split_Tables_Two_Tables_Two_Datasources()
     {
@@ -70,16 +70,16 @@ public sealed class SplitIntoTableTests
         var (onPremise, dataSources) = Optimizer.SplitIntoTables(select);
 
         onPremise.ShouldBeSelect(join: select.Join);
-        
+
         dataSources.Should().NotBeEmpty();
         dataSources.Count.Should().Be(2);
 
         dataSources.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("ticket", "tickets"),
-            expectedSelect: [new AttributeSpecifier("ticket", "tickets", "subject")]);    
+            new TableSpecifier("ticket", "tickets"),
+            [new AttributeSpecifier("ticket", "tickets", "subject")]);
         dataSources.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("erp", "employee"),
-            expectedSelect: [new AttributeSpecifier("erp", "employee", "name")]);       
+            new TableSpecifier("erp", "employee"),
+            [new AttributeSpecifier("erp", "employee", "name")]);
     }
 
     [Test]
@@ -93,16 +93,16 @@ public sealed class SplitIntoTableTests
         var (onPremise, dataSources) = Optimizer.SplitIntoTables(select);
 
         onPremise.ShouldBeEmpty();
-        
+
         dataSources.Should().NotBeEmpty();
         dataSources.Count.Should().Be(1);
 
         dataSources.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("ticket", "tickets"),
-            expectedSelect: [new AttributeSpecifier("ticket", "tickets", "subject")],
-            expectedWhere: select.Where); 
+            new TableSpecifier("ticket", "tickets"),
+            [new AttributeSpecifier("ticket", "tickets", "subject")],
+            expectedWhere: select.Where);
     }
-    
+
     [Test]
     public void Should_Split_Tables_Two_Tables_Split_Where()
     {
@@ -115,45 +115,45 @@ public sealed class SplitIntoTableTests
         var (onPremise, dataSources) = Optimizer.SplitIntoTables(select);
 
         onPremise.ShouldBeSelect(join: select.Join);
-        
+
         dataSources.Should().NotBeEmpty();
         dataSources.Count.Should().Be(2);
 
         dataSources.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("ticket", "tickets"),
-            expectedSelect: [new AttributeSpecifier("ticket", "tickets", "subject")],
+            new TableSpecifier("ticket", "tickets"),
+            [new AttributeSpecifier("ticket", "tickets", "subject")],
             expectedWhere: new BinaryOperatorExpressionNode
             {
                 Left = new FullySpecifiedColumnExpressionNode
                 {
-                    Attribute = new AttributeSpecifier("ticket", "tickets", "customer_id"),
+                    Attribute = new AttributeSpecifier("ticket", "tickets", "customer_id")
                 },
                 Operation = "=",
-                Right = new ValueExpressionNode()
+                Right = new ValueExpressionNode
                 {
                     Value = "1234",
                     Type = ValueExpressionNode.ValueExpressionType.String
                 }
-            }); 
-        
+            });
+
         dataSources.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("erp", "employee"),
-            expectedSelect: [new AttributeSpecifier("erp", "employee", "name")],
+            new TableSpecifier("erp", "employee"),
+            [new AttributeSpecifier("erp", "employee", "name")],
             expectedWhere: new BinaryOperatorExpressionNode
             {
                 Left = new FullySpecifiedColumnExpressionNode
                 {
-                    Attribute = new AttributeSpecifier("erp", "employee", "name"),
+                    Attribute = new AttributeSpecifier("erp", "employee", "name")
                 },
                 Operation = "=",
-                Right = new ValueExpressionNode()
+                Right = new ValueExpressionNode
                 {
                     Value = "Philipp",
                     Type = ValueExpressionNode.ValueExpressionType.String
                 }
-            }); 
+            });
     }
-    
+
     [Test]
     public void Should_Split_Tables_Two_Tables_Split_Where_And_Keep_Mixed_On_Premise()
     {
@@ -173,50 +173,50 @@ public sealed class SplitIntoTableTests
             {
                 Left = new FullySpecifiedColumnExpressionNode
                 {
-                    Attribute = new AttributeSpecifier("ticket", "tickets", "assigned_employee_id"),
+                    Attribute = new AttributeSpecifier("ticket", "tickets", "assigned_employee_id")
                 },
                 Operation = "=",
                 Right = new FullySpecifiedColumnExpressionNode
                 {
-                    Attribute = new AttributeSpecifier("erp", "employee", "id"),
-                },
+                    Attribute = new AttributeSpecifier("erp", "employee", "id")
+                }
             });
-        
+
         dataSources.Should().NotBeEmpty();
         dataSources.Count.Should().Be(2);
 
         dataSources.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("ticket", "tickets"),
-            expectedSelect: [new AttributeSpecifier("ticket", "tickets", "subject")],
+            new TableSpecifier("ticket", "tickets"),
+            [new AttributeSpecifier("ticket", "tickets", "subject")],
             expectedWhere: new BinaryOperatorExpressionNode
             {
                 Left = new FullySpecifiedColumnExpressionNode
                 {
-                    Attribute = new AttributeSpecifier("ticket", "tickets", "customer_id"),
+                    Attribute = new AttributeSpecifier("ticket", "tickets", "customer_id")
                 },
                 Operation = "=",
-                Right = new ValueExpressionNode()
+                Right = new ValueExpressionNode
                 {
                     Value = "1234",
                     Type = ValueExpressionNode.ValueExpressionType.String
                 }
-            }); 
-        
+            });
+
         dataSources.ShouldContainSelect(
-            expectedFrom: new TableSpecifier("erp", "employee"),
-            expectedSelect: [new AttributeSpecifier("erp", "employee", "name")],
+            new TableSpecifier("erp", "employee"),
+            [new AttributeSpecifier("erp", "employee", "name")],
             expectedWhere: new BinaryOperatorExpressionNode
             {
                 Left = new FullySpecifiedColumnExpressionNode
                 {
-                    Attribute = new AttributeSpecifier("erp", "employee", "name"),
+                    Attribute = new AttributeSpecifier("erp", "employee", "name")
                 },
                 Operation = "=",
-                Right = new ValueExpressionNode()
+                Right = new ValueExpressionNode
                 {
                     Value = "Philipp",
                     Type = ValueExpressionNode.ValueExpressionType.String
                 }
-            }); 
+            });
     }
 }

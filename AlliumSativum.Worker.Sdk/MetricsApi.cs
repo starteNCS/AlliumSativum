@@ -1,6 +1,6 @@
 namespace AlliumSativum.Worker.Sdk;
 
-public sealed class MetricsApi 
+public sealed class MetricsApi
 {
     private readonly Metrics.MetricsClient _metricsClient;
 
@@ -8,7 +8,7 @@ public sealed class MetricsApi
     {
         _metricsClient = metricsClient;
     }
-    
+
     public async Task TriggerMetricsScrapeAsync(Guid dataSource)
     {
         await _metricsClient.ScrapeMetricsAsync(new DataSourceSelector

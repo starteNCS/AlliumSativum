@@ -25,7 +25,7 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
                 Data = [],
                 Materialized = true,
                 ActualCardinality = 0,
-                ActualCost = stopwatch.Elapsed.TotalMilliseconds,
+                ActualCost = stopwatch.Elapsed.TotalMilliseconds
             };
 
             return Task.FromResult<PlanOperator>(pop);
@@ -35,14 +35,14 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
 
         var minJoinKey = joinKeys.FirstOrDefault(aSpec => minData[0].TryGetValue(aSpec.ToDictKey(), out _));
         if (minJoinKey is null)
-        {
-            throw new AsSQLExecuteException("Did not find a valid join key for the hash join operator. Join keys: " + string.Join(", ", joinKeys.Select(k => k.ToDictKey())) + ". Data keys: " + string.Join(", ", minData[0].Keys));
-        }
-        var maxJoinKey = joinKeys.FirstOrDefault(aSpec => maxData[0].TryGetValue(aSpec.ToDictKey(), out var _));
+            throw new AsSQLExecuteException("Did not find a valid join key for the hash join operator. Join keys: " +
+                                            string.Join(", ", joinKeys.Select(k => k.ToDictKey())) + ". Data keys: " +
+                                            string.Join(", ", minData[0].Keys));
+        var maxJoinKey = joinKeys.FirstOrDefault(aSpec => maxData[0].TryGetValue(aSpec.ToDictKey(), out _));
         if (maxJoinKey is null)
-        {
-            throw new AsSQLExecuteException("Did not find a valid join key for the hash join operator. Join keys: " + string.Join(", ", joinKeys.Select(k => k.ToDictKey())) + ". Data keys: " + string.Join(", ", maxData[0].Keys));
-        }
+            throw new AsSQLExecuteException("Did not find a valid join key for the hash join operator. Join keys: " +
+                                            string.Join(", ", joinKeys.Select(k => k.ToDictKey())) + ". Data keys: " +
+                                            string.Join(", ", maxData[0].Keys));
 
         var result = new List<Dictionary<string, object>>();
 
@@ -50,10 +50,7 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
 
         foreach (var item in minData)
         {
-            if (!item.TryGetValue(minJoinKey.ToDictKey(), out var key) || key == null)
-            {
-                continue;
-            }
+            if (!item.TryGetValue(minJoinKey.ToDictKey(), out var key) || key == null) continue;
 
             if (!hashTable.TryGetValue(GetJsonContent(key), out var list))
             {
@@ -66,23 +63,14 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
 
         foreach (var item in maxData)
         {
-            if (!item.TryGetValue(maxJoinKey.ToDictKey(), out var probeKey) || probeKey == null)
-            {
-                continue;
-            }
+            if (!item.TryGetValue(maxJoinKey.ToDictKey(), out var probeKey) || probeKey == null) continue;
 
-            if (!hashTable.TryGetValue(GetJsonContent(probeKey), out var matches))
-            {
-                continue;
-            }
+            if (!hashTable.TryGetValue(GetJsonContent(probeKey), out var matches)) continue;
 
             foreach (var match in matches)
             {
                 var merged = Merge(item, match);
-                if (pop.Expression.EvaluatePredicate(merged))
-                {
-                    result.Add(merged);
-                }
+                if (pop.Expression.EvaluatePredicate(merged)) result.Add(merged);
             }
         }
 
@@ -93,7 +81,7 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
             Data = result,
             Materialized = true,
             ActualCardinality = result.Count,
-            ActualCost = stopwatch.Elapsed.TotalMilliseconds,
+            ActualCost = stopwatch.Elapsed.TotalMilliseconds
         };
 
         return Task.FromResult<PlanOperator>(pop);
@@ -102,25 +90,16 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
     private static Dictionary<string, object> Merge(Dictionary<string, object> left, Dictionary<string, object> right)
     {
         var merged = new Dictionary<string, object>(left);
-        foreach (var kvp in right)
-        {
-            merged[kvp.Key] = kvp.Value;
-        }
+        foreach (var kvp in right) merged[kvp.Key] = kvp.Value;
 
         return merged;
     }
 
     private object GetJsonContent(object obj)
     {
-        if (obj is not JsonElement json)
-        {
-            return obj;
-        }
+        if (obj is not JsonElement json) return obj;
 
-        if (json.ValueKind == JsonValueKind.Number)
-        {
-            return json.GetDouble();
-        }
+        if (json.ValueKind == JsonValueKind.Number) return json.GetDouble();
 
         return json.ToString();
     }

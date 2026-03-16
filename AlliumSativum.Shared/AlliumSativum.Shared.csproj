@@ -11,19 +11,19 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+        <PackageReference Include="MathNet.Numerics" Version="5.0.0"/>
         <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4"/>
         <PackageReference Include="Dapper.Extensions.PostgreSQL" Version="5.4.2"/>
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1"/>
         <PackageReference Include="dbup-postgresql" Version="6.1.5"/>
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.1"/>
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.1"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.AspNetCore">
-        <HintPath>..\..\..\..\.dotnet\shared\Microsoft.AspNetCore.App\10.0.0\Microsoft.AspNetCore.dll</HintPath>
-      </Reference>
+        <Reference Include="Microsoft.AspNetCore">
+            <HintPath>..\..\..\..\.dotnet\shared\Microsoft.AspNetCore.App\10.0.0\Microsoft.AspNetCore.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
 </Project>

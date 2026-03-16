@@ -8,12 +8,12 @@ namespace AlliumSativum.QueryExecutor;
 
 public sealed class QueryExecutor
 {
-    private readonly ProjectPlanOperatorExecutor _projectPlanOperatorExecutor;
     private readonly FilterPlanOperatorExecutor _filterPlanOperatorExecutor;
-    private readonly PushdownSqlPlanOperatorExecutor _pushdownSqlPlanOperatorExecutor;
-    private readonly PushdownRestPlanOperatorExecutor _pushdownRestPlanOperatorExecutor;
-    private readonly NestedLoopJoinPlanOperatorExecutor _nestedLoopJoinPlanOperatorExecutor;
     private readonly HashJoinPlanOperatorExecutor _hashJoinPlanOperatorExecutor;
+    private readonly NestedLoopJoinPlanOperatorExecutor _nestedLoopJoinPlanOperatorExecutor;
+    private readonly ProjectPlanOperatorExecutor _projectPlanOperatorExecutor;
+    private readonly PushdownRestPlanOperatorExecutor _pushdownRestPlanOperatorExecutor;
+    private readonly PushdownSqlPlanOperatorExecutor _pushdownSqlPlanOperatorExecutor;
 
     public QueryExecutor(
         ProjectPlanOperatorExecutor projectPlanOperatorExecutor,
@@ -30,31 +30,28 @@ public sealed class QueryExecutor
         _nestedLoopJoinPlanOperatorExecutor = nestedLoopJoinPlanOperatorExecutor;
         _hashJoinPlanOperatorExecutor = hashJoinPlanOperatorExecutor;
     }
-    
+
     public async Task<List<Dictionary<string, object>>> ExecuteAsync(ParallelQueryExecutionPlan root)
     {
         if (root.AwaitableStacks.Count > 0)
-        {
             // hand off to workers, especially those close to the data source
             await Task.WhenAll(root.AwaitableStacks.Select(ExecuteAsync));
-        }
 
         PlanOperator? latestPop = null;
         while (root.Continuation.Count > 0)
         {
             latestPop = root.Continuation.Pop();
-            
+
             latestPop = await (latestPop switch
             {
                 ProjectPlanOperator project => _projectPlanOperatorExecutor.ExecuteAsync(project),
                 FilterPlanOperator filter => _filterPlanOperatorExecutor.ExecuteAsync(filter),
                 PushdownSqlPlanOperator pushdown => _pushdownSqlPlanOperatorExecutor.ExecuteAsync(pushdown),
-                PushdownRestCallPlanOperator pushdown => _pushdownRestPlanOperatorExecutor.ExecuteAsync(pushdown), 
+                PushdownRestCallPlanOperator pushdown => _pushdownRestPlanOperatorExecutor.ExecuteAsync(pushdown),
                 NestedLoopJoinPlanOperator join => _nestedLoopJoinPlanOperatorExecutor.ExecuteAsync(join),
                 HashJoinPlanOperator join => _hashJoinPlanOperatorExecutor.ExecuteAsync(join),
                 _ => throw new NotSupportedException($"Unsupported plan operator: {latestPop.GetType().Name}")
             });
-            
         }
 
         return latestPop?.ExecutionData.Data ?? [];

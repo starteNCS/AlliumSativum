@@ -15,12 +15,12 @@ namespace AlliumSativum.Optimize;
 
 public sealed class Optimizer
 {
-    private readonly IPlannerApi _planner;
+    private readonly ICostModel _costModel;
     private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
     private readonly JoinOptimizer _joinOptimizer;
+    private readonly IPlannerApi _planner;
     private readonly SelectOptimizer _selectOptimizer;
     private readonly WhereOptimizer _whereOptimizer;
-    private readonly ICostModel _costModel;
 
     public Optimizer(
         IPlannerApi planner,
@@ -37,24 +37,24 @@ public sealed class Optimizer
         _whereOptimizer = whereOptimizer;
         _costModel = costModel;
     }
-    
+
     /// <summary>
-    /// Optimizes the given SelectBaseModel into a QueryExecutionPlan
-    /// Operates in multiple steps:
-    /// (✅ implementation, ☑️ test)
-    /// - create on-premise only join tree ✅ ☑️
-    /// - split the given model into TABLES ✅ ☑️
-    /// - check which WHERE expressions can be 100% assigned to one table ✅ ☑️ 
-    /// - append hidden selects ✅ ☑️
-    /// - check joins, merge multiple tables into one sub plan if possible ✅ ☑️
-    /// - check WHERE again, if any more can be pushed down ✅
-    /// - propose to the worker ✅
-    /// - check what it did not accept and add POP's to the plan accordingly
-    /// - Join Order Optimization of on-premise joins
-    /// - rule/cost-based check what POP's can be accumulated for cost reduction (if any) 
-    /// - accumulate cost
-    /// - return plan with cost
-    /// - 
+    ///     Optimizes the given SelectBaseModel into a QueryExecutionPlan
+    ///     Operates in multiple steps:
+    ///     (✅ implementation, ☑️ test)
+    ///     - create on-premise only join tree ✅ ☑️
+    ///     - split the given model into TABLES ✅ ☑️
+    ///     - check which WHERE expressions can be 100% assigned to one table ✅ ☑️
+    ///     - append hidden selects ✅ ☑️
+    ///     - check joins, merge multiple tables into one sub plan if possible ✅ ☑️
+    ///     - check WHERE again, if any more can be pushed down ✅
+    ///     - propose to the worker ✅
+    ///     - check what it did not accept and add POP's to the plan accordingly
+    ///     - Join Order Optimization of on-premise joins
+    ///     - rule/cost-based check what POP's can be accumulated for cost reduction (if any)
+    ///     - accumulate cost
+    ///     - return plan with cost
+    ///     -
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
@@ -63,27 +63,22 @@ public sealed class Optimizer
     {
         var stopwatch = Stopwatch.StartNew();
         var projections = new HashSet<AttributeSpecifier>();
-        foreach (var select in model.Select)
-        {
-            projections.Add((AttributeSpecifier) select);
-        }
-        
+        foreach (var select in model.Select) projections.Add((AttributeSpecifier)select);
+
         // create on-premise only join tree
         var (onPremiseJoins, additionalSelectAttributesNeededForJoin) = _joinOptimizer.ConstructOnPremiseJoin(model);
-        foreach (var select in additionalSelectAttributesNeededForJoin)
-        {
-            projections.Add(select);
-        }
-        
-        
+        foreach (var select in additionalSelectAttributesNeededForJoin) projections.Add(select);
+
+
         // split the given model into TABLES
         var (onPremise, tables) = SplitIntoTables(model, projections);
         tables = _selectOptimizer.AppendComputationalSelects(tables, additionalSelectAttributesNeededForJoin);
-        
+
         // check joins, merge multiple tables into one sub plan if possible
-        var (joinsLeftOnPremise, joinedTableSelect) = _joinOptimizer.CombineTablesByJoinPushDown(onPremise.Join, tables);
+        var (joinsLeftOnPremise, joinedTableSelect) =
+            _joinOptimizer.CombineTablesByJoinPushDown(onPremise.Join, tables);
         onPremise.Join = joinsLeftOnPremise;
-        
+
         // check WHERE again, if any more can be pushed down
         _whereOptimizer.AssignWhereToJoinedProposals(onPremise, joinedTableSelect);
 
@@ -92,44 +87,34 @@ public sealed class Optimizer
         foreach (var select in joinedTableSelect)
         {
             var (plannedProposals, unplanned) = await _planner.PlanQueryAsync(select);
-            if (plannedProposals.Count == 0)
-            {
-                throw new AsSqlOptimizeException("Expected pushdown plan, but got none");
-            }
-            
+            if (plannedProposals.Count == 0) throw new AsSqlOptimizeException("Expected pushdown plan, but got none");
+
             // add all projections. Since projections is a hash map, duplicates are not an issue, but hidden
             // attributes are added as well, which is important for the final projection at the end of the optimization process
-            foreach (var x in unplanned?.Select ?? [])
-            {
-                projections.Add((AttributeSpecifier)x);
-            }
+            foreach (var x in unplanned?.Select ?? []) projections.Add((AttributeSpecifier)x);
 
             foreach (var plannedProposal in plannedProposals)
             {
                 var wrappedResult = await WrapPlanProposalWithMissingPopsAsync(plannedProposal, onPremise, unplanned);
                 plans.Add(wrappedResult.PlannedItems.AffectedTables, wrappedResult.Plan);
             }
-            
+
             // could not distribute WHERE fully, therefore the missing part needs to be added to the on-premise plan
             if (unplanned?.Where is not null)
-            {
                 onPremise.Where = _expressionNodeOptimizer.MergeCnfExpressions(onPremise.Where, unplanned.Where);
-            }
 
             // push all joins left to the intermediate join tree, so that they can be optimized together with the on-premise joins.
             // (where in fact, those joins are now also on-premise, since they cannot be executed at the worker without the planned tables)
             foreach (var join in unplanned?.Join ?? [])
             {
                 (onPremiseJoins, var attributes) = _joinOptimizer.AddJoinToIntermediateJoinTree(onPremiseJoins, join);
-                foreach (var attr in attributes)
-                {
-                    projections.Add(attr);
-                }
+                foreach (var attr in attributes) projections.Add(attr);
             }
         }
-        
-        var joinPlans = await _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTreeAsync(onPremiseJoins, plans, prune);
-        
+
+        var joinPlans =
+            await _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTreeAsync(onPremiseJoins, plans, prune);
+
         for (var i = 0; i < joinPlans.Count; i++)
         {
             var joinPlanRoot = joinPlans[i];
@@ -144,7 +129,7 @@ public sealed class Optimizer
                     Children = [joinPlanRoot],
                     ExpectedCardinality = distributionCost.Cardinality,
                     Selectivity = distributionCost.Selectivity,
-                    DistributionData = distributionCost.Distribution,
+                    DistributionData = distributionCost.Distribution
                 };
                 joinPlanRoot.Cost = _costModel.CalculateCost(joinPlanRoot);
             }
@@ -164,7 +149,7 @@ public sealed class Optimizer
                 joinPlanRoot.Cost = _costModel.CalculateCost(joinPlanRoot);
             }
         }
-        
+
         stopwatch.Stop();
         return joinPlans
             .Select(x => new QueryExecutionPlan
@@ -175,35 +160,35 @@ public sealed class Optimizer
             }).ToList();
     }
 
-    private async Task<PlanContainer> WrapPlanProposalWithMissingPopsAsync(PlanContainer planContainer, SelectBaseModel onPremise, SelectBaseModel? unplanned)
+    private async Task<PlanContainer> WrapPlanProposalWithMissingPopsAsync(PlanContainer planContainer,
+        SelectBaseModel onPremise, SelectBaseModel? unplanned)
     {
         // check if there are any pops, that are now exclusive to this proposal
-        planContainer.Plan = _selectOptimizer.HandleProjection(planContainer.Plan, planContainer.PlannedItems.From, unplanned);
+        planContainer.Plan =
+            _selectOptimizer.HandleProjection(planContainer.Plan, planContainer.PlannedItems.From, unplanned);
         planContainer.Plan = await _whereOptimizer.DistributeWhereToProposalsAsync(planContainer, onPremise, unplanned);
 
         return planContainer;
     }
 
     /// <summary>
-    /// Splits the provided (already parsed) query into multiple SelectBaseModels, one for each data source respectively
+    ///     Splits the provided (already parsed) query into multiple SelectBaseModels, one for each data source respectively
     /// </summary>
     /// <param name="model"></param>
     /// <returns>
     ///     - onPremise: whatever was not able to be split for data sources
     ///     - dataSources: the parts which should be checked for push down
     /// </returns>
-    public (SelectBaseModel onPremise, List<SelectBaseModel> dataSources) SplitIntoTables(SelectBaseModel model, HashSet<AttributeSpecifier> allProjections)
+    public (SelectBaseModel onPremise, List<SelectBaseModel> dataSources) SplitIntoTables(SelectBaseModel model,
+        HashSet<AttributeSpecifier> allProjections)
     {
         // new data sources may only be introduced in either JOIN or FROM
         var tables = model.Join
             .Select(j => j.Inner)
             .Append(model.From!);
 
-        if (model.Where is not null)
-        {
-            model.Where = BooleanExpressionParser.AsConjunctiveNormalForm(model.Where);
-        }
-        
+        if (model.Where is not null) model.Where = BooleanExpressionParser.AsConjunctiveNormalForm(model.Where);
+
 
         List<SelectBaseModel> selects = [];
         foreach (var table in tables)
@@ -217,7 +202,7 @@ public sealed class Optimizer
     }
 
     /// <summary>
-    /// Extracts a single table of the given SelectBaseModel
+    ///     Extracts a single table of the given SelectBaseModel
     /// </summary>
     /// <param name="model">Base model</param>
     /// <param name="table">Which table should be extracted</param>
@@ -225,36 +210,33 @@ public sealed class Optimizer
     ///     - base: what is left of the base model
     ///     - split: the split for this specific table
     /// </returns>
-    private (SelectBaseModel @base, SelectBaseModel split) ExtractTable(SelectBaseModel model, TableSpecifier table, HashSet<AttributeSpecifier> allProjections)
+    private (SelectBaseModel @base, SelectBaseModel split) ExtractTable(SelectBaseModel model, TableSpecifier table,
+        HashSet<AttributeSpecifier> allProjections)
     {
-        
         var extractedWhere = _expressionNodeOptimizer.ExtractExpression(model.Where, table);
         var hiddenSplitWhereAttributes = extractedWhere.split?.GetAttributesOfExpression() ?? [];
-        
+
         var selectModel = new SelectBaseModel
         {
             From = model.From,
             Join = model.Join,
             Where = extractedWhere.@base,
-            Select = model.Select,
+            Select = model.Select
         };
 
-        var split = new SelectBaseModel()
+        var split = new SelectBaseModel
         {
             From = table,
             Select = model.Select
                 .Where(spec => spec is AttributeSpecifier aSpec && aSpec.IsInTable(table))
                 .ToList()
                 .AppendHiddenAttributes(hiddenSplitWhereAttributes),
-            Join = [], 
+            Join = [],
             Where = extractedWhere.split
         };
 
-        foreach (var attr in hiddenSplitWhereAttributes)
-        {
-            allProjections.Add(attr);
-        }
-        
+        foreach (var attr in hiddenSplitWhereAttributes) allProjections.Add(attr);
+
         return (selectModel, split);
     }
 }
@@ -268,7 +250,7 @@ public static class OptimizerExtensions
         services.AddScoped<JoinOptimizer>();
         services.AddScoped<SelectOptimizer>();
         services.AddScoped<WhereOptimizer>();
-        
+
         return services;
     }
 }

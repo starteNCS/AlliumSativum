@@ -6,12 +6,12 @@ public static class HtmlClasses
     {
         return $"<span style=\"color: {color};\">{value}</span>";
     }
-    
+
     public static string Bold(string? value)
     {
         return $"<b>{value}</b>";
     }
-    
+
     public static string Italic(string? value)
     {
         return $"<i>{value}</i>";

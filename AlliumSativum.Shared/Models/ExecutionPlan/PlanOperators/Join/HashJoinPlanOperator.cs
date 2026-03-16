@@ -5,19 +5,27 @@ namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Join;
 
 public sealed class HashJoinPlanOperator : JoinPlanOperator
 {
-    public HashJoinPlanOperator(PlanOperator left, ExpressionNode expression, PlanOperator right) : base(left, expression, right)
+    public HashJoinPlanOperator(PlanOperator left, ExpressionNode expression, PlanOperator right) : base(left,
+        expression, right)
     {
     }
-    
+
     public static HashJoinPlanOperator FromJoinPop(JoinPlanOperator joinPop)
     {
         return new HashJoinPlanOperator(joinPop.Left, joinPop.Expression, joinPop.Right)
         {
-            DistributionData = joinPop.DistributionData,
+            DistributionData = joinPop.DistributionData
         };
     }
 
-    protected override string GetNodeInfo() => $"JOIN [HASH]: {Expression}";
-    protected override string GetNodeInfoHtml() =>
-        $"{HtmlClasses.Bold(HtmlClasses.Colored("JOIN", color: "green"))} [{HtmlClasses.Italic(HtmlClasses.Colored("HASH", color: "gray"))}]: {Expression}";
+    protected override string GetNodeInfo()
+    {
+        return $"JOIN [HASH]: {Expression}";
+    }
+
+    protected override string GetNodeInfoHtml()
+    {
+        return
+            $"{HtmlClasses.Bold(HtmlClasses.Colored("JOIN", "green"))} [{HtmlClasses.Italic(HtmlClasses.Colored("HASH", "gray"))}]: {Expression}";
+    }
 }

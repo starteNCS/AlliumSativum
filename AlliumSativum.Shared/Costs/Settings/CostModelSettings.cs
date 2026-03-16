@@ -24,7 +24,7 @@ public sealed class JoinCost
 {
     public NestedLoopJoinCost NestedLoop { get; set; }
     public HashJoinCost Hash { get; set; }
-    
+
     public sealed class NestedLoopJoinCost
     {
         public double BaseCost { get; set; }
@@ -36,4 +36,4 @@ public sealed class JoinCost
         public double PerAttributeHashTableInitiation { get; set; }
         public double PerAttributeHashTableLookup { get; set; }
     }
-} 
+}

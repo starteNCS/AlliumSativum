@@ -9,20 +9,17 @@ public static class DictionaryHelper
         var expando = new ExpandoObject();
         var expandoDict = (IDictionary<string, object>)expando;
 
-        foreach (var kvp in dictionary)
-        {
-            expandoDict[kvp.Key] = kvp.Value;
-        }
+        foreach (var kvp in dictionary) expandoDict[kvp.Key] = kvp.Value;
 
         return expando;
     }
-    
+
     public static Dictionary<string, TValue> PrefixKeys<TValue>(
-        this Dictionary<string, TValue> source, 
+        this Dictionary<string, TValue> source,
         string prefix)
     {
         return source.ToDictionary(
-            kvp => $"{prefix}{kvp.Key}", 
+            kvp => $"{prefix}{kvp.Key}",
             kvp => kvp.Value
         );
     }

@@ -10,10 +10,27 @@ namespace QueryPlanner.Tests.Parser;
 // more tests are run in BooleanExpressionParserTest
 public sealed class WhereSelectQueries
 {
-    private static readonly Tokenizer Tokenizer = new Tokenizer();
-    private static readonly TokenQueryParser TokenQueryParser = new TokenQueryParser();
-    
+    private static readonly Tokenizer Tokenizer = new();
+    private static readonly TokenQueryParser TokenQueryParser = new();
+
+    #region NegativeTests
+
+    [Test]
+    public void ShouldNotParse_MultipleWhereBlocks()
+    {
+        var query =
+            "SELECT erp->customers.name FROM erp->customers WHERE erp->customers.name='John Doe' WHERE erp->customers.age>25";
+        var tokens = Tokenizer.Tokenize(query);
+        Action action = () => TokenQueryParser.Parse(tokens);
+
+        action.ShouldThrowParseException("",
+            $"Only one {AsSqlKeywords.WHERE} statement is allowed. Please combine them using AND");
+    }
+
+    #endregion
+
     #region PositiveTests
+
     [Test]
     public void ShouldParse_SingleWhere()
     {
@@ -27,8 +44,8 @@ public sealed class WhereSelectQueries
         result.Select.ShouldContainAttributeSpecifier("erp", "customers", "name");
         result.Where.Should().NotBeNull();
         result.Where.ShouldBeBinaryOperator("=", new AttributeSpecifier("erp", "customers", "name"), "John Doe");
-    }    
-    
+    }
+
     [Test]
     public void ShouldParse_SingleWhere_VariableMapping()
     {
@@ -43,18 +60,6 @@ public sealed class WhereSelectQueries
         result.Where.Should().NotBeNull();
         result.Where.ShouldBeBinaryOperator("=", new VariableMappingSpecifier("c", "name"), "John Doe");
     }
-    #endregion
 
-    #region NegativeTests
-    [Test]
-    public void ShouldNotParse_MultipleWhereBlocks()
-    {
-        var query =
-            "SELECT erp->customers.name FROM erp->customers WHERE erp->customers.name='John Doe' WHERE erp->customers.age>25";
-        var tokens = Tokenizer.Tokenize(query);
-        Action action = () => TokenQueryParser.Parse(tokens);
-        
-        action.ShouldThrowParseException("", $"Only one {AsSqlKeywords.WHERE} statement is allowed. Please combine them using AND");
-    }
     #endregion
 }

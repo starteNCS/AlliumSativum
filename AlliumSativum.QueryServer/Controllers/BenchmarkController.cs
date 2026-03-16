@@ -10,9 +10,9 @@ namespace AlliumSativum.QueryServer.Controllers;
 public sealed class BenchmarkController
 {
     private readonly QueryCompiler _compiler;
-    private readonly QueryExecutor.QueryExecutor _queryExecutor;
     private readonly ICostModel _costModel;
     private readonly ILogger<BenchmarkController> _logger;
+    private readonly QueryExecutor.QueryExecutor _queryExecutor;
     private readonly ReconstructionDistanceService _reconstructionDistanceService;
 
     public BenchmarkController(
@@ -33,7 +33,7 @@ public sealed class BenchmarkController
     public async Task<dynamic> GetWinningPlanAccuracy([FromBody] List<string> queries)
     {
         var results = new List<BenchmarkPredictCorrectPlanResult>();
-        
+
         foreach (var query in queries)
         {
             var plans = await _compiler.CompileNoPruningAsync(query);
@@ -46,12 +46,13 @@ public sealed class BenchmarkController
                 plan.RootOperator.StripExecutionResultData();
                 benchmarks.Add(new BenchmarkPredictCorrectPlanSingleResult
                 {
-                    ActualCost = _costModel.TotalCost(plan.RootOperator, fromActualCost: true),
+                    ActualCost = _costModel.TotalCost(plan.RootOperator, true),
                     EstimatedCost = plan.TotalCost,
                     WasWinningPlan = plan == plans.MinBy(x => x.TotalCost)
                 });
-                
-                _logger.LogInformation("Handled plan no. {PlanNumber} (of {TotalCount} for query: {Query}.", index++, plans.Count, query);
+
+                _logger.LogInformation("Handled plan no. {PlanNumber} (of {TotalCount} for query: {Query}.", index++,
+                    plans.Count, query);
             }
 
             var orderedResults = benchmarks.OrderBy(x => x.ActualCost).ToList();
@@ -69,7 +70,7 @@ public sealed class BenchmarkController
                                100,
                 DurationAscendingMs = orderedResults.Select(x => x.ActualCost).ToList()
             });
-            
+
             _logger.LogInformation("Finished benchmarking query: {Query}.", query);
         }
 
@@ -87,9 +88,10 @@ public sealed class BenchmarkController
     {
         return _reconstructionDistanceService.ReconstructionSimilarityAsync(queries);
     }
-    
+
     [HttpGet("reconstructed-histograms/{dataSourceId:guid}")]
-    public Task<ReconstructionSimilarityResult> GetReconstructedHistograms([FromRoute] Guid dataSourceId, [FromQuery] List<string> ignore)
+    public Task<ReconstructionSimilarityResult> GetReconstructedHistograms([FromRoute] Guid dataSourceId,
+        [FromQuery] List<string> ignore)
     {
         return _reconstructionDistanceService.ReconstructionSimilarityOfDatasourceAsync(dataSourceId, ignore);
     }

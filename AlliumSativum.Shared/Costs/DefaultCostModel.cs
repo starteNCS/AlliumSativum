@@ -1,20 +1,16 @@
 using AlliumSativum.Shared.Costs.Settings;
 using AlliumSativum.Shared.Database;
-using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Join;
-using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
-using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
-using AlliumSativum.Shared.Utils;
 using Microsoft.Extensions.Options;
 
 namespace AlliumSativum.Shared.Costs;
 
 /// <summary>
-/// Default cost model, should be okay-ish for all types of data source, but connectors maybe need to implement their
-/// own, to fit their specific needs
+///     Default cost model, should be okay-ish for all types of data source, but connectors maybe need to implement their
+///     own, to fit their specific needs
 /// </summary>
 public sealed partial class DefaultCostModel : ICostModel
 {
@@ -30,28 +26,23 @@ public sealed partial class DefaultCostModel : ICostModel
     }
 
     /// <summary>
-    /// Iterates through the POP-tree and calculates the total cost of the plan, by summing up the cost of each operator
+    ///     Iterates through the POP-tree and calculates the total cost of the plan, by summing up the cost of each operator
     /// </summary>
     /// <param name="planOperator"></param>
     /// <returns></returns>
     public double TotalCost(PlanOperator? planOperator, bool fromActualCost = false)
     {
-        if (planOperator == null)
-        {
-            return 0;
-        }
+        if (planOperator == null) return 0;
 
         // If there are no children, the cost is just this node's cost
         if (planOperator.Children.Count == 0)
-        {
-            return fromActualCost 
-                ? planOperator.ExecutionData.ActualCost 
+            return fromActualCost
+                ? planOperator.ExecutionData.ActualCost
                 : planOperator.Cost;
-        }
 
         // Recursively find the total cost of each child's branch
         // and pick the maximum (the "more expensive" parallel path)
-        double maxChildBranchCost = planOperator.Children
+        var maxChildBranchCost = planOperator.Children
             .Select(child => TotalCost(child, fromActualCost))
             .Max();
 
@@ -61,14 +52,14 @@ public sealed partial class DefaultCostModel : ICostModel
     }
 
     /// <summary>
-    /// Calculates the cost of a given plan operator
+    ///     Calculates the cost of a given plan operator
     /// </summary>
     /// <remarks>
-    /// All other fields must already be initialized, as the cost of a plan operator may depend on them
+    ///     All other fields must already be initialized, as the cost of a plan operator may depend on them
     /// </remarks>
     /// <param name="op"></param>
     /// <returns>
-    /// The cost for ONLY the given plan operator
+    ///     The cost for ONLY the given plan operator
     /// </returns>
     public double CalculateCost(PlanOperator op)
     {
@@ -83,41 +74,42 @@ public sealed partial class DefaultCostModel : ICostModel
 
     private double CalculateProjectCost(ProjectPlanOperator project)
     {
-        return _settings.Project.BaseCost 
-               + project.ExpectedCardinality 
+        return _settings.Project.BaseCost
+               + project.ExpectedCardinality
                * (project.Attributes.Count * _settings.Project.PerAttributeCost);
     }
-    
+
     private double CalculateFilterCost(FilterPlanOperator filter)
     {
         var numberOfExpressions = filter.Expression.GetExpressionsCount();
 
         double costPerRow = 0;
         foreach (var typedCount in numberOfExpressions)
-        {
             costPerRow += typedCount.Key switch
             {
                 ValueExpressionNode.ValueExpressionType.String => _settings.Filter.PerAttributeCostString,
                 ValueExpressionNode.ValueExpressionType.Numeric => _settings.Filter.PerAttributeCostNumeric,
                 _ => -1
             };
-        }
-        
-        return _settings.Filter.BaseCost 
+
+        return _settings.Filter.BaseCost
                + filter.ExpectedCardinality * costPerRow;
     }
-    
+
     private double CalculateJoinCost(JoinPlanOperator join)
     {
         return join switch
         {
-            NestedLoopJoinPlanOperator nlj => 
-                _settings.Join.NestedLoop.BaseCost 
-                + (nlj.Left.ExpectedCardinality * nlj.Right.ExpectedCardinality) * _settings.Filter.PerAttributeCostNumeric,
-            HashJoinPlanOperator hj => 
+            NestedLoopJoinPlanOperator nlj =>
+                _settings.Join.NestedLoop.BaseCost
+                + nlj.Left.ExpectedCardinality * nlj.Right.ExpectedCardinality *
+                _settings.Filter.PerAttributeCostNumeric,
+            HashJoinPlanOperator hj =>
                 _settings.Join.Hash.BaseCost
-                + Math.Min(hj.Left.ExpectedCardinality, hj.Right.ExpectedCardinality) * _settings.Join.Hash.PerAttributeHashTableInitiation
-                + Math.Max(hj.Left.ExpectedCardinality, hj.Right.ExpectedCardinality) * (_settings.Join.Hash.PerAttributeHashTableLookup + _settings.Filter.PerAttributeCostNumeric),
+                + Math.Min(hj.Left.ExpectedCardinality, hj.Right.ExpectedCardinality) *
+                _settings.Join.Hash.PerAttributeHashTableInitiation
+                + Math.Max(hj.Left.ExpectedCardinality, hj.Right.ExpectedCardinality) *
+                (_settings.Join.Hash.PerAttributeHashTableLookup + _settings.Filter.PerAttributeCostNumeric),
             MergeSortJoinPlanOperator mj => double.MaxValue,
             _ => throw new ArgumentException("Unsupported join in cost calculation")
         };

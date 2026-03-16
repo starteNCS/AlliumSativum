@@ -27,7 +27,7 @@ public class IntermediateJoinTreeTableSpecifier : TableSpecifier, IIntermediateJ
 public class IntermediateJoinNode : IIntermediateJoinNode
 {
     public required IIntermediateJoinNode Left { get; set; }
-    
+
     public required ExpressionNode Expression { get; init; }
 
     public required IIntermediateJoinNode Right { get; set; }

@@ -11,14 +11,11 @@ public sealed class RawSelectModel
 
     public bool Validate()
     {
-        if (Select == null || From == null)
-        {
-            return false;
-        }
+        if (Select == null || From == null) return false;
 
         return true;
     }
-    
+
     public void Add(string type, string value)
     {
         if (type.Contains(AsSqlKeywords.JOIN))
@@ -26,7 +23,7 @@ public sealed class RawSelectModel
             Join.Add($"{type} {value}"); // with every operator except join we can infer the type of operator from the field
             return;
         }
-        
+
         switch (type)
         {
             case AsSqlKeywords.SELECT:

@@ -1,1 +1,2 @@
-ALTER TABLE Catalog.Attributes ADD COLUMN MeanBinHeight double precision;
+ALTER TABLE Catalog.Attributes
+    ADD COLUMN MeanBinHeight double precision;

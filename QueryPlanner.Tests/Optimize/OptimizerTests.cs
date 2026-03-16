@@ -111,7 +111,8 @@ public sealed class OptimizerTests
     {
         var select = SelectBaseModelHelper.FromAsSql("SELECT t.subject FROM ticket->tickets t");
         var planner = Substitute.For<IPlannerApi>();
-        planner.PlanQueryAsync(Arg.Any<SelectBaseModel>()).Returns(Task.FromResult<(PlanOperator?, SelectBaseModel?)>((null, null)));
+        planner.PlanQueryAsync(Arg.Any<SelectBaseModel>())
+            .Returns(Task.FromResult<(PlanOperator?, SelectBaseModel?)>((null, null)));
         var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
 
         var act = async () => await optimizer.OptimizeAsync(select);
@@ -148,17 +149,17 @@ public sealed class OptimizerTests
             plan.RootOperator.Should().BeOfType<PushdownSqlPlanOperator>();
         }
     }
-    
+
     [Test]
     public async Task Should_Optimize_Two_Joins_With_Same_Table_Diff_Source()
     {
         var select = SelectBaseModelHelper.FromAsSql("""
-            SELECT t.subject, tc.body, e.first_name, e.last_name 
-            FROM ticket->tickets t 
-            INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id 
-            INNER JOIN erp->employees e ON e.id = t.assigned_employee_id 
-            WHERE t.status = 'In Progress'
-            """);
+                                                     SELECT t.subject, tc.body, e.first_name, e.last_name 
+                                                     FROM ticket->tickets t 
+                                                     INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id 
+                                                     INNER JOIN erp->employees e ON e.id = t.assigned_employee_id 
+                                                     WHERE t.status = 'In Progress'
+                                                     """);
         var planner = CreatePlannerMock();
         var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
 
@@ -177,17 +178,17 @@ public sealed class OptimizerTests
             plan.RootOperator.Should().BeOfType<PushdownSqlPlanOperator>();
         }
     }
-    
+
     [Test]
     public async Task Should_Optimize_Two_Deep_Joins()
     {
         var select = SelectBaseModelHelper.FromAsSql("""
-            SELECT t.subject, tc.body, e.first_name, e.last_name, c.name 
-            FROM ticket->tickets t 
-            INNER JOIN erp->employees e ON e.id = t.assigned_employee_id 
-            INNER JOIN erp->customers c ON c.id = e.customer_id 
-            WHERE t.status = 'In Progress'
-            """);
+                                                     SELECT t.subject, tc.body, e.first_name, e.last_name, c.name 
+                                                     FROM ticket->tickets t 
+                                                     INNER JOIN erp->employees e ON e.id = t.assigned_employee_id 
+                                                     INNER JOIN erp->customers c ON c.id = e.customer_id 
+                                                     WHERE t.status = 'In Progress'
+                                                     """);
         var planner = CreatePlannerMock();
         var optimizer = new Optimizer(planner, ExpressionOptimizer, JoinOptimizer, SelectOptimizer, WhereOptimizer);
 

@@ -6,7 +6,7 @@ public sealed class ExecutorWrapper
 {
     public PlanOperator PlanOperator { get; set; }
     public List<Dictionary<string, object>> Result { get; set; }
-    
+
     public long FactualCardinality { get; set; }
     public double FactualCost { get; set; }
 }

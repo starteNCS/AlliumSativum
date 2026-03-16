@@ -3,16 +3,21 @@ namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 public class PartialColumnExpressionNode : ExpressionNode
 {
     public string Name { get; set; } = string.Empty;
-    public override string ToString() => $"[{Name}]";
-    public override string ToSqlQueryString() => "invalid";
+
+    public override string ToString()
+    {
+        return $"[{Name}]";
+    }
+
+    public override string ToSqlQueryString()
+    {
+        return "invalid";
+    }
 
     public override bool Equals(object? obj)
     {
-        if (obj is not PartialColumnExpressionNode other)
-        {
-            return false;
-        }
-        
+        if (obj is not PartialColumnExpressionNode other) return false;
+
         return other.Name.Equals(Name);
     }
 

@@ -8,7 +8,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddConnectorSharedServices(this IServiceCollection services)
     {
         services.AddScoped<CatalogDistributionUtils>();
-        
+
         return services;
     }
 }

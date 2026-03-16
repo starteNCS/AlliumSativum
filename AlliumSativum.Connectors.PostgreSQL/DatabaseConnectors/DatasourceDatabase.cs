@@ -7,12 +7,12 @@ using Npgsql;
 
 namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 
-    public sealed class DatasourceDatabase
+public sealed class DatasourceDatabase
 {
-    private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 99);
-    private static Dictionary<Guid, string> _sConnections = new ();
-    
-    
+    private static readonly SemaphoreSlim _semaphoreSlim = new(1, 99);
+    private static readonly Dictionary<Guid, string> _sConnections = new();
+
+
     private readonly CatalogDatabase _catalogDatabase;
     private readonly ILogger<DatasourceDatabase> _logger;
 
@@ -21,14 +21,11 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
         _catalogDatabase = catalogDatabase;
         _logger = logger;
     }
-    
+
     public async Task<List<T>> QueryAsync<T>(Guid dataSource, string query, object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
-        if (connection is null)
-        {
-            throw new ArgumentException("Connection string may not be null");
-        }
+        if (connection is null) throw new ArgumentException("Connection string may not be null");
 
         _logger.LogDebug("Executing query against {DataSource}: {Query}", dataSource, query);
         try
@@ -48,14 +45,12 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
             await connection.DisposeAsync();
         }
     }
-    
-    public async Task<List<Dictionary<string, object>>> QueryAsync(Guid dataSource, string query, object? parameters = null)
+
+    public async Task<List<Dictionary<string, object>>> QueryAsync(Guid dataSource, string query,
+        object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
-        if (connection is null)
-        {
-            throw new ArgumentException("Connection string may not be null");
-        }
+        if (connection is null) throw new ArgumentException("Connection string may not be null");
 
         _logger.LogDebug("Executing query against {DataSource}: {Query}", dataSource, query);
         try
@@ -78,14 +73,11 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
             await connection.DisposeAsync();
         }
     }
-    
+
     public async Task<long> TimeQueryAsync(Guid dataSource, string query, object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
-        if (connection is null)
-        {
-            throw new ArgumentException("Connection string may not be null");
-        }
+        if (connection is null) throw new ArgumentException("Connection string may not be null");
 
         _logger.LogDebug("Executing timed query against {DataSource}", dataSource, query);
         try
@@ -111,15 +103,12 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
     public async Task<int> ExecuteAsync(Guid dataSource, string query, object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
-        if (connection is null)
-        {
-            throw new ArgumentException("Connection string may not be null");
-        }
+        if (connection is null) throw new ArgumentException("Connection string may not be null");
 
         _logger.LogDebug("Executing query against {DataSource}: {Query}", dataSource, query);
-        try 
+        try
         {
-            await connection.OpenAsync(); 
+            await connection.OpenAsync();
             var result = await connection.ExecuteAsync(query, parameters);
             await connection.CloseAsync();
             return result;
@@ -135,7 +124,7 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
         }
     }
 
-    private async Task<NpgsqlConnection?> GetConnectionStringForDataSource(Guid dataSource) 
+    private async Task<NpgsqlConnection?> GetConnectionStringForDataSource(Guid dataSource)
     {
         await _semaphoreSlim.WaitAsync();
         try
@@ -158,7 +147,8 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
             }
 
             return new NpgsqlConnection(connectionString);
-        }finally
+        }
+        finally
         {
             _semaphoreSlim.Release();
         }

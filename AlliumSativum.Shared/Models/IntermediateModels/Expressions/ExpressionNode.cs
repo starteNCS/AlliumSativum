@@ -5,33 +5,34 @@ namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 // fix empty output for ASP.NET endpoints
 [JsonPolymorphic(IgnoreUnrecognizedTypeDiscriminators = true)]
-[JsonDerivedType(typeof(PartialColumnExpressionNode), typeDiscriminator: "partial")]
-[JsonDerivedType(typeof(VariableMappingExpressionNode), typeDiscriminator: "variable")]
-[JsonDerivedType(typeof(FullySpecifiedColumnExpressionNode), typeDiscriminator: "fullySpecified")]
-[JsonDerivedType(typeof(ValueExpressionNode), typeDiscriminator: "value")]
-[JsonDerivedType(typeof(BinaryOperatorExpressionNode), typeDiscriminator: "binary")]
+[JsonDerivedType(typeof(PartialColumnExpressionNode), "partial")]
+[JsonDerivedType(typeof(VariableMappingExpressionNode), "variable")]
+[JsonDerivedType(typeof(FullySpecifiedColumnExpressionNode), "fullySpecified")]
+[JsonDerivedType(typeof(ValueExpressionNode), "value")]
+[JsonDerivedType(typeof(BinaryOperatorExpressionNode), "binary")]
 public abstract class ExpressionNode
 {
     public abstract string ToSqlQueryString();
     public abstract bool Equals(object? obj);
-    
+
     public bool IsPurelyTables(List<TableSpecifier> table)
     {
         return this switch
         {
             ValueExpressionNode => true,
-            FullySpecifiedColumnExpressionNode fully => table.Exists(x => x.TableName == fully.Attribute.TableName &&  x.DataSourceName == fully.Attribute.DataSourceName),
+            FullySpecifiedColumnExpressionNode fully => table.Exists(x =>
+                x.TableName == fully.Attribute.TableName && x.DataSourceName == fully.Attribute.DataSourceName),
             BinaryOperatorExpressionNode binary =>
                 binary.Left.IsPurelyTables(table) && binary.Right.IsPurelyTables(table),
             _ => false
         };
     }
-    
+
     public List<AttributeSpecifier> GetAttributesOfExpression()
     {
         var results = new HashSet<AttributeSpecifier>();
         var stack = new Stack<ExpressionNode>();
-    
+
         stack.Push(this);
 
         while (stack.Count > 0)
@@ -50,7 +51,8 @@ public abstract class ExpressionNode
                     break;
 
                 case VariableMappingExpressionNode varMap:
-                    throw new ArgumentException($"Variable mapping is not expected at this point. Should have been expanded by the semantic transformer. Did not expect alias {varMap.VariableMapping.VariableName}");
+                    throw new ArgumentException(
+                        $"Variable mapping is not expected at this point. Should have been expanded by the semantic transformer. Did not expect alias {varMap.VariableMapping.VariableName}");
             }
         }
 
@@ -66,7 +68,7 @@ public abstract class ExpressionNode
     }
 
     /// <summary>
-    /// Returns the number of arithmetic expressions contained within this expression with the given type
+    ///     Returns the number of arithmetic expressions contained within this expression with the given type
     /// </summary>
     /// <returns></returns>
     public Dictionary<ValueExpressionNode.ValueExpressionType, int> GetExpressionsCount()
@@ -74,7 +76,7 @@ public abstract class ExpressionNode
         var counts = new Dictionary<ValueExpressionNode.ValueExpressionType, int>();
         var stack = new Stack<ExpressionNode>();
         stack.Push(this);
-        
+
         while (stack.Count > 0)
         {
             var current = stack.Pop();
@@ -85,16 +87,12 @@ public abstract class ExpressionNode
                     stack.Push(binary.Right);
                     stack.Push(binary.Left);
                     break;
-                
+
                 case ValueExpressionNode valueExpression:
                     if (counts.TryGetValue(valueExpression.Type, out var value))
-                    {
                         counts[valueExpression.Type] = ++value;
-                    }
                     else
-                    {
                         counts[valueExpression.Type] = 1;
-                    }
                     break;
             }
         }
@@ -108,6 +106,9 @@ public abstract class ExpressionNode
     public bool IsEquiJoin()
     {
         return this is BinaryOperatorExpressionNode binary &&
-               binary is { Operation: "=", Left: FullySpecifiedColumnExpressionNode, Right: FullySpecifiedColumnExpressionNode };
+               binary is
+               {
+                   Operation: "=", Left: FullySpecifiedColumnExpressionNode, Right: FullySpecifiedColumnExpressionNode
+               };
     }
 }

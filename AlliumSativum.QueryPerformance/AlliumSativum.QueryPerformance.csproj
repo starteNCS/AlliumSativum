@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AlliumSativum.QueryExecutor\AlliumSativum.QueryExecutor.csproj" />
-      <ProjectReference Include="..\AlliumSativum.QueryPlanner\AlliumSativum.QueryPlanner.csproj" />
+        <ProjectReference Include="..\AlliumSativum.QueryExecutor\AlliumSativum.QueryExecutor.csproj"/>
+        <ProjectReference Include="..\AlliumSativum.QueryPlanner\AlliumSativum.QueryPlanner.csproj"/>
     </ItemGroup>
 
 </Project>

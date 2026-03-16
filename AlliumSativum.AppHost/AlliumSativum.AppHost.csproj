@@ -9,13 +9,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AlliumSativum.QueryServer\AlliumSativum.QueryServer.csproj" />
-      <ProjectReference Include="..\AlliumSativum.Worker\AlliumSativum.Worker.csproj" />
+        <ProjectReference Include="..\AlliumSativum.QueryServer\AlliumSativum.QueryServer.csproj"/>
+        <ProjectReference Include="..\AlliumSativum.Worker\AlliumSativum.Worker.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.1.0" />
-      <PackageReference Include="Aspire.Hosting.Redis" Version="13.1.0" />
+        <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.1.0"/>
+        <PackageReference Include="Aspire.Hosting.Redis" Version="13.1.0"/>
     </ItemGroup>
 
 </Project>

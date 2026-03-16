@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AlliumSativum.Connectors.PostgreSQL.Models.ORM;
 
 public sealed class PostgresTablesModel

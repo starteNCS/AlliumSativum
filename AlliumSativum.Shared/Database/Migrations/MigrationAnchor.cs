@@ -1,4 +1,3 @@
-using System.Reflection;
 using AlliumSativum.Shared.Database;
 using DbUp;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +8,6 @@ namespace AlliumSativum.Shared.Migrations;
 // Anchor to reference in startUp
 public sealed class MigrationAnchor
 {
-    
 }
 
 public static class MigrationExtensions
@@ -25,10 +23,7 @@ public static class MigrationExtensions
 
         var result = upgradeEngine.PerformUpgrade();
 
-        if (!result.Successful)
-        {
-            throw new ArgumentException($"Could not run postgreSQL database {connectionString}");
-        }
+        if (!result.Successful) throw new ArgumentException($"Could not run postgreSQL database {connectionString}");
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Success! Database is up to date.");

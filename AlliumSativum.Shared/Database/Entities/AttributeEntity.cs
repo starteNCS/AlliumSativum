@@ -1,4 +1,3 @@
-using AlliumSativum.Shared.Enums;
 using AlliumSativum.Shared.Utils;
 
 namespace AlliumSativum.Shared.Database.Entities;
@@ -22,6 +21,7 @@ public sealed class AttributeEntity
     public double? Kurtosis { get; set; }
     public DistributionType DistributionType { get; set; }
     public string DataType { get; set; } = string.Empty;
-    
-    public bool IsNumeric => DataType is "smallint" or "integer" or "bigint" or "decimal" or "numeric" or "real" or "double precision";
+
+    public bool IsNumeric =>
+        DataType is "smallint" or "integer" or "bigint" or "decimal" or "numeric" or "real" or "double precision";
 }

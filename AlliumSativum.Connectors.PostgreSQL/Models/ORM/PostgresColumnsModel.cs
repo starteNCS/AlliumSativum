@@ -7,6 +7,7 @@ public sealed class PostgresColumnsModel
     public string ColumnName { get; set; } = string.Empty;
     public string DataType { get; set; } = string.Empty;
     public long MaximumOctetLength { get; set; }
-    
-    public bool IsNummeric => DataType is "smallint" or "integer" or "bigint" or "decimal" or "numeric" or "real" or "double precision";
+
+    public bool IsNummeric =>
+        DataType is "smallint" or "integer" or "bigint" or "decimal" or "numeric" or "real" or "double precision";
 }

@@ -8,10 +8,10 @@ public sealed class AttributePeakEntity
     public int Height { get; set; }
     public double StandardDeviation { get; set; }
     public double Mean { get; set; }
-    
-    
+
+
     /// <summary>
-    /// Density, NOT PART OF THE SQL MODEl
+    ///     Density, NOT PART OF THE SQL MODEl
     /// </summary>
     public double Density { get; set; }
 }

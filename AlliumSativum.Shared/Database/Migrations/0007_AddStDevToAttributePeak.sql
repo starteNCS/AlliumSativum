@@ -1,1 +1,2 @@
-ALTER TABLE Catalog.AttributePeaks ADD COLUMN StandardDeviation double precision;
+ALTER TABLE Catalog.AttributePeaks
+    ADD COLUMN StandardDeviation double precision;
