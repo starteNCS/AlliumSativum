@@ -1,11 +1,11 @@
 using System.Text;
 using AlliumSativum.Compiler;
-using AlliumSativum.Connectors.Shared;
 using AlliumSativum.QueryServer.Utils;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Utils;
 using Microsoft.AspNetCore.Mvc;
 using ScottPlot;
 using ScottPlot.Statistics;
@@ -16,22 +16,16 @@ namespace AlliumSativum.QueryServer.Controllers;
 [Route("[controller]")]
 public class HistogramController : Controller
 {
-    private readonly CatalogDatabase _catalog;
     private readonly QueryCompiler _compiler;
     private readonly ICostModel _costModel;
     private readonly DataUtils _dataUtils;
-    private readonly QueryExecutor.QueryExecutor _queryExecutor;
 
     public HistogramController(
-        CatalogDatabase catalog,
         QueryCompiler compiler,
-        QueryExecutor.QueryExecutor queryExecutor,
         ICostModel costModel,
         DataUtils dataUtils)
     {
-        _catalog = catalog;
         _compiler = compiler;
-        _queryExecutor = queryExecutor;
         _costModel = costModel;
         _dataUtils = dataUtils;
     }
@@ -39,11 +33,6 @@ public class HistogramController : Controller
     [HttpPost("reconstructed")]
     public async Task<IResult> GetReconstructedHistogram([FromBody] CompileInput query)
     {
-        List<Color> colors =
-        [
-            Color.FromHex("#6CD4FF"),
-            Color.FromHex("#FE938C")
-        ];
         var plt = new Plot();
 
         var plan = await _compiler.CompileAsync(query.Query);
@@ -132,7 +121,7 @@ public class HistogramController : Controller
 
             var parsed = await _dataUtils.LoadDataAsync(plan);
 
-            var (attribute, modes) =
+            var (attribute, _) =
                 DistributionUtils.CalculateDistribution(parsed.Select(x => (double?)x).ToList(), new AttributeEntity());
             attributes.Add(attribute);
 

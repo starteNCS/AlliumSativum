@@ -15,6 +15,15 @@ public class DataSourceSpecifier : ISpecifier, IEquatable<DataSourceSpecifier>
                DataSourceName == other.DataSourceName;
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is DataSourceSpecifier other)
+        {
+            return Equals(other);
+        }
+        return false;
+    }
+    
     public override string ToString()
     {
         return DataSourceName;
@@ -24,8 +33,7 @@ public class DataSourceSpecifier : ISpecifier, IEquatable<DataSourceSpecifier>
     {
         return new TableSpecifier(DataSourceName, tableName);
     }
-
-
+    
     public override int GetHashCode()
     {
         return DataSourceName.GetHashCode();

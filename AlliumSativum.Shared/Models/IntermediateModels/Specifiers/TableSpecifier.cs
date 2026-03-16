@@ -18,6 +18,16 @@ public class TableSpecifier : DataSourceSpecifier, IEquatable<TableSpecifier>
                TableName == other.TableName;
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is TableSpecifier other)
+        {
+            return Equals(other);
+        }
+
+        return false;
+    }
+
     public override string ToString()
     {
         return $"{base.ToString()}{AsSqlParameters.Attribute.DataSourceSeparator}{TableName}";

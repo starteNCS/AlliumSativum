@@ -110,7 +110,7 @@ public sealed partial class DefaultCostModel : ICostModel
                 _settings.Join.Hash.PerAttributeHashTableInitiation
                 + Math.Max(hj.Left.ExpectedCardinality, hj.Right.ExpectedCardinality) *
                 (_settings.Join.Hash.PerAttributeHashTableLookup + _settings.Filter.PerAttributeCostNumeric),
-            MergeSortJoinPlanOperator mj => double.MaxValue,
+            MergeSortJoinPlanOperator => double.MaxValue,
             _ => throw new ArgumentException("Unsupported join in cost calculation")
         };
     }

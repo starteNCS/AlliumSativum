@@ -7,6 +7,7 @@ public partial class Tokenizer
     [GeneratedRegex(@"('[^']*')|(,|\.|->|!=|>=|<=|=|<|>)|(\(|\))|(\w+)")]
     private static partial Regex JoinTokens();
 
+    // ReSharper disable once MemberCanBeMadeStatic.Global
     public Stack<string> Tokenize(string query)
     {
         query = query.Replace(@"\r\n", " ");

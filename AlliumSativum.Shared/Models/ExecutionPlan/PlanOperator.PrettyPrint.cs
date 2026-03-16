@@ -106,31 +106,6 @@ public abstract partial class PlanOperator
         return sb.ToString();
     }
 
-    private string GetDistributionDataInfo()
-    {
-        if (DistributionData.Count == 0) return string.Empty;
-
-        var sb = new StringBuilder();
-        sb
-            .Append(HtmlClasses.Bold("Distribution Data"))
-            .Append(": ");
-        foreach (var kvp in DistributionData)
-        {
-            sb.Append($"{kvp.Key}: {kvp.Value.DistributionType} ");
-
-            if (kvp.Value.Peaks.Count > 0)
-            {
-                sb.Append("(peaks ");
-                foreach (var str in kvp.Value.Peaks.OrderBy(x => x.Position)
-                             .Select(x => $"[{x.Height} at {x.Position}]")) sb.Append(str);
-
-                sb.Append("), ");
-            }
-        }
-
-        return sb.ToString().TrimEnd(' ', ',');
-    }
-
     protected abstract double GetActualSelectivityInfo();
 
     private string GetTargetPrecisionHtmlString(double target, double actual)
@@ -145,9 +120,9 @@ public abstract partial class PlanOperator
         return HtmlClasses.Colored($"{error:F2}%", color);
     }
 
-    private double GetTargetPrecision(double target, double actual)
+    private static double GetTargetPrecision(double target, double actual)
     {
-        if (target == 0) return 100;
+        if (Math.Abs(target) <= 0e-12) return 100;
 
         return (1 - Math.Abs(target - actual) / target) * 100;
     }

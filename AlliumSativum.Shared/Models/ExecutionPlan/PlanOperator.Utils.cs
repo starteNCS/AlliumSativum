@@ -4,7 +4,10 @@ public abstract partial class PlanOperator
 {
     public T? FindFirst<T>() where T : PlanOperator
     {
-        if (this is T t) return t;
+        if (this is T t)
+        {
+            return t;
+        }
 
         foreach (var child in Children)
         {

@@ -20,6 +20,11 @@ public sealed class JoinBaseModel
                && Inner.Equals(join.Inner)
                && Expression.Equals(join.Expression);
     }
+    
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(JoinType, Inner, Expression);
+    }
 
     /// <summary>
     ///     Returns the "other" table from a join (the table needed for the expression, rather than the newly joined table)

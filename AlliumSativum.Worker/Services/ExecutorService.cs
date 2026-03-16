@@ -24,12 +24,12 @@ public sealed class ExecutorService : Executor.ExecutorBase
     {
         var dataSource = await _catalog.GetDataSourceAsync(GetDataSourceIdFromPlanOperator(request));
         if (dataSource is null)
-            throw new AsSQLExecuteException("Data source not found for the given plan operator.",
+            throw new AsSqlExecuteException("Data source not found for the given plan operator.",
                 ConnectorType.Postgres);
 
         var planOperator = request.FromGrpcModel();
         if (planOperator is null)
-            throw new AsSQLExecuteException("Failed to convert the gRPC plan operator to the internal model.",
+            throw new AsSqlExecuteException("Failed to convert the gRPC plan operator to the internal model.",
                 ConnectorType.Postgres);
 
         var executor = _strategy.GetPlannerOfConnector(dataSource.Connector);

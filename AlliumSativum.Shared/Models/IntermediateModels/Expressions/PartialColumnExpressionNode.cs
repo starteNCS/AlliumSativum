@@ -21,6 +21,11 @@ public class PartialColumnExpressionNode : ExpressionNode
         return other.Name.Equals(Name);
     }
 
+    public override int GetHashCode()
+    {
+        return Name.GetHashCode();
+    }
+
     public override object? ResolveValue(Dictionary<string, object> row)
     {
         return null;

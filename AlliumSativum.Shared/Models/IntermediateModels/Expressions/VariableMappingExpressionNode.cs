@@ -20,9 +20,17 @@ public class VariableMappingExpressionNode : ExpressionNode
 
     public override bool Equals(object? obj)
     {
-        if (obj is not VariableMappingExpressionNode other) return false;
+        if (obj is VariableMappingExpressionNode other)
+        {
+            return other.VariableMapping.Equals(VariableMapping);
+        }
 
-        return other.VariableMapping.Equals(VariableMapping);
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return VariableMapping.GetHashCode();
     }
 
     public override object? ResolveValue(Dictionary<string, object> row)

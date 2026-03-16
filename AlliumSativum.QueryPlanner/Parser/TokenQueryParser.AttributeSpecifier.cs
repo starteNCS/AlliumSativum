@@ -6,7 +6,7 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser
 {
-    private ISpecifier GetVariableSpecifier(Stack<string> tokens)
+    private static ISpecifier GetVariableSpecifier(Stack<string> tokens)
     {
         if (!tokens.TryPop(out var variableName))
             throw new AsSqlParseException($"{variableName}", "expected variable name");
@@ -62,11 +62,11 @@ public partial class TokenQueryParser
         return datasourceSpecifier.ToTableSpecifier(tableName);
     }
 
-    private DataSourceSpecifier GetDataSourceSpecifier(Stack<string> tokens)
+    private static DataSourceSpecifier GetDataSourceSpecifier(Stack<string> tokens)
     {
-        if (!tokens.TryPop(out var datasource)) throw new AsSqlParseException("", "expected datasource name");
-
-        return new DataSourceSpecifier(datasource);
+        return !tokens.TryPop(out var datasource) 
+            ? throw new AsSqlParseException("", "expected datasource name") 
+            : new DataSourceSpecifier(datasource);
     }
 
     private ISpecifier GetVariableOrAttributeSpecifier(Stack<string> tokens)

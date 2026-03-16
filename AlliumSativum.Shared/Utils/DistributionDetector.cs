@@ -75,20 +75,20 @@ public static class DistributionDetector
             items.Reverse();
         }
 
-        if (values.First().Value < 0.4) return reverse ? false : IsPowerLaw(values, modes, true);
+        if (values.First().Value < 0.4) return !reverse && IsPowerLaw(values, modes, true);
 
         var wasPreviousHigher = false;
-        var previous = items.First();
+        var previous = items[0];
         foreach (var value in items.Skip(1))
         {
             // the next item may be a little higher than the previous one, but if it is way more than 10% higher, then it is not a power law distribution
-            if (value > previous * 1.1) return reverse ? false : IsPowerLaw(values, modes, true);
+            if (value > previous * 1.1) return !reverse && IsPowerLaw(values, modes, true);
 
             if (value > previous && value < previous * 1.1)
             {
                 if (wasPreviousHigher)
                     // if we have already seen a value that is higher than the previous one, and we see another one, then it is not a power law distribution
-                    return reverse ? false : IsPowerLaw(values, modes, true);
+                    return !reverse && IsPowerLaw(values, modes, true);
                 wasPreviousHigher = true;
             }
             else
@@ -170,6 +170,7 @@ public static class DistributionDetector
             if (gap > 0 && gap < minGap) minGap = gap;
         }
 
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
         return minGap == double.MaxValue ? 1.0 : minGap;
     }
 

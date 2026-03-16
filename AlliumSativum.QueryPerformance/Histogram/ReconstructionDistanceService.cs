@@ -1,5 +1,4 @@
 using AlliumSativum.Compiler;
-using AlliumSativum.Connectors.Shared;
 using AlliumSativum.QueryServer.Utils;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Database;
@@ -7,6 +6,7 @@ using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
+using AlliumSativum.Shared.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace AlliumSativum.QueryExecutor.Performance.Histogram;
@@ -68,9 +68,9 @@ public sealed class ReconstructionDistanceService
         {
             var plan = await _compiler.CompileAsync(query);
             if (plan.RootOperator is not ProjectPlanOperator pop)
-                throw new AsSQLExecuteException("QExP must end with a project operator");
+                throw new AsSqlExecuteException("QExP must end with a project operator");
             if (pop.Attributes.Count != 1)
-                throw new AsSQLExecuteException("QExP must project to exactly one attribute");
+                throw new AsSqlExecuteException("QExP must project to exactly one attribute");
 
             var parsed = await _dataUtils.LoadDataAsync(plan);
             var histogram = parsed

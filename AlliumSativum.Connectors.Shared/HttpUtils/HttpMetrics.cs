@@ -23,7 +23,7 @@ public sealed class HttpMetrics<T> where T : new()
     public long TotalElapsed { get; internal set; }
 }
 
-public sealed class HttpMetricsScraper
+public static class HttpMetricsScraper
 {
     public static async Task<HttpMetrics<T>> MeasureRequestAsync<T>(string url) where T : new()
     {

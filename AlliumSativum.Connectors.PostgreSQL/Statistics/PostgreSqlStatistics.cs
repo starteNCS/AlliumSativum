@@ -4,6 +4,7 @@ using AlliumSativum.Connectors.PostgreSQL.Models.ORM;
 using AlliumSativum.Connectors.Shared;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
+using AlliumSativum.Shared.Utils;
 using AlliumSavitum.Connectors.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -110,6 +111,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         var relationMetrics = new List<RelationEntity>();
         var attributeMetrics = new List<AttributeEntity>();
 
+        // ReSharper disable once UnusedVariable
         var warumUp = await _dataSource.TimeQueryAsync(dataSource, "SELECT 1");
 
         var accessTime = await _dataSource.TimeQueryAsync(dataSource,

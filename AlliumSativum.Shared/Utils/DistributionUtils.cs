@@ -1,9 +1,8 @@
 using AlliumSativum.Shared.Database.Entities;
-using AlliumSativum.Shared.Utils;
 
-namespace AlliumSativum.Connectors.Shared;
+namespace AlliumSativum.Shared.Utils;
 
-public sealed class DistributionUtils
+public static class DistributionUtils
 {
     public static (AttributeEntity attribute, List<AttributePeakEntity> modes) CalculateDistribution(
         List<double?> values, AttributeEntity attribute)
@@ -27,12 +26,12 @@ public sealed class DistributionUtils
         attribute.StandardDeviation = Math.Sqrt(attribute.Variance);
 
         double n = nonNullValues.Count;
-        attribute.Skewness = attribute.StandardDeviation == 0
+        attribute.Skewness = Math.Abs(attribute.StandardDeviation) <= 0e-12
             ? null
             : n / ((n - 1) * (n - 2)) * nonNullValues
                 .Select(value => Math.Pow((value - attribute.Mean) / attribute.StandardDeviation, 3))
                 .Sum();
-        attribute.Kurtosis = attribute.StandardDeviation == 0
+        attribute.Kurtosis = Math.Abs(attribute.StandardDeviation) <= 0e-12
             ? null
             : n / ((n - 1) * (n - 2)) * nonNullValues
                 .Select(value => Math.Pow((value - attribute.Mean) / attribute.StandardDeviation, 4))

@@ -24,4 +24,4 @@ builder.AddProject<AlliumSativum_QueryServer>("Query-Service")
     .WithReference(worker)
     .WaitFor(worker);
 
-builder.Build().Run();
+await builder.Build().RunAsync();

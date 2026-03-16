@@ -27,13 +27,13 @@ public sealed class JsonServerExecutor : IWorkerExecutor
     public async Task<ExecutorWrapper> ExecuteAsync(PlanOperator @operator)
     {
         if (@operator is not PushdownRestCallPlanOperator pushdown)
-            throw new AsSQLExecuteException(
+            throw new AsSqlExecuteException(
                 "Invalid plan operator type for TicketSystemExecutor. Expected PushdownRestCallPlanOperator.",
                 ConnectorType.JsonServer);
 
         var dataSource = await _catalog.GetDataSourceAsync(pushdown.DataSource);
         if (dataSource is null)
-            throw new AsSQLExecuteException($"Data source with id {pushdown.DataSource} not found",
+            throw new AsSqlExecuteException($"Data source with id {pushdown.DataSource} not found",
                 ConnectorType.JsonServer);
 
         var httpClient = _httpClientFactory.CreateClient("connector");

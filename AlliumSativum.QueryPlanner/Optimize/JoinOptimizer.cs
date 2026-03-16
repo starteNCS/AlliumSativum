@@ -74,58 +74,60 @@ public sealed class JoinOptimizer
             var rightPlans = await BuildSubtreesAsync(rightMask, tables, joins, memo, popLookupTable, prune);
 
             foreach (var left in leftPlans)
-            foreach (var right in rightPlans)
             {
-                // Find the expression that connects the 'left' set and 'right' set
-                var expression = FindExpressionForSets(leftMask, rightMask, tables, joins);
-
-                if (expression != null)
+                foreach (var right in rightPlans)
                 {
-                    // Merge distribution data
-                    var distributions = ((List<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>)
-                            [left.DistributionData, right.DistributionData])
-                        .SelectMany(d => d)
-                        .ToDictionary(kv => kv.Key, kv => kv.Value);
+                    // Find the expression that connects the 'left' set and 'right' set
+                    var expression = FindExpressionForSets(leftMask, rightMask, tables, joins);
 
-                    var costData =
-                        await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)expression,
-                            distributions,
-                            [left, right]);
-
-                    // Local helper to cleanly handle the pruning logic for all join types
-                    void ProcessPlan(PlanOperator plan)
+                    if (expression != null)
                     {
-                        plan.Cost = _costModel.CalculateCost(plan);
-                        if (!prune)
+                        // Merge distribution data
+                        var distributions = ((List<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>)
+                                [left.DistributionData, right.DistributionData])
+                            .SelectMany(d => d)
+                            .ToDictionary(kv => kv.Key, kv => kv.Value);
+
+                        var costData =
+                            await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)expression,
+                                distributions,
+                                [left, right]);
+
+                        // Local helper to cleanly handle the pruning logic for all join types
+                        void ProcessPlan(PlanOperator plan)
                         {
-                            results.Add(plan);
+                            plan.Cost = _costModel.CalculateCost(plan);
+                            if (!prune)
+                            {
+                                results.Add(plan);
+                            }
+                            else if (plan.Cost < minCost)
+                            {
+                                minCost = plan.Cost;
+                                cheapestPlanForMask = plan;
+                            }
                         }
-                        else if (plan.Cost < minCost)
-                        {
-                            minCost = plan.Cost;
-                            cheapestPlanForMask = plan;
-                        }
-                    }
 
-                    // --- Evaluate Nested Loop Join ---
-                    var nlj = new NestedLoopJoinPlanOperator(left, expression, right)
-                    {
-                        DistributionData = costData.Distribution,
-                        Selectivity = costData.Selectivity,
-                        ExpectedCardinality = costData.Cardinality
-                    };
-                    ProcessPlan(nlj);
-
-                    if (expression.IsEquiJoin())
-                    {
-                        // --- Evaluate Hash Join ---
-                        var hj = new HashJoinPlanOperator(left, expression, right)
+                        // --- Evaluate Nested Loop Join ---
+                        var nlj = new NestedLoopJoinPlanOperator(left, expression, right)
                         {
                             DistributionData = costData.Distribution,
                             Selectivity = costData.Selectivity,
                             ExpectedCardinality = costData.Cardinality
                         };
-                        ProcessPlan(hj);
+                        ProcessPlan(nlj);
+
+                        if (expression.IsEquiJoin())
+                        {
+                            // --- Evaluate Hash Join ---
+                            var hj = new HashJoinPlanOperator(left, expression, right)
+                            {
+                                DistributionData = costData.Distribution,
+                                Selectivity = costData.Selectivity,
+                                ExpectedCardinality = costData.Cardinality
+                            };
+                            ProcessPlan(hj);
+                        }
                     }
                 }
             }
@@ -150,7 +152,7 @@ public sealed class JoinOptimizer
         )?.Expression;
     }
 
-    private bool TableInMask(TableSpecifier table, int mask, List<TableSpecifier> allTables)
+    private static bool TableInMask(TableSpecifier table, int mask, List<TableSpecifier> allTables)
     {
         // 1. Find the position (index) of the table in our master list
         var index = allTables.IndexOf(table);
@@ -200,9 +202,12 @@ public sealed class JoinOptimizer
         return (joinsLeft, tablePlans);
     }
 
-    public TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectBaseModel> joinSelects)
+    public static TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectBaseModel> joinSelects)
     {
-        if (join.Inner == joinSelects[0].From) return joinSelects[1].From;
+        if (join.Inner == joinSelects[0].From)
+        {
+            return joinSelects[1].From;
+        }
 
         return joinSelects[0].From;
     }
@@ -235,7 +240,7 @@ public sealed class JoinOptimizer
     /// </summary>
     /// <param name="select"></param>
     /// <returns></returns>
-    public List<JoinBaseModel> GetOnlyMixedJoins(SelectBaseModel select)
+    public static List<JoinBaseModel> GetOnlyMixedJoins(SelectBaseModel select)
     {
         return select.Join
             .Where(join => join.GetJoinExpressionTable().DataSourceName != join.Inner.DataSourceName)

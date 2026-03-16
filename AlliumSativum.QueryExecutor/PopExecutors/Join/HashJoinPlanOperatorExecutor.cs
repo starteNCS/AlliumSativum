@@ -35,12 +35,12 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
 
         var minJoinKey = joinKeys.FirstOrDefault(aSpec => minData[0].TryGetValue(aSpec.ToDictKey(), out _));
         if (minJoinKey is null)
-            throw new AsSQLExecuteException("Did not find a valid join key for the hash join operator. Join keys: " +
+            throw new AsSqlExecuteException("Did not find a valid join key for the hash join operator. Join keys: " +
                                             string.Join(", ", joinKeys.Select(k => k.ToDictKey())) + ". Data keys: " +
                                             string.Join(", ", minData[0].Keys));
         var maxJoinKey = joinKeys.FirstOrDefault(aSpec => maxData[0].TryGetValue(aSpec.ToDictKey(), out _));
         if (maxJoinKey is null)
-            throw new AsSQLExecuteException("Did not find a valid join key for the hash join operator. Join keys: " +
+            throw new AsSqlExecuteException("Did not find a valid join key for the hash join operator. Join keys: " +
                                             string.Join(", ", joinKeys.Select(k => k.ToDictKey())) + ". Data keys: " +
                                             string.Join(", ", maxData[0].Keys));
 
@@ -95,11 +95,17 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
         return merged;
     }
 
-    private object GetJsonContent(object obj)
+    private static object GetJsonContent(object obj)
     {
-        if (obj is not JsonElement json) return obj;
+        if (obj is not JsonElement json)
+        {
+            return obj;
+        }
 
-        if (json.ValueKind == JsonValueKind.Number) return json.GetDouble();
+        if (json.ValueKind == JsonValueKind.Number)
+        {
+            return json.GetDouble();
+        }
 
         return json.ToString();
     }

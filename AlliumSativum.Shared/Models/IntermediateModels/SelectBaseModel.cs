@@ -61,9 +61,9 @@ public sealed class SelectBaseModel
         return stringBuilder.ToString();
     }
 
-    private StringBuilder AppendAsAttributeString(StringBuilder sb, AttributeSpecifier attribute)
+    private static void AppendAsAttributeString(StringBuilder sb, AttributeSpecifier attribute)
     {
-        return sb.Append(" AS ")
+        sb.Append(" AS ")
             .Append('"')
             .Append(attribute.DataSourceName)
             .Append(AsSqlParameters.Attribute.DataSourceSeparator)

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace AlliumSativum.Shared.Migrations;
 
 // Anchor to reference in startUp
+// ReSharper disable once UnusedType.Global
 public sealed class MigrationAnchor
 {
 }

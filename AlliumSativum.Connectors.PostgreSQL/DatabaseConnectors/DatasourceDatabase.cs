@@ -9,6 +9,7 @@ namespace AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 
 public sealed class DatasourceDatabase
 {
+    private const string ConnectionStringEmptyErrorMessage = "Connection string may not be null";
     private static readonly SemaphoreSlim _semaphoreSlim = new(1, 99);
     private static readonly Dictionary<Guid, string> _sConnections = new();
 
@@ -25,7 +26,7 @@ public sealed class DatasourceDatabase
     public async Task<List<T>> QueryAsync<T>(Guid dataSource, string query, object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
-        if (connection is null) throw new ArgumentException("Connection string may not be null");
+        if (connection is null) throw new ArgumentException("");
 
         _logger.LogDebug("Executing query against {DataSource}: {Query}", dataSource, query);
         try
@@ -50,7 +51,7 @@ public sealed class DatasourceDatabase
         object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
-        if (connection is null) throw new ArgumentException("Connection string may not be null");
+        if (connection is null) throw new ArgumentException(ConnectionStringEmptyErrorMessage);
 
         _logger.LogDebug("Executing query against {DataSource}: {Query}", dataSource, query);
         try
@@ -77,9 +78,8 @@ public sealed class DatasourceDatabase
     public async Task<long> TimeQueryAsync(Guid dataSource, string query, object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
-        if (connection is null) throw new ArgumentException("Connection string may not be null");
+        if (connection is null) throw new ArgumentException(ConnectionStringEmptyErrorMessage);
 
-        _logger.LogDebug("Executing timed query against {DataSource}", dataSource, query);
         try
         {
             var stopwatch = Stopwatch.StartNew();
@@ -103,7 +103,7 @@ public sealed class DatasourceDatabase
     public async Task<int> ExecuteAsync(Guid dataSource, string query, object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
-        if (connection is null) throw new ArgumentException("Connection string may not be null");
+        if (connection is null) throw new ArgumentException(ConnectionStringEmptyErrorMessage);
 
         _logger.LogDebug("Executing query against {DataSource}: {Query}", dataSource, query);
         try

@@ -161,7 +161,7 @@ public static class BooleanExpressionParser
         // Simple heuristic: if it starts with single quote or is a number, it's a value.
         // Otherwise, treat as column.
         var isTokenString = token.StartsWith('\'');
-        var isTokenDecimal = decimal.TryParse(token, out var d);
+        var isTokenDecimal = decimal.TryParse(token, out var _);
         if (isTokenString || isTokenDecimal)
             return new ValueExpressionNode
             {

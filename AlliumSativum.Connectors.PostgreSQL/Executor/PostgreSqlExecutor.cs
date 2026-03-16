@@ -21,7 +21,7 @@ public sealed class PostgreSqlExecutor : IWorkerExecutor
     public async Task<ExecutorWrapper> ExecuteAsync(PlanOperator @operator)
     {
         if (@operator is not PushdownSqlPlanOperator pushdown)
-            throw new AsSQLExecuteException(
+            throw new AsSqlExecuteException(
                 "Invalid plan operator type for PostgreSqlExecutor. Expected PushdownSqlPlanOperator.",
                 ConnectorType.Postgres);
 

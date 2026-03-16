@@ -27,6 +27,15 @@ public sealed class AttributeSpecifier : TableSpecifier, IEquatable<AttributeSpe
                AttributeName == other.AttributeName;
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is AttributeSpecifier other)
+        {
+            return Equals(other);
+        }
+        return false;
+    }
+
     public override string ToString()
     {
         return new StringBuilder()

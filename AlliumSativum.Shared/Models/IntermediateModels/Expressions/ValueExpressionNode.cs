@@ -32,6 +32,11 @@ public class ValueExpressionNode : ExpressionNode
 
         return other.Value.Equals(Value) && other.Type.Equals(Type);
     }
+    
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Value, Type);
+    }
 
     public override object? ResolveValue(Dictionary<string, object> row)
     {

@@ -2,9 +2,9 @@ using AlliumSativum.Shared.Enums;
 
 namespace AlliumSativum.Shared.Exceptions;
 
-public sealed class AsSQLExecuteException : AsSqlException
+public sealed class AsSqlExecuteException : AsSqlException
 {
-    public AsSQLExecuteException(string message, ConnectorType? connector = null) : base(message)
+    public AsSqlExecuteException(string message, ConnectorType? connector = null) : base(message)
     {
         Connector = connector;
     }

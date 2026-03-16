@@ -24,7 +24,7 @@ public class SemanticTransformer
         model.Select = CollapseVariableMappingsOfSpecifiers(model.VariableMappings, model.Select);
     }
 
-    private List<ISpecifier> CollapseVariableMappingsOfSpecifiers(List<VariableMapping> variableMappings,
+    private static List<ISpecifier> CollapseVariableMappingsOfSpecifiers(List<VariableMapping> variableMappings,
         List<ISpecifier> specifiers)
     {
         for (var index = 0; index < specifiers.Count; index++)

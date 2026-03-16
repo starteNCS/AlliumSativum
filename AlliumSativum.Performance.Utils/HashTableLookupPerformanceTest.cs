@@ -17,8 +17,12 @@ public class HashTableLookupPerformanceTest
         _hashTable = new Dictionary<string, object>();
 
         for (var i = 0; i < N; i++)
+        {
             if (Random.Shared.NextDouble() < 0.5)
+            {
                 _hashTable.Add(i.ToString(), i);
+            }
+        }
     }
 
     [Benchmark]

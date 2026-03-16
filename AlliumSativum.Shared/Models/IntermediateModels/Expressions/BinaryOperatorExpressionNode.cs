@@ -23,6 +23,11 @@ public class BinaryOperatorExpressionNode : ExpressionNode
         return other.Operation == Operation && other.Left.Equals(Left) && other.Right.Equals(Right);
     }
 
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Operation, Left, Right);
+    }
+    
     public override object? ResolveValue(Dictionary<string, object> row)
     {
         return null;

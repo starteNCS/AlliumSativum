@@ -4,6 +4,7 @@ using AlliumSativum.Connectors.Shared.HttpUtils;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Exceptions;
+using AlliumSativum.Shared.Utils;
 using AlliumSavitum.Connectors.Shared.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -12,14 +13,11 @@ namespace AlliumSativum.Connectors.JsonServer.Statistics;
 public sealed class JsonServerStatistics : IDataSourceStatistics
 {
     private readonly CatalogDatabase _catalog;
-    private readonly ILogger<JsonServerStatistics> _logger;
 
     public JsonServerStatistics(
-        CatalogDatabase catalog,
-        ILogger<JsonServerStatistics> logger)
+        CatalogDatabase catalog)
     {
         _catalog = catalog;
-        _logger = logger;
     }
 
     public async Task ScrapeStatistics(Guid dataSource)

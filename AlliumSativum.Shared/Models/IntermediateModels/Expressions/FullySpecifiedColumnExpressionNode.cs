@@ -25,6 +25,11 @@ public class FullySpecifiedColumnExpressionNode : ExpressionNode
 
         return other.Attribute.Equals(Attribute);
     }
+    
+    public override int GetHashCode()
+    {
+        return Attribute.GetHashCode();
+    }
 
     public override object? ResolveValue(Dictionary<string, object> row)
     {

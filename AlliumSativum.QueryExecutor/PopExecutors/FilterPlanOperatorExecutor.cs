@@ -12,9 +12,9 @@ public sealed class FilterPlanOperatorExecutor : IPlanOperatorExecutor<FilterPla
         var stopwatch = Stopwatch.StartNew();
 
         List<Dictionary<string, object>> result = [];
-        foreach (var item in pop.Children.Single().ExecutionData.Data)
-            if (pop.Expression.EvaluatePredicate(item))
-                result.Add(item);
+        result.AddRange(pop.Children
+            .Single().ExecutionData.Data
+            .Where(item => pop.Expression.EvaluatePredicate(item)));
 
         stopwatch.Stop();
         var executionData = new PlanOperatorExecutionData

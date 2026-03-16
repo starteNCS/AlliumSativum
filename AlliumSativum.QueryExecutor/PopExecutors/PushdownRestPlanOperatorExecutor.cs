@@ -23,9 +23,9 @@ public sealed class PushdownRestPlanOperatorExecutor : IPlanOperatorExecutor<Pus
     public async Task<PlanOperator> ExecuteAsync(PushdownRestCallPlanOperator pop)
     {
         var result = await _executorApi.ExecutePlanAsync(pop);
-        if (result == null) throw new AsSQLExecuteException("Execution of pushdown SQL plan operator failed.");
+        if (result == null) throw new AsSqlExecuteException("Execution of pushdown SQL plan operator failed.");
 
-        _logger.LogDebug("Successfully executed rest pushdown in {resultMs}ms (Pushdown content: {Content}",
+        _logger.LogDebug("Successfully executed rest pushdown in {ResultMs}ms (Pushdown content: {Content}",
             result.FactualCost, pop.Url);
 
         var executionData = new PlanOperatorExecutionData

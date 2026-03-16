@@ -21,11 +21,6 @@ public static class AsSqlKeywords
     {
         public const string INNER = "INNER";
 
-        // Only inner for now, as it is easier in combination with WHERE filters
-        //public const string LEFT = "LEFT";
-        //public const string RIGHT = "RIGHT";
-        //public const string OUTER = "OUTER";
-
         public static readonly List<string> Types = [INNER];
     }
 }

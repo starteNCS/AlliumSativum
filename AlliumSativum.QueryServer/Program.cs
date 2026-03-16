@@ -85,12 +85,12 @@ app.MapPost("execute-return-plan",
         var executionPlan = await compiler.CompileAsync(query.Query);
 
         var parallelPlan = QueryExecutor.ToParallelStacks(executionPlan.RootOperator);
-        var result = await queryExecutor.ExecuteAsync(parallelPlan);
+        await queryExecutor.ExecuteAsync(parallelPlan);
 
         return executionPlan.RootOperator.ToPrettyString(true, true);
     });
 
-app.Run();
+await app.RunAsync();
 
 public class CompileInput
 {
