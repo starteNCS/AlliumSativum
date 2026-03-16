@@ -1,15 +1,11 @@
 using System.Diagnostics;
 using AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
-using AlliumSativum.Connectors.PostgreSQL.Statistics;
 using AlliumSativum.Connectors.Shared.Interfaces;
-using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Enums;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.Executor;
-using AlliumSativum.Shared.Utils;
-using Microsoft.Extensions.Logging;
 
 namespace AlliumSativum.Connectors.PostgreSQL.Executor;
 
@@ -34,7 +30,6 @@ public sealed class PostgreSqlExecutor : IWorkerExecutor
         stopwatch.Stop();
         
         result = result
-            .Select(x => x.PrefixKeys(pushdown.Self.ToString() + "."))
             .ToList();
         
         return new ExecutorWrapper

@@ -1,16 +1,21 @@
-SELECT t.subject, t.status, tc.body, e.first_name, e.last_name, c.name FROM ticket->tickets t INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id INNER JOIN erp->employees e ON e.id = t.assigned_employee_id INNER JOIN erp->customers c ON c.id = e.customer_id WHERE t.status = 'In Progress'
+Every survey item answer enriched with the respondent's employment status
+SELECT r.respondent_id, r.employment_status, r.income_bracket, r.age_bracket, sr.study_id, sr.channel, sr.is_complete, i.item_index, i.raw_answer, i.numeric_score FROM business->biz_response_item i INNER JOIN business->biz_survey_response sr ON sr.response_id = i.response_id INNER JOIN shared->respondent r ON r.respondent_id = sr.respondent_id
 
--- project, filter one data source
-SELECT t.subject FROM ticket->tickets t WHERE t.priority = 'Low'
+Every employment wave snapshot with the respondent's country and education
+SELECT ew.wave_id, ew.wave_date, ew.study_id, r.respondent_id, r.country_iso, r.education_level, r.age_bracket, ew.employment_status, ew.job_sector, ew.weekly_hours, ew.gross_monthly_usd, ew.job_satisfaction, ew.financial_anxiety FROM business->biz_employment_wave ew INNER JOIN shared->respondent r ON r.respondent_id = ew.respondent_id
 
--- project, filter complex one data source
-SELECT t.subject FROM ticket->tickets t WHERE t.priority = 'Low' AND t.status = 'In Progress'
+Every run metric result with the algorithm name and family attached
+SELECT rm.run_id, rm.metric_name, rm.split, rm.value, rm.std_dev, rm.k_folds, er.hardware_tag, er.train_time_secs, er.peak_memory_mb, er.status, a.name, a.family, a.task_type FROM cs->run_metric rm INNER JOIN cs->experiment_run er ON er.id = rm.run_id INNER JOIN cs->algorithm a ON a.id = er.algorithm_id WHERE er.status = 'Completed'
 
--- project, join one data source
-SELECT t.subject, tc.body FROM ticket->tickets t INNER JOIN ticket->ticket_comments tc ON tc.ticket_id = t.id
+Every hyperparameter row with its algorithm family and hardware context
+SELECT hp.run_id, hp.param_name, hp.param_value, hp.param_type, er.hardware_tag, er.random_seed, a.name, a.family, a.task_type FROM cs->hyperparameter  hp INNER JOIN cs->experiment_run  er ON er.id = hp.run_id INNER JOIN cs->algorithm a ON a.id = er.algorithm_id WHERE er.status = 'Completed'
 
--- project, join two data sources
-SELECT t.subject, e.first_name FROM ticket->tickets t INNER JOIN erp->employees e ON t.assigned_employee_id = e.id
+Survey responses with the study topic and instrument scale type in one row
+SELECT sr.response_id, sr.respondent_id, sr.collected_at, sr.channel, sr.completion_secs, sr.is_complete, s.title, s.topic, s.research_type, si.name, si.scale_type, si.item_count FROM   business->biz_survey_response sr INNER JOIN business->biz_study s ON s.study_id = sr.study_id INNER JOIN shared->survey_instrument si  ON si.instrument_id = sr.instrument_id
 
--- project only first, join for filter two data sources
-SELECT t.subject FROM ticket->tickets t INNER JOIN ticket->time_bookings tb ON tb.ticket_id = t.id WHERE tb.minutes_spent > 160
+Cross-schema: pair each CS observation with the same respondent's
+employment wave rows (respondents appearing in both research streams)
+SELECT so.id, so.task_label, so.nasa_tlx_score, so.satisfaction, so.completion_secs, so.error_count, ew.wave_date, ew.employment_status, ew.gross_monthly_usd, ew.financial_anxiety, ew.job_satisfaction, ew.job_sector FROM cs->study_observation so INNER JOIN business->biz_employment_wave  ew ON ew.respondent_id = so.respondent_id
+
+Run metrics with the dataset name and domain from the benchmark definition
+SELECT rm.run_id, rm.metric_name, rm.split, rm.value, rm.std_dev, er.hardware_tag, er.run_at, b.name, b.task_type, b.eval_metric, d.name, d.domain, d.row_count FROM cs->run_metric rm INNER JOIN cs->experiment_run er ON er.id = rm.run_id INNER JOIN cs->benchmark b ON b.id = er.benchmark_id INNER JOIN shared->open_dataset d ON d.dataset_id  = b.dataset_id WHERE er.status = 'Completed'

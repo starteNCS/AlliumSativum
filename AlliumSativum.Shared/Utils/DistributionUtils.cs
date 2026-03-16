@@ -19,6 +19,8 @@ public sealed class DistributionUtils
             return (attribute, []);
         }
 
+        attribute.Min = nonNullValues.Min();
+        attribute.Max = nonNullValues.Max();
         attribute.Mean = nonNullValues.Average();
         attribute.MeanBinHeight = binnedDistribution.Values.Average();
         attribute.Range = nonNullValues.Max() - nonNullValues.Min();

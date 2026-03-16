@@ -37,8 +37,9 @@ public sealed class JsonServerExecutor : IWorkerExecutor
         {
             throw new AsSQLExecuteException($"Data source with id {@pushdown.DataSource} not found", ConnectorType.JsonServer);
         }
-        
-        var httpClient = _httpClientFactory.CreateClient();
+
+        var httpClient = _httpClientFactory.CreateClient("connector");
+        httpClient.Timeout = new TimeSpan(0, 5, 0);
         var request = new HttpRequestMessage(new HttpMethod(@pushdown.HttpMethod), @pushdown.Url);
         if(@pushdown.Body is not null)
         {

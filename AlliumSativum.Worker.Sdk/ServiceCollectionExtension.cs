@@ -10,7 +10,11 @@ public static class ServiceCollectionExtension
     {
         var channel = GrpcChannel.ForAddress(workerUrl, new GrpcChannelOptions
         {
-            MaxReceiveMessageSize = null
+            MaxReceiveMessageSize = null,
+            HttpClient =  new HttpClient
+            {
+                Timeout = TimeSpan.FromMinutes(6)
+            }
         });
         services.AddSingleton(new Metrics.MetricsClient(channel));
         services.AddSingleton(new Planner.PlannerClient(channel));

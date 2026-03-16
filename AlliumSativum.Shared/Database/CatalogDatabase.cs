@@ -57,6 +57,29 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
         return pooledResult.ToList();
     }
 
+    public async Task<List<Dictionary<string, object>>> QueryAsync(string query, object? parameters = null) 
+    {
+        await _semaphoreSlim.WaitAsync();
+        // If inside a transaction, reuse the dedicated connection
+        if (_transaction != null)
+        {
+            var result = await _txConnection!.QueryAsync(query, parameters, _transaction);
+            return result
+                .Select(row => (IDictionary<string, object>)row)
+                .Select(dict => dict.ToDictionary(k => k.Key, v => v.Value))
+                .ToList();
+        }
+        // Otherwise open a fresh pooled connection (Npgsql pools automatically)
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+        var pooledResult = await connection.QueryAsync(query, parameters);
+        _semaphoreSlim.Release();
+        return pooledResult
+            .Select(row => (IDictionary<string, object>)row)
+            .Select(dict => dict.ToDictionary(k => k.Key, v => v.Value))
+            .ToList();
+    }
+    
     public async Task<int> ExecuteAsync(string query, object? parameters = null)
     {
         if (_transaction != null)

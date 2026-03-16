@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using AlliumSativum.Compiler;
 using AlliumSativum.Connectors.Shared;
+using AlliumSativum.QueryServer.Utils;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
@@ -20,17 +21,20 @@ public class HistogramController : Controller
     private readonly QueryCompiler _compiler;
     private readonly QueryExecutor.QueryExecutor _queryExecutor;
     private readonly ICostModel _costModel;
+    private readonly DataUtils _dataUtils;
 
     public HistogramController(
         CatalogDatabase catalog,
         QueryCompiler compiler,
         QueryExecutor.QueryExecutor queryExecutor,
-        ICostModel costModel)
+        ICostModel costModel,
+        DataUtils dataUtils)
     {
         _catalog = catalog;
         _compiler = compiler;
         _queryExecutor = queryExecutor;
         _costModel = costModel;
+        _dataUtils = dataUtils;
     }
 
     [HttpPost("reconstructed")]
@@ -53,7 +57,7 @@ public class HistogramController : Controller
             return Results.Content("<html><body><p>You need to project to one operator here</p></body></html>", "text/html");
         }
     
-        var parsed = await LoadDataAsync(plan);
+        var parsed = await _dataUtils.LoadDataAsync(plan);
         var map = parsed
             .GroupBy(x => x)
             .OrderBy(x => x.Key)
@@ -69,6 +73,8 @@ public class HistogramController : Controller
         foreach (var bar in originalPlot.Bars)
         {
             bar.Size = barWidth;
+            bar.LineStyle = LineStyle.None;
+            bar.LineWidth = 0;
         }
 
         var distributionData = plan.RootOperator.DistributionData.Single().Value;
@@ -82,6 +88,8 @@ public class HistogramController : Controller
         foreach (var bar in reconstructedPlot.Bars)
         {
             bar.Size = barWidth;
+            bar.LineStyle = LineStyle.None;
+            bar.LineWidth = 0;
         }
         
         plt.Axes.Margins(bottom: 0);
@@ -127,7 +135,7 @@ public class HistogramController : Controller
                 return Results.Content("<html><body><p>You need to project to one operator here</p></body></html>", "text/html");
             }
         
-            var parsed = await LoadDataAsync(plan);
+            var parsed = await _dataUtils.LoadDataAsync(plan);
 
             var (attribute, modes) = DistributionUtils.CalculateDistribution(parsed.Select(x => (double?)x).ToList(), new AttributeEntity());
             attributes.Add(attribute);
@@ -178,24 +186,5 @@ public class HistogramController : Controller
             .Append("</body></html>");
         
         return Results.Content(stringBuilder.ToString(), "text/html");
-    }
-
-    private async Task<List<double>> LoadDataAsync(QueryExecutionPlan plan)
-    {
-        var result = await _queryExecutor.ExecuteAsync(plan.RootOperator);
-        var parsed = result
-            .Select(x => (JsonElement?) x.Single().Value)
-            .Where(x => x is null || x.Value.ValueKind == JsonValueKind.Number)
-            .Select(x =>
-            {
-                if (x is null || !x.Value.TryGetDouble(out var value))
-                {
-                    return double.NaN;
-                }
-
-                return value;
-            })
-            .ToList();
-        return parsed;
     }
 }

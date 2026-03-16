@@ -7,6 +7,8 @@ using AlliumSativum.Optimize;
 using AlliumSativum.Parser;
 using AlliumSativum.QueryExecutor;
 using AlliumSativum.QueryExecutor.Performance;
+using AlliumSativum.QueryPerformance;
+using AlliumSativum.QueryServer.Utils;
 using AlliumSativum.Semantic;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Database;
@@ -36,7 +38,7 @@ builder.Services
     .AddOptimizer();
 
 builder.Services
-    .AddScoped<JoinSelectivityPerformanceChecker>();
+    .AddQueryBenchmark();
 
 builder.Services.AddCostModel(builder.Configuration);
 
@@ -100,9 +102,6 @@ app.MapPost("execute-return-plan", async (QueryCompiler compiler, QueryExecutor 
 
     return executionPlan.RootOperator.ToPrettyString(html: true, includeActual: true);
 });
-
-app.MapGet("selectivity-performance",
-    async (JoinSelectivityPerformanceChecker performanceChecker) => await performanceChecker.ExecuteJoinSelectivityPerformanceCheckerAsync());
 
 app.Run();
 

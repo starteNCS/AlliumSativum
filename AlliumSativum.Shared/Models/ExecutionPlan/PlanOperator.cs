@@ -12,4 +12,13 @@ public abstract partial class PlanOperator
 
     public Dictionary<AttributeSpecifier, PlanOperatorDistributionData> DistributionData { get; set; } = [];
     public PlanOperatorExecutionData ExecutionData { get; set; } = new();
+    
+    public void StripExecutionResultData()
+    {
+        ExecutionData.Data = [];
+        foreach (var child in Children)
+        {
+            child.StripExecutionResultData();
+        }
+    }
 }

@@ -38,7 +38,12 @@ builder.Services
 builder.Services
     .AddCostModel(builder.Configuration);
 
-builder.Services.AddHttpClient();
+builder.Services
+    .AddHttpClient("connector")
+    .AddStandardResilienceHandler(options =>
+    {
+        options.TotalRequestTimeout.Timeout = new TimeSpan(0, 5, 0);
+    });
 
 var app = builder.Build();
 

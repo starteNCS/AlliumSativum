@@ -1,4 +1,5 @@
 using System.Text;
+using AlliumSativum.Shared.Constants;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
@@ -29,14 +30,17 @@ public sealed class SelectBaseModel
         stringBuilder.Append("SELECT ");
         var first = (AttributeSpecifier)Select[0];
         stringBuilder.Append($"{first.TableName}.{first.AttributeName}");
+        AppendAsAttributeString(stringBuilder, first);
         foreach (var specifier in Select.Skip(1))
         {
             if (specifier is not AttributeSpecifier select)
             {
                 continue;
             }
-            
-            stringBuilder.Append($", {select.TableName}.{select.AttributeName}");
+
+            stringBuilder
+                .Append($", {select.TableName}.{select.AttributeName}");
+            AppendAsAttributeString(stringBuilder, select);
         }
 
         stringBuilder.Append($" FROM {From?.TableName}");
@@ -58,6 +62,18 @@ public sealed class SelectBaseModel
         return stringBuilder.ToString();
     }
 
+    private StringBuilder AppendAsAttributeString(StringBuilder sb, AttributeSpecifier attribute)
+    {
+        return sb.Append(" AS ")
+            .Append('"')
+            .Append(attribute.DataSourceName)
+            .Append(AsSqlParameters.Attribute.DataSourceSeparator)
+            .Append(attribute.TableName)
+            .Append(AsSqlParameters.Attribute.TableSeparator)
+            .Append(attribute.AttributeName)
+            .Append('"');
+    }
+    
     public override string ToString()
     {
         return ToPostgreSqlString();
