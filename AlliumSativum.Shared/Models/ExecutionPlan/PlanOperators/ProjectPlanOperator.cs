@@ -39,6 +39,11 @@ public class ProjectPlanOperator : PlanOperator
         return 1;
     }
 
+    public override string ToJoinPlanString()
+    {
+        return Children.Single().ToJoinPlanString();
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Attributes);

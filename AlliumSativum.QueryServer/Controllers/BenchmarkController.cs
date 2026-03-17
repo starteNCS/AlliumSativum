@@ -1,6 +1,8 @@
+using System.Collections.Concurrent;
 using AlliumSativum.Compiler;
 using AlliumSativum.QueryExecutor.Performance.Histogram;
 using AlliumSativum.Shared.Costs;
+using AlliumSativum.Shared.Models.ExecutionPlan;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlliumSativum.QueryServer.Controllers;
@@ -37,22 +39,33 @@ public sealed class BenchmarkController
         foreach (var query in queries)
         {
             var plans = await _compiler.CompileNoPruningAsync(query);
+            var generatedWinningPlan = await _compiler.CompileAsync(query);
 
-            List<BenchmarkPredictCorrectPlanSingleResult> benchmarks = [];
+            ConcurrentBag<BenchmarkPredictCorrectPlanSingleResult> benchmarks = [];
             var index = 0;
-            foreach (var plan in plans)
+            var page = 1;
+            const int pageSize = 1;
+            var chunked = plans.Chunk(pageSize).ToList();
+            foreach (var chunk in chunked)
             {
-                var _ = await _queryExecutor.ExecuteAsync(plan.RootOperator);
-                plan.RootOperator.StripExecutionResultData();
-                benchmarks.Add(new BenchmarkPredictCorrectPlanSingleResult
+                _logger.LogInformation("Begin batch no. {Page} (of {TotalPages}) for query: {JoinPlan}.", page++, chunked.Count, query);
+                var tasks = chunk.Select(async plan =>
                 {
-                    ActualCost = _costModel.TotalCost(plan.RootOperator, true),
-                    EstimatedCost = plan.TotalCost,
-                    WasWinningPlan = plan == plans.MinBy(x => x.TotalCost)
-                });
+                    await _queryExecutor.ExecuteAsync(plan.RootOperator);
 
-                _logger.LogInformation("Handled plan no. {PlanNumber} (of {TotalCount} for query: {Query}.", index++,
-                    plans.Count, query);
+                    plan.RootOperator.StripExecutionResultData();
+                    benchmarks.Add(new BenchmarkPredictCorrectPlanSingleResult
+                    {
+                        ActualCost = _costModel.TotalCost(plan.RootOperator, true),
+                        EstimatedCost = plan.TotalCost,
+                        JoinPlan = plan.RootOperator.ToJoinPlanString(),
+                        WasWinningPlan = plan.RootOperator.Equals(generatedWinningPlan.RootOperator)
+                    });
+
+                    _logger.LogInformation("Handled plan no. {PlanNumber} (of {TotalCount}) for query: {Query}.", index++,
+                        plans.Count, plan.RootOperator.ToJoinPlanString());
+                }).ToList();
+                await Task.WhenAll(tasks);
             }
 
             var orderedResults = benchmarks.OrderBy(x => x.ActualCost).ToList();
@@ -68,7 +81,7 @@ public sealed class BenchmarkController
                 OffByPercent = (winningPlan.ActualCost - orderedResults[0].ActualCost) /
                                winningPlan.ActualCost *
                                100,
-                DurationAscendingMs = orderedResults.Select(x => x.ActualCost).ToList()
+                OrderedData = orderedResults.ToList()
             });
 
             _logger.LogInformation("Finished benchmarking query: {Query}.", query);
@@ -104,7 +117,7 @@ public class BenchmarkPredictCorrectPlanResult
     public int PlanCount { get; set; }
     public double OffByMs { get; set; }
     public double OffByPercent { get; set; }
-    public List<double> DurationAscendingMs { get; set; }
+    public List<BenchmarkPredictCorrectPlanSingleResult> OrderedData { get; set; } = [];
     public string Query { get; set; } = string.Empty;
 }
 
@@ -113,4 +126,5 @@ public class BenchmarkPredictCorrectPlanSingleResult
     public double EstimatedCost { get; set; }
     public double ActualCost { get; set; }
     public bool WasWinningPlan { get; set; }
+    public string JoinPlan { get; set; }
 }

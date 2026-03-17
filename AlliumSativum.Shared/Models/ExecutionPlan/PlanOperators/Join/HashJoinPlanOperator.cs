@@ -28,4 +28,24 @@ public sealed class HashJoinPlanOperator : JoinPlanOperator
         return
             $"{HtmlClasses.Bold(HtmlClasses.Colored("JOIN", "green"))} [{HtmlClasses.Italic(HtmlClasses.Colored("HASH", "gray"))}]: {Expression}";
     }
+
+    public override string ToJoinPlanString()
+    {
+        return $"HASH JOIN ({Left.ToJoinPlanString()}, {Right.ToJoinPlanString()})";
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Left, Expression, Right);
+    }
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj is not HashJoinPlanOperator other)
+        {
+            return false;
+        }
+
+        return other.Left.Equals(Left) && other.Right.Equals(Right) && other.Expression.Equals(Expression);
+    }
 }

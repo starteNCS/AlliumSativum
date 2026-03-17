@@ -16,6 +16,11 @@ public abstract partial class PlanOperator
     public void StripExecutionResultData()
     {
         ExecutionData.Data = [];
-        foreach (var child in Children) child.StripExecutionResultData();
+        foreach (var child in Children)
+        {
+            child.StripExecutionResultData();
+        }
     }
+
+    public abstract string ToJoinPlanString();
 }

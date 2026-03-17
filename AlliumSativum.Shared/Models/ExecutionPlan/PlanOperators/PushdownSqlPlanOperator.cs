@@ -31,6 +31,11 @@ public class PushdownSqlPlanOperator : PlanOperator
         return 1;
     }
 
+    public override string ToJoinPlanString()
+    {
+        return Self.ToString();
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(DataSource, SqlStatement);

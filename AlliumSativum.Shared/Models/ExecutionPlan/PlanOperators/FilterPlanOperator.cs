@@ -28,6 +28,11 @@ public class FilterPlanOperator : PlanOperator
         return (double)ExecutionData.ActualCardinality / Children.Single().ExecutionData.ActualCardinality;
     }
 
+    public override string ToJoinPlanString()
+    {
+        return Children.Single().ToJoinPlanString();
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Expression);
