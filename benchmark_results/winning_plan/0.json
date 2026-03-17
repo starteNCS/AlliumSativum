@@ -1,0 +1,209 @@
+{
+  "choseWinningPlanCount": 0,
+  "averageWinningPlanLocation": 3,
+  "ofAveragePlanCount": 32,
+  "results": [
+    {
+      "choseWinningPlan": false,
+      "winningPlanLocation": 3,
+      "planCount": 32,
+      "offByMs": 102.59730000000002,
+      "offByPercent": 14.416238676245339,
+      "orderedData": [
+        {
+          "estimatedCost": 75864.748072,
+          "actualCost": 609.0813999999999,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (HASH JOIN (cs->hyperparameter, cs->experiment_run), cs->algorithm)"
+        },
+        {
+          "estimatedCost": 75864.748072,
+          "actualCost": 611.8563,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (cs->algorithm, HASH JOIN (cs->experiment_run, cs->hyperparameter))"
+        },
+        {
+          "estimatedCost": 75864.748072,
+          "actualCost": 711.6786999999999,
+          "wasWinningPlan": true,
+          "joinPlan": "HASH JOIN (cs->algorithm, HASH JOIN (cs->hyperparameter, cs->experiment_run))"
+        },
+        {
+          "estimatedCost": 75864.748072,
+          "actualCost": 715.2666,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (HASH JOIN (cs->experiment_run, cs->hyperparameter), cs->algorithm)"
+        },
+        {
+          "estimatedCost": 75862.566638,
+          "actualCost": 717.2611999999999,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (NESTED LOOP JOIN (cs->algorithm, cs->experiment_run), cs->hyperparameter)"
+        },
+        {
+          "estimatedCost": 75862.566638,
+          "actualCost": 733.1711,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (cs->hyperparameter, HASH JOIN (cs->experiment_run, cs->algorithm))"
+        },
+        {
+          "estimatedCost": 75862.566638,
+          "actualCost": 753.4002,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (cs->hyperparameter, HASH JOIN (cs->algorithm, cs->experiment_run))"
+        },
+        {
+          "estimatedCost": 75862.566638,
+          "actualCost": 803.2774,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (cs->hyperparameter, NESTED LOOP JOIN (cs->experiment_run, cs->algorithm))"
+        },
+        {
+          "estimatedCost": 75862.566638,
+          "actualCost": 833.4306,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (HASH JOIN (cs->experiment_run, cs->algorithm), cs->hyperparameter)"
+        },
+        {
+          "estimatedCost": 75862.566638,
+          "actualCost": 895.2185000000001,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (NESTED LOOP JOIN (cs->experiment_run, cs->algorithm), cs->hyperparameter)"
+        },
+        {
+          "estimatedCost": 75862.566638,
+          "actualCost": 930.337,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (HASH JOIN (cs->algorithm, cs->experiment_run), cs->hyperparameter)"
+        },
+        {
+          "estimatedCost": 75916.64964,
+          "actualCost": 1056.7496,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (HASH JOIN (cs->experiment_run, cs->hyperparameter), cs->algorithm)"
+        },
+        {
+          "estimatedCost": 75916.64964,
+          "actualCost": 1058.349,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (HASH JOIN (cs->hyperparameter, cs->experiment_run), cs->algorithm)"
+        },
+        {
+          "estimatedCost": 75862.566638,
+          "actualCost": 1152.4370000000001,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (cs->hyperparameter, NESTED LOOP JOIN (cs->algorithm, cs->experiment_run))"
+        },
+        {
+          "estimatedCost": 75916.64964,
+          "actualCost": 1318.2887,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (cs->algorithm, HASH JOIN (cs->hyperparameter, cs->experiment_run))"
+        },
+        {
+          "estimatedCost": 75916.64964,
+          "actualCost": 1524.9809999999998,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (cs->algorithm, HASH JOIN (cs->experiment_run, cs->hyperparameter))"
+        },
+        {
+          "estimatedCost": 93206.94237199999,
+          "actualCost": 57156.7206,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (cs->algorithm, NESTED LOOP JOIN (cs->hyperparameter, cs->experiment_run))"
+        },
+        {
+          "estimatedCost": 93258.84393999999,
+          "actualCost": 58840.733799999995,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (cs->algorithm, NESTED LOOP JOIN (cs->hyperparameter, cs->experiment_run))"
+        },
+        {
+          "estimatedCost": 93258.84393999999,
+          "actualCost": 59500.1014,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (NESTED LOOP JOIN (cs->hyperparameter, cs->experiment_run), cs->algorithm)"
+        },
+        {
+          "estimatedCost": 93206.94237199999,
+          "actualCost": 60516.4645,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (NESTED LOOP JOIN (cs->hyperparameter, cs->experiment_run), cs->algorithm)"
+        },
+        {
+          "estimatedCost": 93206.94237199999,
+          "actualCost": 64389.1782,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (NESTED LOOP JOIN (cs->experiment_run, cs->hyperparameter), cs->algorithm)"
+        },
+        {
+          "estimatedCost": 93258.84393999999,
+          "actualCost": 65788.6559,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (NESTED LOOP JOIN (cs->experiment_run, cs->hyperparameter), cs->algorithm)"
+        },
+        {
+          "estimatedCost": 93258.84393999999,
+          "actualCost": 65937.3795,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (cs->algorithm, NESTED LOOP JOIN (cs->experiment_run, cs->hyperparameter))"
+        },
+        {
+          "estimatedCost": 93206.94237199999,
+          "actualCost": 66940.0605,
+          "wasWinningPlan": false,
+          "joinPlan": "HASH JOIN (cs->algorithm, NESTED LOOP JOIN (cs->experiment_run, cs->hyperparameter))"
+        },
+        {
+          "estimatedCost": 94711.17204199999,
+          "actualCost": 67477.38459999999,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (cs->hyperparameter, NESTED LOOP JOIN (cs->experiment_run, cs->algorithm))"
+        },
+        {
+          "estimatedCost": 94711.17204199999,
+          "actualCost": 67492.5456,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (HASH JOIN (cs->algorithm, cs->experiment_run), cs->hyperparameter)"
+        },
+        {
+          "estimatedCost": 94711.17204199999,
+          "actualCost": 69611.7848,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (cs->hyperparameter, HASH JOIN (cs->algorithm, cs->experiment_run))"
+        },
+        {
+          "estimatedCost": 94711.17204199999,
+          "actualCost": 69676.1843,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (NESTED LOOP JOIN (cs->algorithm, cs->experiment_run), cs->hyperparameter)"
+        },
+        {
+          "estimatedCost": 94711.17204199999,
+          "actualCost": 70852.3075,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (cs->hyperparameter, HASH JOIN (cs->experiment_run, cs->algorithm))"
+        },
+        {
+          "estimatedCost": 94711.17204199999,
+          "actualCost": 72193.8913,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (NESTED LOOP JOIN (cs->experiment_run, cs->algorithm), cs->hyperparameter)"
+        },
+        {
+          "estimatedCost": 94711.17204199999,
+          "actualCost": 72622.9219,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (HASH JOIN (cs->experiment_run, cs->algorithm), cs->hyperparameter)"
+        },
+        {
+          "estimatedCost": 94711.17204199999,
+          "actualCost": 73266.7947,
+          "wasWinningPlan": false,
+          "joinPlan": "NESTED LOOP JOIN (cs->hyperparameter, NESTED LOOP JOIN (cs->algorithm, cs->experiment_run))"
+        }
+      ],
+      "query": "SELECT hp.run_id, hp.param_name, hp.param_value, hp.param_type, er.hardware_tag, er.random_seed, a.name, a.family, a.task_type FROM cs->hyperparameter  hp INNER JOIN cs->experiment_run  er ON er.id = hp.run_id INNER JOIN cs->algorithm a ON a.id = er.algorithm_id WHERE er.status = 'Completed'"
+    }
+  ]
+}

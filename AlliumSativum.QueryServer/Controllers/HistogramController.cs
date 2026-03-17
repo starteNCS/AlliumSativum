@@ -34,6 +34,7 @@ public class HistogramController : Controller
     public async Task<IResult> GetReconstructedHistogram([FromBody] CompileInput query)
     {
         var plt = new Plot();
+        IColormap colormap = new ScottPlot.Colormaps.Viridis();
 
         var plan = await _compiler.CompileAsync(query.Query);
         if (plan.RootOperator is not ProjectPlanOperator pop)
@@ -54,6 +55,7 @@ public class HistogramController : Controller
         var originalPlotPositions = map.Keys.Select(k => k - offset).ToArray();
         var originalPlotHeights = map.Values.Select(x => (double)x).ToArray();
         var originalPlot = plt.Add.Bars(originalPlotPositions, originalPlotHeights);
+        originalPlot.Color = colormap.GetColor(0);
         originalPlot.LegendText = "Original";
 
         foreach (var bar in originalPlot.Bars)
@@ -69,6 +71,7 @@ public class HistogramController : Controller
         var reconstructedPlotPositions = reconstructed.Keys.Select(k => k + offset).ToArray();
         var reconstructedPlotHeights = reconstructed.Values.ToArray();
         var reconstructedPlot = plt.Add.Bars(reconstructedPlotPositions, reconstructedPlotHeights);
+        reconstructedPlot.Color = colormap.GetColor(1);
         reconstructedPlot.LegendText = "Reconstructed";
 
         foreach (var bar in reconstructedPlot.Bars)
@@ -95,14 +98,10 @@ public class HistogramController : Controller
     }
 
     [HttpPost]
-    public async Task<IResult> GetHistogram([FromBody] List<CompileInput> queries)
+    public async Task<IResult> GetHistogram([FromBody] List<HistogramInput> queries, [FromQuery] bool download = false)
     {
-        List<Color> colors =
-        [
-            Color.FromHex("#6CD4FF"),
-            Color.FromHex("#FE938C")
-        ];
         var plt = new Plot();
+        IColormap colormap = new ScottPlot.Colormaps.Viridis();
 
         List<AttributeEntity> attributes = [];
         List<Dictionary<double, int>> maps = [];
@@ -112,12 +111,6 @@ public class HistogramController : Controller
         foreach (var query in queries)
         {
             var plan = await _compiler.CompileAsync(query.Query);
-            if (plan.RootOperator is not ProjectPlanOperator pop)
-                return Results.Content("<html><body><p>Only simple select queries are supported</p></body></html>",
-                    "text/html");
-            if (pop.Attributes.Count != 1)
-                return Results.Content("<html><body><p>You need to project to one operator here</p></body></html>",
-                    "text/html");
 
             var parsed = await _dataUtils.LoadDataAsync(plan);
 
@@ -133,17 +126,43 @@ public class HistogramController : Controller
             max = map.Keys.Max() > max ? map.Keys.Max() : max;
             maps.Add(map);
 
-            var hist = Histogram.WithBinCount(map.Count, parsed);
-            var histPlot = plt.Add.Histogram(hist, colors[index]);
-            histPlot.BarWidthFraction = 0.8;
+            const double barWidth = 0.8;
+            var plotPositions = map.Keys.ToArray();
+            var plotHeights = map.Values.ToArray();
+            var barPlot = plt.Add.Bars(plotPositions, plotHeights);
+            barPlot.Color = colormap.GetColor((double)index / queries.Count);
+            barPlot.LegendText = query.LegendText;
 
+            foreach (var bar in barPlot.Bars)
+            {
+                bar.Size = barWidth;
+                bar.LineStyle = LineStyle.None;
+                bar.LineWidth = 0;
+            }
             index++;
         }
 
         plt.Axes.Margins(bottom: 0);
         plt.Axes.Bottom.Min = min;
         plt.Axes.Bottom.Max = min;
+        plt.Axes.Bottom.Label.Text = "Distinct items";
+        plt.Axes.Bottom.Label.Bold = false;
 
+        plt.Axes.Left.Label.Text = "Count";
+        plt.Axes.Left.Label.Bold = false;
+        
+        plt.Title("Data Distribution Histogram");
+        var legend = plt.ShowLegend();
+        legend.Alignment = Alignment.UpperLeft;
+        legend.FontName = "Arial";
+        legend.FontSize = 14;
+
+        if (download)
+        {
+            var imageBytes = plt.GetImageBytes(1200, 600, ScottPlot.ImageFormat.Png);
+            return Results.File(imageBytes, "image/png", "histogram.png");
+        }
+        
         var svg = plt.GetSvgXml(600, 400);
         var stringBuilder = new StringBuilder();
         stringBuilder.Append("<html><body>")
@@ -170,4 +189,10 @@ public class HistogramController : Controller
 
         return Results.Content(stringBuilder.ToString(), "text/html");
     }
+}
+
+public class HistogramInput
+{
+    public string Query { get; set; } = string.Empty;
+    public string LegendText { get; set; } = string.Empty;
 }
