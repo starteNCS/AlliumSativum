@@ -10,3 +10,4 @@ services:
       - ./configs/jvm.config:/opt/presto-server/etc/jvm.config
       - ./configs/node.properties:/opt/presto-server/etc/node.properties
       - ./configs/catalog:/opt/presto-server/etc/catalog
+      - ./json-server-connector/target/json-server-connector-1.0-SNAPSHOT.jar:/opt/presto-server/plugin/rest/json-server-connector-1.0-SNAPSHOT.jar
