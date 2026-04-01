@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using AlliumSativum.Compiler;
 using AlliumSativum.QueryExecutor.Performance.Histogram;
 using AlliumSativum.Shared.Costs;
+using AlliumSativum.Shared.Models;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using Microsoft.AspNetCore.Mvc;
 
@@ -113,6 +115,18 @@ public sealed class BenchmarkController
     public Task<ReconstructionSimilarityResult> GetReconstructedHistograms([FromQuery] string? ignore)
     {
         return _reconstructionDistanceService.ReconstructionSimilarityOfAllDatasourcesAsync(ignore?.Split(',').ToList() ?? []);
+    }
+    
+    [HttpPost("timings")]
+    public async Task<AlliumSativumTimingResult> GetCompileTiming([FromBody] List<string> queries)
+    {
+        var (plan, timingResult) = await _compiler.TimedCompileAsync(queries.Single());
+        
+        var stopwatch = Stopwatch.StartNew();
+        await _queryExecutor.ExecuteAsync(plan.RootOperator);
+        timingResult.Execute = stopwatch.Elapsed;
+
+        return timingResult;
     }
 }
 
