@@ -37,12 +37,6 @@ public class HistogramController : Controller
         IColormap colormap = new ScottPlot.Colormaps.Viridis();
 
         var plan = await _compiler.CompileAsync(query.Query);
-        if (plan.RootOperator is not ProjectPlanOperator pop)
-            return Results.Content("<html><body><p>Only simple select queries are supported</p></body></html>",
-                "text/html");
-        if (pop.Attributes.Count != 1)
-            return Results.Content("<html><body><p>You need to project to one operator here</p></body></html>",
-                "text/html");
 
         var parsed = await _dataUtils.LoadDataAsync(plan);
         var map = parsed

@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  presto:
+    image: prestodb/presto:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./configs/config.properties:/opt/presto-server/etc/config.properties
+      - ./configs/jvm.config:/opt/presto-server/etc/jvm.config
+      - ./configs/node.properties:/opt/presto-server/etc/node.properties
+      - ./configs/catalog:/opt/presto-server/etc/catalog

@@ -104,9 +104,15 @@ public sealed class BenchmarkController
 
     [HttpGet("reconstructed-histograms/{dataSourceId:guid}")]
     public Task<ReconstructionSimilarityResult> GetReconstructedHistograms([FromRoute] Guid dataSourceId,
-        [FromQuery] string ignore)
+        [FromQuery] string? ignore)
     {
-        return _reconstructionDistanceService.ReconstructionSimilarityOfDatasourceAsync(dataSourceId, ignore.Split(',').ToList());
+        return _reconstructionDistanceService.ReconstructionSimilarityOfDatasourceAsync(dataSourceId, ignore?.Split(',').ToList() ?? []);
+    }
+    
+    [HttpGet("reconstructed-histograms/all")]
+    public Task<ReconstructionSimilarityResult> GetReconstructedHistograms([FromQuery] string? ignore)
+    {
+        return _reconstructionDistanceService.ReconstructionSimilarityOfAllDatasourcesAsync(ignore?.Split(',').ToList() ?? []);
     }
 }
 

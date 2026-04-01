@@ -52,8 +52,37 @@ public sealed class ReconstructionDistanceService
         {
             if (ignoreAttributes.Contains(attribute["attributename"])) continue;
 
+            var relationSplits = ((string)attribute["relationname"]).Split('.');
+            var relationName = relationSplits.Length > 1 ? relationSplits.Last() : (string)attribute["relationname"];
+            
             var query =
-                $"SELECT x.{attribute["attributename"]} FROM {attribute["datasourcename"]}->{attribute["relationname"]} x";
+                $"SELECT x.{attribute["attributename"]} FROM {attribute["datasourcename"]}->{relationName} x";
+            queries.Add(query);
+        }
+
+        return await ReconstructionSimilarityAsync(queries);
+    }
+    
+    public async Task<ReconstructionSimilarityResult> ReconstructionSimilarityOfAllDatasourcesAsync(List<string> ignoreAttributes)
+    {
+        var attributes = await _catalog.QueryAsync("""
+                                                   SELECT a.name as AttributeName, r.name as RelationName, d.Name as DataSourceName
+                                                   FROM catalog.attributes a 
+                                                   INNER JOIN catalog.relations r on a.relationid = r.id
+                                                   INNER JOIN catalog.datasources d on r.datasourceid = d.id
+                                                   WHERE a.datatype = ANY(ARRAY['smallint', 'integer', 'bigint', 'decimal', 'numeric', 'real', 'double precision', 'Number'])
+                                                   """);
+
+        var queries = new List<string>();
+        foreach (var attribute in attributes)
+        {
+            if (ignoreAttributes.Contains(attribute["attributename"])) continue;
+
+            var relationSplits = ((string)attribute["relationname"]).Split('.');
+            var relationName = relationSplits.Length > 1 ? relationSplits.Last() : (string)attribute["relationname"];
+            
+            var query =
+                $"SELECT x.{attribute["attributename"]} FROM {attribute["datasourcename"]}->{relationName} x";
             queries.Add(query);
         }
 
@@ -67,10 +96,6 @@ public sealed class ReconstructionDistanceService
         foreach (var query in queries)
         {
             var plan = await _compiler.CompileAsync(query);
-            if (plan.RootOperator is not ProjectPlanOperator pop)
-                throw new AsSqlExecuteException("QExP must end with a project operator");
-            if (pop.Attributes.Count != 1)
-                throw new AsSqlExecuteException("QExP must project to exactly one attribute");
 
             var parsed = await _dataUtils.LoadDataAsync(plan);
             var histogram = parsed
