@@ -1,9 +1,142 @@
 [
   {
-    "query": "",
-    "allium-sativum": 
+    "query": "SELECT r.respondent_id, r.employment_status, r.income_bracket, r.age_bracket, sr.study_id, sr.channel, sr.is_complete, i.item_index, i.raw_answer, i.numeric_score FROM business->biz_response_item i INNER JOIN business->biz_survey_response sr ON sr.response_id = i.response_id INNER JOIN shared->respondent r ON r.respondent_id = sr.respondent_id",
+    "query_short": "Q1",
+    "allium-sativum": {
+      "plan": {
+        "tokenize": 0.126,
+        "parse": 0.047,
+        "semanticTransform": 0.0037,
+        "optimize": 178.9171,
+        "total": 179.0938
+      },
+      "execute": 495.1669,
+      "total": 674.2607
+    },
     "presto": {
-      
+      "plan": 1790,
+      "execute": 3450,
+      "total": 5810
+    }
+  },
+  {
+    "query": "SELECT ew.wave_id, ew.wave_date, ew.study_id, r.respondent_id, r.country_iso, r.education_level, r.age_bracket, ew.employment_status, ew.job_sector, ew.weekly_hours, ew.gross_monthly_usd, ew.job_satisfaction, ew.financial_anxiety FROM business->biz_employment_wave ew INNER JOIN shared->respondent r ON r.respondent_id = ew.respondent_id",
+    "query_short": "Q2",
+    "allium-sativum": {
+      "plan": {
+        "tokenize": 0.8665,
+        "parse": 0.3418,
+        "semanticTransform": 0.0096,
+        "optimize": 87.022,
+        "total": 88.2399
+      },
+      "execute": 1632.3762,
+      "total": 1720.6161
+    },
+    "presto": {
+      "plan": 1010,
+      "execute": 1570,
+      "total": 3160
+    }
+  },
+  {
+    "query": "SELECT rm.run_id, rm.metric_name, rm.split, rm.value, rm.std_dev, rm.k_folds, er.hardware_tag, er.train_time_secs, er.peak_memory_mb, er.status, a.name, a.family, a.task_type FROM cs->run_metric rm INNER JOIN cs->experiment_run er ON er.id = rm.run_id INNER JOIN cs->algorithm a ON a.id = er.algorithm_id WHERE er.status = 'Completed'",
+    "query_short": "Q3",
+    "allium-sativum": {
+      "plan": {
+        "tokenize": 0.7328,
+        "parse": 0.0646,
+        "semanticTransform": 0.0101,
+        "optimize": 292.6482,
+        "total": 293.4557
+      },
+      "execute": 2608.814,
+      "total": 2902.2697
+    },
+    "presto": {
+      "plan": 203.83,
+      "execute": 1980,
+      "total": 2050
+    }
+  },
+  {
+    "query": "SELECT hp.run_id, hp.param_name, hp.param_value, hp.param_type, er.hardware_tag, er.random_seed, a.name, a.family, a.task_type FROM cs->hyperparameter  hp INNER JOIN cs->experiment_run  er ON er.id = hp.run_id INNER JOIN cs->algorithm a ON a.id = er.algorithm_id WHERE er.status = 'Completed'",
+    "query_short": "Q4",
+    "allium-sativum": {
+      "plan": {
+        "tokenize": 0.3475,
+        "parse": 0.1016,
+        "semanticTransform": 0.0037,
+        "optimize": 152.9525,
+        "total": 153.4053
+      },
+      "execute": 1298.0861,
+      "total": 1451.4914
+    },
+    "presto": {
+      "plan": 165.48,
+      "execute": 1170,
+      "total": 1200
+    }
+  },
+  {
+    "query": "SELECT sr.response_id, sr.respondent_id, sr.collected_at, sr.channel, sr.completion_secs, sr.is_complete, s.title, s.topic, s.research_type, si.name, si.scale_type, si.item_count FROM business->biz_survey_response sr INNER JOIN business->biz_study s ON s.study_id = sr.study_id INNER JOIN shared->survey_instrument si ON si.instrument_id = sr.instrument_id",
+    "query_short": "Q5",
+    "allium-sativum": {
+      "plan": {
+        "tokenize": 1.5907,
+        "parse": 0.0705,
+        "semanticTransform": 0.0092,
+        "optimize": 99.9593,
+        "total": 101.6297
+      },
+      "execute": 997.2111,
+      "total": 1098.8408
+    },
+    "presto": {
+      "plan": 1330,
+      "execute": 1750,
+      "total": 4140
+    }
+  },
+  {
+    "query": "SELECT so.id, so.task_label, so.nasa_tlx_score, so.satisfaction, so.completion_secs, so.error_count, ew.wave_date, ew.employment_status, ew.gross_monthly_usd, ew.financial_anxiety, ew.job_satisfaction, ew.job_sector FROM cs->study_observation so INNER JOIN business->biz_employment_wave  ew ON ew.respondent_id = so.respondent_id",
+    "query_short": "Q6",
+    "allium-sativum": {
+      "plan": {
+        "tokenize": 0.1109,
+        "parse": 0.0456,
+        "semanticTransform": 0.0029,
+        "optimize": 57.6606,
+        "total": 57.82
+      },
+      "execute": 640.7878,
+      "total": 698.6078
+    },
+    "presto": {
+      "plan": 487.37,
+      "execute": 902.60,
+      "total": 1810
+    }
+  },
+  {
+    "query": "SELECT rm.run_id, rm.metric_name, rm.split, rm.value, rm.std_dev, er.hardware_tag, er.run_at, b.name, b.task_type, b.eval_metric, d.name, d.domain, d.row_count FROM cs->run_metric rm INNER JOIN cs->experiment_run er ON er.id = rm.run_id INNER JOIN cs->benchmark b ON b.id = er.benchmark_id INNER JOIN shared->open_dataset d ON d.dataset_id  = b.dataset_id WHERE er.status = 'Completed'",
+    "query_short": "Q7",
+    "allium-sativum": {
+      "plan": {
+        "tokenize": 0.2207,
+        "parse": 0.0963,
+        "semanticTransform": 0.0279,
+        "optimize": 199.7569,
+        "total": 200.1018
+      },
+      "execute": 3261.2745,
+      "total": 3461.3763
+    },
+    "presto": {
+      "plan": 711.91,
+      "execute": 2310,
+      "total": 3030
     }
   }
 ]

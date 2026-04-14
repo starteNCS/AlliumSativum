@@ -118,7 +118,7 @@ public sealed class BenchmarkController
     }
     
     [HttpPost("timings")]
-    public async Task<AlliumSativumTimingResult> GetCompileTiming([FromBody] List<string> queries)
+    public async Task<object> GetCompileTiming([FromBody] List<string> queries)
     {
         var (plan, timingResult) = await _compiler.TimedCompileAsync(queries.Single());
         
@@ -126,7 +126,7 @@ public sealed class BenchmarkController
         await _queryExecutor.ExecuteAsync(plan.RootOperator);
         timingResult.Execute = stopwatch.Elapsed;
 
-        return timingResult;
+        return timingResult.ToMilliSeconds();
     }
 }
 

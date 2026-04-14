@@ -5,6 +5,7 @@ using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 using AlliumSativum.Shared.Utils;
 using Microsoft.AspNetCore.Mvc;
 using ScottPlot;
@@ -119,22 +120,16 @@ public class HistogramController : Controller
             min = map.Keys.Min() < min ? map.Keys.Min() : min;
             max = map.Keys.Max() > max ? map.Keys.Max() : max;
             maps.Add(map);
-
-            const double barWidth = 0.8;
-            var plotPositions = map.Keys.ToArray();
-            var plotHeights = map.Values.ToArray();
-            var barPlot = plt.Add.Bars(plotPositions, plotHeights);
-            barPlot.Color = colormap.GetColor((double)index / queries.Count);
-            barPlot.LegendText = query.LegendText;
-
-            foreach (var bar in barPlot.Bars)
-            {
-                bar.Size = barWidth;
-                bar.LineStyle = LineStyle.None;
-                bar.LineWidth = 0;
-            }
+            
+            var color = colormap.GetColor((double)index / queries.Count);
+            PlotHistogram(plt, map, color, query.LegendText);
             index++;
         }
+
+        var reconstructed = GenerateHistogram(min, max, 700);
+        var reconstructedColor = colormap.GetColor((double)index / queries.Count);
+        PlotHistogram(plt, reconstructed, reconstructedColor, "Outer");
+        
 
         plt.Axes.Margins(bottom: 0);
         plt.Axes.Bottom.Min = min;
@@ -182,6 +177,44 @@ public class HistogramController : Controller
             .Append("</body></html>");
 
         return Results.Content(stringBuilder.ToString(), "text/html");
+    }
+
+    private static void PlotHistogram(Plot plt, Dictionary<double, int> map, Color color, string legend)
+    {
+        const double barWidth = 0.8;
+        var plotPositions = map.Keys.ToArray();
+        var plotHeights = map.Values.ToArray();
+        var barPlot = plt.Add.Bars(plotPositions, plotHeights);
+        barPlot.Color = color;
+        barPlot.LegendText = legend;
+
+        foreach (var bar in barPlot.Bars)
+        {
+            bar.Size = barWidth;
+            bar.LineStyle = LineStyle.None;
+            bar.LineWidth = 0;
+        }
+    }
+
+    private Dictionary<double, int> GenerateHistogram(double min, double max, int maxHeight)
+    {
+        return _costModel.ReconstructDistribution(new PlanOperatorDistributionData
+        {
+            Min = min,
+            Max = max,
+            Mean = 0,
+            MeanBinHeight = 0,
+            Peaks =
+            [
+                new PlanOperatorDistributionData.Peak()
+                {
+                    Height = maxHeight,
+                    StandardDeviation = 2,
+                    Mean = 3,
+                    Position = 4
+                }
+            ]
+        }).ToDictionary(x => x.Key, x => (int)x.Value);
     }
 }
 
