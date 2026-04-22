@@ -8,7 +8,7 @@ namespace AlliumSativum.Parser;
 public partial class TokenQueryParser
 {
     /// <summary>
-    ///     Expects token of format (LEFT|RIGHT|INNER|OUTER) JOIN tableSpec varName ON expr
+    ///     Expects token of format INNER JOIN tableSpec varName ON expr
     /// </summary>
     /// <param name="tokens"></param>
     /// <param name="model"></param>

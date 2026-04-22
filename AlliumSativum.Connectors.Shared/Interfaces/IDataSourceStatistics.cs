@@ -2,5 +2,5 @@ namespace AlliumSavitum.Connectors.Shared.Interfaces;
 
 public interface IDataSourceStatistics
 {
-    Task ScrapeStatistics(Guid dataSource);
+    Task ScrapeStatisticsAsync(Guid dataSource);
 }

@@ -28,7 +28,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         _logger = logger;
     }
 
-    public async Task ScrapeStatistics(Guid dataSource)
+    public async Task ScrapeStatisticsAsync(Guid dataSource)
     {
         var tables = await _dataSource.QueryAsync<PostgresTablesModel>(dataSource,
             "SELECT table_schema AS TableSchema, table_name AS TableName FROM information_schema.tables WHERE table_schema != 'pg_catalog' AND table_schema != 'information_schema' AND table_type = 'BASE TABLE'");

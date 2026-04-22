@@ -30,7 +30,7 @@ public sealed class MetricsService : Metrics.MetricsBase
 
         var statistics = _statisticsStrategy.GetStatisticsOfConnector(datasource.Connector);
         var stopwatch = Stopwatch.StartNew();
-        await statistics.ScrapeStatistics(datasource.Id);
+        await statistics.ScrapeStatisticsAsync(datasource.Id);
         stopwatch.Stop();
         _logger.LogInformation("Scrape statistics for {DataSource} took {StopwatchElapsedMilliseconds}ms",
             datasource.Name, stopwatch.ElapsedMilliseconds);

@@ -33,12 +33,10 @@ public sealed class JoinOptimizer
     {
         if (joins.Count == 0) return [popLookupTable.Single()];
 
-        // 1. Identify all unique tables involved
         var allTables = joins.SelectMany(j => j.AffectedTables).Distinct().ToList();
-
-        // Memoization: Map a bitmask of tables to all possible PlanOperators for that set
         var memo = new Dictionary<int, List<PlanOperator>>();
 
+        // (1 << allTables.Count) - 1 fills all bits up to the number of tables with a 1
         return await BuildSubtreesAsync((1 << allTables.Count) - 1, allTables, joins, memo, popLookupTable, prune);
     }
 
@@ -80,54 +78,53 @@ public sealed class JoinOptimizer
                     // Find the expression that connects the 'left' set and 'right' set
                     var expression = FindExpressionForSets(leftMask, rightMask, tables, joins);
 
-                    if (expression != null)
+                    if (expression == null) continue;
+                    
+                    // Merge distribution data
+                    var distributions = ((List<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>)
+                            [left.DistributionData, right.DistributionData])
+                        .SelectMany(d => d)
+                        .ToDictionary(kv => kv.Key, kv => kv.Value);
+
+                    var costData =
+                        await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)expression,
+                            distributions,
+                            [left, right]);
+
+                    // Local helper to cleanly handle the pruning logic for all join types
+                    void ProcessPlan(PlanOperator plan)
                     {
-                        // Merge distribution data
-                        var distributions = ((List<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>)
-                                [left.DistributionData, right.DistributionData])
-                            .SelectMany(d => d)
-                            .ToDictionary(kv => kv.Key, kv => kv.Value);
-
-                        var costData =
-                            await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)expression,
-                                distributions,
-                                [left, right]);
-
-                        // Local helper to cleanly handle the pruning logic for all join types
-                        void ProcessPlan(PlanOperator plan)
+                        plan.Cost = _costModel.CalculateCost(plan);
+                        if (!prune)
                         {
-                            plan.Cost = _costModel.CalculateCost(plan);
-                            if (!prune)
-                            {
-                                results.Add(plan);
-                            }
-                            else if (plan.Cost < minCost)
-                            {
-                                minCost = plan.Cost;
-                                cheapestPlanForMask = plan;
-                            }
+                            results.Add(plan);
                         }
+                        else if (plan.Cost < minCost)
+                        {
+                            minCost = plan.Cost;
+                            cheapestPlanForMask = plan;
+                        }
+                    }
 
-                        // --- Evaluate Nested Loop Join ---
-                        var nlj = new NestedLoopJoinPlanOperator(left, expression, right)
+                    // --- Evaluate Nested Loop Join ---
+                    var nlj = new NestedLoopJoinPlanOperator(left, expression, right)
+                    {
+                        DistributionData = costData.Distribution,
+                        Selectivity = costData.Selectivity,
+                        ExpectedCardinality = costData.Cardinality
+                    };
+                    ProcessPlan(nlj);
+
+                    if (expression.IsEquiJoin())
+                    {
+                        // --- Evaluate Hash Join ---
+                        var hj = new HashJoinPlanOperator(left, expression, right)
                         {
                             DistributionData = costData.Distribution,
                             Selectivity = costData.Selectivity,
                             ExpectedCardinality = costData.Cardinality
                         };
-                        ProcessPlan(nlj);
-
-                        if (expression.IsEquiJoin())
-                        {
-                            // --- Evaluate Hash Join ---
-                            var hj = new HashJoinPlanOperator(left, expression, right)
-                            {
-                                DistributionData = costData.Distribution,
-                                Selectivity = costData.Selectivity,
-                                ExpectedCardinality = costData.Cardinality
-                            };
-                            ProcessPlan(hj);
-                        }
+                        ProcessPlan(hj);
                     }
                 }
             }

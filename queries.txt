@@ -13,8 +13,7 @@ SELECT hp.run_id, hp.param_name, hp.param_value, hp.param_type, er.hardware_tag,
 Q5: Survey responses with the study topic and instrument scale type in one row
 SELECT sr.response_id, sr.respondent_id, sr.collected_at, sr.channel, sr.completion_secs, sr.is_complete, s.title, s.topic, s.research_type, si.name, si.scale_type, si.item_count FROM   business->biz_survey_response sr INNER JOIN business->biz_study s ON s.study_id = sr.study_id INNER JOIN shared->survey_instrument si  ON si.instrument_id = sr.instrument_id
 
-Q6: Cross-schema: pair each CS observation with the same respondent's
-employment wave rows (respondents appearing in both research streams)
+Q6: Cross-schema: pair each CS observation with the same respondent's employment wave rows (respondents appearing in both research streams)
 SELECT so.id, so.task_label, so.nasa_tlx_score, so.satisfaction, so.completion_secs, so.error_count, ew.wave_date, ew.employment_status, ew.gross_monthly_usd, ew.financial_anxiety, ew.job_satisfaction, ew.job_sector FROM cs->study_observation so INNER JOIN business->biz_employment_wave  ew ON ew.respondent_id = so.respondent_id
 
 Q7: Run metrics with the dataset name and domain from the benchmark definition

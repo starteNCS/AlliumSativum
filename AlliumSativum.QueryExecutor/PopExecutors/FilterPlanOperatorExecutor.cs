@@ -13,7 +13,8 @@ public sealed class FilterPlanOperatorExecutor : IPlanOperatorExecutor<FilterPla
 
         List<Dictionary<string, object>> result = [];
         result.AddRange(pop.Children
-            .Single().ExecutionData.Data
+            .Single()
+            .ExecutionData.Data
             .Where(item => pop.Expression.EvaluatePredicate(item)));
 
         stopwatch.Stop();

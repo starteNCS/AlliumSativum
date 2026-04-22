@@ -81,7 +81,8 @@ public sealed class JsonServerPlanner : IPlanner
         urlBuilder.Append('/');
         urlBuilder.Append(relation.AccessPath);
 
-        var cost = relation.ConnectionOpenMs + relation.Transfer100Ms * (relation.Cardinality / 100);
+        // only use T100, as scraping the metrics stores the Tall time (we cannot paginate the json server)
+        var cost = relation.ConnectionOpenMs + relation.Transfer100Ms;
 
         return new PlanContainer
         {
