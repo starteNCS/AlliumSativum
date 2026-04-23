@@ -35,5 +35,6 @@ public sealed class JoinCost
         public double BaseCost { get; set; }
         public double PerAttributeHashTableInitiation { get; set; }
         public double PerAttributeHashTableLookup { get; set; }
+        public double PerPropertyCloneCost { get; set; }
     }
 }

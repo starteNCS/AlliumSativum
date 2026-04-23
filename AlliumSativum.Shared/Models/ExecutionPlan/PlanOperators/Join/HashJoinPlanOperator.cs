@@ -10,14 +10,6 @@ public sealed class HashJoinPlanOperator : JoinPlanOperator
     {
     }
 
-    public static HashJoinPlanOperator FromJoinPop(JoinPlanOperator joinPop)
-    {
-        return new HashJoinPlanOperator(joinPop.Left, joinPop.Expression, joinPop.Right)
-        {
-            DistributionData = joinPop.DistributionData
-        };
-    }
-
     protected override string GetNodeInfo()
     {
         return $"JOIN [HASH]: {Expression}";

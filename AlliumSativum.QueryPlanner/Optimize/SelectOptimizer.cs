@@ -61,7 +61,8 @@ public sealed class SelectOptimizer
             Selectivity = pop.Selectivity,
             DistributionData = pop.DistributionData
                 .Where(x => projected.Contains(x.Key))
-                .ToDictionary(x => x.Key, x => x.Value)
+                .ToDictionary(x => x.Key, x => x.Value),
+            Width = projected.Count
         };
         projectPop.Cost = _costModel.CalculateCost(projectPop);
 

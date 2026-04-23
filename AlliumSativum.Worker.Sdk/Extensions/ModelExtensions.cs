@@ -136,7 +136,8 @@ public static class ModelExtensions
                     }
                 },
                 Cost = planOperator.Cost,
-                ExpectedCardinality = planOperator.ExpectedCardinality
+                ExpectedCardinality = planOperator.ExpectedCardinality,
+                Width = planOperator.Width,
             },
             PushdownRestCallPlanOperator prest => new GPlanOperator
             {
@@ -152,7 +153,8 @@ public static class ModelExtensions
                     }
                 },
                 Cost = planOperator.Cost,
-                ExpectedCardinality = planOperator.ExpectedCardinality
+                ExpectedCardinality = planOperator.ExpectedCardinality,
+                Width = planOperator.Width,
             },
             _ => new GPlanOperator()
         };
@@ -297,7 +299,8 @@ public static class ModelExtensions
                 ExpectedCardinality = proto.ExpectedCardinality,
                 Selectivity = 1,
                 Self = new TableSpecifier(proto.PushdownSql.Self.DataSource, proto.PushdownSql.Self.TableName),
-                DistributionData = proto.OutputDistribution.FromGrpcModel()
+                DistributionData = proto.OutputDistribution.FromGrpcModel(),
+                Width = proto.Width
             },
             GPlanOperator.OperatorTypeOneofCase.PushdownRestCall => new PushdownRestCallPlanOperator(
                 Guid.Parse(proto.PushdownRestCall.DatasourceId),
@@ -310,7 +313,8 @@ public static class ModelExtensions
                 Selectivity = 1,
                 Self = new TableSpecifier(proto.PushdownRestCall.Self.DataSource,
                     proto.PushdownRestCall.Self.TableName),
-                DistributionData = proto.OutputDistribution.FromGrpcModel()
+                DistributionData = proto.OutputDistribution.FromGrpcModel(),
+                Width = proto.Width
             },
             _ => throw new ArgumentException("Expected some plan operator")
         };

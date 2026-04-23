@@ -246,6 +246,16 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
 
         return attribute.Single();
     }
+    
+    public Task<List<AttributeEntity>> GetAttributesOfRelationAsync(Guid relationId)
+    {
+        return QueryAsync<AttributeEntity>(
+            "SELECT * FROM Catalog.Attributes WHERE RelationId = @RelationId",
+            new
+            {
+                RelationId = relationId
+            });
+    }
 
     public Task<AttributeEntity> GetAttributeAsync(FullySpecifiedColumnExpressionNode node)
     {

@@ -71,11 +71,12 @@ message GQueryExecutionPlan {
 message GPlanOperator {
   double cost = 1;
   int64 expectedCardinality = 2;
+  int32 width = 3;
   oneof operator_type {
-    GPushdownSqlPlanOperator pushdown_sql = 3;
-    GPushdownRestCallPlanOperator pushdown_rest_call = 4;
+    GPushdownSqlPlanOperator pushdown_sql = 4;
+    GPushdownRestCallPlanOperator pushdown_rest_call = 5;
   };
-  map<string, GPlanOperatorDistributionData> outputDistribution = 5;
+  map<string, GPlanOperatorDistributionData> outputDistribution = 6;
 }
 
 message GPushdownSqlPlanOperator {

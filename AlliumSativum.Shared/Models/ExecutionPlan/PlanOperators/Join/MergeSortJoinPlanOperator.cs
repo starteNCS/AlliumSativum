@@ -10,14 +10,6 @@ public sealed class MergeSortJoinPlanOperator : JoinPlanOperator
     {
     }
 
-    public static MergeSortJoinPlanOperator FromJoinPop(JoinPlanOperator joinPop)
-    {
-        return new MergeSortJoinPlanOperator(joinPop.Left, joinPop.Expression, joinPop.Right)
-        {
-            DistributionData = joinPop.DistributionData
-        };
-    }
-
     protected override string GetNodeInfo()
     {
         return $"JOIN [MERGE SORT]: {Expression}";

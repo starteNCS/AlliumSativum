@@ -129,7 +129,8 @@ public sealed class Optimizer
                     Children = [joinPlanRoot],
                     ExpectedCardinality = distributionCost.Cardinality,
                     Selectivity = distributionCost.Selectivity,
-                    DistributionData = distributionCost.Distribution
+                    DistributionData = distributionCost.Distribution,
+                    Width = joinPlanRoot.Width
                 };
                 joinPlanRoot.Cost = _costModel.CalculateCost(joinPlanRoot);
             }
@@ -144,7 +145,8 @@ public sealed class Optimizer
                     ExpectedCardinality = joinPlanRoot.ExpectedCardinality,
                     DistributionData = joinPlanRoot.DistributionData
                         .Where(x => applyProjections.Contains(x.Key))
-                        .ToDictionary(x => x.Key, x => x.Value)
+                        .ToDictionary(x => x.Key, x => x.Value),
+                    Width = applyProjections.Count
                 };
                 joinPlanRoot.Cost = _costModel.CalculateCost(joinPlanRoot);
             }

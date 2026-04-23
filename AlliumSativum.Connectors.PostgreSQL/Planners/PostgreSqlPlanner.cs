@@ -45,7 +45,8 @@ public sealed class PostgreSqlPlanner : IPlanner
                     Cost = cost,
                     ExpectedCardinality = cardinality,
                     Self = selectModel.From,
-                    DistributionData = distribution
+                    DistributionData = distribution,
+                    Width = selectModel.Select.Count
                 },
                 PlannedItems = selectModel
             }

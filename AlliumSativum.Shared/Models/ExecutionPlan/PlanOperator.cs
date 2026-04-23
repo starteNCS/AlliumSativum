@@ -9,6 +9,7 @@ public abstract partial class PlanOperator
     public double Cost { get; set; }
     public long ExpectedCardinality { get; set; }
     public double Selectivity { get; set; } = 1;
+    public required int Width { get; set; }
 
     public Dictionary<AttributeSpecifier, PlanOperatorDistributionData> DistributionData { get; set; } = [];
     public PlanOperatorExecutionData ExecutionData { get; set; } = new();

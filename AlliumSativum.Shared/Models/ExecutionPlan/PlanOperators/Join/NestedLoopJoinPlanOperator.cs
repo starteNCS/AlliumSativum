@@ -10,14 +10,6 @@ public sealed class NestedLoopJoinPlanOperator : JoinPlanOperator
     {
     }
 
-    public static NestedLoopJoinPlanOperator FromJoinPop(JoinPlanOperator joinPop)
-    {
-        return new NestedLoopJoinPlanOperator(joinPop.Left, joinPop.Expression, joinPop.Right)
-        {
-            DistributionData = joinPop.DistributionData
-        };
-    }
-
     protected override string GetNodeInfo()
     {
         return $"JOIN [NESTED LOOP]: {Expression}";

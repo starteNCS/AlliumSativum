@@ -111,7 +111,8 @@ public sealed class JoinOptimizer
                     {
                         DistributionData = costData.Distribution,
                         Selectivity = costData.Selectivity,
-                        ExpectedCardinality = costData.Cardinality
+                        ExpectedCardinality = costData.Cardinality,
+                        Width = (left.Width + right.Width) - expression.GetAttributesOfExpression().Count
                     };
                     ProcessPlan(nlj);
 
@@ -122,7 +123,8 @@ public sealed class JoinOptimizer
                         {
                             DistributionData = costData.Distribution,
                             Selectivity = costData.Selectivity,
-                            ExpectedCardinality = costData.Cardinality
+                            ExpectedCardinality = costData.Cardinality,
+                            Width = (left.Width + right.Width) - expression.GetAttributesOfExpression().Count
                         };
                         ProcessPlan(hj);
                     }

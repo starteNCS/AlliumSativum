@@ -33,6 +33,8 @@ public sealed class JsonServerPlanner : IPlanner
         var fromRelation = await _catalogDatabase.GetRelationAsync(dataSourceId, selectModel.From!.TableName);
         if (fromRelation is null) return ([], null);
 
+        var fromRelationAttribtues = await _catalogDatabase.GetAttributesOfRelationAsync(fromRelation.Id);
+
         var distribution = await _distributionUtils.GetAttributeDistributionsAsync(selectModel.GetAffectedAttributes());
 
         var unplanned = selectModel;
@@ -41,6 +43,7 @@ public sealed class JsonServerPlanner : IPlanner
             BuildPushDown(
                 dataSource,
                 fromRelation,
+                fromRelationAttribtues,
                 selectModel.From,
                 distribution
                     .Where(x => x.Key.IsInTable(selectModel.From))
@@ -50,11 +53,15 @@ public sealed class JsonServerPlanner : IPlanner
         {
             var joinRelation = await _catalogDatabase.GetRelationAsync(dataSourceId, join.Inner.TableName);
             if (joinRelation is null) return ([], null);
+            
+            var joinRelationAttributes = await _catalogDatabase.GetAttributesOfRelationAsync(joinRelation.Id);
+            
 
             planOperators.Add(
                 BuildPushDown(
                     dataSource,
                     joinRelation,
+                    joinRelationAttributes,
                     join.Inner,
                     distribution
                         .Where(x => x.Key.IsInTable(join.Inner))
@@ -73,7 +80,7 @@ public sealed class JsonServerPlanner : IPlanner
             unplanned);
     }
 
-    private PlanContainer BuildPushDown(DataSourceEntity dataSource, RelationEntity relation, TableSpecifier from,
+    private PlanContainer BuildPushDown(DataSourceEntity dataSource, RelationEntity relation, List<AttributeEntity> attributes, TableSpecifier from,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         var urlBuilder = new StringBuilder();
@@ -91,7 +98,8 @@ public sealed class JsonServerPlanner : IPlanner
                 Cost = cost,
                 ExpectedCardinality = relation.Cardinality,
                 Self = from,
-                DistributionData = distributionData
+                DistributionData = distributionData,
+                Width = attributes.Count
             },
             PlannedItems = new SelectBaseModel { From = from }
         };

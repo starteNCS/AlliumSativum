@@ -79,7 +79,8 @@ public sealed class WhereOptimizer
             Children = [scan.Plan],
             ExpectedCardinality = distributionCost.Cardinality,
             Selectivity = distributionCost.Selectivity,
-            DistributionData = distributionCost.Distribution
+            DistributionData = distributionCost.Distribution,
+            Width = scan.Plan.Width
         };
 
         filterPop.Cost = _costModel.CalculateCost(filterPop);
