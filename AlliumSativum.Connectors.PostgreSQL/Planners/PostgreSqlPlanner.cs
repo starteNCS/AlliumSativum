@@ -1,3 +1,4 @@
+using AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 using AlliumSativum.Connectors.Shared.CatalogUtils;
 using AlliumSativum.Connectors.Shared.Interfaces;
 using AlliumSativum.Shared.Database;
@@ -12,13 +13,16 @@ public sealed class PostgreSqlPlanner : IPlanner
 {
     private readonly CatalogDatabase _catalogDatabase;
     private readonly CatalogDistributionUtils _distributionUtils;
+    private readonly DatasourceDatabase _datasource;
 
     public PostgreSqlPlanner(
         CatalogDatabase catalogDatabase,
-        CatalogDistributionUtils distributionUtils)
+        CatalogDistributionUtils distributionUtils,
+        DatasourceDatabase datasource)
     {
         _catalogDatabase = catalogDatabase;
         _distributionUtils = distributionUtils;
+        _datasource = datasource;
     }
 
     public async Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanAsync(Guid dataSourceId,
@@ -27,12 +31,21 @@ public sealed class PostgreSqlPlanner : IPlanner
         var relation = await _catalogDatabase.GetRelationAsync(dataSourceId, selectModel.From!.TableName);
         if (relation is null) return ([], null);
 
-        // TODO: adjust cost for filters and joins
-        var cost = relation.ConnectionOpenMs + relation.Transfer100Ms * (relation.Cardinality / 100);
+        var postgresString = selectModel.ToPostgreSqlString();
+        var estimations = await _datasource.QueryAsync(dataSourceId, "SELECT * FROM query_stats(@Sql)", new
+        {
+            Sql = postgresString
+        });
 
-        // TODO: Calculate adjusted cardinality
-        var cardinality = relation.Cardinality;
-
+        var estimate = estimations.Single();
+        if(!estimate.TryGetValue("cardinality", out object cardinalityObj))
+            return ([], null);
+        var cardinality = Convert.ToInt64(cardinalityObj);
+        
+        if(!estimate.TryGetValue("execution_time_ms", out object executionTimeMs))
+            return ([], null);
+        var cost = Convert.ToDouble(executionTimeMs) + relation.ConnectionOpenMs + relation.Transfer100Ms;
+        
         var distribution =
             await _distributionUtils.GetAttributeDistributionsAsync(selectModel.Select
                 .Select(x => (AttributeSpecifier)x).ToList());
@@ -40,7 +53,7 @@ public sealed class PostgreSqlPlanner : IPlanner
         return ([
             new PlanContainer
             {
-                Plan = new PushdownSqlPlanOperator(relation.DataSourceId, selectModel.ToPostgreSqlString())
+                Plan = new PushdownSqlPlanOperator(relation.DataSourceId, postgresString)
                 {
                     Cost = cost,
                     ExpectedCardinality = cardinality,

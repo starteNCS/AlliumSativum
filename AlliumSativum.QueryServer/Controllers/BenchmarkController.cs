@@ -34,14 +34,14 @@ public sealed class BenchmarkController
     }
 
     [HttpPost("winning-plan-accuracy")]
-    public async Task<dynamic> GetWinningPlanAccuracy([FromBody] List<string> queries)
+    public async Task<dynamic> GetWinningPlanAccuracy([FromBody] Dictionary<string, string> queries)
     {
         var results = new List<BenchmarkPredictCorrectPlanResult>();
 
         foreach (var query in queries)
         {
-            var plans = await _compiler.CompileNoPruningAsync(query);
-            var generatedWinningPlan = await _compiler.CompileAsync(query);
+            var plans = await _compiler.CompileNoPruningAsync(query.Value);
+            var generatedWinningPlan = await _compiler.CompileAsync(query.Value);
 
             ConcurrentBag<BenchmarkPredictCorrectPlanSingleResult> benchmarks = [];
             var index = 0;
@@ -78,7 +78,8 @@ public sealed class BenchmarkController
                 ChoseWinningPlan = orderedResults[0].WasWinningPlan,
                 WinningPlanLocation = orderedResults.FindIndex(x => x.WasWinningPlan) + 1,
                 PlanCount = orderedResults.Count,
-                Query = query,
+                Query = query.Value,
+                QueryShort = query.Key,
                 OffByMs = winningPlan.ActualCost - orderedResults[0].ActualCost,
                 OffByPercent = (winningPlan.ActualCost - orderedResults[0].ActualCost) /
                                winningPlan.ActualCost *
@@ -89,13 +90,14 @@ public sealed class BenchmarkController
             _logger.LogInformation("Finished benchmarking query: {Query}.", query);
         }
 
-        return new
-        {
-            ChoseWinningPlanCount = results.Count(x => x.ChoseWinningPlan),
-            AverageWinningPlanLocation = results.Average(x => x.WinningPlanLocation),
-            OfAveragePlanCount = results.Average(x => x.PlanCount),
-            Results = results
-        };
+        return results;
+        // return new
+        // {
+        //     ChoseWinningPlanCount = results.Count(x => x.ChoseWinningPlan),
+        //     AverageWinningPlanLocation = results.Average(x => x.WinningPlanLocation),
+        //     OfAveragePlanCount = results.Average(x => x.PlanCount),
+        //     Results = results
+        // };
     }
 
     [HttpPost("reconstructed-histograms")]
@@ -139,6 +141,7 @@ public class BenchmarkPredictCorrectPlanResult
     public double OffByPercent { get; set; }
     public List<BenchmarkPredictCorrectPlanSingleResult> OrderedData { get; set; } = [];
     public string Query { get; set; } = string.Empty;
+    public string QueryShort { get; set; } = string.Empty;
 }
 
 public class BenchmarkPredictCorrectPlanSingleResult

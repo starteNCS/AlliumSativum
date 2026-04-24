@@ -106,8 +106,8 @@ public sealed partial class DefaultCostModel : ICostModel
                 _settings.Filter.PerAttributeCostNumeric,
             HashJoinPlanOperator hj =>
                 _settings.Join.Hash.BaseCost
-                + hj.Left.ExpectedCardinality * _settings.Join.Hash.PerAttributeHashTableInitiation
-                + hj.Right.ExpectedCardinality * (_settings.Join.Hash.PerAttributeHashTableLookup + _settings.Filter.PerAttributeCostNumeric)
+                + hj.Left.ExpectedCardinality * (_settings.Join.Hash.PerAttributeHashTableInitiation)
+                + hj.Right.ExpectedCardinality *  (_settings.Join.Hash.PerAttributeHashTableLookup + _settings.Filter.PerAttributeCostNumeric)
                 + hj.ExpectedCardinality * (hj.Right.Width * _settings.Join.Hash.PerPropertyCloneCost),
             MergeSortJoinPlanOperator => double.MaxValue,
             _ => throw new ArgumentException("Unsupported join in cost calculation")

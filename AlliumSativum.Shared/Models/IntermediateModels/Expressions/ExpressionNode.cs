@@ -15,6 +15,29 @@ public abstract class ExpressionNode
     public abstract string ToSqlQueryString();
     public abstract bool Equals(object? obj);
 
+    public int GetBooleanFactorCount()
+    {
+        var count = 0;
+        var stack = new Stack<ExpressionNode>();
+        stack.Push(this);
+
+        while (stack.Count > 0)
+        {
+            var current = stack.Pop();
+
+            switch (current)
+            {
+                case BinaryOperatorExpressionNode { Operation: "AND" or "OR" } binary:
+                    count++;
+                    stack.Push(binary.Right);
+                    stack.Push(binary.Left);
+                    break;
+            }
+        }
+
+        return count;
+    }
+    
     public bool IsPurelyTables(List<TableSpecifier> table)
     {
         return this switch

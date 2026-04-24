@@ -69,7 +69,7 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
 
             foreach (var match in matches)
             {
-                var merged = Merge(item, match);
+                var merged = Merge(match, item);
                 if (pop.Expression.EvaluatePredicate(merged)) result.Add(merged);
             }
         }

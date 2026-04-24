@@ -96,6 +96,8 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                                           Kurtosis = EXCLUDED.Kurtosis,
                                                           DistributionType = EXCLUDED.DistributionType
                                             """, attributeMetrics);
+
+        await CreateQueryStatsMethodAsync(dataSource);
     }
 
     private async Task<(List<RelationEntity> relationEntities, List<AttributeEntity> attributeEntities)>
@@ -217,5 +219,28 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         }
 
         return (relationMetrics, attributeMetrics);
+    }
+
+    private async Task CreateQueryStatsMethodAsync(Guid datasourceId)
+    {
+        await _dataSource.ExecuteAsync(datasourceId, """
+                                 CREATE OR REPLACE FUNCTION query_stats(q text)
+                                 RETURNS TABLE(execution_time_ms numeric, cardinality bigint)
+                                 LANGUAGE plpgsql AS $$
+                                 DECLARE
+                                   j json;
+                                   r record;
+                                 BEGIN
+                                   -- Capture EXPLAIN ANALYZE JSON output row by row
+                                   FOR r IN EXECUTE format('EXPLAIN (ANALYZE, FORMAT JSON) %s', q) LOOP
+                                     j := r."QUERY PLAN";
+                                   END LOOP;
+
+                                   RETURN QUERY SELECT
+                                     (j -> 0 ->> 'Execution Time')::numeric,
+                                     (j -> 0 -> 'Plan' ->> 'Actual Rows')::bigint;
+                                 END;
+                                 $$;
+                                 """);
     }
 }
