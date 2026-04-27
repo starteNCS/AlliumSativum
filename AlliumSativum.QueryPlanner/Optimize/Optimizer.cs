@@ -150,6 +150,8 @@ public sealed class Optimizer
                 };
                 joinPlanRoot.Cost = _costModel.CalculateCost(joinPlanRoot);
             }
+
+            joinPlans[i] = joinPlanRoot;
         }
 
         stopwatch.Stop();

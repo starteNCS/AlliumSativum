@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using AlliumSativum.Compiler;
 using AlliumSativum.Optimize;
 using AlliumSativum.Parser;
@@ -8,6 +9,7 @@ using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Migrations;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Utils;
 using AlliumSativum.Token;
 using AlliumSativum.Worker.Sdk;
 using Microsoft.AspNetCore.Mvc;
@@ -85,9 +87,12 @@ app.MapPost("execute-return-plan",
         var executionPlan = await compiler.CompileAsync(query.Query);
 
         var parallelPlan = QueryExecutor.ToParallelStacks(executionPlan.RootOperator);
+        var stopwatch = Stopwatch.StartNew();
         await queryExecutor.ExecuteAsync(parallelPlan);
+        stopwatch.Stop();
 
-        return executionPlan.RootOperator.ToPrettyString(true, true);
+        var pretty = executionPlan.RootOperator.ToPrettyString(true, true);
+        return $"<span>{HtmlClasses.Bold("Total Execution Time")}: {stopwatch.Elapsed.TotalMilliseconds}ms</span><hr>" + pretty;
     });
 
 await app.RunAsync();

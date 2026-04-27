@@ -1,142 +1,182 @@
 [
   {
-    "query": "SELECT r.respondent_id, r.employment_status, r.income_bracket, r.age_bracket, sr.study_id, sr.channel, sr.is_complete, i.item_index, i.raw_answer, i.numeric_score FROM business->biz_response_item i INNER JOIN business->biz_survey_response sr ON sr.response_id = i.response_id INNER JOIN shared->respondent r ON r.respondent_id = sr.respondent_id",
+    "query": "SELECT a.id FROM cs->algorithm a",
     "query_short": "Q1",
-    "allium-sativum": {
+    "alliumSativum": {
       "plan": {
-        "tokenize": 0.126,
-        "parse": 0.047,
-        "semanticTransform": 0.0037,
-        "optimize": 178.9171,
-        "total": 179.0938
+        "tokenize": 0.0268,
+        "parse": 0.0066,
+        "semanticTransform": 0.0023,
+        "optimize": 13.4148,
+        "total": 13.4505
       },
-      "execute": 495.1669,
-      "total": 674.2607
+      "execute": 30.0708,
+      "total": 43.5213
     },
     "presto": {
-      "plan": 1790,
-      "execute": 3450,
-      "total": 5810
+      "plan": 9.96,
+      "execute": 112.80,
+      "total": 114.14
     }
   },
   {
-    "query": "SELECT ew.wave_id, ew.wave_date, ew.study_id, r.respondent_id, r.country_iso, r.education_level, r.age_bracket, ew.employment_status, ew.job_sector, ew.weekly_hours, ew.gross_monthly_usd, ew.job_satisfaction, ew.financial_anxiety FROM business->biz_employment_wave ew INNER JOIN shared->respondent r ON r.respondent_id = ew.respondent_id",
+    "query": "SELECT a.id FROM cs->algorithm a WHERE a.task_type = 3",
     "query_short": "Q2",
-    "allium-sativum": {
+    "alliumSativum": {
       "plan": {
-        "tokenize": 0.8665,
-        "parse": 0.3418,
-        "semanticTransform": 0.0096,
-        "optimize": 87.022,
-        "total": 88.2399
+        "tokenize": 0.3678,
+        "parse": 2.0826,
+        "semanticTransform": 0.4843,
+        "optimize": 159.9369,
+        "total": 162.8716
       },
-      "execute": 1632.3762,
-      "total": 1720.6161
+      "execute": 123.1627,
+      "total": 286.0343
     },
     "presto": {
-      "plan": 1010,
-      "execute": 1570,
-      "total": 3160
+      "plan": 55.44,
+      "execute": 266.81,
+      "total":273.95
     }
   },
   {
-    "query": "SELECT rm.run_id, rm.metric_name, rm.split, rm.value, rm.std_dev, rm.k_folds, er.hardware_tag, er.train_time_secs, er.peak_memory_mb, er.status, a.name, a.family, a.task_type FROM cs->run_metric rm INNER JOIN cs->experiment_run er ON er.id = rm.run_id INNER JOIN cs->algorithm a ON a.id = er.algorithm_id WHERE er.status = 'Completed'",
+    "query": "SELECT er.git_commit FROM cs->experiment_run er WHERE er.peak_memory_mb > 15000",
     "query_short": "Q3",
-    "allium-sativum": {
+    "alliumSativum": {
       "plan": {
-        "tokenize": 0.7328,
-        "parse": 0.0646,
-        "semanticTransform": 0.0101,
-        "optimize": 292.6482,
-        "total": 293.4557
+        "tokenize": 0.0134,
+        "parse": 0.0145,
+        "semanticTransform": 0.004,
+        "optimize": 27.7359,
+        "total": 27.7678
       },
-      "execute": 2608.814,
-      "total": 2902.2697
+      "execute": 293.9871,
+      "total": 321.7549
     },
     "presto": {
-      "plan": 203.83,
-      "execute": 1980,
-      "total": 2050
+      "plan": 48.78,
+      "execute": 438.75,
+      "total":465.88
     }
   },
   {
-    "query": "SELECT hp.run_id, hp.param_name, hp.param_value, hp.param_type, er.hardware_tag, er.random_seed, a.name, a.family, a.task_type FROM cs->hyperparameter  hp INNER JOIN cs->experiment_run  er ON er.id = hp.run_id INNER JOIN cs->algorithm a ON a.id = er.algorithm_id WHERE er.status = 'Completed'",
+    "query": "SELECT a.family FROM cs->experiment_run er INNER JOIN cs->algorithm a ON er.algorithm_id = a.id",
     "query_short": "Q4",
-    "allium-sativum": {
+    "alliumSativum": {
       "plan": {
-        "tokenize": 0.3475,
-        "parse": 0.1016,
-        "semanticTransform": 0.0037,
-        "optimize": 152.9525,
-        "total": 153.4053
+        "tokenize": 0.0578,
+        "parse": 0.7283,
+        "semanticTransform": 0.0419,
+        "optimize": 37.1426,
+        "total": 37.9706
       },
-      "execute": 1298.0861,
-      "total": 1451.4914
+      "execute": 564.3537,
+      "total": 602.3243
     },
     "presto": {
-      "plan": 165.48,
-      "execute": 1170,
-      "total": 1200
+      "plan": 130.75,
+      "execute": 572.92,
+      "total": 592.93
     }
   },
   {
-    "query": "SELECT sr.response_id, sr.respondent_id, sr.collected_at, sr.channel, sr.completion_secs, sr.is_complete, s.title, s.topic, s.research_type, si.name, si.scale_type, si.item_count FROM business->biz_survey_response sr INNER JOIN business->biz_study s ON s.study_id = sr.study_id INNER JOIN shared->survey_instrument si ON si.instrument_id = sr.instrument_id",
+    "query": "SELECT r.recruited_at FROM cs->study_observation so INNER JOIN shared->respondent r ON so.respondent_id = r.respondent_id",
     "query_short": "Q5",
-    "allium-sativum": {
+    "alliumSativum": {
       "plan": {
-        "tokenize": 1.5907,
-        "parse": 0.0705,
-        "semanticTransform": 0.0092,
-        "optimize": 99.9593,
-        "total": 101.6297
+        "tokenize": 0.0184,
+        "parse": 0.0222,
+        "semanticTransform": 0.0066,
+        "optimize": 62.3304,
+        "total": 62.3776
       },
-      "execute": 997.2111,
-      "total": 1098.8408
+      "execute": 169.183,
+      "total": 231.5606
     },
     "presto": {
-      "plan": 1330,
-      "execute": 1750,
-      "total": 4140
+      "plan": 501.15,
+      "execute": 873.33,
+      "total": 1870
     }
   },
   {
-    "query": "SELECT so.id, so.task_label, so.nasa_tlx_score, so.satisfaction, so.completion_secs, so.error_count, ew.wave_date, ew.employment_status, ew.gross_monthly_usd, ew.financial_anxiety, ew.job_satisfaction, ew.job_sector FROM cs->study_observation so INNER JOIN business->biz_employment_wave  ew ON ew.respondent_id = so.respondent_id",
+    "query": "SELECT r.income_bracket, cd.employment_status FROM cs->study_observation so INNER JOIN shared->respondent r ON so.respondent_id = r.respondent_id INNER JOIN business->biz_consumer_decision cd ON so.respondent_id = cd.respondent_id",
     "query_short": "Q6",
-    "allium-sativum": {
+    "alliumSativum": {
       "plan": {
-        "tokenize": 0.1109,
-        "parse": 0.0456,
-        "semanticTransform": 0.0029,
-        "optimize": 57.6606,
-        "total": 57.82
+        "tokenize": 0.0161,
+        "parse": 0.0232,
+        "semanticTransform": 0.0068,
+        "optimize": 115.3635,
+        "total": 115.4096
       },
-      "execute": 640.7878,
-      "total": 698.6078
+      "execute": 190.4768,
+      "total": 305.8864
     },
     "presto": {
-      "plan": 487.37,
-      "execute": 902.60,
-      "total": 1810
+      "plan": 1080,
+      "execute": 1470,
+      "total": 2970
     }
   },
   {
-    "query": "SELECT rm.run_id, rm.metric_name, rm.split, rm.value, rm.std_dev, er.hardware_tag, er.run_at, b.name, b.task_type, b.eval_metric, d.name, d.domain, d.row_count FROM cs->run_metric rm INNER JOIN cs->experiment_run er ON er.id = rm.run_id INNER JOIN cs->benchmark b ON b.id = er.benchmark_id INNER JOIN shared->open_dataset d ON d.dataset_id  = b.dataset_id WHERE er.status = 'Completed'",
+    "query": "SELECT a.id FROM cs->study_observation so INNER JOIN cs->user_study us ON so.user_study_id = us.id INNER JOIN cs->algorithm a ON us.algorithm_id = a.id",
     "query_short": "Q7",
-    "allium-sativum": {
+    "alliumSativum": {
       "plan": {
-        "tokenize": 0.2207,
-        "parse": 0.0963,
-        "semanticTransform": 0.0279,
-        "optimize": 199.7569,
-        "total": 200.1018
+        "tokenize": 0.0247,
+        "parse": 0.023,
+        "semanticTransform": 0.0461,
+        "optimize": 62.6215,
+        "total": 62.7153
       },
-      "execute": 3261.2745,
-      "total": 3461.3763
+      "execute": 240.0004,
+      "total": 302.7157
     },
     "presto": {
-      "plan": 711.91,
-      "execute": 2310,
-      "total": 3030
+      "plan": 66.74,
+      "execute": 373.87,
+      "total": 378.99
+    }
+  },
+  {
+    "query": "SELECT sd.dataset_id FROM business->biz_market_sentiment sm INNER JOIN business->biz_study s ON sm.study_id = s.study_id INNER JOIN business->biz_study_dataset sd ON s.study_id = sd.study_id",
+    "query_short": "Q8",
+    "alliumSativum": {
+      "plan": {
+        "tokenize": 0.2759,
+        "parse": 0.2038,
+        "semanticTransform": 0.356,
+        "optimize": 57.2968,
+        "total": 58.1325
+      },
+      "execute": 44.9877,
+      "total": 103.1202
+    },
+    "presto": {
+      "plan": 1510,
+      "execute": 1820,
+      "total": 4120
+    }
+  },
+  {
+    "query": "SELECT b.dataset_id FROM cs->experiment_run er INNER JOIN cs->benchmark b ON er.benchmark_id = b.id WHERE er.algorithm_id < 15",
+    "query_short": "Q9",
+    "alliumSativum": {
+      "plan": {
+        "tokenize": 0.0777,
+        "parse": 0.0232,
+        "semanticTransform": 0.0052,
+        "optimize": 25.8236,
+        "total": 25.9297
+      },
+      "execute": 361.7408,
+      "total": 387.6705
+    },
+    "presto": {
+      "plan": 70.09,
+      "execute": 486.03,
+      "total": 507.06
     }
   }
 ]
