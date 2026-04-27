@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using AlliumSativum.Compiler;
 using AlliumSativum.QueryExecutor.Performance.Histogram;
+using AlliumSativum.QueryPerformance.Selectivity;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Models;
 using AlliumSativum.Shared.Models.ExecutionPlan;
@@ -129,6 +130,26 @@ public sealed class BenchmarkController
         timingResult.Execute = stopwatch.Elapsed;
 
         return timingResult.ToMilliSeconds();
+    }
+    
+    [HttpPost("selectivity-per-stage")]
+    public async Task<object> GetSelectivityPerStage([FromBody] Dictionary<string, string> queries, [FromQuery] bool excludeOnes = false)
+    {
+        var results = new List<object>();
+        
+        foreach (var query in queries)
+        {
+            var compiled = await _compiler.CompileAsync(query.Value);
+            await _queryExecutor.ExecuteAsync(compiled.RootOperator);
+            
+            results.Add(new
+            {
+                Query = query.Key,
+                SelectivityPerStage = SelectivityEvaluationService.EvaluateExecutedTree(compiled.RootOperator, excludeOnes),
+            });
+        }
+        
+        return results;
     }
 }
 

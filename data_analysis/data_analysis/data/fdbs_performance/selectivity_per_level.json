@@ -1,0 +1,134 @@
+[
+  {
+    "query": "1",
+    "selectivityPerStage": [
+      {
+        "predicted": 0.26333899770209407,
+        "actual": 0.2,
+        "absoluteDiff": 0.06333899770209406,
+        "level": 0
+      },
+      {
+        "predicted": 0.04347528308996757,
+        "actual": 0.04,
+        "absoluteDiff": 0.0034752830899675707,
+        "level": 1
+      },
+      {
+        "predicted": 0.02511938203609063,
+        "actual": 0.03333333333333333,
+        "absoluteDiff": 0.008213951297242703,
+        "level": 2
+      },
+      {
+        "predicted": 0.002371115982924718,
+        "actual": 0.004,
+        "absoluteDiff": 0.0016288840170752819,
+        "level": 3
+      }
+    ]
+  },
+  {
+    "query": "2",
+    "selectivityPerStage": [
+      {
+        "predicted": 7.667840306397807E-05,
+        "actual": 0.00020185708518368994,
+        "absoluteDiff": 0.00012517868211971188,
+        "level": 0
+      },
+      {
+        "predicted": 0.00012477766630207402,
+        "actual": 0.0001779676098949991,
+        "absoluteDiff": 5.318994359292508E-05,
+        "level": 1
+      }
+    ]
+  },
+  {
+    "query": "3",
+    "selectivityPerStage": [
+      {
+        "predicted": 0.23162970689390258,
+        "actual": 0.2,
+        "absoluteDiff": 0.03162970689390257,
+        "level": 0
+      },
+      {
+        "predicted": 0.10416666666666667,
+        "actual": 0.06666666666666667,
+        "absoluteDiff": 0.037500000000000006,
+        "level": 1
+      },
+      {
+        "predicted": 0.08783673469387757,
+        "actual": 0.03333333333333333,
+        "absoluteDiff": 0.05450340136054423,
+        "level": 2
+      }
+    ]
+  },
+  {
+    "query": "4",
+    "selectivityPerStage": [
+      {
+        "predicted": 0.04196481812760883,
+        "actual": 0.08333333333333333,
+        "absoluteDiff": 0.0413685152057245,
+        "level": 0
+      },
+      {
+        "predicted": 0.0018719100857644126,
+        "actual": 0.00125,
+        "absoluteDiff": 0.0006219100857644125,
+        "level": 1
+      }
+    ]
+  },
+  {
+    "query": "5",
+    "selectivityPerStage": [
+      {
+        "predicted": 0.08783673469387757,
+        "actual": 0.03341681574239714,
+        "absoluteDiff": 0.05441991895148043,
+        "level": 0
+      },
+      {
+        "predicted": 0.10416666666666667,
+        "actual": 0.06666666666666667,
+        "absoluteDiff": 0.037500000000000006,
+        "level": 1
+      },
+      {
+        "predicted": 0.0018719100857644126,
+        "actual": 0.00125,
+        "absoluteDiff": 0.0006219100857644125,
+        "level": 2
+      },
+      {
+        "predicted": 0.04196481812760883,
+        "actual": 0.08333333333333333,
+        "absoluteDiff": 0.0413685152057245,
+        "level": 3
+      },
+      {
+        "predicted": 0.23162970689390258,
+        "actual": 0.2,
+        "absoluteDiff": 0.03162970689390257,
+        "level": 1
+      }
+    ]
+  },
+  {
+    "query": "6",
+    "selectivityPerStage": [
+      {
+        "predicted": 0.04005006257822278,
+        "actual": 0.03333333333333333,
+        "absoluteDiff": 0.006716729244889447,
+        "level": 0
+      }
+    ]
+  }
+]
