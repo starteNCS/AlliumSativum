@@ -9,6 +9,10 @@ public sealed class QueryExecutionPlan
     public required PlanOperator RootOperator { get; set; }
 
     public required long OptimizeTimeMs { get; set; }
+    /// <summary>
+    /// Flag indicating whether the plan represented by this execution plan was the winning plan after optimization.
+    /// </summary>
+    public bool OptimizeDidWin { get; set; }
 
     public string ToPrettyString(bool html = false)
     {

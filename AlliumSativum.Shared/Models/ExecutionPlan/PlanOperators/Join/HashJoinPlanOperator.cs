@@ -40,4 +40,10 @@ public sealed class HashJoinPlanOperator : JoinPlanOperator
 
         return other.Left.Equals(Left) && other.Right.Equals(Right) && other.Expression.Equals(Expression);
     }
+    
+    public override bool IsEquivalentTo(PlanOperator? other)
+    {
+        if (!base.IsEquivalentTo(other)) return false;
+        return other is HashJoinPlanOperator otherJoin && Equals(otherJoin);
+    }
 }

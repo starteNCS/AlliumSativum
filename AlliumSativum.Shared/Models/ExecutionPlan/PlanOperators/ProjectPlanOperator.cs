@@ -55,4 +55,10 @@ public class ProjectPlanOperator : PlanOperator
 
         return other.Attributes.All(x => Attributes.Contains(x));
     }
+    
+    public override bool IsEquivalentTo(PlanOperator? other)
+    {
+        if (!base.IsEquivalentTo(other)) return false;
+        return other is ProjectPlanOperator otherProject && Equals(otherProject);
+    }
 }

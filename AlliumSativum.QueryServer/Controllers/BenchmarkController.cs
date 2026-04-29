@@ -62,7 +62,7 @@ public sealed class BenchmarkController
                         ActualCost = _costModel.TotalCost(plan.RootOperator, true),
                         EstimatedCost = plan.TotalCost,
                         JoinPlan = plan.RootOperator.ToJoinPlanString(),
-                        WasWinningPlan = plan.RootOperator.Equals(generatedWinningPlan.RootOperator)
+                        WasWinningPlan = plan.RootOperator.IsEquivalentTo(generatedWinningPlan.RootOperator)
                     });
 
                     _logger.LogInformation("Handled plan no. {PlanNumber} (of {TotalCount}) for query: {Query}.", index++,

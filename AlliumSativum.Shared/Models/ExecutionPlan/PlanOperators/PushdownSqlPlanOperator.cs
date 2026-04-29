@@ -47,4 +47,10 @@ public class PushdownSqlPlanOperator : PlanOperator
 
         return other.DataSource.Equals(DataSource) && other.SqlStatement.Equals(SqlStatement);
     }
+    
+    public override bool IsEquivalentTo(PlanOperator? other)
+    {
+        if (!base.IsEquivalentTo(other)) return false;
+        return other is PushdownSqlPlanOperator otherPushdown && Equals(otherPushdown);
+    }
 }
