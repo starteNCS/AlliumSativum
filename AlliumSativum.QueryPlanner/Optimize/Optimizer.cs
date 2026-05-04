@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using AlliumSativum.Interfaces;
+using AlliumSativum.Optimize.Interfaces;
 using AlliumSativum.Parser.Algorithms;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
@@ -17,18 +18,18 @@ namespace AlliumSativum.Optimize;
 public sealed class Optimizer : IOptimizer
 {
     private readonly ICostModel _costModel;
-    private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
-    private readonly JoinOptimizer _joinOptimizer;
+    private readonly IExpressionNodeOptimizer _expressionNodeOptimizer;
+    private readonly IJoinOptimizer _joinOptimizer;
     private readonly IPlannerApi _planner;
-    private readonly SelectOptimizer _selectOptimizer;
-    private readonly WhereOptimizer _whereOptimizer;
+    private readonly ISelectOptimizer _selectOptimizer;
+    private readonly IWhereOptimizer _whereOptimizer;
 
     public Optimizer(
         IPlannerApi planner,
-        ExpressionNodeOptimizer expressionNodeOptimizer,
-        JoinOptimizer joinOptimizer,
-        SelectOptimizer selectOptimizer,
-        WhereOptimizer whereOptimizer,
+        IExpressionNodeOptimizer expressionNodeOptimizer,
+        IJoinOptimizer joinOptimizer,
+        ISelectOptimizer selectOptimizer,
+        IWhereOptimizer whereOptimizer,
         ICostModel costModel)
     {
         _planner = planner;
@@ -251,10 +252,10 @@ public static class OptimizerExtensions
     public static IServiceCollection AddOptimizer(this IServiceCollection services)
     {
         services.AddScoped<IOptimizer, Optimizer>();
-        services.AddScoped<ExpressionNodeOptimizer>();
-        services.AddScoped<JoinOptimizer>();
-        services.AddScoped<SelectOptimizer>();
-        services.AddScoped<WhereOptimizer>();
+        services.AddScoped<IExpressionNodeOptimizer, ExpressionNodeOptimizer>();
+        services.AddScoped<IJoinOptimizer, JoinOptimizer>();
+        services.AddScoped<ISelectOptimizer, SelectOptimizer>();
+        services.AddScoped<IWhereOptimizer, WhereOptimizer>();
 
         return services;
     }

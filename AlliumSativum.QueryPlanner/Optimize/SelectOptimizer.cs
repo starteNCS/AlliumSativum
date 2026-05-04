@@ -1,3 +1,4 @@
+using AlliumSativum.Optimize.Interfaces;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
@@ -7,7 +8,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Optimize;
 
-public sealed class SelectOptimizer
+public sealed class SelectOptimizer : ISelectOptimizer
 {
     private readonly ICostModel _costModel;
 

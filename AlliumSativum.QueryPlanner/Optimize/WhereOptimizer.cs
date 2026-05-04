@@ -1,3 +1,4 @@
+using AlliumSativum.Optimize.Interfaces;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
@@ -6,13 +7,13 @@ using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 namespace AlliumSativum.Optimize;
 
-public sealed class WhereOptimizer
+public sealed class WhereOptimizer : IWhereOptimizer
 {
     private readonly ICostModel _costModel;
-    private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
+    private readonly IExpressionNodeOptimizer _expressionNodeOptimizer;
 
     public WhereOptimizer(
-        ExpressionNodeOptimizer expressionNodeOptimizer,
+        IExpressionNodeOptimizer expressionNodeOptimizer,
         ICostModel costModel)
     {
         _expressionNodeOptimizer = expressionNodeOptimizer;

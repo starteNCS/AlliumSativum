@@ -98,4 +98,14 @@ public sealed class SelectBaseModel
             Select.Add(attribute);
         }
     }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is SelectBaseModel model &&
+               VariableMappings.SequenceEqual(model.VariableMappings) &&
+               Select.SequenceEqual(model.Select) &&
+               From.Equals(model.From) &&
+               ((Where == null && model.Where == null) || (Where != null && Where.Equals(model.Where))) &&
+               Join.SequenceEqual(model.Join);
+    }
 }

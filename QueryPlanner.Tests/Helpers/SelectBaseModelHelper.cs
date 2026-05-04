@@ -5,18 +5,49 @@ using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Token;
 using FluentAssertions;
+using FluentAssertions.Primitives;
 
 namespace QueryPlanner.Tests.Helpers;
 
 public static class SelectBaseModelHelper
 {
-    public static SelectBaseModel FromAsSql(string query)
+    private static readonly Tokenizer Tokenizer = new();
+    private static readonly TokenQueryParser TokenQueryParser = new();
+    private static readonly SemanticTransformer SemanticTransformer = new();
+    
+    public static SelectBaseModel ToSelectDto(this string query)
     {
-        var tokens = new Tokenizer().Tokenize(query);
-        var select = new TokenQueryParser().Parse(tokens);
-        new SemanticTransformer().Transform(select);
-        return select;
+        var tokens = Tokenizer.Tokenize(query);
+        var parsed = TokenQueryParser.Parse(tokens);
+        if(parsed is null) throw new Exception("Failed to parse query");
+        
+        SemanticTransformer.Transform(parsed);
+        return parsed;
     }
+
+    extension(ObjectAssertions assertions)
+    {
+        public void BeSelectDto(SelectBaseModel selectBaseModel)
+        {
+            assertions.Subject.ToString().Should().Be(selectBaseModel.ToString());
+        }
+
+        public void NotBeSelectDto(SelectBaseModel selectBaseModel)
+        {
+            assertions.Subject.ToString().Should().NotBe(selectBaseModel.ToString());
+        }
+
+        public void ShouldBeExpressionNode(ExpressionNode expected)
+        {
+            assertions.Subject?.ToString().Should().Be(expected?.ToString());
+        }
+        
+        public void ShouldNotBeExpressionNode(ExpressionNode? expected)
+        {
+            assertions.Subject?.ToString().Should().NotBe(expected?.ToString());
+        }
+    }
+
 
     public static void ShouldBeSelect(this SelectBaseModel selectBaseModel, TableSpecifier? from = null,
         List<AttributeSpecifier>? select = null, List<JoinBaseModel>? join = null, ExpressionNode? where = null)

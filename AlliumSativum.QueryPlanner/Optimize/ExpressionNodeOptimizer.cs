@@ -1,9 +1,10 @@
+using AlliumSativum.Optimize.Interfaces;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Optimize;
 
-public sealed class ExpressionNodeOptimizer
+public sealed class ExpressionNodeOptimizer : IExpressionNodeOptimizer
 {
     /// <summary>
     ///     Extracts the tree for a specific table

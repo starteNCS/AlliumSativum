@@ -1,4 +1,5 @@
 using System.Numerics;
+using AlliumSativum.Optimize.Interfaces;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
@@ -10,7 +11,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Optimize;
 
-public sealed class JoinOptimizer
+public sealed class JoinOptimizer : IJoinOptimizer
 {
     private readonly ICostModel _costModel;
     private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
@@ -201,7 +202,7 @@ public sealed class JoinOptimizer
         return (joinsLeft, tablePlans);
     }
 
-    public static TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectBaseModel> joinSelects)
+    public TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectBaseModel> joinSelects)
     {
         if (join.Inner == joinSelects[0].From)
         {
@@ -239,7 +240,7 @@ public sealed class JoinOptimizer
     /// </summary>
     /// <param name="select"></param>
     /// <returns></returns>
-    public static List<JoinBaseModel> GetOnlyMixedJoins(SelectBaseModel select)
+    public List<JoinBaseModel> GetOnlyMixedJoins(SelectBaseModel select)
     {
         return select.Join
             .Where(join => join.GetJoinExpressionTable().DataSourceName != join.Inner.DataSourceName)
