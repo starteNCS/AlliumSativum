@@ -1,3 +1,4 @@
+using AlliumSativum.Interfaces;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
@@ -8,7 +9,7 @@ namespace AlliumSativum.Semantic;
 /// <summary>
 ///     Semanatic analyzer
 /// </summary>
-public class SemanticTransformer
+public class SemanticTransformer : ISemanticTransformer
 {
     /// <summary>
     ///     Transforms in place

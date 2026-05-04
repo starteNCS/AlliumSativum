@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using AlliumSativum.Compiler;
+using AlliumSativum.Interfaces;
 using AlliumSativum.Optimize;
 using AlliumSativum.Parser;
 using AlliumSativum.QueryExecutor;
@@ -25,9 +26,9 @@ builder.Services.AddAlliumSativumWorkerGrpcSdk(builder.Configuration["WorkerUrl"
 
 builder.Services
     .AddScoped<QueryCompiler>()
-    .AddScoped<TokenQueryParser>()
-    .AddScoped<SemanticTransformer>()
-    .AddScoped<Tokenizer>()
+    .AddScoped<ITokenQueryParser, TokenQueryParser>()
+    .AddScoped<ISemanticTransformer, SemanticTransformer>()
+    .AddScoped<ITokenizer, Tokenizer>()
     .AddOptimizer();
 
 builder.Services

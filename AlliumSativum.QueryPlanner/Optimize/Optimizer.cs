@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using AlliumSativum.Interfaces;
 using AlliumSativum.Parser.Algorithms;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Exceptions;
@@ -13,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AlliumSativum.Optimize;
 
-public sealed class Optimizer
+public sealed class Optimizer : IOptimizer
 {
     private readonly ICostModel _costModel;
     private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
@@ -249,7 +250,7 @@ public static class OptimizerExtensions
 {
     public static IServiceCollection AddOptimizer(this IServiceCollection services)
     {
-        services.AddScoped<Optimizer>();
+        services.AddScoped<IOptimizer, Optimizer>();
         services.AddScoped<ExpressionNodeOptimizer>();
         services.AddScoped<JoinOptimizer>();
         services.AddScoped<SelectOptimizer>();

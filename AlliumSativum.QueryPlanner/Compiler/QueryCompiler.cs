@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using AlliumSativum.Interfaces;
 using AlliumSativum.Optimize;
 using AlliumSativum.Parser;
 using AlliumSativum.Semantic;
@@ -11,13 +12,13 @@ namespace AlliumSativum.Compiler;
 
 public class QueryCompiler
 {
-    private readonly Optimizer _optimizer;
-    private readonly TokenQueryParser _parser;
-    private readonly SemanticTransformer _semanticTransformer;
-    private readonly Tokenizer _tokenizer;
+    private readonly IOptimizer _optimizer;
+    private readonly ITokenQueryParser _parser;
+    private readonly ISemanticTransformer _semanticTransformer;
+    private readonly ITokenizer _tokenizer;
 
-    public QueryCompiler(Tokenizer tokenizer, TokenQueryParser parser, SemanticTransformer semanticTransformer,
-        Optimizer optimizer)
+    public QueryCompiler(ITokenizer tokenizer, ITokenQueryParser parser, ISemanticTransformer semanticTransformer,
+        IOptimizer optimizer)
     {
         _tokenizer = tokenizer;
         _parser = parser;

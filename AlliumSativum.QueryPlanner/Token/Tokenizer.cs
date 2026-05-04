@@ -1,8 +1,9 @@
 using System.Text.RegularExpressions;
+using AlliumSativum.Interfaces;
 
 namespace AlliumSativum.Token;
 
-public partial class Tokenizer
+public partial class Tokenizer : ITokenizer
 {
     [GeneratedRegex(@"('[^']*')|(,|\.|->|!=|>=|<=|=|<|>)|(\(|\))|(\w+)")]
     private static partial Regex JoinTokens();

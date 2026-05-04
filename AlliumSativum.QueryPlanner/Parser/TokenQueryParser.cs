@@ -1,9 +1,10 @@
+using AlliumSativum.Interfaces;
 using AlliumSativum.Shared.Constants;
 using AlliumSativum.Shared.Models.IntermediateModels;
 
 namespace AlliumSativum.Parser;
 
-public partial class TokenQueryParser
+public partial class TokenQueryParser : ITokenQueryParser
 {
     public SelectBaseModel? Parse(Stack<string> tokens)
     {
