@@ -65,7 +65,7 @@ public static class SelectBaseModelHelper
         public void NotBePop(PlanOperator? other)
         {
             var pop = (PlanOperator) assertions.Subject;
-            pop?.IsEquivalentTo(other).Should().BeTrue();
+            pop?.IsEquivalentTo(other).Should().BeFalse();
         }
     }
 
