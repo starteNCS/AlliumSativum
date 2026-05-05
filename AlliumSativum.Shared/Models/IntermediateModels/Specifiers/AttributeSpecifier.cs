@@ -19,6 +19,8 @@ public sealed class AttributeSpecifier : TableSpecifier, IEquatable<AttributeSpe
     /// </summary>
     public bool IsHidden { get; set; }
 
+    public TableSpecifier Table => new(DataSourceName, TableName);
+    
     public bool Equals(AttributeSpecifier? other)
     {
         return other != null &&

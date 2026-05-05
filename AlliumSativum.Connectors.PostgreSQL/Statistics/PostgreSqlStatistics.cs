@@ -223,6 +223,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
 
     private async Task CreateQueryStatsMethodAsync(Guid datasourceId)
     {
+        // this method was developed with help of google's gemini pro 3.5
         await _dataSource.ExecuteAsync(datasourceId, """
                                  CREATE OR REPLACE FUNCTION query_stats(q text)
                                  RETURNS TABLE(execution_time_ms numeric, cardinality bigint)

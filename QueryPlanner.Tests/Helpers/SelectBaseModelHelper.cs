@@ -1,5 +1,6 @@
 using AlliumSativum.Parser;
 using AlliumSativum.Semantic;
+using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
@@ -15,6 +16,13 @@ public static class SelectBaseModelHelper
     private static readonly TokenQueryParser TokenQueryParser = new();
     private static readonly SemanticTransformer SemanticTransformer = new();
     
+    /// <summary>
+    /// Returns a SelectBaseModel for the provided query.
+    /// </summary>
+    /// /// <remarks>The validity of the model is shown in the respective tests</remarks>
+    /// <param name="query"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     public static SelectBaseModel ToSelectDto(this string query)
     {
         var tokens = Tokenizer.Tokenize(query);
@@ -37,14 +45,27 @@ public static class SelectBaseModelHelper
             assertions.Subject.ToString().Should().NotBe(selectBaseModel.ToString());
         }
 
-        public void ShouldBeExpressionNode(ExpressionNode expected)
+        public void BeExpressionNode(ExpressionNode? expected)
         {
             assertions.Subject?.ToString().Should().Be(expected?.ToString());
         }
         
-        public void ShouldNotBeExpressionNode(ExpressionNode? expected)
+        public void NotBeExpressionNode(ExpressionNode? expected)
         {
             assertions.Subject?.ToString().Should().NotBe(expected?.ToString());
+        }
+
+        public void BePop(PlanOperator? other)
+        {
+            assertions.Subject?.GetType().Should().Be(other?.GetType());
+            var pop = (PlanOperator) assertions.Subject;
+            pop?.IsEquivalentTo(other).Should().BeTrue();
+        }
+        
+        public void NotBePop(PlanOperator? other)
+        {
+            var pop = (PlanOperator) assertions.Subject;
+            pop?.IsEquivalentTo(other).Should().BeTrue();
         }
     }
 

@@ -24,4 +24,5 @@ public abstract partial class PlanOperator
     }
 
     public abstract string ToJoinPlanString();
+    public new abstract bool Equals(object? other);
 }

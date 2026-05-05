@@ -12,6 +12,12 @@ public class AssignWhereToJoinedProposalsTests
 {
     private readonly WhereOptimizerTestFixture _fixture = new();
     
+    [SetUp]
+    public void Setup()
+    {
+        _fixture.ExpressionNodeOptimizer.ClearReceivedCalls();
+    }
+    
     [Test]
     public void Should_Not_Assign_Null_Input()
     {
@@ -73,6 +79,6 @@ public class AssignWhereToJoinedProposalsTests
         var inputUntouched = query.ToSelectDto();
         input.Should().NotBeSelectDto(inputUntouched);
         input.Where.Should().BeNull();
-        proposal.Where.Should().ShouldBeExpressionNode(inputUntouched.Where);
+        proposal.Where.Should().BeExpressionNode(inputUntouched.Where);
     }
 }

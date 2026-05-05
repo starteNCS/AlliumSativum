@@ -45,14 +45,7 @@ public sealed class WhereOptimizer : IWhereOptimizer
         }
     }
 
-    /// <summary>
-    ///     Distributes both all possible where sub-trees from onPremise, and also all non-accepted where from proposal
-    /// </summary>
-    /// <param name="scan"></param>
-    /// <param name="onPremise"></param>
-    /// <param name="proposalAffectedTables"></param>
-    /// <param name="unplanned"></param>
-    /// <returns></returns>
+    
     public async Task<PlanOperator> DistributeWhereToProposalsAsync(PlanContainer scan, SelectBaseModel onPremise,
         SelectBaseModel? unplanned)
     {

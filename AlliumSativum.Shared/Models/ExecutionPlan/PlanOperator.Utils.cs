@@ -10,6 +10,7 @@ public abstract partial class PlanOperator
         if (this.GetType() != other.GetType()) return false;
 
         if (Children.Count != other.Children.Count) return false;
+        if (!Equals(other)) return false;
 
         for (int i = 0; i < Children.Count; i++)
         {
