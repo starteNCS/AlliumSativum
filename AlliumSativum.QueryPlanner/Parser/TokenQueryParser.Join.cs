@@ -13,7 +13,7 @@ public partial class TokenQueryParser
     /// <param name="tokens"></param>
     /// <param name="model"></param>
     /// <exception cref="AsSqlParseException"></exception>
-    private void HandleJoinStatement(Stack<string> tokens, SelectBaseModel model)
+    private void HandleJoinStatement(Stack<string> tokens, SelectDto model)
     {
         if (!tokens.TryPeek(out var joinType) || !AsSqlKeywords.JoinType.Types.Contains(joinType))
             throw new AsSqlParseException($"{joinType}",

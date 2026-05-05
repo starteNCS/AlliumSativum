@@ -61,7 +61,7 @@ public sealed class Optimizer : IOptimizer
     /// <param name="model"></param>
     /// <returns></returns>
     /// <exception cref="AsSqlOptimizeException"></exception>
-    public async Task<List<QueryExecutionPlan>> OptimizeAsync(SelectBaseModel model, bool prune = true)
+    public async Task<List<QueryExecutionPlan>> OptimizeAsync(SelectDto model, bool prune = true)
     {
         var stopwatch = Stopwatch.StartNew();
         var projections = new HashSet<AttributeSpecifier>();
@@ -167,7 +167,7 @@ public sealed class Optimizer : IOptimizer
     }
 
     private async Task<PlanContainer> WrapPlanProposalWithMissingPopsAsync(PlanContainer planContainer,
-        SelectBaseModel onPremise, SelectBaseModel? unplanned)
+        SelectDto onPremise, SelectDto? unplanned)
     {
         // check if there are any pops, that are now exclusive to this proposal
         planContainer.Plan =
@@ -185,7 +185,7 @@ public sealed class Optimizer : IOptimizer
     ///     - onPremise: whatever was not able to be split for data sources
     ///     - dataSources: the parts which should be checked for push down
     /// </returns>
-    public (SelectBaseModel onPremise, List<SelectBaseModel> dataSources) SplitIntoTables(SelectBaseModel model,
+    public (SelectDto onPremise, List<SelectDto> dataSources) SplitIntoTables(SelectDto model,
         HashSet<AttributeSpecifier> allProjections)
     {
         // new data sources may only be introduced in either JOIN or FROM
@@ -196,7 +196,7 @@ public sealed class Optimizer : IOptimizer
         if (model.Where is not null) model.Where = BooleanExpressionParser.AsConjunctiveNormalForm(model.Where);
 
 
-        List<SelectBaseModel> selects = [];
+        List<SelectDto> selects = [];
         foreach (var table in tables)
         {
             var (@base, split) = ExtractTable(model, table, allProjections);
@@ -216,13 +216,13 @@ public sealed class Optimizer : IOptimizer
     ///     - base: what is left of the base model
     ///     - split: the split for this specific table
     /// </returns>
-    private (SelectBaseModel @base, SelectBaseModel split) ExtractTable(SelectBaseModel model, TableSpecifier table,
+    private (SelectDto @base, SelectDto split) ExtractTable(SelectDto model, TableSpecifier table,
         HashSet<AttributeSpecifier> allProjections)
     {
         var extractedWhere = _expressionNodeOptimizer.ExtractExpression(model.Where, table);
         var hiddenSplitWhereAttributes = extractedWhere.split?.GetAttributesOfExpression() ?? [];
 
-        var selectModel = new SelectBaseModel
+        var selectModel = new SelectDto
         {
             From = model.From,
             Join = model.Join,
@@ -230,7 +230,7 @@ public sealed class Optimizer : IOptimizer
             Select = model.Select
         };
 
-        var split = new SelectBaseModel
+        var split = new SelectDto
         {
             From = table,
             Select = model.Select

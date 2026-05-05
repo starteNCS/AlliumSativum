@@ -12,8 +12,8 @@ public interface ISelectOptimizer
     /// <param name="splitSelects">The selects only targetting one table</param>
     /// <param name="hiddenAttributes">The attributes that should be appended</param>
     /// <returns></returns>
-    List<SelectBaseModel> AppendComputationalSelects(List<SelectBaseModel> splitSelects,
+    List<SelectDto> AppendComputationalSelects(List<SelectDto> splitSelects,
         List<AttributeSpecifier> hiddenAttributes);
 
-    PlanOperator HandleProjection(PlanOperator pop, TableSpecifier forTable, SelectBaseModel? unplanned);
+    PlanOperator HandleProjection(PlanOperator pop, TableSpecifier forTable, SelectDto? unplanned);
 }

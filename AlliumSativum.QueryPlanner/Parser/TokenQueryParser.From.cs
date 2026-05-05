@@ -6,7 +6,7 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser
 {
-    private void HandleFromStatement(Stack<string> tokens, SelectBaseModel model)
+    private void HandleFromStatement(Stack<string> tokens, SelectDto model)
     {
         if (model.From is not null)
             throw new AsSqlParseException(ReadStringToNextKeyword(tokens),

@@ -6,9 +6,9 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser : ITokenQueryParser
 {
-    public SelectBaseModel? Parse(Stack<string> tokens)
+    public SelectDto? Parse(Stack<string> tokens)
     {
-        var select = new SelectBaseModel();
+        var select = new SelectDto();
 
         while (tokens.Count > 0) HandleTopStatement(tokens, select);
 
@@ -16,7 +16,7 @@ public partial class TokenQueryParser : ITokenQueryParser
         return select;
     }
 
-    private void HandleTopStatement(Stack<string> tokens, SelectBaseModel model)
+    private void HandleTopStatement(Stack<string> tokens, SelectDto model)
     {
         switch (tokens.Peek())
         {

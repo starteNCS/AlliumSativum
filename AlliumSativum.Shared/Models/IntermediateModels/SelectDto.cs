@@ -5,7 +5,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels;
 
-public sealed class SelectBaseModel
+public sealed class SelectDto
 {
     public List<VariableMapping> VariableMappings { get; set; } = [];
     public List<ISpecifier> Select { get; set; } = [];
@@ -101,7 +101,7 @@ public sealed class SelectBaseModel
 
     public override bool Equals(object? obj)
     {
-        return obj is SelectBaseModel model &&
+        return obj is SelectDto model &&
                VariableMappings.SequenceEqual(model.VariableMappings) &&
                Select.SequenceEqual(model.Select) &&
                From.Equals(model.From) &&

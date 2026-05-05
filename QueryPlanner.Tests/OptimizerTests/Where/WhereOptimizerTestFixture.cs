@@ -1,11 +1,9 @@
 using AlliumSativum.Optimize;
 using AlliumSativum.Optimize.Interfaces;
-using AlliumSativum.Parser.Algorithms;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Costs.Models;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
-using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using NSubstitute;

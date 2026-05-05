@@ -27,5 +27,5 @@ public interface IOptimizer
     /// <param name="model"></param>
     /// <returns></returns>
     /// <exception cref="AsSqlOptimizeException"></exception>
-    Task<List<QueryExecutionPlan>> OptimizeAsync(SelectBaseModel model, bool prune = true);
+    Task<List<QueryExecutionPlan>> OptimizeAsync(SelectDto model, bool prune = true);
 }

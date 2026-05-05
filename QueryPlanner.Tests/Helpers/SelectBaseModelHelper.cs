@@ -23,7 +23,7 @@ public static class SelectBaseModelHelper
     /// <param name="query"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public static SelectBaseModel ToSelectDto(this string query)
+    public static SelectDto ToSelectDto(this string query)
     {
         var tokens = Tokenizer.Tokenize(query);
         var parsed = TokenQueryParser.Parse(tokens);
@@ -35,14 +35,14 @@ public static class SelectBaseModelHelper
 
     extension(ObjectAssertions assertions)
     {
-        public void BeSelectDto(SelectBaseModel selectBaseModel)
+        public void BeSelectDto(SelectDto selectDto)
         {
-            assertions.Subject.ToString().Should().Be(selectBaseModel.ToString());
+            assertions.Subject.ToString().Should().Be(selectDto.ToString());
         }
 
-        public void NotBeSelectDto(SelectBaseModel selectBaseModel)
+        public void NotBeSelectDto(SelectDto selectDto)
         {
-            assertions.Subject.ToString().Should().NotBe(selectBaseModel.ToString());
+            assertions.Subject.ToString().Should().NotBe(selectDto.ToString());
         }
 
         public void BeExpressionNode(ExpressionNode? expected)
@@ -70,21 +70,21 @@ public static class SelectBaseModelHelper
     }
 
 
-    public static void ShouldBeSelect(this SelectBaseModel selectBaseModel, TableSpecifier? from = null,
+    public static void ShouldBeSelect(this SelectDto selectDto, TableSpecifier? from = null,
         List<AttributeSpecifier>? select = null, List<JoinBaseModel>? join = null, ExpressionNode? where = null)
     {
-        if (from is not null) selectBaseModel.From.ShouldBeTable(from);
+        if (from is not null) selectDto.From.ShouldBeTable(from);
 
         if (select is not null)
             foreach (var item in select)
-                selectBaseModel.Select.ShouldContainAttributeSpecifier(item);
+                selectDto.Select.ShouldContainAttributeSpecifier(item);
 
-        if (join is not null) selectBaseModel.Join.Should().Contain(join);
+        if (join is not null) selectDto.Join.Should().Contain(join);
 
-        if (where is not null) selectBaseModel.Where.Should().Be(where);
+        if (where is not null) selectDto.Where.Should().Be(where);
     }
 
-    public static void ShouldContainSelect(this List<SelectBaseModel> selectBaseModels,
+    public static void ShouldContainSelect(this List<SelectDto> selectBaseModels,
         TableSpecifier? expectedFrom = null, List<AttributeSpecifier>? expectedSelect = null,
         List<JoinBaseModel>? expectedJoin = null, ExpressionNode? expectedWhere = null)
     {
@@ -129,7 +129,7 @@ public static class SelectBaseModelHelper
         selectBaseModels.Count.Should().Be(1, "this methods expects exactly one select");
     }
 
-    public static void ShouldBeEmpty(this SelectBaseModel onPremise)
+    public static void ShouldBeEmpty(this SelectDto onPremise)
     {
         // FROM cannot be empty, as the field is not logically nullable
         onPremise.Should().NotBeNull();

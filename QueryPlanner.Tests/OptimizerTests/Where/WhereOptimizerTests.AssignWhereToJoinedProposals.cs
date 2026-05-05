@@ -23,7 +23,7 @@ public class AssignWhereToJoinedProposalsTests
     {
         var model = "SELECT a.id FROM cs->algorithm a".ToSelectDto();
 
-        _fixture.WhereOptimizer.AssignWhereToJoinedProposals(model, new List<SelectBaseModel>());
+        _fixture.WhereOptimizer.AssignWhereToJoinedProposals(model, new List<SelectDto>());
 
         // test first expression AFTER guard clause
         _fixture.ExpressionNodeOptimizer
@@ -43,7 +43,7 @@ public class AssignWhereToJoinedProposalsTests
         _fixture.UseGetCnfSubTrees();
         
         var input = query.ToSelectDto();
-        _fixture.WhereOptimizer.AssignWhereToJoinedProposals(input, new List<SelectBaseModel>());
+        _fixture.WhereOptimizer.AssignWhereToJoinedProposals(input, new List<SelectDto>());
 
         _fixture.ExpressionNodeOptimizer
             .Received(1)

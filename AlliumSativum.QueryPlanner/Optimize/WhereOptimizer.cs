@@ -25,7 +25,7 @@ public sealed class WhereOptimizer : IWhereOptimizer
     /// </summary>
     /// <param name="onPremise"></param>
     /// <param name="joinedTableProposals"></param>
-    public void AssignWhereToJoinedProposals(SelectBaseModel onPremise, List<SelectBaseModel> joinedTableProposals)
+    public void AssignWhereToJoinedProposals(SelectDto onPremise, List<SelectDto> joinedTableProposals)
     {
         if (onPremise.Where is null) return;
 
@@ -46,8 +46,8 @@ public sealed class WhereOptimizer : IWhereOptimizer
     }
 
     
-    public async Task<PlanOperator> DistributeWhereToProposalsAsync(PlanContainer scan, SelectBaseModel onPremise,
-        SelectBaseModel? unplanned)
+    public async Task<PlanOperator> DistributeWhereToProposalsAsync(PlanContainer scan, SelectDto onPremise,
+        SelectDto? unplanned)
     {
         var (unplannedExprLeft, unplannedExpr) =
             _expressionNodeOptimizer.ExtractExpression(unplanned?.Where, scan.PlannedItems.AffectedTables);

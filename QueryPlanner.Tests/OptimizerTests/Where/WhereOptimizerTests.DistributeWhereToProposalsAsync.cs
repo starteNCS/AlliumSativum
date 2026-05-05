@@ -10,7 +10,7 @@ using QueryPlanner.Tests.Helpers;
 
 namespace QueryPlanner.Tests.OptimizerTests.Where;
 
-public sealed class DistributeWhereToProposalsAsync
+public sealed class DistributeWhereToProposalsAsyncTests
 {
     private readonly WhereOptimizerTestFixture _fixture = new();
 
@@ -66,7 +66,7 @@ public sealed class DistributeWhereToProposalsAsync
             PlannedItems = "SELECT a.peak_memory_mb FROM cs->algorithm a".ToSelectDto()
         };
         
-        var pop = await _fixture.WhereOptimizer.DistributeWhereToProposalsAsync(planContainer, onPremises, new SelectBaseModel());
+        var pop = await _fixture.WhereOptimizer.DistributeWhereToProposalsAsync(planContainer, onPremises, new SelectDto());
 
         pop.Should().NotBeOfType<FilterPlanOperator>();
     }
@@ -108,7 +108,7 @@ public sealed class DistributeWhereToProposalsAsync
             PlannedItems = "SELECT a.peak_memory_mb FROM cs->algorithm a".ToSelectDto()
         };
         
-        var pop = await _fixture.WhereOptimizer.DistributeWhereToProposalsAsync(planContainer, new SelectBaseModel(), unplanned);
+        var pop = await _fixture.WhereOptimizer.DistributeWhereToProposalsAsync(planContainer, new SelectDto(), unplanned);
 
         pop.Should().BeOfType<FilterPlanOperator>();
         var filterPop = pop as FilterPlanOperator;

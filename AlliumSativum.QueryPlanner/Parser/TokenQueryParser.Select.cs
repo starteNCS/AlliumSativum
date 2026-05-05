@@ -6,7 +6,7 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser
 {
-    private void HandleSelectStatement(Stack<string> tokens, SelectBaseModel model)
+    private void HandleSelectStatement(Stack<string> tokens, SelectDto model)
     {
         List<ISpecifier> specifiers = [];
         do

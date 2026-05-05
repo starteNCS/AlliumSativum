@@ -25,9 +25,9 @@ public class CompilerTest
         QueryCompiler Compiler = new(_tokenizer, _tokenQueryParser, _semanticTransformer, _optimizer);
         
         _tokenizer.Tokenize(Arg.Any<string>()).Returns(new Stack<string>());
-        _tokenQueryParser.Parse(Arg.Any<Stack<string>>()).Returns(new SelectBaseModel());
+        _tokenQueryParser.Parse(Arg.Any<Stack<string>>()).Returns(new SelectDto());
         // SemanticTransformer operates in-place, so we don't need to return anything from it.
-        _optimizer.OptimizeAsync(Arg.Any<SelectBaseModel>()).Returns(Task.FromResult(new List<QueryExecutionPlan>()
+        _optimizer.OptimizeAsync(Arg.Any<SelectDto>()).Returns(Task.FromResult(new List<QueryExecutionPlan>()
         {
             null!
         }));
@@ -39,8 +39,8 @@ public class CompilerTest
         {
             _tokenizer.Tokenize(Arg.Any<string>());
             _tokenQueryParser.Parse(Arg.Any<Stack<string>>());
-            _semanticTransformer.Transform(Arg.Any<SelectBaseModel>());
-            await _optimizer.OptimizeAsync(Arg.Any<SelectBaseModel>());
+            _semanticTransformer.Transform(Arg.Any<SelectDto>());
+            await _optimizer.OptimizeAsync(Arg.Any<SelectDto>());
         });
     }
 }

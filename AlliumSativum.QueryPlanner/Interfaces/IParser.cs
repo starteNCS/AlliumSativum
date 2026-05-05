@@ -4,5 +4,5 @@ namespace AlliumSativum.Interfaces;
 
 public interface ITokenQueryParser
 {
-    SelectBaseModel? Parse(Stack<string> tokens);
+    SelectDto? Parse(Stack<string> tokens);
 }

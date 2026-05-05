@@ -7,7 +7,7 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser
 {
-    private void HandleWhereStatement(Stack<string> tokens, SelectBaseModel model)
+    private void HandleWhereStatement(Stack<string> tokens, SelectDto model)
     {
         if (model.Where is not null)
             throw new AsSqlParseException("",

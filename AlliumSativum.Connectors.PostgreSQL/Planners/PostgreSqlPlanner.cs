@@ -25,8 +25,8 @@ public sealed class PostgreSqlPlanner : IPlanner
         _datasource = datasource;
     }
 
-    public async Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanAsync(Guid dataSourceId,
-        SelectBaseModel selectModel)
+    public async Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanAsync(Guid dataSourceId,
+        SelectDto selectModel)
     {
         var relation = await _catalogDatabase.GetRelationAsync(dataSourceId, selectModel.From!.TableName);
         if (relation is null) return ([], null);

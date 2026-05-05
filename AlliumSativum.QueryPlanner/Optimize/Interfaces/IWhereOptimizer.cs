@@ -13,13 +13,13 @@ public interface IWhereOptimizer
     /// <param name="proposalAffectedTables"></param>
     /// <param name="unplanned"></param>
     /// <returns></returns>
-    Task<PlanOperator> DistributeWhereToProposalsAsync(PlanContainer scan, SelectBaseModel onPremise,
-        SelectBaseModel? unplanned);
+    Task<PlanOperator> DistributeWhereToProposalsAsync(PlanContainer scan, SelectDto onPremise,
+        SelectDto? unplanned);
 
     /// <summary>
     ///     Iterates through the WHERE expression tree to check if they could be pushed down to a proposal
     /// </summary>
     /// <param name="onPremise"></param>
     /// <param name="joinedTableProposals"></param>
-    void AssignWhereToJoinedProposals(SelectBaseModel onPremise, List<SelectBaseModel> joinedTableProposals);
+    void AssignWhereToJoinedProposals(SelectDto onPremise, List<SelectDto> joinedTableProposals);
 }

@@ -6,7 +6,7 @@ namespace AlliumSativum.Worker.Sdk;
 
 public interface IPlannerApi
 {
-    Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanQueryAsync(SelectBaseModel model);
+    Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanQueryAsync(SelectDto model);
 }
 
 public class PlannerApi : IPlannerApi
@@ -18,7 +18,7 @@ public class PlannerApi : IPlannerApi
         _client = client;
     }
 
-    public async Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanQueryAsync(SelectBaseModel model)
+    public async Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanQueryAsync(SelectDto model)
     {
         var response = await _client.PlanAsync(model.ToGrpcModel());
         if (response == null) return ([], null);

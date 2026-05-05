@@ -15,7 +15,7 @@ namespace AlliumSativum.Worker.Sdk.Extensions;
 
 public static class ModelExtensions
 {
-    public static GSelectBaseModel ToGrpcModel(this SelectBaseModel model)
+    public static GSelectBaseModel ToGrpcModel(this SelectDto model)
     {
         var payload = new GSelectBaseModel
         {
@@ -208,9 +208,9 @@ public static class ModelExtensions
     }
 
 
-    public static SelectBaseModel FromGrpcModel(this GSelectBaseModel model)
+    public static SelectDto FromGrpcModel(this GSelectBaseModel model)
     {
-        return new SelectBaseModel
+        return new SelectDto
         {
             From = new TableSpecifier(model.From.DataSource, model.From.TableName),
             Select = model.Select.Select(ISpecifier (spec) =>

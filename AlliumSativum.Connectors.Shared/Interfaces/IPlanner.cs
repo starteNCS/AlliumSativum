@@ -15,6 +15,6 @@ public interface IPlanner
     /// <param name="dataSourceId"></param>
     /// <param name="selectModel"></param>
     /// <returns></returns>
-    Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanAsync(Guid dataSourceId,
-        SelectBaseModel selectModel);
+    Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanAsync(Guid dataSourceId,
+        SelectDto selectModel);
 }

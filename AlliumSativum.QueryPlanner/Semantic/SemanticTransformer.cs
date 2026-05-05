@@ -15,7 +15,7 @@ public class SemanticTransformer : ISemanticTransformer
     ///     Transforms in place
     /// </summary>
     /// <param name="model"></param>
-    public void Transform(SelectBaseModel model)
+    public void Transform(SelectDto model)
     {
         model.Where = CollapseVariableMappingsOfExpression(model.VariableMappings, model.Where);
 

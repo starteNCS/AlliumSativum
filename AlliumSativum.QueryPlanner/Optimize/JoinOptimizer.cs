@@ -163,8 +163,8 @@ public sealed class JoinOptimizer : IJoinOptimizer
         return (mask & (1 << index)) != 0;
     }
 
-    public (List<JoinBaseModel> joinsLeft, List<SelectBaseModel> joinedTablePlans) CombineTablesByJoinPushDown(
-        List<JoinBaseModel> joins, List<SelectBaseModel> tablePlans)
+    public (List<JoinBaseModel> joinsLeft, List<SelectDto> joinedTablePlans) CombineTablesByJoinPushDown(
+        List<JoinBaseModel> joins, List<SelectDto> tablePlans)
     {
         var joinsLeft = new List<JoinBaseModel>();
 
@@ -187,7 +187,7 @@ public sealed class JoinOptimizer : IJoinOptimizer
 
             if (joinSelects.Count != 2) throw new AsSqlOptimizeException("At least one of the join plans are missing");
 
-            var proposal = new SelectBaseModel
+            var proposal = new SelectDto
             {
                 From = GetFromForJoin(join, joinSelects),
                 Where = _expressionNodeOptimizer.MergeCnfExpressions(joinSelects[0].Where, joinSelects[1].Where),
@@ -202,7 +202,7 @@ public sealed class JoinOptimizer : IJoinOptimizer
         return (joinsLeft, tablePlans);
     }
 
-    public TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectBaseModel> joinSelects)
+    public TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectDto> joinSelects)
     {
         if (join.Inner == joinSelects[0].From)
         {
@@ -221,7 +221,7 @@ public sealed class JoinOptimizer : IJoinOptimizer
     /// <param name="select"></param>
     /// <returns></returns>
     public (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) ConstructOnPremiseJoin(
-        SelectBaseModel select)
+        SelectDto select)
     {
         var mixedJoins = GetOnlyMixedJoins(select);
         return (mixedJoins, mixedJoins.SelectMany(x => x.Expression.GetAttributesOfExpression()).ToList());
@@ -240,7 +240,7 @@ public sealed class JoinOptimizer : IJoinOptimizer
     /// </summary>
     /// <param name="select"></param>
     /// <returns></returns>
-    public List<JoinBaseModel> GetOnlyMixedJoins(SelectBaseModel select)
+    public List<JoinBaseModel> GetOnlyMixedJoins(SelectDto select)
     {
         return select.Join
             .Where(join => join.GetJoinExpressionTable().DataSourceName != join.Inner.DataSourceName)

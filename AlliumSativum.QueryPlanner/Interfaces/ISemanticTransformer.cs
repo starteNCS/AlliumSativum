@@ -8,5 +8,5 @@ public interface ISemanticTransformer
     ///     Transforms in place
     /// </summary>
     /// <param name="model"></param>
-    void Transform(SelectBaseModel model);
+    void Transform(SelectDto model);
 }

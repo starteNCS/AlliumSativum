@@ -14,10 +14,10 @@ public interface IJoinOptimizer
     Task<List<PlanOperator>> ConstructJoinPopTreeFromIntermediateJoinTreeAsync(List<JoinBaseModel> joins,
         PopLookupTable popLookupTable, bool prune = true);
 
-    (List<JoinBaseModel> joinsLeft, List<SelectBaseModel> joinedTablePlans) CombineTablesByJoinPushDown(
-        List<JoinBaseModel> joins, List<SelectBaseModel> tablePlans);
+    (List<JoinBaseModel> joinsLeft, List<SelectDto> joinedTablePlans) CombineTablesByJoinPushDown(
+        List<JoinBaseModel> joins, List<SelectDto> tablePlans);
 
-    TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectBaseModel> joinSelects);
+    TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectDto> joinSelects);
 
     /// <summary>
     ///     Constructing all joins that need to be executed on Premise,
@@ -28,7 +28,7 @@ public interface IJoinOptimizer
     /// <param name="select"></param>
     /// <returns></returns>
     (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) ConstructOnPremiseJoin(
-        SelectBaseModel select);
+        SelectDto select);
 
     (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) AddJoinToIntermediateJoinTree(
         List<JoinBaseModel> root, JoinBaseModel join);
@@ -38,5 +38,5 @@ public interface IJoinOptimizer
     /// </summary>
     /// <param name="select"></param>
     /// <returns></returns>
-    List<JoinBaseModel> GetOnlyMixedJoins(SelectBaseModel select);
+    List<JoinBaseModel> GetOnlyMixedJoins(SelectDto select);
 }

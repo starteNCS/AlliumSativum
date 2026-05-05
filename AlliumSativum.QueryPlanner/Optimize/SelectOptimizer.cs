@@ -23,8 +23,7 @@ public sealed class SelectOptimizer : ISelectOptimizer
     /// <param name="splitSelects">The selects only targetting one table</param>
     /// <param name="hiddenAttributes">The attributes that should be appended</param>
     /// <returns></returns>
-    public List<SelectBaseModel> AppendComputationalSelects(List<SelectBaseModel> splitSelects,
-        List<AttributeSpecifier> hiddenAttributes)
+    public List<SelectDto> AppendComputationalSelects(List<SelectDto> splitSelects, List<AttributeSpecifier> hiddenAttributes)
     {
         foreach (var attribute in hiddenAttributes)
         {
@@ -43,7 +42,7 @@ public sealed class SelectOptimizer : ISelectOptimizer
         return splitSelects;
     }
 
-    public PlanOperator HandleProjection(PlanOperator pop, TableSpecifier forTable, SelectBaseModel? unplanned)
+    public PlanOperator HandleProjection(PlanOperator pop, TableSpecifier forTable, SelectDto? unplanned)
     {
         if (unplanned is null || unplanned.Select.Count == 0) return pop;
 

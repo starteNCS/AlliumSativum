@@ -24,8 +24,8 @@ public sealed class JsonServerPlanner : IPlanner
         _distributionUtils = distributionUtils;
     }
 
-    public async Task<(List<PlanContainer> proposal, SelectBaseModel? unplanned)> PlanAsync(Guid dataSourceId,
-        SelectBaseModel selectModel)
+    public async Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanAsync(Guid dataSourceId,
+        SelectDto selectModel)
     {
         var dataSource = await _catalogDatabase.GetDataSourceAsync(dataSourceId);
         if (dataSource is null) return ([], null);
@@ -101,7 +101,7 @@ public sealed class JsonServerPlanner : IPlanner
                 DistributionData = distributionData,
                 Width = attributes.Count
             },
-            PlannedItems = new SelectBaseModel { From = from }
+            PlannedItems = new SelectDto { From = from }
         };
     }
 }
