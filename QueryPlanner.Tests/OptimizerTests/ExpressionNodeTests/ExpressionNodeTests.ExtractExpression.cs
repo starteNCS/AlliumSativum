@@ -6,7 +6,7 @@ using QueryPlanner.Tests.Helpers;
 
 namespace QueryPlanner.Tests.OptimizerTests.ExpressionNodeTests;
 
-public sealed class ExtractExpression
+public sealed class ExtractExpressionTests
 {
     private readonly ExpressionNodeTestFixture _fixture = new();
     
