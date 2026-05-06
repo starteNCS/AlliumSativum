@@ -8,7 +8,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using NSubstitute;
 
-namespace QueryPlanner.Tests.OptimizerTests.Where;
+namespace QueryPlanner.Tests.OptimizerTests.WhereTests;
 
 public sealed class WhereOptimizerTestFixture
 {

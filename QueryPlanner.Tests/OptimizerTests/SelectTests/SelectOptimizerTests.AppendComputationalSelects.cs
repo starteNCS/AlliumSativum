@@ -1,9 +1,8 @@
-using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using FluentAssertions;
 using QueryPlanner.Tests.Helpers;
 
-namespace QueryPlanner.Tests.OptimizerTests.Select;
+namespace QueryPlanner.Tests.OptimizerTests.SelectTests;
 
 public sealed class AppendComputationalSelectsTests
 {

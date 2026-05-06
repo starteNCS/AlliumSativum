@@ -40,4 +40,12 @@ public class FullySpecifiedColumnExpressionNode : ExpressionNode
     {
         return row.TryGetValue(Attribute.ToDictKey(), out var val) && val is not null;
     }
+    
+    public static FullySpecifiedColumnExpressionNode FromValues(string dataSource, string table, string attribute)
+    {
+        return new FullySpecifiedColumnExpressionNode
+        {
+            Attribute = new AttributeSpecifier(dataSource, table, attribute),
+        };
+    }
 }

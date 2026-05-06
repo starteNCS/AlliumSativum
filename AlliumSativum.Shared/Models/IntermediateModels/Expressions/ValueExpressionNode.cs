@@ -52,4 +52,13 @@ public class ValueExpressionNode : ExpressionNode
     {
         return false;
     }
+    
+    public static ValueExpressionNode FromValues(ValueExpressionType type, string value)
+    {
+        return new ValueExpressionNode
+        {
+            Type = type,
+            Value = value
+        };
+    }
 }

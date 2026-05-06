@@ -1,4 +1,3 @@
-using AlliumSativum.Optimize;
 using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
@@ -8,7 +7,7 @@ using FluentAssertions;
 using NSubstitute;
 using QueryPlanner.Tests.Helpers;
 
-namespace QueryPlanner.Tests.OptimizerTests.Where;
+namespace QueryPlanner.Tests.OptimizerTests.WhereTests;
 
 public sealed class DistributeWhereToProposalsAsyncTests
 {

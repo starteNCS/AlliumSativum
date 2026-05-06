@@ -1,12 +1,10 @@
-using AlliumSativum.Optimize;
-using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using FluentAssertions;
 using NSubstitute;
 using QueryPlanner.Tests.Helpers;
 
-namespace QueryPlanner.Tests.OptimizerTests.Where;
+namespace QueryPlanner.Tests.OptimizerTests.WhereTests;
 
 public class AssignWhereToJoinedProposalsTests
 {

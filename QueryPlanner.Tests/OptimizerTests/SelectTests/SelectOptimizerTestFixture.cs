@@ -5,7 +5,7 @@ using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using NSubstitute;
 
-namespace QueryPlanner.Tests.OptimizerTests.Select;
+namespace QueryPlanner.Tests.OptimizerTests.SelectTests;
 
 public sealed class SelectOptimizerTestFixture
 {

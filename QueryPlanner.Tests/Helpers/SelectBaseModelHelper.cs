@@ -47,7 +47,11 @@ public static class SelectBaseModelHelper
 
         public void BeExpressionNode(ExpressionNode? expected)
         {
-            assertions.Subject?.ToString().Should().Be(expected?.ToString());
+            if(assertions.Subject == null && expected == null) return;
+            assertions.Subject.Should().NotBeNull();
+            
+            var subject = assertions.Subject as ExpressionNode;
+            subject.ToSqlQueryString().Should().Be(expected?.ToSqlQueryString());
         }
         
         public void NotBeExpressionNode(ExpressionNode? expected)
