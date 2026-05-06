@@ -14,10 +14,10 @@ namespace AlliumSativum.Optimize;
 public sealed class JoinOptimizer : IJoinOptimizer
 {
     private readonly ICostModel _costModel;
-    private readonly ExpressionNodeOptimizer _expressionNodeOptimizer;
+    private readonly IExpressionNodeOptimizer _expressionNodeOptimizer;
 
     public JoinOptimizer(
-        ExpressionNodeOptimizer expressionNodeOptimizer,
+        IExpressionNodeOptimizer expressionNodeOptimizer,
         ICostModel costModel)
     {
         _expressionNodeOptimizer = expressionNodeOptimizer;

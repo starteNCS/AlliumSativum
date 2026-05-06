@@ -134,13 +134,12 @@ public class HistogramController : Controller
         plt.Axes.Margins(bottom: 0);
         plt.Axes.Bottom.Min = min;
         plt.Axes.Bottom.Max = min;
-        plt.Axes.Bottom.Label.Text = "Distinct items";
+        plt.Axes.Bottom.Label.Text = "Key";
         plt.Axes.Bottom.Label.Bold = false;
 
         plt.Axes.Left.Label.Text = "Count";
         plt.Axes.Left.Label.Bold = false;
         
-        plt.Title("Data Distribution Histogram");
         var legend = plt.ShowLegend();
         legend.Alignment = Alignment.UpperLeft;
         legend.FontName = "Arial";
