@@ -47,5 +47,4 @@ public interface IExpressionNodeOptimizer
     List<ExpressionNode> GetCnfSubTrees(ExpressionNode? root);
 
     ExpressionNode RemoveCnfExpression(ExpressionNode? fromNode, ExpressionNode remove);
-    ExpressionNode? RebuildAndTree(List<ExpressionNode> clauses);
 }

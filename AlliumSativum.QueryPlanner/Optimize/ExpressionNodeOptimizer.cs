@@ -126,12 +126,13 @@ public sealed class ExpressionNodeOptimizer : IExpressionNodeOptimizer
         return RebuildAndTree(from);
     }
 
-    public ExpressionNode? RebuildAndTree(List<ExpressionNode> clauses)
+    private ExpressionNode? RebuildAndTree(List<ExpressionNode> clauses)
     {
         if (clauses.Count == 0) return null;
-
+        if(clauses.Count == 1) return clauses[0];
+        
         var root = clauses[0];
-        foreach (var clause in clauses)
+        foreach (var clause in clauses.Skip(1))
             root = new BinaryOperatorExpressionNode
             {
                 Operation = "AND",
