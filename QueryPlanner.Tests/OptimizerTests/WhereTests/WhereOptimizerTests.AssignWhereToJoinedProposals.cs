@@ -53,6 +53,10 @@ public class AssignWhereToJoinedProposalsTests
     [Test]
     public void Should_Assign_Expression()
     {
+        _fixture.UseGetCnfSubTrees();
+        _fixture.UseMergeCnfExpressions();
+        _fixture.UseRemoveCnfExpression();
+        
         var query = """
                     SELECT a.id 
                     FROM cs->algorithm a 
@@ -64,7 +68,6 @@ public class AssignWhereToJoinedProposalsTests
                     SELECT a.id 
                     FROM cs->algorithm a 
                     """;
-        _fixture.UseGetCnfSubTrees();
         
         var input = query.ToSelectDto();
         var proposal = proposalQuery.ToSelectDto();

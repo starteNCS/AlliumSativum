@@ -40,7 +40,7 @@ public sealed class WhereOptimizer : IWhereOptimizer
                 // no possible push down proposal, since the expression affects more tables than the proposal
                 continue;
 
-            _expressionNodeOptimizer.MergeCnfExpressions(potentialProposal.Where, clause);
+            potentialProposal.Where = _expressionNodeOptimizer.MergeCnfExpressions(potentialProposal.Where, clause);
             onPremise.Where = _expressionNodeOptimizer.RemoveCnfExpression(onPremise.Where, clause);
         }
     }

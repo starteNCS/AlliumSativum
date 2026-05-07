@@ -75,6 +75,17 @@ public sealed class WhereOptimizerTestFixture
                 return new ExpressionNodeOptimizer().MergeCnfExpressions(left, right);
             });
     }
+    
+    public void UseRemoveCnfExpression()
+    {
+        ExpressionNodeOptimizer.RemoveCnfExpression(Arg.Any<ExpressionNode>(), Arg.Any<ExpressionNode>())
+            .Returns(callInfo =>
+            {
+                var root = callInfo[0] as ExpressionNode;
+                var toRemove = callInfo[1] as ExpressionNode;
+                return new ExpressionNodeOptimizer().RemoveCnfExpression(root, toRemove);
+            });
+    }
 
     #endregion
 
