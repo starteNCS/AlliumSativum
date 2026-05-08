@@ -3,7 +3,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 
-public class PushdownSqlPlanOperator : PlanOperator
+public class PushdownSqlPlanOperator : PushdownPlanOperator
 {
     public PushdownSqlPlanOperator(Guid dataSource, string sqlStatement)
     {

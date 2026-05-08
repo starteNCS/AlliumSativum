@@ -11,7 +11,7 @@ public interface IJoinOptimizer
     /// </summary>
     /// <param name="joins"></param>
     /// <param name="popLookupTable"></param>
-    Task<List<PlanOperator>> ConstructJoinPopTreeFromIntermediateJoinTreeAsync(List<JoinBaseModel> joins,
+    Task<List<PlanOperator>> EnumerateBushyJoinsAsync(List<JoinBaseModel> joins,
         PopLookupTable popLookupTable, bool prune = true);
 
     (List<JoinBaseModel> joinsLeft, List<SelectDto> joinedTablePlans) CombineTablesByJoinPushDown(

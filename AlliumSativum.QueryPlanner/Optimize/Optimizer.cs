@@ -115,7 +115,7 @@ public sealed class Optimizer : IOptimizer
         }
 
         var joinPlans =
-            await _joinOptimizer.ConstructJoinPopTreeFromIntermediateJoinTreeAsync(onPremiseJoins, plans, prune);
+            await _joinOptimizer.EnumerateBushyJoinsAsync(onPremiseJoins, plans, prune);
 
         for (var i = 0; i < joinPlans.Count; i++)
         {

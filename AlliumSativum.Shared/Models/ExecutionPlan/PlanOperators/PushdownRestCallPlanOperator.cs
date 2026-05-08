@@ -3,7 +3,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 
-public class PushdownRestCallPlanOperator : PlanOperator
+public class PushdownRestCallPlanOperator : PushdownPlanOperator
 {
     public PushdownRestCallPlanOperator(Guid dataSource, string httpMethod, string url, object? body)
     {
