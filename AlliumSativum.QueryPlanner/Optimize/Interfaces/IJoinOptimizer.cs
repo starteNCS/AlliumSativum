@@ -17,8 +17,6 @@ public interface IJoinOptimizer
     (List<JoinBaseModel> joinsLeft, List<SelectDto> joinedTablePlans) CombineTablesByJoinPushDown(
         List<JoinBaseModel> joins, List<SelectDto> tablePlans);
 
-    TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectDto> joinSelects);
-
     /// <summary>
     ///     Constructing all joins that need to be executed on Premise,
     ///     this might return a heavily one-sided tree, but since we later do the Join Order Optimization
@@ -27,16 +25,6 @@ public interface IJoinOptimizer
     /// </summary>
     /// <param name="select"></param>
     /// <returns></returns>
-    (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) ConstructOnPremiseJoin(
+    (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) ExtractOnPremiseJoins(
         SelectDto select);
-
-    (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) AddJoinToIntermediateJoinTree(
-        List<JoinBaseModel> root, JoinBaseModel join);
-
-    /// <summary>
-    ///     Returns a list of all joins, where the tables reside in different data sources
-    /// </summary>
-    /// <param name="select"></param>
-    /// <returns></returns>
-    List<JoinBaseModel> GetOnlyMixedJoins(SelectDto select);
 }

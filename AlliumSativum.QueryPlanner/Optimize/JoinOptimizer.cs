@@ -202,7 +202,7 @@ public sealed class JoinOptimizer : IJoinOptimizer
         return (joinsLeft, tablePlans);
     }
 
-    public TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectDto> joinSelects)
+    private TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectDto> joinSelects)
     {
         if (join.Inner == joinSelects[0].From)
         {
@@ -220,20 +220,12 @@ public sealed class JoinOptimizer : IJoinOptimizer
     /// </summary>
     /// <param name="select"></param>
     /// <returns></returns>
-    public (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) ConstructOnPremiseJoin(
+    public (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) ExtractOnPremiseJoins(
         SelectDto select)
     {
         var mixedJoins = GetOnlyMixedJoins(select);
         return (mixedJoins, mixedJoins.SelectMany(x => x.Expression.GetAttributesOfExpression()).ToList());
     }
-
-    public (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) AddJoinToIntermediateJoinTree(
-        List<JoinBaseModel> root, JoinBaseModel join)
-    {
-        root.Add(join);
-        return (root, join.Expression.GetAttributesOfExpression());
-    }
-
 
     /// <summary>
     ///     Returns a list of all joins, where the tables reside in different data sources

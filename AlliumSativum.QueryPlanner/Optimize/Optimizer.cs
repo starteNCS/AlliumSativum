@@ -68,7 +68,7 @@ public sealed class Optimizer : IOptimizer
         foreach (var select in model.Select) projections.Add((AttributeSpecifier)select);
 
         // create on-premise only join tree
-        var (onPremiseJoins, additionalSelectAttributesNeededForJoin) = _joinOptimizer.ConstructOnPremiseJoin(model);
+        var (onPremiseJoins, additionalSelectAttributesNeededForJoin) = _joinOptimizer.ExtractOnPremiseJoins(model);
         foreach (var select in additionalSelectAttributesNeededForJoin) projections.Add(select);
 
 
@@ -109,8 +109,8 @@ public sealed class Optimizer : IOptimizer
             // (where in fact, those joins are now also on-premise, since they cannot be executed at the worker without the planned tables)
             foreach (var join in unplanned?.Join ?? [])
             {
-                (onPremiseJoins, var attributes) = _joinOptimizer.AddJoinToIntermediateJoinTree(onPremiseJoins, join);
-                foreach (var attr in attributes) projections.Add(attr);
+                onPremiseJoins.Add(join);
+                foreach (var attr in join.Expression.GetAttributesOfExpression()) projections.Add(attr);
             }
         }
 
