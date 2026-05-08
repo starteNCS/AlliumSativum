@@ -164,13 +164,13 @@ public sealed class JoinOptimizer : IJoinOptimizer
     }
 
     public (List<JoinBaseModel> joinsLeft, List<SelectDto> joinedTablePlans) CombineTablesByJoinPushDown(
-        List<JoinBaseModel> joins, List<SelectDto> tablePlans)
+        List<JoinBaseModel> joins, List<SelectDto> tableSplits)
     {
         var joinsLeft = new List<JoinBaseModel>();
 
         foreach (var join in joins)
         {
-            var joinSelects = tablePlans
+            var joinSelects = tableSplits
                 .Where(x => join.AffectedTables.Any(at => x.AffectedTables.Contains(at)))
                 .ToList();
 
@@ -194,12 +194,12 @@ public sealed class JoinOptimizer : IJoinOptimizer
                 Select = [..joinSelects[0].Select, ..joinSelects[1].Select],
                 Join = [..joinSelects[0].Join, ..joinSelects[1].Join, join]
             };
-            tablePlans.Remove(joinSelects[0]);
-            tablePlans.Remove(joinSelects[1]);
-            tablePlans.Add(proposal);
+            tableSplits.Remove(joinSelects[0]);
+            tableSplits.Remove(joinSelects[1]);
+            tableSplits.Add(proposal);
         }
 
-        return (joinsLeft, tablePlans);
+        return (joinsLeft, tableSplits);
     }
 
     private TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectDto> joinSelects)

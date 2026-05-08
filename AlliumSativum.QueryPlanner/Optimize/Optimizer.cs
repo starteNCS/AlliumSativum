@@ -73,12 +73,12 @@ public sealed class Optimizer : IOptimizer
 
 
         // split the given model into TABLES
-        var (onPremise, tables) = SplitIntoTables(model, projections);
-        tables = _selectOptimizer.AppendComputationalSelects(tables, additionalSelectAttributesNeededForJoin);
+        var (onPremise, tableSplits) = SplitIntoTables(model, projections);
+        tableSplits = _selectOptimizer.AppendComputationalSelects(tableSplits, additionalSelectAttributesNeededForJoin);
 
         // check joins, merge multiple tables into one sub plan if possible
         var (joinsLeftOnPremise, joinedTableSelect) =
-            _joinOptimizer.CombineTablesByJoinPushDown(onPremise.Join, tables);
+            _joinOptimizer.CombineTablesByJoinPushDown(onPremise.Join, tableSplits);
         onPremise.Join = joinsLeftOnPremise;
 
         // check WHERE again, if any more can be pushed down

@@ -15,7 +15,7 @@ public interface IJoinOptimizer
         PopLookupTable popLookupTable, bool prune = true);
 
     (List<JoinBaseModel> joinsLeft, List<SelectDto> joinedTablePlans) CombineTablesByJoinPushDown(
-        List<JoinBaseModel> joins, List<SelectDto> tablePlans);
+        List<JoinBaseModel> joins, List<SelectDto> tableSplits);
 
     /// <summary>
     ///     Constructing all joins that need to be executed on Premise,
