@@ -17,6 +17,11 @@
       "plan": 9.96,
       "execute": 112.80,
       "total": 114.14
+    },
+    "presto_hbo": {
+      "plan": 37.05,
+      "execute": 146.51,
+      "total": 114.14
     }
   },
   {
@@ -37,6 +42,11 @@
       "plan": 55.44,
       "execute": 266.81,
       "total":273.95
+    },
+    "presto_hbo": {
+      "plan": 30.8,
+      "execute": 188.78,
+      "total": 196.61
     }
   },
   {
@@ -57,6 +67,11 @@
       "plan": 48.78,
       "execute": 438.75,
       "total":465.88
+    },
+    "presto_hbo": {
+      "plan": 23.06,
+      "execute": 773.3,
+      "total": 776.19
     }
   },
   {
@@ -77,6 +92,11 @@
       "plan": 130.75,
       "execute": 572.92,
       "total": 592.93
+    },
+    "presto_hbo": {
+      "plan": 40.99,
+      "execute": 560.82,
+      "total": 565.59
     }
   },
   {
@@ -97,6 +117,11 @@
       "plan": 501.15,
       "execute": 873.33,
       "total": 1870
+    },
+    "presto_hbo": {
+      "plan": 665.48,
+      "execute": 1090,
+      "total": 198
     }
   },
   {
@@ -117,6 +142,11 @@
       "plan": 1080,
       "execute": 1470,
       "total": 2970
+    },
+    "presto_hbo": {
+      "plan": 1290,
+      "execute": 1670,
+      "total": 3360
     }
   },
   {
@@ -137,6 +167,11 @@
       "plan": 66.74,
       "execute": 373.87,
       "total": 378.99
+    },
+    "presto_hbo": {
+      "plan": 53.9,
+      "execute": 350.87,
+      "total": 355.28
     }
   },
   {
@@ -157,6 +192,11 @@
       "plan": 1510,
       "execute": 1820,
       "total": 4120
+    },
+    "presto_hbo": {
+      "plan": 2000,
+      "execute": 2310,
+      "total": 4900
     }
   },
   {
@@ -177,6 +217,11 @@
       "plan": 70.09,
       "execute": 486.03,
       "total": 507.06
+    },
+    "presto_hbo": {
+      "plan": 35.96,
+      "execute": 900,
+      "total": 903
     }
   }
 ]

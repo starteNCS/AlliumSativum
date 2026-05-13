@@ -3,11 +3,20 @@ version: "3.8"
 services:
   presto:
     image: prestodb/presto:latest
+    container_name: presto-coordinator
+    hostname: coordinator
     ports:
       - "8080:8080"
     volumes:
       - ./configs/config.properties:/opt/presto-server/etc/config.properties
       - ./configs/jvm.config:/opt/presto-server/etc/jvm.config
       - ./configs/node.properties:/opt/presto-server/etc/node.properties
+      - ./configs/log.properties:/opt/presto-server/etc/log.properties
       - ./configs/catalog:/opt/presto-server/etc/catalog
       - ./json-server-connector/target/json-server-connector-1.0-SNAPSHOT.jar:/opt/presto-server/plugin/rest/json-server-connector-1.0-SNAPSHOT.jar
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/info"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
