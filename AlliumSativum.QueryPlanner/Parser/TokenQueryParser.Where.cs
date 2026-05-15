@@ -7,6 +7,15 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser
 {
+    /// <summary>
+    /// Reads the next tokens as a WHERE statement and updates the model accordingly
+    /// </summary>
+    /// <remarks>
+    /// Expects the next tokens to be in the format: "WHERE" "expression"
+    /// </remarks>
+    /// <param name="tokens">Stack of tokens</param>
+    /// <param name="model">Current select dto</param>
+    /// <exception cref="AsSqlParseException">Either one where exists or topmost token is not "WHERE"</exception>
     private void HandleWhereStatement(Stack<string> tokens, SelectDto model)
     {
         if (model.Where is not null)

@@ -67,7 +67,7 @@ public sealed class Optimizer : IOptimizer
         var projections = new HashSet<AttributeSpecifier>();
         foreach (var select in model.Select) projections.Add((AttributeSpecifier)select);
 
-        // create on-premise only join tree
+        // create on-premise only join list
         var (onPremiseJoins, additionalSelectAttributesNeededForJoin) = _joinOptimizer.ExtractOnPremiseJoins(model);
         foreach (var select in additionalSelectAttributesNeededForJoin) projections.Add(select);
 
@@ -78,7 +78,7 @@ public sealed class Optimizer : IOptimizer
 
         // check joins, merge multiple tables into one sub plan if possible
         var (joinsLeftOnPremise, joinedTableSelect) =
-            _joinOptimizer.CombineTablesByJoinPushDown(onPremise.Join, tableSplits);
+            _joinOptimizer.CombineTableSplitsByJoinPushDown(onPremise.Join, tableSplits);
         onPremise.Join = joinsLeftOnPremise;
 
         // check WHERE again, if any more can be pushed down

@@ -6,15 +6,9 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Semantic;
 
-/// <summary>
-///     Semanatic analyzer
-/// </summary>
 public class SemanticTransformer : ISemanticTransformer
 {
-    /// <summary>
-    ///     Transforms in place
-    /// </summary>
-    /// <param name="model"></param>
+    /// <inheritdoc />
     public void Transform(SelectDto model)
     {
         model.Where = CollapseVariableMappingsOfExpression(model.VariableMappings, model.Where);
@@ -25,6 +19,14 @@ public class SemanticTransformer : ISemanticTransformer
         model.Select = CollapseVariableMappingsOfSpecifiers(model.VariableMappings, model.Select);
     }
 
+    /// <summary>
+    /// Collapses variable mappings of the given specifiers by replacing all VariableMappingSpecifiers
+    /// with AttributeSpecifiers based on the given variable mappings.
+    /// </summary>
+    /// <param name="variableMappings">All variable mappings of a query</param>
+    /// <param name="specifiers">All projections of a query</param>
+    /// <returns>The fully expanded list of attribute specifiers</returns>
+    /// <exception cref="AsSqlSemanticException">A attribute specifier uses a non-existing variable mapping</exception>
     private static List<ISpecifier> CollapseVariableMappingsOfSpecifiers(List<VariableMapping> variableMappings,
         List<ISpecifier> specifiers)
     {
@@ -45,6 +47,14 @@ public class SemanticTransformer : ISemanticTransformer
         return specifiers;
     }
 
+    /// <summary>
+    /// Collapses variable mappings of the given expression by replacing all VariableMappingExpressionNodes
+    /// with FullySpecifiedColumnExpressionNodes based on the given variable mappings.
+    /// </summary>
+    /// <param name="variableMappings">All variable mappings of a query</param>
+    /// <param name="expression">The root node of an expression</param>
+    /// <returns>The fully expanded expression node</returns>
+    /// <exception cref="AsSqlSemanticException">A node uses a mapping that does not exist</exception>
     private ExpressionNode? CollapseVariableMappingsOfExpression(List<VariableMapping> variableMappings,
         ExpressionNode? expression)
     {
@@ -58,6 +68,13 @@ public class SemanticTransformer : ISemanticTransformer
         return moveExpression;
     }
 
+    /// <summary>
+    /// Hands over the expression as a ref parameter and collapses all variable mappings of the given expression by replacing all VariableMappingExpressionNodes
+    /// with FullySpecifiedColumnExpressionNodes based on the given variable mappings.
+    /// </summary>
+    /// <param name="variableMappings">All variable mappings of a query</param>
+    /// <param name="expression">The root node of an expression</param>
+    /// <exception cref="AsSqlSemanticException">A node ues a mapping that does not exist</exception>
     private void CollapseVariableMappingsOfExpressionRef(List<VariableMapping> variableMappings,
         ref ExpressionNode? expression)
     {

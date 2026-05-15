@@ -20,11 +20,7 @@ public sealed class WhereOptimizer : IWhereOptimizer
         _costModel = costModel;
     }
 
-    /// <summary>
-    ///     Iterates through the WHERE expression tree to check if they could be pushed down to a proposal
-    /// </summary>
-    /// <param name="onPremise"></param>
-    /// <param name="joinedTableProposals"></param>
+    /// <inheritdoc/>
     public void AssignWhereToJoinedProposals(SelectDto onPremise, List<SelectDto> joinedTableProposals)
     {
         if (onPremise.Where is null) return;
@@ -45,7 +41,7 @@ public sealed class WhereOptimizer : IWhereOptimizer
         }
     }
 
-    
+    /// <inheritdoc/>
     public async Task<PlanOperator> DistributeWhereToProposalsAsync(PlanContainer scan, SelectDto onPremise,
         SelectDto? unplanned)
     {

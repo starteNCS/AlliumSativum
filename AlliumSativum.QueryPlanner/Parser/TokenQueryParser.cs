@@ -6,6 +6,7 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser : ITokenQueryParser
 {
+    /// <inheritdoc/>
     public SelectDto? Parse(Stack<string> tokens)
     {
         var select = new SelectDto();
@@ -16,6 +17,11 @@ public partial class TokenQueryParser : ITokenQueryParser
         return select;
     }
 
+    /// <summary>
+    /// Given a stack of tokens, determines which part of the query should be parsed next and calls the appropriate handler method
+    /// </summary>
+    /// <param name="tokens">Stack of tokens</param>
+    /// <param name="model">Current resulting model, with all properties set according to previous statements</param>
     private void HandleTopStatement(Stack<string> tokens, SelectDto model)
     {
         switch (tokens.Peek())

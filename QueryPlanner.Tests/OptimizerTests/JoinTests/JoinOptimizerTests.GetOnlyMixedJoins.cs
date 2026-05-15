@@ -1,3 +1,4 @@
+using AlliumSativum.Optimize;
 using FluentAssertions;
 using QueryPlanner.Tests.Helpers;
 
@@ -13,7 +14,7 @@ public sealed class GetOnlyMixedJoinsTests
         var query = "SELECT a.id FROM cs->algorithm a";
         
         var input = query.ToSelectDto();
-        var result = _fixture.JoinOptimizer.GetOnlyMixedJoins(input);
+        var result = JoinOptimizer.GetOnlyMixedJoins(input);
         
         result.Should().BeEmpty();
     }
@@ -28,7 +29,7 @@ public sealed class GetOnlyMixedJoinsTests
                     """;
         
         var input = query.ToSelectDto();
-        var result = _fixture.JoinOptimizer.GetOnlyMixedJoins(input);
+        var result = JoinOptimizer.GetOnlyMixedJoins(input);
         
         result.Should().BeEmpty();
     }
@@ -42,7 +43,7 @@ public sealed class GetOnlyMixedJoinsTests
                         INNER JOIN shared->respondent r ON r.algorithm_id = a.id
                     """.ToSelectDto();
         
-        var result = _fixture.JoinOptimizer.GetOnlyMixedJoins(query);
+        var result = JoinOptimizer.GetOnlyMixedJoins(query);
         
         result.Should().HaveCount(1);
         result.Should().BeEquivalentTo(query.Join);

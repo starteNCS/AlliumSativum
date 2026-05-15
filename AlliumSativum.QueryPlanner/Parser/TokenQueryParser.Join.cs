@@ -10,9 +10,12 @@ public partial class TokenQueryParser
     /// <summary>
     ///     Expects token of format INNER JOIN tableSpec varName ON expr
     /// </summary>
-    /// <param name="tokens"></param>
-    /// <param name="model"></param>
-    /// <exception cref="AsSqlParseException"></exception>
+    /// <remarks>
+    /// Expects the next tokens to be in the format: "INNER JOIN" "dataSourceName"->"tableName" ON "boolean expression"
+    /// </remarks>
+    /// <param name="tokens">Stack of tokens</param>
+    /// <param name="model">Current select dto</param>
+    /// <exception cref="AsSqlParseException">Some token did not match the expected format</exception>
     private void HandleJoinStatement(Stack<string> tokens, SelectDto model)
     {
         if (!tokens.TryPeek(out var joinType) || !AsSqlKeywords.JoinType.Types.Contains(joinType))

@@ -6,6 +6,15 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser
 {
+    
+    /// <summary>
+    /// Reads the next tokens as a SELECT statement and updates the model accordingly.
+    /// </summary>
+    /// <remarks>
+    /// Expects the next tokens to be in the format: "SELECT" "specifier" ("," "specifier")*
+    /// </remarks>
+    /// <param name="tokens">Stack oftokens</param>
+    /// <param name="model">The current select DTO</param>
     private void HandleSelectStatement(Stack<string> tokens, SelectDto model)
     {
         List<ISpecifier> specifiers = [];

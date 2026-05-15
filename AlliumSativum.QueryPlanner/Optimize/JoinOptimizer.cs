@@ -38,6 +38,19 @@ public sealed class JoinOptimizer : IJoinOptimizer
         return await BuildSubtreesAsync((1 << allTables.Count) - 1, allTables, joins, memo, popLookupTable, prune);
     }
 
+    /// <summary>
+    /// Dynamic programming approach to build all possible join trees for a given set of tables and joins.
+    /// Using a bitmask to represent subsets of tables and memoization to avoid redundant calculations.
+    ///
+    /// 🤖 Developed iteratively with the help of Google Gemini
+    /// </summary>
+    /// <param name="mask">The mask of the current subtree</param>
+    /// <param name="tables">All tables of the selectDto</param>
+    /// <param name="joins">All joins that should be enumerated</param>
+    /// <param name="memo">The momoization dictionary</param>
+    /// <param name="popLookupTable">A lookup table for table specifier -> access POP</param>
+    /// <param name="prune">If worse plans should be discared</param>
+    /// <returns>(All / most optimal) POP for this join, depending on prune</returns>
     private async Task<List<PlanOperator>> BuildSubtreesAsync(int mask, List<TableSpecifier> tables,
         List<JoinBaseModel> joins, Dictionary<int, List<PlanOperator>> memo, PopLookupTable popLookupTable, bool prune)
     {
@@ -138,29 +151,40 @@ public sealed class JoinOptimizer : IJoinOptimizer
         return results;
     }
 
+    /// <summary>
+    /// Finds an expression (join), that could join the two masks (table sets)
+    /// </summary>
+    /// <param name="mask1">First mask</param>
+    /// <param name="mask2">Second mask</param>
+    /// <param name="tables">All tables</param>
+    /// <param name="joins">All joins left</param>
+    /// <returns>If available, an expression joining both masks</returns>
     private ExpressionNode? FindExpressionForSets(int mask1, int mask2, List<TableSpecifier> tables,
         List<JoinBaseModel> joins)
     {
-        // Identify which tables are in each mask and find the join spec that connects them
-        // This logic assumes a join exists; in a cross-product scenario, this would return a Const(true)
         return joins.FirstOrDefault(j =>
             (TableInMask(j.Inner, mask1, tables) && TableInMask(j.GetJoinExpressionTable(), mask2, tables)) ||
             (TableInMask(j.Inner, mask2, tables) && TableInMask(j.GetJoinExpressionTable(), mask1, tables))
         )?.Expression;
     }
 
+    /// <summary>
+    /// Checks if a table is part of the mask, by identifying the index of the table in the list of all tables
+    /// and checking if the corresponding bit is set in the mask.
+    /// </summary>
+    /// <param name="table">The table to look for</param>
+    /// <param name="mask">The mask to check</param>
+    /// <param name="allTables">All tables</param>
+    /// <returns>True, if table is in mask</returns>
     private static bool TableInMask(TableSpecifier table, int mask, List<TableSpecifier> allTables)
     {
-        // 1. Find the position (index) of the table in our master list
         var index = allTables.IndexOf(table);
-
-        // 2. Create a bit for that index (1 << index) 
-        // and check if it exists in the mask using bitwise AND
         if (index == -1) return false;
         return (mask & (1 << index)) != 0;
     }
 
-    public (List<JoinBaseModel> joinsLeft, List<SelectDto> joinedTablePlans) CombineTablesByJoinPushDown(
+    /// <inheritdoc/> 
+    public (List<JoinBaseModel> joinsLeft, List<SelectDto> joinedTablePlans) CombineTableSplitsByJoinPushDown(
         List<JoinBaseModel> joins, List<SelectDto> tableSplits)
     {
         var joinsLeft = new List<JoinBaseModel>();
@@ -199,7 +223,13 @@ public sealed class JoinOptimizer : IJoinOptimizer
         return (joinsLeft, tableSplits);
     }
 
-    private TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectDto> joinSelects)
+    /// <summary>
+    /// Get the "FROM" for the join, that is the newly joined table ("INNER JOIN table ON ...")
+    /// </summary>
+    /// <param name="join">The join to load the FROM from</param>
+    /// <param name="joinSelects">Both sides of the join as a select dto</param>
+    /// <returns>The FROM table specifier </returns>
+    private static TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectDto> joinSelects)
     {
         if (join.Inner == joinSelects[0].From)
         {
@@ -208,7 +238,6 @@ public sealed class JoinOptimizer : IJoinOptimizer
 
         return joinSelects[0].From;
     }
-
     
     /// <inheritdoc/>
     public (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) ExtractOnPremiseJoins(
@@ -219,11 +248,11 @@ public sealed class JoinOptimizer : IJoinOptimizer
     }
 
     /// <summary>
-    ///     Returns a list of all joins, where the tables reside in different data sources
+    /// Returns a list of all joins, where the tables reside in different data sources
     /// </summary>
-    /// <param name="select"></param>
-    /// <returns></returns>
-    public List<JoinBaseModel> GetOnlyMixedJoins(SelectDto select)
+    /// <param name="select">The select dto to check the joins of</param>
+    /// <returns>All of those joins, that cross data source borders</returns>
+    public static List<JoinBaseModel> GetOnlyMixedJoins(SelectDto select)
     {
         return select.Join
             .Where(join => join.GetJoinExpressionTable().DataSourceName != join.Inner.DataSourceName)

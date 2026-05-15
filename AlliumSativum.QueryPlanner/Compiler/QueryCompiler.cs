@@ -26,18 +26,33 @@ public class QueryCompiler
         _optimizer = optimizer;
     }
 
+    /// <summary>
+    /// Default compilation settings. Turns the query into one optimal execution plan
+    /// </summary>
+    /// <param name="query">Query string in AsSQL</param>
+    /// <returns>Optimal Query Execution Plan</returns>
+    /// <exception cref="AsSqlException">Query could not be parsed</exception>
     public async Task<QueryExecutionPlan> CompileAsync(string query)
     {
         var tokens = _tokenizer.Tokenize(query);
         var selectModel = _parser.Parse(tokens);
         if (selectModel is null) throw new AsSqlException("Failed to parse query.");
         _semanticTransformer.Transform(selectModel);
-        // TODO: semantic checker (check attributes etc.)
         var executionPlan = await _optimizer.OptimizeAsync(selectModel);
 
         return executionPlan.Single();
     }
     
+    /// <summary>
+    /// Times all compilation steps in addition to compiling the query.
+    /// /// May be used for benchmarking purposes.
+    /// </summary>
+    /// <param name="query">Query in AsSQL</param>
+    /// <returns>
+    ///     - plan: Optimal Query Execution Plan
+    ///     - timingResult: Time taken for each compilation step (tokenization, parsing, semantic transformation, optimization)
+    /// </returns>
+    /// <exception cref="AsSqlException">Query could not be parsed</exception>
     public async Task<(QueryExecutionPlan plan, AlliumSativumTimingResult timingResult)> TimedCompileAsync(string query)
     {
         var stopwatch = Stopwatch.StartNew();
@@ -63,13 +78,20 @@ public class QueryCompiler
         return (executionPlan.Single(), result);
     }
 
+    
+    /// <summary>
+    /// Compiles the query without pruning the join tree. All possible execution plans for a given query are enumerated.
+    /// May be used for benchmarking purposes.
+    /// </summary>
+    /// <param name="query">Query in AsSQL</param>
+    /// <returns>List of all possible plans for this query</returns>
+    /// <exception cref="AsSqlException">Query could not be parsed</exception>
     public async Task<List<QueryExecutionPlan>> CompileNoPruningAsync(string query)
     {
         var tokens = _tokenizer.Tokenize(query);
         var selectModel = _parser.Parse(tokens);
         if (selectModel is null) throw new AsSqlException("Failed to parse query.");
         _semanticTransformer.Transform(selectModel);
-        // TODO: semantic checker (check attributes etc.)
         var executionPlan = await _optimizer.OptimizeAsync(selectModel, false);
 
         return executionPlan;

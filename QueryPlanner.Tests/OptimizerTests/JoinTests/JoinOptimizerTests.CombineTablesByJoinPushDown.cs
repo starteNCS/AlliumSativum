@@ -14,7 +14,7 @@ public sealed class CombineTablesByJoinPushDownTests
     {
         var model = "SELECT a.id FROM cs->algorithm a".ToSelectDto();
         
-        var (joinsLeft, tableSplits) = _fixture.JoinOptimizer.CombineTablesByJoinPushDown([], [model]);
+        var (joinsLeft, tableSplits) = _fixture.JoinOptimizer.CombineTableSplitsByJoinPushDown([], [model]);
 
         joinsLeft.Should().BeEmpty();
         tableSplits.Should().HaveCount(1);
@@ -29,7 +29,7 @@ public sealed class CombineTablesByJoinPushDownTests
         
         var join = "FROM cs->algorithm a INNER JOIN shared->respondent r ON r.algorithm_id = a.id".ToSelectDto().Join;
         
-        var (joinsLeft, tableSplits) = _fixture.JoinOptimizer.CombineTablesByJoinPushDown(join, [algorithmDto, respondentDto]);
+        var (joinsLeft, tableSplits) = _fixture.JoinOptimizer.CombineTableSplitsByJoinPushDown(join, [algorithmDto, respondentDto]);
 
         joinsLeft.Should().HaveCount(1);
         joinsLeft[0].Should().Be(join.Single());
@@ -47,7 +47,7 @@ public sealed class CombineTablesByJoinPushDownTests
         
         var join = "FROM cs->algorithm a INNER JOIN cs->experiment_run er ON er.algorithm_id = a.id".ToSelectDto().Join;
         
-        var (joinsLeft, tableSplits) = _fixture.JoinOptimizer.CombineTablesByJoinPushDown(join, [algorithmDto, experimentRunDto]);
+        var (joinsLeft, tableSplits) = _fixture.JoinOptimizer.CombineTableSplitsByJoinPushDown(join, [algorithmDto, experimentRunDto]);
 
         joinsLeft.Should().BeEmpty();
         tableSplits.Should().HaveCount(1);

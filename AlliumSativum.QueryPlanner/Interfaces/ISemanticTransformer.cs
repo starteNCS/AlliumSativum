@@ -5,8 +5,11 @@ namespace AlliumSativum.Interfaces;
 public interface ISemanticTransformer
 {
     /// <summary>
-    ///     Transforms in place
+    /// Transforms the dto by expanding all variable mappings (that is, replacing all variables with their mapped values)
     /// </summary>
-    /// <param name="model"></param>
+    /// <remarks>
+    /// Transforms the given SelectDto in place
+    /// </remarks>
+    /// <param name="model">Current select dto</param>
     void Transform(SelectDto model);
 }

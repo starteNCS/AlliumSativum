@@ -6,6 +6,16 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser
 {
+    
+    /// <summary>
+    /// Reads the next tokens as a FROM statement and updates the model accordingly.
+    /// </summary>
+    /// <remarks>
+    /// Expects the next tokens to be in the format: "FROM" "dataSourceName"->"tableName" ["variableName"]
+    /// </remarks>
+    /// <param name="tokens">Stack of tokens</param>
+    /// <param name="model">Current select dto</param>
+    /// <exception cref="AsSqlParseException">Either one "FROM" was already read, or topmost token did not match</exception>
     private void HandleFromStatement(Stack<string> tokens, SelectDto model)
     {
         if (model.From is not null)

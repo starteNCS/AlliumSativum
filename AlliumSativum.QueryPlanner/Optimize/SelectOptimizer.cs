@@ -17,17 +17,12 @@ public sealed class SelectOptimizer : ISelectOptimizer
         _costModel = costModel;
     }
 
-    /// <summary>
-    ///     Appends the select projections needed for computational purposes (i.e. join) to all push down proposals
-    /// </summary>
-    /// <param name="splitSelects">The selects only targetting one table</param>
-    /// <param name="hiddenAttributes">The attributes that should be appended</param>
-    /// <returns></returns>
-    public List<SelectDto> AppendComputationalSelects(List<SelectDto> splitSelects, List<AttributeSpecifier> hiddenAttributes)
+    /// <inheritdoc/>
+    public List<SelectDto> AppendComputationalSelects(List<SelectDto> tableSplits, List<AttributeSpecifier> hiddenAttributes)
     {
         foreach (var attribute in hiddenAttributes)
         {
-            var select = splitSelects.SingleOrDefault(s => attribute.IsInTable(s.From));
+            var select = tableSplits.SingleOrDefault(s => attribute.IsInTable(s.From));
             if (select is null)
                 throw new AsSqlOptimizeException("Expected to find select model to push hidden attribute to");
 
@@ -39,9 +34,10 @@ public sealed class SelectOptimizer : ISelectOptimizer
             select.Select.Add(attribute);
         }
 
-        return splitSelects;
+        return tableSplits;
     }
 
+    /// <inheritdoc/>
     public PlanOperator HandleProjection(PlanOperator pop, TableSpecifier forTable, SelectDto? unplanned)
     {
         if (unplanned is null || unplanned.Select.Count == 0) return pop;

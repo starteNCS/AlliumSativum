@@ -6,6 +6,16 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser
 {
+    
+    /// <summary>
+    /// Reads the next three tokens as a variable mapping specifier
+    /// </summary>
+    /// <remarks>
+    /// Variable Mapping Specifier format: "variableName"."attributeName"
+    /// </remarks>
+    /// <param name="tokens">Stack of tokens</param>
+    /// <returns>The variable mapping specifier</returns>
+    /// <exception cref="AsSqlParseException">Any of the three tokens did not match the expected format</exception>
     private static ISpecifier GetVariableSpecifier(Stack<string> tokens)
     {
         if (!tokens.TryPop(out var variableName))
@@ -28,6 +38,15 @@ public partial class TokenQueryParser
         return new VariableMappingSpecifier(variableName, attributeName);
     }
 
+    /// <summary>
+    /// Reads the next five tokens as an attribute specifier
+    /// </summary>
+    /// <remarks>
+    /// Attribute Specifier format: "datasourceName"->"tableName"."attributeName"
+    /// </remarks>
+    /// <param name="tokens">Stack of tokens</param>
+    /// <returns>The attribute specifier</returns>
+    /// <exception cref="AsSqlParseException">Any of the five tokens did not match the expected format</exception>
     private AttributeSpecifier GetAttributeSpecifier(Stack<string> tokens)
     {
         var tableSpecifier = GetTableSpecifier(tokens);
@@ -46,6 +65,15 @@ public partial class TokenQueryParser
         return tableSpecifier.ToAttributeSpecifier(attributeName);
     }
 
+    /// <summary>
+    /// Reads the next three tokens as a table specifier
+    /// </summary>
+    /// <remarks>
+    /// Table Specifier format: "datasourceName"->"tableName"
+    /// </remarks>
+    /// <param name="tokens">Stack of tokens</param>
+    /// <returns>The table specifier</returns>
+    /// <exception cref="AsSqlParseException">Any of the three tokens did not match the expected format</exception>
     private TableSpecifier GetTableSpecifier(Stack<string> tokens)
     {
         var datasourceSpecifier = GetDataSourceSpecifier(tokens);
@@ -62,6 +90,12 @@ public partial class TokenQueryParser
         return datasourceSpecifier.ToTableSpecifier(tableName);
     }
 
+    /// <summary>
+    /// Reads the next token as a datasource specifier
+    /// </summary>
+    /// <param name="tokens">Stack of tokens</param>
+    /// <returns>The data source specifier</returns>
+    /// <exception cref="AsSqlParseException">Token did not match the expected format</exception>
     private static DataSourceSpecifier GetDataSourceSpecifier(Stack<string> tokens)
     {
         return !tokens.TryPop(out var datasource) 
@@ -69,6 +103,15 @@ public partial class TokenQueryParser
             : new DataSourceSpecifier(datasource);
     }
 
+    /// <summary>
+    /// Returns the top-most attribute-like specifier of the stack;
+    /// May either be a variable mapping specifier or a full attribute specifier
+    ///
+    /// If the second token is a datasource separator, the top-most specifier is an full attribute specifier, otherwise it is a variable mapping specifier
+    /// </summary>
+    /// <param name="tokens">Stack of tokens</param>
+    /// <returns>The specifier</returns>
+    /// <exception cref="AsSqlParseException">Some token did not match the expected format</exception>
     private ISpecifier GetVariableOrAttributeSpecifier(Stack<string> tokens)
     {
         var topmost = tokens.Pop();
