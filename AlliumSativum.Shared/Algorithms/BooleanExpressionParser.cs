@@ -22,6 +22,12 @@ public static class BooleanExpressionParser
         return OperatorPrecedence.ContainsKey(token);
     }
 
+    /// <summary>
+    /// Parses a list of tokens representing a boolean expression into an expression tree using the Shunting Yard Algorithm.
+    /// </summary>
+    /// <param name="tokens">Token stack containing only the tokens of the boolean expression</param>
+    /// <returns>ExpressionNode tree</returns>
+    /// <exception cref="AsSqlParseException">Some error in the boolean expression</exception>
     public static ExpressionNode? Parse(Stack<string> tokens)
     {
         var operatorStack = new Stack<string>();
@@ -69,6 +75,14 @@ public static class BooleanExpressionParser
         return operandStack.Count > 0 ? operandStack.Pop() : null;
     }
 
+    /// <summary>
+    /// Transforms any given boolean expression tree into Conjunctive Normal Form (CNF) using the distributive property of OR over AND.
+    /// </summary>
+    /// <remarks>
+    /// Returns the same tree if it's already in CNF or cannot be transformed
+    /// </remarks>
+    /// <param name="node">Starting node</param>
+    /// <returns>Transformed node</returns>
     public static ExpressionNode AsConjunctiveNormalForm(ExpressionNode? node)
     {
         if (node is not BinaryOperatorExpressionNode binary) return node;
@@ -102,7 +116,11 @@ public static class BooleanExpressionParser
         return new BinaryOperatorExpressionNode { Operation = binary.Operation, Left = left, Right = right };
     }
 
-    // Helper to combine top operator with top 2 operands
+    /// <summary>
+    /// Building binary operator node, that is a node with an operator and two children
+    /// </summary>
+    /// <param name="operators">The operator stack</param>
+    /// <param name="operands">The operand stack</param>
     private static void BuildNode(Stack<string> operators, Stack<ExpressionNode> operands)
     {
         var op = operators.Pop();
@@ -112,6 +130,12 @@ public static class BooleanExpressionParser
         operands.Push(new BinaryOperatorExpressionNode { Operation = op, Left = left, Right = right });
     }
 
+    /// <summary>
+    /// Loading the top-most full node from the operand stack, which can be either a ValueExpressionNode, a BinaryOperatorExpressionNode, a FullySpecifiedColumnExpressionNode or a VariableMappingExpressionNode
+    /// </summary>
+    /// <param name="operands">Operand stack</param>
+    /// <returns>Topmost full expression node</returns>
+    /// <exception cref="AsSqlParseException">Some parsing error occured</exception>
     private static ExpressionNode GetFullTopMostNode(Stack<ExpressionNode> operands)
     {
         if (operands.Peek() is ValueExpressionNode || operands.Peek() is BinaryOperatorExpressionNode)
@@ -156,10 +180,17 @@ public static class BooleanExpressionParser
         };
     }
 
+    /// <summary>
+    /// Load a expression node from the topmost token, which can be either a ValueExpressionNode or a PartialColumnExpressionNode, depending on the token format
+    /// </summary>
+    /// <remarks>
+    /// Simple heuristic: if it starts with single quote or is a number, it's a value.
+    /// Otherwise, treat as column.
+    /// </remarks>
+    /// <param name="token">The topmost token</param>
+    /// <returns>Expression node</returns>
     private static ExpressionNode CreateOperandNode(string token)
     {
-        // Simple heuristic: if it starts with single quote or is a number, it's a value.
-        // Otherwise, treat as column.
         var isTokenString = token.StartsWith('\'');
         var isTokenDecimal = decimal.TryParse(token, out var _);
         if (isTokenString || isTokenDecimal)

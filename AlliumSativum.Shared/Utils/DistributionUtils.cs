@@ -4,6 +4,12 @@ namespace AlliumSativum.Shared.Utils;
 
 public static class DistributionUtils
 {
+    /// <summary>
+    /// Calculate the distribution of a list of values and update the provided attribute entity with the calculated statistics.
+    /// </summary>
+    /// <param name="values">The raw values</param>
+    /// <param name="attribute">The attribute of the values</param>
+    /// <returns>Updated attribute and modes of it</returns>
     public static (AttributeEntity attribute, List<AttributePeakEntity> modes) CalculateDistribution(
         List<double?> values, AttributeEntity attribute)
     {

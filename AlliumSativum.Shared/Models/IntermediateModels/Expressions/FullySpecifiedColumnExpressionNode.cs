@@ -3,6 +3,9 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
+/// <summary>
+/// A attribute specifier containing data source, table and attribute information.
+/// </summary>
 public class FullySpecifiedColumnExpressionNode : ExpressionNode
 {
     public required AttributeSpecifier Attribute { get; set; }
@@ -31,11 +34,13 @@ public class FullySpecifiedColumnExpressionNode : ExpressionNode
         return Attribute.GetHashCode();
     }
 
+    /// <inheritdoc/>
     public override object? ResolveValue(Dictionary<string, object> row)
     {
         return row.GetValueOrDefault(Attribute.ToDictKey())?.ToString();
     }
 
+    /// <inheritdoc/>
     public override bool EvaluatePredicate(Dictionary<string, object> row)
     {
         return row.TryGetValue(Attribute.ToDictKey(), out var val) && val is not null;

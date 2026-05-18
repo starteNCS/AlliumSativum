@@ -3,6 +3,9 @@ using AlliumSativum.Shared.Constants;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
+/// <summary>
+/// Specifier for the full attribute
+/// </summary>
 public sealed class AttributeSpecifier : TableSpecifier, IEquatable<AttributeSpecifier>
 {
     public AttributeSpecifier(string dataSourceName, string tableName, string attributeName) : base(dataSourceName,

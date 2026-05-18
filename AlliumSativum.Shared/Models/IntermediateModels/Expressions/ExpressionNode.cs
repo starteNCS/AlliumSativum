@@ -3,6 +3,9 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
+/// <summary>
+/// Abstract class for all expression nodes
+/// </summary>
 // fix empty output for ASP.NET endpoints
 [JsonPolymorphic(IgnoreUnrecognizedTypeDiscriminators = true)]
 [JsonDerivedType(typeof(PartialColumnExpressionNode), "partial")]
@@ -14,30 +17,12 @@ public abstract class ExpressionNode
 {
     public abstract string ToSqlQueryString();
     public abstract bool Equals(object? obj);
-
-    public int GetBooleanFactorCount()
-    {
-        var count = 0;
-        var stack = new Stack<ExpressionNode>();
-        stack.Push(this);
-
-        while (stack.Count > 0)
-        {
-            var current = stack.Pop();
-
-            switch (current)
-            {
-                case BinaryOperatorExpressionNode { Operation: "AND" or "OR" } binary:
-                    count++;
-                    stack.Push(binary.Right);
-                    stack.Push(binary.Left);
-                    break;
-            }
-        }
-
-        return count;
-    }
     
+    /// <summary>
+    /// Recursively checks if all tables in this expression are in "table"
+    /// </summary>
+    /// <param name="table">Tables which should only be in the expression</param>
+    /// <returns>True, when all expression tables in "tables"</returns>
     public bool IsPurelyTables(List<TableSpecifier> table)
     {
         return this switch
@@ -51,6 +36,11 @@ public abstract class ExpressionNode
         };
     }
 
+    /// <summary>
+    /// Get all attributes used in this expression
+    /// </summary>
+    /// <returns>All attribtues used</returns>
+    /// <exception cref="ArgumentException">A variable mapping was found</exception>
     public List<AttributeSpecifier> GetAttributesOfExpression()
     {
         var results = new HashSet<AttributeSpecifier>();
@@ -82,6 +72,10 @@ public abstract class ExpressionNode
         return results.ToList();
     }
 
+    /// <summary>
+    /// Get all tables used in this expression
+    /// </summary>
+    /// <returns>All tables</returns>
     public List<TableSpecifier> GetTablesOfExpression()
     {
         return GetAttributesOfExpression()
@@ -93,7 +87,7 @@ public abstract class ExpressionNode
     /// <summary>
     ///     Returns the number of arithmetic expressions contained within this expression with the given type
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The number of boolean factors</returns>
     public Dictionary<ValueExpressionNode.ValueExpressionType, int> GetExpressionsCount()
     {
         var counts = new Dictionary<ValueExpressionNode.ValueExpressionType, int>();
@@ -123,7 +117,18 @@ public abstract class ExpressionNode
         return counts;
     }
 
+    /// <summary>
+    /// Unpack the value of this expression for a given row of data
+    /// </summary>
+    /// <param name="row">The row</param>
+    /// <returns>The value</returns>
     public abstract object? ResolveValue(Dictionary<string, object> row);
+    
+    /// <summary>
+    /// Evaluate a row against this expression
+    /// </summary>
+    /// <param name="row">The row</param>
+    /// <returns>True, if expression evaluated to true</returns>
     public abstract bool EvaluatePredicate(Dictionary<string, object> row);
 
     public bool IsEquiJoin()

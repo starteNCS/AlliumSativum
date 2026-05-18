@@ -1,5 +1,8 @@
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
+/// <summary>
+/// Expression node representing a binary operator (e.g., AND, OR, =, >, <, etc.)
+/// </summary>
 public class BinaryOperatorExpressionNode : ExpressionNode
 {
     public string Operation { get; set; } = string.Empty;
@@ -28,11 +31,13 @@ public class BinaryOperatorExpressionNode : ExpressionNode
         return HashCode.Combine(Operation, Left, Right);
     }
     
+    /// <inheritdoc/>
     public override object? ResolveValue(Dictionary<string, object> row)
     {
         return null;
     }
 
+    /// <inheritdoc/>
     public override bool EvaluatePredicate(Dictionary<string, object> row)
     {
         return Operation switch
@@ -49,14 +54,14 @@ public class BinaryOperatorExpressionNode : ExpressionNode
         };
     }
 
-    public bool EvaluateEquals(Dictionary<string, object> row)
+    private bool EvaluateEquals(Dictionary<string, object> row)
     {
         var left = Left.ResolveValue(row);
         var right = Right.ResolveValue(row);
         return Equals(left?.ToString(), right?.ToString());
     }
 
-    public int EvaluateComparison(Dictionary<string, object> row)
+    private int EvaluateComparison(Dictionary<string, object> row)
     {
         if (!double.TryParse(Left.ResolveValue(row)?.ToString(), out var leftNum) ||
             !double.TryParse(Right.ResolveValue(row)?.ToString(), out var rightNum)) return -1;

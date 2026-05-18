@@ -2,6 +2,9 @@ using AlliumSativum.Shared.Constants;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
+/// <summary>
+/// Specifier containing data source and table information
+/// </summary>
 public class TableSpecifier : DataSourceSpecifier, IEquatable<TableSpecifier>
 {
     public TableSpecifier(string dataSourceName, string tableName) : base(dataSourceName)

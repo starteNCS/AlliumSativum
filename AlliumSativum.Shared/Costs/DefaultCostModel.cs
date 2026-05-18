@@ -9,8 +9,7 @@ using Microsoft.Extensions.Options;
 namespace AlliumSativum.Shared.Costs;
 
 /// <summary>
-///     Default cost model, should be okay-ish for all types of data source, but connectors maybe need to implement their
-///     own, to fit their specific needs
+///     Default cost model
 /// </summary>
 public sealed partial class DefaultCostModel : ICostModel
 {
@@ -25,11 +24,7 @@ public sealed partial class DefaultCostModel : ICostModel
         _settings = settings.Value;
     }
 
-    /// <summary>
-    ///     Iterates through the POP-tree and calculates the total cost of the plan, by summing up the cost of each operator
-    /// </summary>
-    /// <param name="planOperator"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public double TotalCost(PlanOperator? planOperator, bool fromActualCost = false)
     {
         if (planOperator == null) return 0;
@@ -72,6 +67,11 @@ public sealed partial class DefaultCostModel : ICostModel
         };
     }
 
+    /// <summary>
+    /// Calculates the cost for a project operator
+    /// </summary>
+    /// <param name="project">The operator</param>
+    /// <returns>The cost</returns>
     private double CalculateProjectCost(ProjectPlanOperator project)
     {
         return _settings.Project.BaseCost
@@ -79,6 +79,11 @@ public sealed partial class DefaultCostModel : ICostModel
                * (project.Attributes.Count * _settings.Project.PerAttributeCost);
     }
 
+    /// <summary>
+    /// Calculates the cost for a filter operator
+    /// </summary>
+    /// <param name="filter">The operator</param>
+    /// <returns>The cost</returns>
     private double CalculateFilterCost(FilterPlanOperator filter)
     {
         var numberOfExpressions = filter.Expression.GetExpressionsCount();
@@ -96,6 +101,13 @@ public sealed partial class DefaultCostModel : ICostModel
                + filter.ExpectedCardinality * costPerRow;
     }
 
+    
+    /// <summary>
+    /// Calculates the cost for any join operator
+    /// </summary>
+    /// <param name="join">Any join POP</param>
+    /// <returns>The cost</returns>
+    /// <exception cref="ArgumentException">An unsupported join POP was provided</exception>
     private double CalculateJoinCost(JoinPlanOperator join)
     {
         return join switch
@@ -109,7 +121,6 @@ public sealed partial class DefaultCostModel : ICostModel
                 + hj.Left.ExpectedCardinality * (_settings.Join.Hash.PerAttributeHashTableInitiation)
                 + hj.Right.ExpectedCardinality *  (_settings.Join.Hash.PerAttributeHashTableLookup + _settings.Filter.PerAttributeCostNumeric)
                 + hj.ExpectedCardinality * (hj.Right.Width * _settings.Join.Hash.PerPropertyCloneCost),
-            MergeSortJoinPlanOperator => double.MaxValue,
             _ => throw new ArgumentException("Unsupported join in cost calculation")
         };
     }

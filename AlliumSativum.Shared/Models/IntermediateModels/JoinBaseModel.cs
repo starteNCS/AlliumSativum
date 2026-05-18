@@ -4,6 +4,9 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels;
 
+/// <summary>
+/// DTO for a join statement, containing all necessary information to execute the query
+/// </summary>
 public sealed class JoinBaseModel
 {
     public JoinType JoinType { get; init; }
@@ -47,19 +50,4 @@ public enum JoinType
     // Left,
     // Right,
     Inner
-}
-
-public static class JoinTypeExtensions
-{
-    public static JoinType ToJoinType(this string typeString)
-    {
-        return typeString.ToUpper() switch
-        {
-            AsSqlKeywords.JoinType.INNER => JoinType.Inner,
-            // AsSqlKeywords.JoinType.LEFT => JoinType.Left,
-            // AsSqlKeywords.JoinType.RIGHT => JoinType.Right,
-            // AsSqlKeywords.JoinType.OUTER => JoinType.Outer,
-            _ => throw new ArgumentOutOfRangeException(nameof(typeString), typeString, null)
-        };
-    }
 }

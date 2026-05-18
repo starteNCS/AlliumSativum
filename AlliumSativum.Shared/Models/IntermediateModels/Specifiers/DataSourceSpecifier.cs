@@ -1,5 +1,8 @@
 namespace AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
+/// <summary>
+/// Specifier containing only data source information
+/// </summary>
 public class DataSourceSpecifier : ISpecifier, IEquatable<DataSourceSpecifier>
 {
     public DataSourceSpecifier(string dataSourceNameName)

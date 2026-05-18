@@ -5,6 +5,7 @@ namespace AlliumSativum.Shared.Costs;
 
 public sealed partial class DefaultCostModel
 {
+    /// <inheritdoc/>
     public Dictionary<double, double> ReconstructDistribution(PlanOperatorDistributionData distributionData)
     {
         if (distributionData.DistributionType == DistributionType.Uniform)
@@ -13,6 +14,13 @@ public sealed partial class DefaultCostModel
         return ReconstructGaussDistribution(distributionData);
     }
 
+    /// <summary>
+    /// Reconstructing a uniform distribution from the given distribution data,
+    /// by filling the histogram with the mean bin height for each bin
+    /// </summary>
+    /// <param name="distributionData">The attributes distribution data</param>
+    /// <returns>The histogram</returns>
+    /// <exception cref="ArgumentException">Distribution type was not uniform</exception>
     private static Dictionary<double, double> ReconstructUniformDistribution(
         PlanOperatorDistributionData distributionData)
     {
@@ -33,6 +41,12 @@ public sealed partial class DefaultCostModel
         return dictionary;
     }
 
+    /// <summary>
+    /// Reconstructing any other distribution using multiple overlapping Gaussians
+    /// </summary>
+    /// <param name="distributionData">The attribtue distribution data</param>
+    /// <returns>The histogram</returns>
+    /// <exception cref="ArgumentException">Distribute type was uniform</exception>
     private static Dictionary<double, double> ReconstructGaussDistribution(
         PlanOperatorDistributionData distributionData)
     {
@@ -66,6 +80,12 @@ public sealed partial class DefaultCostModel
         return dictionary;
     }
 
+    /// <summary>
+    /// Calculates the normalized normal distribution value for the given position and peak parameters, so that the maximum value of the distribution is 1
+    /// </summary>
+    /// <param name="x">The position to calculate for</param>
+    /// <param name="peak">The current peak to calculate for</param>
+    /// <returns>The height at position x</returns>
     private static double NormalizedNormalDistribution(double x, PlanOperatorDistributionData.Peak peak)
     {
         var first = 1 / Math.Sqrt(2 * Math.PI * Math.Pow(peak.StandardDeviation, 2));

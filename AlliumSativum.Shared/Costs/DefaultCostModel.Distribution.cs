@@ -9,6 +9,7 @@ namespace AlliumSativum.Shared.Costs;
 
 public sealed partial class DefaultCostModel
 {
+    /// <inheritdoc/>
     public async Task<PlanOperatorDistributionCost> GetDistributionOfExpressionAsync(BinaryOperatorExpressionNode node,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData, List<PlanOperator> children)
     {
@@ -48,6 +49,13 @@ public sealed partial class DefaultCostModel
         }
     }
 
+    /// <summary>
+    /// Recursively calculates the new distribution of attributes for and expressions
+    /// </summary>
+    /// <param name="node">The node to calculate distribution for</param>
+    /// <param name="distributionData">The children distribution data</param>
+    /// <param name="children">The childrens</param>
+    /// <returns>New POP attribute distribution</returns>
     private async Task<PlanOperatorDistributionCost> GetDistributionsOfAndExpression(BinaryOperatorExpressionNode node,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData,
         List<PlanOperator> children)
@@ -67,6 +75,14 @@ public sealed partial class DefaultCostModel
         };
     }
 
+    
+    /// <summary>
+    /// Calculates the new distributions for and expressions
+    /// </summary>
+    /// <remarks>Using Lemma 3.3.8, Cases 1</remarks>
+    /// <param name="left">Left child</param>
+    /// <param name="right">Right child</param>
+    /// <returns>New distributions</returns>
     private static Dictionary<AttributeSpecifier, PlanOperatorDistributionData> AndMergeDistributions(
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> left,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> right)
@@ -100,6 +116,13 @@ public sealed partial class DefaultCostModel
         return newDistribution;
     }
 
+    /// <summary>
+    /// Recursively calculates the new distribution of attributes for or expressions
+    /// </summary>
+    /// <param name="node">The node to calculate distribution for</param>
+    /// <param name="distributionData">The children distribution data</param>
+    /// <param name="children">The childrens</param>
+    /// <returns>New POP attribute distribution</returns>
     private async Task<PlanOperatorDistributionCost> GetDistributionsOfOrExpression(BinaryOperatorExpressionNode node,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData,
         List<PlanOperator> children)
@@ -119,6 +142,13 @@ public sealed partial class DefaultCostModel
         };
     }
 
+    /// <summary>
+    /// Calculates the new distributions for and expressions
+    /// </summary>
+    /// <remarks>Using Lemma 3.3.8, Cases 2</remarks>
+    /// <param name="left">Left child</param>
+    /// <param name="right">Right child</param>
+    /// <returns>New distributions</returns>
     private static Dictionary<AttributeSpecifier, PlanOperatorDistributionData> OrMergeDistributions(
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> left,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> right)
@@ -150,6 +180,15 @@ public sealed partial class DefaultCostModel
         return newDistribution;
     }
 
+    /// <summary>
+    /// Calculates distribution for equality predicates between two attributes
+    /// </summary>
+    /// <param name="node">The node to calculate distribution for</param>
+    /// <param name="distributionData">The children distribution data</param>
+    /// <param name="children">The childrens</param>
+    /// <remarks>Using Lemma 3.3.6, Cases 1</remarks>
+    /// <returns>New POP attribute distribution</returns>
+    /// <exception cref="ArgumentException"></exception>
     private async Task<PlanOperatorDistributionCost> GetDistributionOfEqualsAttributeExpression(
         BinaryOperatorExpressionNode node,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData, List<PlanOperator> children)
@@ -243,6 +282,15 @@ public sealed partial class DefaultCostModel
         };
     }
 
+    /// <summary>
+    /// Calculate distribution for predicates with >, <, >=, <= between an attribute and a value
+    /// </summary>
+    /// <remarks>Using Lemma 3.3.6, Cases 3 & 4</remarks>
+    /// <param name="node">The node to calculate distribution for</param>
+    /// <param name="distributionData">The children distribution data</param>
+    /// <param name="children">The childrens</param>
+    /// <returns>New POP attribute distribution</returns>
+    /// <exception cref="ArgumentException"></exception>
     private async Task<PlanOperatorDistributionCost> GetDistributionOfLessGreaterValueExpression(
         BinaryOperatorExpressionNode node,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData,
@@ -294,6 +342,11 @@ public sealed partial class DefaultCostModel
         };
     }
 
+    /// <summary>
+    /// Calculates the mean height of the bins in the histogram by reconstruction those histograms
+    /// </summary>
+    /// <param name="distributionData">The distribution data</param>
+    /// <returns>The mean bin height</returns>
     private double GetMeanBinHeight(List<PlanOperatorDistributionData> distributionData)
     {
         var heights = 0.0;
@@ -308,6 +361,11 @@ public sealed partial class DefaultCostModel
         return bins == 0 ? 0 : heights / bins;
     }
 
+    /// <summary>
+    /// Translates the new peak count to the distribution type
+    /// </summary>
+    /// <param name="peaksLeft">All peaks that are left</param>
+    /// <returns>DistributionType</returns>
     private static DistributionType PeakCountToDistributionType(List<PlanOperatorDistributionData.Peak> peaksLeft)
     {
         return peaksLeft.Count switch
@@ -319,6 +377,13 @@ public sealed partial class DefaultCostModel
         };
     }
 
+    /// <summary>
+    /// Calculates the new min and max values for an attribute after applying a filter with the given operation and value.
+    /// </summary>
+    /// <param name="data">Distribution data as base</param>
+    /// <param name="operation">The operation applied</param>
+    /// <param name="value">The value allied against</param>
+    /// <returns>The new min and max</returns>
     private static (double min, double max) GetValueRange(PlanOperatorDistributionData data, string operation,
         double value)
     {
@@ -359,6 +424,14 @@ public sealed partial class DefaultCostModel
         return (double.NaN, double.NaN);
     }
 
+    /// <summary>
+    /// Checks if  a peak lies relative to a value according to the given operation
+    /// </summary>
+    /// <param name="peak">The peak</param>
+    /// <param name="operation">The operation</param>
+    /// <param name="value">The value to check against</param>
+    /// <returns>True, if operation satisfied. False otherwise</returns>
+    /// <exception cref="ArgumentException">An unsupported operation was used</exception>
     private static bool CheckPeak(PlanOperatorDistributionData.Peak peak, string operation, double value)
     {
         return operation switch

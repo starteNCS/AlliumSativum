@@ -115,6 +115,14 @@ public static class DistributionDetector
         return peaks.Count > 1 && coefficientOfVariance > 0.2 && peakRatio < 0.15;
     }
 
+    /// <summary>
+    /// Calculate the modes of the distribution using Kernel Density Estimation (KDE) and find the peaks in the density curve.
+    ///
+    /// 🤖 Developed iteratively with the help of Google Gemini
+    /// </summary>
+    /// <param name="data">The histogram to find the modes of</param>
+    /// <param name="attribute">Attribute base information</param>
+    /// <returns>List of modes</returns>
     private static List<AttributePeakEntity> FindModes(Dictionary<double, int> data, AttributeEntity attribute)
     {
         if (data.Count == 0) return [];
@@ -154,12 +162,19 @@ public static class DistributionDetector
             var rightBound = valleys.Where(v => v > peak.Position).DefaultIfEmpty(double.MaxValue).Min();
 
             var peakData = data.Where(kv => kv.Key >= leftBound && kv.Key <= rightBound);
-            (peak.Mean, peak.StandardDeviation) = CalculatePeakStandardDeviation(peakData);
+            (peak.Mean, peak.StandardDeviation) = CalculatePeakStatisticalMeasures(peakData);
         }
 
         return validPeaks;
     }
 
+    /// <summary>
+    /// Calculate the minimum gap between consecutive data points in the histogram to determine a reasonable bandwidth for KDE.
+    /// 
+    /// 🤖 Developed iteratively with the help of Google Gemini
+    /// </summary>
+    /// <param name="data">The histogram</param>
+    /// <returns>Minimum gap between two bins</returns>
     private static double GetMinDataGap(Dictionary<double, int> data)
     {
         var sortedKeys = data.Keys.OrderBy(k => k).ToList();
@@ -174,6 +189,15 @@ public static class DistributionDetector
         return minGap == double.MaxValue ? 1.0 : minGap;
     }
 
+    /// <summary>
+    /// Get density curve using Gaussian Kernel Density Estimation (KDE) for the given data and bandwidth h.
+    /// 
+    /// 🤖 Developed iteratively with the help of Google Gemini
+    /// </summary>
+    /// <param name="data">The histogram</param>
+    /// <param name="h">Density configuration parameter</param>
+    /// <param name="attribute">Attribute meta information</param>
+    /// <returns>Peak candidates</returns>
     private static List<AttributePeakEntity> GenerateDensityCurve(Dictionary<double, int> data, double h,
         AttributeEntity attribute)
     {
@@ -206,17 +230,27 @@ public static class DistributionDetector
         return curve;
     }
 
+    /// <summary>
+    /// Get local minima from the density curve, i.e. valleys between peaks
+    /// </summary>
+    /// <param name="curve">Density curve candidates</param>
+    /// <returns>Mimimas</returns>
     private static List<double> GetLocalMinima(List<AttributePeakEntity> curve)
     {
         var minima = new List<double>();
         for (var i = 1; i < curve.Count - 1; i++)
-            // If it's lower than both its neighbors, it's a valley
             if (curve[i].Density < curve[i - 1].Density && curve[i].Density < curve[i + 1].Density)
                 minima.Add(curve[i].Position);
 
         return minima;
     }
 
+    
+    /// <summary>
+    /// Get local maxima from the density curve, i.e. peaks between hills
+    /// </summary>
+    /// <param name="curve">Density curve candidates</param>
+    /// <returns>Maximas</returns>
     private static List<AttributePeakEntity> GetLocalMaxima(List<AttributePeakEntity> curve)
     {
         var maxima = new List<AttributePeakEntity>();
@@ -227,7 +261,12 @@ public static class DistributionDetector
         return maxima;
     }
 
-    private static (double mean, double standardDeviation) CalculatePeakStandardDeviation(
+    /// <summary>
+    /// Calculate the mean and standard deviation of the data points within a peak
+    /// </summary>
+    /// <param name="dataSlice"></param>
+    /// <returns>The mean and stdev of a peak</returns>
+    private static (double mean, double standardDeviation) CalculatePeakStatisticalMeasures(
         IEnumerable<KeyValuePair<double, int>> dataSlice)
     {
         var sliceList = dataSlice.ToList();

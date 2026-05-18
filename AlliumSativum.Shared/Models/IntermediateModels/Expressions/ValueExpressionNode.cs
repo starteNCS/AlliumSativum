@@ -1,5 +1,8 @@
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
+/// <summary>
+/// Node containing a plain value
+/// </summary>
 public class ValueExpressionNode : ExpressionNode
 {
     public enum ValueExpressionType
@@ -38,6 +41,7 @@ public class ValueExpressionNode : ExpressionNode
         return HashCode.Combine(Value, Type);
     }
 
+    /// <inheritdoc/>
     public override object? ResolveValue(Dictionary<string, object> row)
     {
         return Type switch
@@ -48,6 +52,7 @@ public class ValueExpressionNode : ExpressionNode
         };
     }
 
+    /// <inheritdoc/>
     public override bool EvaluatePredicate(Dictionary<string, object> row)
     {
         return false;

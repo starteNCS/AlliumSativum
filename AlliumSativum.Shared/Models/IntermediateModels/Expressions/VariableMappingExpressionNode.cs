@@ -3,6 +3,9 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
+/// <summary>
+/// Expression node representing the mapping between a variable and the attribute it represents. Used exclusively in the semantic transformation.
+/// </summary>
 public class VariableMappingExpressionNode : ExpressionNode
 {
     public required VariableMappingSpecifier VariableMapping { get; set; }

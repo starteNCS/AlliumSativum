@@ -5,6 +5,9 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels;
 
+/// <summary>
+/// DTO for the select statement, containing all necessary information to execute the query
+/// </summary>
 public sealed class SelectDto
 {
     public List<VariableMapping> VariableMappings { get; set; } = [];
@@ -83,8 +86,7 @@ public sealed class SelectDto
     ///     Appends the given attributes either as hidden, when not existing
     ///     or leave the attribute as is, when already existing (i.e. not hidden)
     /// </summary>
-    /// <param name="select"></param>
-    /// <param name="hiddenAttributes"></param>
+    /// <param name="hiddenAttributes">The hidden atrtibutes to add</param>
     /// <returns></returns>
     public void AppendHiddenAttribute(List<AttributeSpecifier> hiddenAttributes)
     {

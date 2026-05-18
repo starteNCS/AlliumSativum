@@ -4,16 +4,13 @@ namespace AlliumSativum.Shared.Utils;
 
 public static class DictionaryHelper
 {
-    public static dynamic ToDynamic(this IDictionary<string, object> dictionary)
-    {
-        var expando = new ExpandoObject();
-        var expandoDict = (IDictionary<string, object>)expando;
-
-        foreach (var kvp in dictionary) expandoDict[kvp.Key] = kvp.Value;
-
-        return expando;
-    }
-
+    /// <summary>
+    /// Prefixes the keys of a dictionary with a specified string.
+    /// </summary>
+    /// <param name="source">The dictionary to prefix</param>
+    /// <param name="prefix">The prefix</param>
+    /// <typeparam name="TValue"></typeparam>
+    /// <returns>The prefixed dictionary</returns>
     public static Dictionary<string, TValue> PrefixKeys<TValue>(
         this Dictionary<string, TValue> source,
         string prefix)
