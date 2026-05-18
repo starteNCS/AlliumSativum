@@ -4,6 +4,14 @@ namespace AlliumSativum.QueryPerformance.Selectivity;
 
 public sealed class SelectivityEvaluationService
 {
+    /// <summary>
+    /// Recursively evaluates the execution tree and compares the predicted selectivity with the actual selectivity for each operator.
+    /// </summary>
+    /// <param name="root">The qexp tree root</param>
+    /// <param name="excludeOnes">Whether to includes ones in average</param>
+    /// <param name="level">The current depth in the tree</param>
+    /// <returns>The absolute selectivity values and their diff</returns>
+    /// <exception cref="ArgumentException">POP did not contain actual cardinality information</exception>
     public static List<BenchmarkSelectivityItem> EvaluateExecutedTree(PlanOperator root, bool excludeOnes, int level = 0)
     {
         List<BenchmarkSelectivityItem> result = [];

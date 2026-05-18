@@ -51,6 +51,7 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
+// Endpoint to compile a query and return the execution plan as HTML
 app.MapPost("/compile", async (QueryCompiler compiler, [FromBody] CompileInput query) =>
 {
     var executionPlan = await compiler.CompileAsync(query.Query);
@@ -59,6 +60,7 @@ app.MapPost("/compile", async (QueryCompiler compiler, [FromBody] CompileInput q
     return Results.Content(pretty, "text/html");
 });
 
+// Endpoint to trigger metrics scrape for all data sources
 app.MapGet("/metrics/all", async (MetricsApi metrics, CatalogDatabase catalog) =>
 {
     var sources = await catalog.QueryAsync<DataSourceEntity>("SELECT * FROM catalog.datasources");
@@ -66,12 +68,14 @@ app.MapGet("/metrics/all", async (MetricsApi metrics, CatalogDatabase catalog) =
     foreach (var source in sources) await metrics.TriggerMetricsScrapeAsync(source.Id);
 });
 
+// Endpoint to trigger metrics scrape for a specific data source
 app.MapGet("/metrics/{datasourceId:guid}",
     async (MetricsApi metrics, [FromRoute] Guid datasourceId) =>
     {
         await metrics.TriggerMetricsScrapeAsync(datasourceId);
     });
 
+// Endpoint to execute a query and return the results
 app.MapPost("execute", async (QueryCompiler compiler, QueryExecutor queryExecutor, [FromBody] CompileInput query) =>
 {
     var executionPlan = await compiler.CompileAsync(query.Query);
@@ -82,6 +86,7 @@ app.MapPost("execute", async (QueryCompiler compiler, QueryExecutor queryExecuto
     return result;
 });
 
+// Endpoint to execute a query and return the execution plan with execution time
 app.MapPost("execute-return-plan",
     async (QueryCompiler compiler, QueryExecutor queryExecutor, [FromBody] CompileInput query) =>
     {

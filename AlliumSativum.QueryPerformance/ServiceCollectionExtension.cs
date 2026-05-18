@@ -1,5 +1,5 @@
-using AlliumSativum.QueryExecutor.Performance.Histogram;
-using AlliumSativum.QueryServer.Utils;
+using AlliumSativum.QueryPerformance.Histogram;
+using AlliumSativum.QueryPerformance.Utils;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AlliumSativum.QueryPerformance;

@@ -1,16 +1,18 @@
 using AlliumSativum.Compiler;
-using AlliumSativum.QueryServer.Utils;
+using AlliumSativum.QueryPerformance.Utils;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
-using AlliumSativum.Shared.Exceptions;
-using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 using AlliumSativum.Shared.Utils;
 using Microsoft.Extensions.Logging;
 
-namespace AlliumSativum.QueryExecutor.Performance.Histogram;
+namespace AlliumSativum.QueryPerformance.Histogram;
 
+
+/// <summary>
+/// Performance Utility to calculate the distance between the original distribution of a query result and the distribution reconstructed by the cost model.
+/// </summary>
 public sealed class ReconstructionDistanceService
 {
     private readonly CatalogDatabase _catalog;
@@ -33,6 +35,12 @@ public sealed class ReconstructionDistanceService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Calculate the average nEMD across all attributes of a given datasource
+    /// </summary>
+    /// <param name="datasourceId">Target datasource</param>
+    /// <param name="ignoreAttributes">If set, ignores the provided attributes</param>
+    /// <returns>The average nEMD</returns>
     public async Task<ReconstructionSimilarityResult> ReconstructionSimilarityOfDatasourceAsync(Guid datasourceId,
         List<string> ignoreAttributes)
     {
@@ -63,6 +71,11 @@ public sealed class ReconstructionDistanceService
         return await ReconstructionSimilarityAsync(queries);
     }
     
+    /// <summary>
+    /// Calculate the average nEMD across all attributes of all datasources
+    /// </summary>
+    /// <param name="ignoreAttributes">If set, ignores the provided attributes</param>
+    /// <returns>The average nEMD</returns>
     public async Task<ReconstructionSimilarityResult> ReconstructionSimilarityOfAllDatasourcesAsync(List<string> ignoreAttributes)
     {
         var attributes = await _catalog.QueryAsync("""
@@ -89,6 +102,11 @@ public sealed class ReconstructionDistanceService
         return await ReconstructionSimilarityAsync(queries);
     }
 
+    /// <summary>
+    /// Calculates the overall Earth Movers Distance between the original and reconstructed distributions for a list of queries
+    /// </summary>
+    /// <param name="queries">All queries to test</param>
+    /// <returns>DTO containing the average nEMD and each item</returns>
     public async Task<ReconstructionSimilarityResult> ReconstructionSimilarityAsync(List<string> queries)
     {
         var results = new List<EarthMoversDistanceResult>();
@@ -136,6 +154,12 @@ public sealed class ReconstructionDistanceService
         };
     }
 
+    /// <summary>
+    /// Given two histograms, calculates the Earth Mover's Distance (EMD) between them, normalized by the range of the data
+    /// </summary>
+    /// <param name="original">The original histogram</param>
+    /// <param name="reconstructed">The reconstructed histogram</param>
+    /// <returns>nEMD Scalar</returns>
     private static double CalculateNormalizedEmd(Dictionary<double, int> original,
         Dictionary<double, double> reconstructed)
     {

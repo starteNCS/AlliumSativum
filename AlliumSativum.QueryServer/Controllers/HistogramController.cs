@@ -1,6 +1,6 @@
 using System.Text;
 using AlliumSativum.Compiler;
-using AlliumSativum.QueryServer.Utils;
+using AlliumSativum.QueryPerformance.Utils;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;

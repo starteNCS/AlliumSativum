@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using AlliumSativum.Compiler;
-using AlliumSativum.QueryExecutor.Performance.Histogram;
+using AlliumSativum.QueryPerformance.Histogram;
 using AlliumSativum.QueryPerformance.Selectivity;
 using AlliumSativum.Shared.Costs;
 using AlliumSativum.Shared.Models;
@@ -34,6 +34,11 @@ public sealed class BenchmarkController
         _reconstructionDistanceService = reconstructionDistanceService;
     }
 
+    /// <summary>
+    /// Calcualtes the proximity of the winning plan to all enumerated contestant plans for a given set of queries
+    /// </summary>
+    /// <param name="queries">All queries to test</param>
+    /// <returns>For each query, all run times for all QExP's and if it was the winning plan</returns>
     [HttpPost("winning-plan-accuracy")]
     public async Task<dynamic> GetWinningPlanAccuracy([FromBody] Dictionary<string, string> queries)
     {
@@ -92,21 +97,26 @@ public sealed class BenchmarkController
         }
 
         return results;
-        // return new
-        // {
-        //     ChoseWinningPlanCount = results.Count(x => x.ChoseWinningPlan),
-        //     AverageWinningPlanLocation = results.Average(x => x.WinningPlanLocation),
-        //     OfAveragePlanCount = results.Average(x => x.PlanCount),
-        //     Results = results
-        // };
     }
 
+    /// <summary>
+    /// Returns the Earth Mover's Distance between the original and reconstructed histograms for a given set of queries
+    /// as well as the individual distances for each query.
+    /// </summary>
+    /// <param name="queries">Queries to test</param>
+    /// <returns>The nEMD</returns>
     [HttpPost("reconstructed-histograms")]
     public Task<ReconstructionSimilarityResult> GetReconstructedHistograms([FromBody] List<string> queries)
     {
         return _reconstructionDistanceService.ReconstructionSimilarityAsync(queries);
     }
-
+    
+    /// <summary>
+    /// Returns the Earth Mover's Distance between the original and reconstructed histograms for all attributes of a given data source
+    /// </summary>
+    /// <param name="dataSourceId">Id of the data source</param>
+    /// <param name="ignore">Which attributes to ignore</param>
+    /// <returns>The nEMD</returns>
     [HttpGet("reconstructed-histograms/{dataSourceId:guid}")]
     public Task<ReconstructionSimilarityResult> GetReconstructedHistograms([FromRoute] Guid dataSourceId,
         [FromQuery] string? ignore)
@@ -114,12 +124,22 @@ public sealed class BenchmarkController
         return _reconstructionDistanceService.ReconstructionSimilarityOfDatasourceAsync(dataSourceId, ignore?.Split(',').ToList() ?? []);
     }
     
+    /// <summary>
+    /// Returns the Earth Mover's Distance between the original and reconstructed histograms for all attributes in the catalog
+    /// </summary>
+    /// <param name="ignore">Which attributes to ignore</param>
+    /// <returns>The nEMD</returns>
     [HttpGet("reconstructed-histograms/all")]
     public Task<ReconstructionSimilarityResult> GetReconstructedHistograms([FromQuery] string? ignore)
     {
         return _reconstructionDistanceService.ReconstructionSimilarityOfAllDatasourcesAsync(ignore?.Split(',').ToList() ?? []);
     }
     
+    /// <summary>
+    /// Gets all exact timings for all steps in the compiling and execution
+    /// </summary>
+    /// <param name="queries">Queries to test</param>
+    /// <returns>The timings</returns>
     [HttpPost("timings")]
     public async Task<object> GetCompileTiming([FromBody] List<string> queries)
     {
@@ -132,6 +152,12 @@ public sealed class BenchmarkController
         return timingResult.ToMilliSeconds();
     }
     
+    /// <summary>
+    /// For a given set of queries, executes the winning plan and evaluates the predicted selectivity vs. the actual selectivity for each operator in the execution tree.
+    /// </summary>
+    /// <param name="queries">Queries to test</param>
+    /// <param name="excludeOnes">Whether to include selectivities, that are set to "1"</param>
+    /// <returns>The selectivities per stage</returns>
     [HttpPost("selectivity-per-stage")]
     public async Task<object> GetSelectivityPerStage([FromBody] Dictionary<string, string> queries, [FromQuery] bool excludeOnes = false)
     {
