@@ -9,6 +9,11 @@ namespace AlliumSativum.QueryExecutor.PopExecutors.Join;
 
 public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoinPlanOperator>
 {
+    /// <summary>
+    /// Joins both child data sets by using a hash join, and applying the specified expression as a predicate to the merged rows
+    /// </summary>
+    /// <param name="pop">The POP to execute</param>
+    /// <returns>"pop", containing their results in the data field</returns>
     public Task<PlanOperator> ExecuteAsync(HashJoinPlanOperator pop)
     {
         var stopwatch = Stopwatch.StartNew();
@@ -87,6 +92,13 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
         return Task.FromResult<PlanOperator>(pop);
     }
 
+    /// <summary>
+    /// Merges two rows into one by concatenating their key-value pairs
+    /// </summary>
+    /// <remarks>In case of key collisions, the value from the right row will be used.</remarks>
+    /// <param name="left">The first row</param>
+    /// <param name="right">The second row</param>
+    /// <returns>The merge result</returns>
     private static Dictionary<string, object> Merge(Dictionary<string, object> left, Dictionary<string, object> right)
     {
         var merged = new Dictionary<string, object>(left);
@@ -95,6 +107,13 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
         return merged;
     }
 
+    
+    /// <summary>
+    /// Unwraps the C# object from a JSON element.
+    /// If the JSON element is a number, it will be converted to a double. Otherwise, the JSON element will be converted to a string.
+    /// </summary>
+    /// <param name="obj">The input json object</param>
+    /// <returns>The unwrapped value</returns>
     private static object GetJsonContent(object obj)
     {
         if (obj is not JsonElement json)

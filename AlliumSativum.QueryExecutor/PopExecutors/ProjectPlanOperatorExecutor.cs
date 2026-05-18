@@ -7,6 +7,12 @@ namespace AlliumSativum.QueryExecutor.PopExecutors;
 
 public sealed class ProjectPlanOperatorExecutor : IPlanOperatorExecutor<ProjectPlanOperator>
 {
+    
+    /// <summary>
+    /// Projects the specified attributes from the child operator's results
+    /// </summary>
+    /// <param name="pop">The POP to execute</param>
+    /// <returns>"pop", containing their results in the data field</returns>
     public Task<PlanOperator> ExecuteAsync(ProjectPlanOperator pop)
     {
         var stopwatch = Stopwatch.StartNew();

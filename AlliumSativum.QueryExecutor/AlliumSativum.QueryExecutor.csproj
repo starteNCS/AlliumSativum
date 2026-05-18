@@ -11,8 +11,4 @@
         <ProjectReference Include="..\AlliumSativum.Worker.Sdk\AlliumSativum.Worker.Sdk.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Performance\"/>
-    </ItemGroup>
-
 </Project>

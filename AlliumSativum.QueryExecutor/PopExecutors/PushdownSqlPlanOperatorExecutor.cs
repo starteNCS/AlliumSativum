@@ -20,6 +20,13 @@ public sealed class PushdownSqlPlanOperatorExecutor : IPlanOperatorExecutor<Push
         _logger = logger;
     }
 
+    
+    /// <summary>
+    /// Hands the pushdown SQL plan operator to the worker's execution API
+    /// </summary>
+    /// <param name="pop">The POP to execute</param>
+    /// <returns>"pop", containing their results in the data field</returns>
+    /// <exception cref="AsSqlExecuteException">Worker ran in some error</exception>
     public async Task<PlanOperator> ExecuteAsync(PushdownSqlPlanOperator pop)
     {
         var result = await _executorApi.ExecutePlanAsync(pop);

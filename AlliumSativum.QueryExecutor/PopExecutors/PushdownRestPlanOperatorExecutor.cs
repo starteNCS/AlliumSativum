@@ -19,7 +19,13 @@ public sealed class PushdownRestPlanOperatorExecutor : IPlanOperatorExecutor<Pus
         _executorApi = executorApi;
         _logger = logger;
     }
-
+    
+    /// <summary>
+    /// Hands the pushdown REST plan operator to the worker's execution API
+    /// </summary>
+    /// <param name="pop">The POP to execute</param>
+    /// <returns>"pop", containing their results in the data field</returns>
+    /// <exception cref="AsSqlExecuteException">Worker ran in some error</exception>
     public async Task<PlanOperator> ExecuteAsync(PushdownRestCallPlanOperator pop)
     {
         var result = await _executorApi.ExecutePlanAsync(pop);
