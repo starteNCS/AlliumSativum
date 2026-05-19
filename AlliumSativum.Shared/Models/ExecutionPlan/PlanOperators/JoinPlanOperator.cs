@@ -48,10 +48,10 @@ public class JoinPlanOperator : PlanOperator
         return HashCode.Combine(Left, Expression, Right);
     }
     
-    public override bool Equals(object? obj)
+    public override bool Equals(object? other)
     {
-        if (obj is not JoinPlanOperator other) return false;
+        if (other is not JoinPlanOperator join) return false;
 
-        return other.Left.Equals(Left) && other.Right.Equals(Right) && other.Expression.Equals(Expression);
+        return join.Left.Equals(Left) && join.Right.Equals(Right) && join.Expression.Equals(Expression);
     }
 }

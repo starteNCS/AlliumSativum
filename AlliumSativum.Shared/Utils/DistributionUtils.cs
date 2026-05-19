@@ -27,22 +27,12 @@ public static class DistributionUtils
         attribute.Mean = nonNullValues.Average();
         attribute.MeanBinHeight = binnedDistribution.Values.Average();
         attribute.Range = nonNullValues.Max() - nonNullValues.Min();
-        attribute.Variance = 1.0 / nonNullValues.Count *
+        var variance = 1.0 / nonNullValues.Count *
                              nonNullValues.Select(value => Math.Pow(value - attribute.Mean, 2)).Sum();
-        attribute.StandardDeviation = Math.Sqrt(attribute.Variance);
+        attribute.StandardDeviation = Math.Sqrt(variance);
 
         double n = nonNullValues.Count;
-        attribute.Skewness = Math.Abs(attribute.StandardDeviation) <= 0e-12
-            ? null
-            : n / ((n - 1) * (n - 2)) * nonNullValues
-                .Select(value => Math.Pow((value - attribute.Mean) / attribute.StandardDeviation, 3))
-                .Sum();
-        attribute.Kurtosis = Math.Abs(attribute.StandardDeviation) <= 0e-12
-            ? null
-            : n / ((n - 1) * (n - 2)) * nonNullValues
-                .Select(value => Math.Pow((value - attribute.Mean) / attribute.StandardDeviation, 4))
-                .Sum();
-        (attribute.DistributionType, var modes) = DistributionDetector.Detect(binnedDistribution, attribute);
+        var modes = DistributionDetector.FindModes(binnedDistribution, attribute);
 
         return (attribute, modes);
     }

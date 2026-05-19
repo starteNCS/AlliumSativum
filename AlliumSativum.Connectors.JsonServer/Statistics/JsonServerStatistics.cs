@@ -89,13 +89,9 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
                                                 Max = @Max,
                                                 Mean = @Mean,
                                                 MeanBinHeight = @MeanBinHeight,
-                                                Variance = @Variance,
                                                 StandardDeviation = @StandardDeviation,
                                                 Range = @Range,
-                                                Skewness = @Skewness,
-                                                Kurtosis = @Kurtosis,
-                                                DataType = @DataType,
-                                                DistributionType = @DistributionType
+                                                DataType = @DataType
                                                 WHERE Id = @Id
                                             """, relationAttributeWithDistribution);
 

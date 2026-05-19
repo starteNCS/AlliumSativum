@@ -32,7 +32,7 @@ public static class SelectBaseModelHelper
         SemanticTransformer.Transform(parsed);
         return parsed;
     }
-
+    
     extension(ObjectAssertions assertions)
     {
         public void BeSelectDto(SelectDto selectDto)

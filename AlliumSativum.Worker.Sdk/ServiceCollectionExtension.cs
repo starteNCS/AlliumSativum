@@ -5,7 +5,6 @@ namespace AlliumSativum.Worker.Sdk;
 
 public static class ServiceCollectionExtension
 {
-    // todo: somehow add multiple workers
     public static IServiceCollection AddAlliumSativumWorkerGrpcSdk(this IServiceCollection services, string workerUrl)
     {
         var channel = GrpcChannel.ForAddress(workerUrl, new GrpcChannelOptions

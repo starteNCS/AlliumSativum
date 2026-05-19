@@ -119,31 +119,6 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
 
         return dataSources.SingleOrDefault();
     }
-
-    public async Task<DataSourceEntity?> GetDataSourceAsync(string dataSource)
-    {
-        var dataSources = await QueryAsync<DataSourceEntity>(
-            "SELECT * FROM Catalog.DataSources WHERE Name = @DataSource",
-            new
-            {
-                DataSource = dataSource
-            });
-
-        return dataSources.SingleOrDefault();
-    }
-
-    public async Task<RelationEntity?> GetRelationAsync(Guid dataSource, string schemaName, string tableName)
-    {
-        var relations = await QueryAsync<RelationEntity>(
-            "SELECT * FROM Catalog.Relations WHERE Name = @TableName AND DataSourceId = @DataSourceId",
-            new
-            {
-                TableName = $"{schemaName}.{tableName}",
-                DataSourceId = dataSource
-            });
-        return relations.SingleOrDefault();
-    }
-
     public async Task<RelationEntity> GetRelationAsync(Guid dataSource, string tableName)
     {
         var relations = await QueryAsync<RelationEntity>(
@@ -180,20 +155,6 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
         return relations.Single();
     }
 
-    public async Task<RelationEntity> GetRelationAsync(Guid relationId)
-    {
-        var relations = await QueryAsync<RelationEntity>("SELECT * FROM Catalog.Relations WHERE Id = @RelationId",
-            new
-            {
-                RelationId = relationId
-            });
-        if (relations.Count > 1)
-            throw new ArgumentException(
-                $"Relation with id '{relationId}' does not exist or is not unique");
-
-        return relations.Single();
-    }
-
     public async Task<List<RelationEntity>> GetRelationsOfDataSourceAsync(Guid dataSource)
     {
         var dataSources = await QueryAsync<RelationEntity>(
@@ -221,31 +182,6 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
 
         return attributes;
     }
-
-    public async Task<AttributeEntity> GetAttributeAsync(AttributeSpecifier attributeSpecifier)
-    {
-        var dataSource = await GetDataSourceAsync(attributeSpecifier.DataSourceName);
-        if (dataSource is null)
-            throw new ArgumentException($"Datasource '{attributeSpecifier.DataSourceName}' not found");
-
-        var relation = await GetRelationAsync(dataSource.Id, attributeSpecifier.TableName);
-        if (relation is null)
-            throw new ArgumentException(
-                $"Table '{attributeSpecifier.TableName}' not found in datasource '{attributeSpecifier.DataSourceName}'");
-
-        var attribute = await QueryAsync<AttributeEntity>(
-            "SELECT * FROM Catalog.Attributes WHERE Name = @AttributeName AND RelationId = @RelationId",
-            new
-            {
-                attributeSpecifier.AttributeName,
-                RelationId = relation.Id
-            });
-        if (attribute.Count != 1)
-            throw new ArgumentException(
-                $"Attribute '{attributeSpecifier.AttributeName}' not found in table '{attributeSpecifier.TableName}' of datasource '{attributeSpecifier.DataSourceName}'");
-
-        return attribute.Single();
-    }
     
     public Task<List<AttributeEntity>> GetAttributesOfRelationAsync(Guid relationId)
     {
@@ -255,11 +191,5 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
             {
                 RelationId = relationId
             });
-    }
-
-    public Task<AttributeEntity> GetAttributeAsync(FullySpecifiedColumnExpressionNode node)
-    {
-        return GetAttributeAsync(new AttributeSpecifier(node.Attribute.DataSourceName, node.Attribute.TableName,
-            node.Attribute.AttributeName));
     }
 }

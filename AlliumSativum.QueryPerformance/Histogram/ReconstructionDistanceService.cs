@@ -129,7 +129,6 @@ public sealed class ReconstructionDistanceService
                 Max = attribute.Max ?? 0,
                 Mean = attribute.Mean,
                 MeanBinHeight = attribute.MeanBinHeight,
-                DistributionType = attribute.DistributionType,
                 Peaks = modes.Select(peak => new PlanOperatorDistributionData.Peak
                 {
                     Mean = peak.Mean,

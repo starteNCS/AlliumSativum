@@ -33,37 +33,7 @@ public static class BooleanExpressionParser
         var operatorStack = new Stack<string>();
         var operandStack = new Stack<ExpressionNode>();
 
-        foreach (var token in tokens)
-            if (IsOperator(token))
-            {
-                while (operatorStack.Count > 0 &&
-                       IsOperator(operatorStack.Peek()) &&
-                       OperatorPrecedence[operatorStack.Peek()] >= OperatorPrecedence[token])
-                    BuildNode(operatorStack, operandStack);
-                operatorStack.Push(token);
-            }
-            else
-            {
-                switch (token)
-                {
-                    case "(":
-                        operatorStack.Push(token);
-                        break;
-                    case ")":
-                    {
-                        while (operatorStack.Count > 0 && operatorStack.Peek() != "(")
-                            BuildNode(operatorStack, operandStack);
-
-                        if (operatorStack.Count == 0) throw new AsSqlParseException("", "Mismatched parentheses.");
-                        operatorStack.Pop(); // Pop the '('
-                        break;
-                    }
-                    default:
-                        // It's an operand (Column or Value)
-                        operandStack.Push(CreateOperandNode(token));
-                        break;
-                }
-            }
+        foreach (var token in tokens) HandleTopmost(token, operatorStack, operandStack);
 
         // Clear remaining operators
         while (operatorStack.Count > 0)
@@ -73,6 +43,47 @@ public static class BooleanExpressionParser
         }
 
         return operandStack.Count > 0 ? operandStack.Pop() : null;
+    }
+
+    /// <summary>
+    /// Handles the topmost token of the token stack using the shunting yard algorithm
+    /// </summary>
+    /// <param name="token">Topmost token</param>
+    /// <param name="operatorStack">The operator stack</param>
+    /// <param name="operandStack">The operand stack</param>
+    /// <exception cref="AsSqlParseException">Mismatched parantheses</exception>
+    private static void HandleTopmost(string token, Stack<string> operatorStack, Stack<ExpressionNode> operandStack)
+    {
+        if (IsOperator(token))
+        {
+            while (operatorStack.Count > 0 &&
+                   IsOperator(operatorStack.Peek()) &&
+                   OperatorPrecedence[operatorStack.Peek()] >= OperatorPrecedence[token])
+                BuildNode(operatorStack, operandStack);
+            operatorStack.Push(token);
+        }
+        else
+        {
+            switch (token)
+            {
+                case "(":
+                    operatorStack.Push(token);
+                    break;
+                case ")":
+                {
+                    while (operatorStack.Count > 0 && operatorStack.Peek() != "(")
+                        BuildNode(operatorStack, operandStack);
+
+                    if (operatorStack.Count == 0) throw new AsSqlParseException("", "Mismatched parentheses.");
+                    operatorStack.Pop(); // Pop the '('
+                    break;
+                }
+                default:
+                    // It's an operand (Column or Value)
+                    operandStack.Push(CreateOperandNode(token));
+                    break;
+            }
+        }
     }
 
     /// <summary>

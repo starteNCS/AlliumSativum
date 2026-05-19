@@ -4,7 +4,6 @@ namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 
 public sealed class PlanOperatorDistributionData
 {
-    public DistributionType DistributionType { get; set; }
     public double Min { get; set; }
     public double Max { get; set; }
     public double Mean { get; set; }

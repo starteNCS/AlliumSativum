@@ -29,14 +29,6 @@ public sealed partial class DefaultCostModel
                 return await GetDistributionOfLessGreaterValueExpression(node, distributionData, children);
             case
             {
-                Left: FullySpecifiedColumnExpressionNode, Operation: ">" or "<" or ">=" or "<=",
-                Right: FullySpecifiedColumnExpressionNode
-            }:
-            {
-                throw new NotImplementedException();
-            }
-            case
-            {
                 Left: FullySpecifiedColumnExpressionNode, Operation: "=", Right: FullySpecifiedColumnExpressionNode
             }:
                 return await GetDistributionOfEqualsAttributeExpression(node, distributionData, children);
@@ -100,7 +92,6 @@ public sealed partial class DefaultCostModel
 
                 newDistribution[distri.Key] = new PlanOperatorDistributionData
                 {
-                    DistributionType = PeakCountToDistributionType(peaks),
                     Min = min,
                     Max = max,
                     Peaks = peaks,
@@ -164,7 +155,6 @@ public sealed partial class DefaultCostModel
 
                 newDistribution[distri.Key] = new PlanOperatorDistributionData
                 {
-                    DistributionType = PeakCountToDistributionType(peaks),
                     Min = min,
                     Max = max,
                     Peaks = peaks,
@@ -217,7 +207,6 @@ public sealed partial class DefaultCostModel
             Max = joinMax,
             Peaks = peaks,
             MeanBinHeight = GetMeanBinHeight([leftData, rightData]),
-            DistributionType = PeakCountToDistributionType(peaks)
         };
 
         var distribution = ReconstructDistribution(distributionData[leftAttribute]);
@@ -263,7 +252,6 @@ public sealed partial class DefaultCostModel
 
         distributionData[attribute] = new PlanOperatorDistributionData
         {
-            DistributionType = DistributionType.Uniform,
             Min = min,
             Max = max,
             MeanBinHeight = GetMeanBinHeight([distributionData[attribute]]),
@@ -307,7 +295,7 @@ public sealed partial class DefaultCostModel
             return new PlanOperatorDistributionCost
             {
                 Distribution = distributionData,
-                Selectivity = 1 / 3.0,
+                Selectivity = 1 / 3.0, // selinger optimizer
                 Cardinality = relation.Cardinality
             };
 
@@ -325,7 +313,6 @@ public sealed partial class DefaultCostModel
             Max = max,
             Peaks = peaksLeft,
             MeanBinHeight = GetMeanBinHeight([distributionData[attribute]]),
-            DistributionType = PeakCountToDistributionType(peaksLeft)
         };
 
         var nowIntegral = ReconstructDistribution(distributionData[attribute]).Values.Sum();
@@ -359,22 +346,6 @@ public sealed partial class DefaultCostModel
         }
 
         return bins == 0 ? 0 : heights / bins;
-    }
-
-    /// <summary>
-    /// Translates the new peak count to the distribution type
-    /// </summary>
-    /// <param name="peaksLeft">All peaks that are left</param>
-    /// <returns>DistributionType</returns>
-    private static DistributionType PeakCountToDistributionType(List<PlanOperatorDistributionData.Peak> peaksLeft)
-    {
-        return peaksLeft.Count switch
-        {
-            0 => DistributionType.Uniform,
-            1 => DistributionType.UniModal,
-            > 1 => DistributionType.MultiModal,
-            _ => DistributionType.Unknown
-        };
     }
 
     /// <summary>

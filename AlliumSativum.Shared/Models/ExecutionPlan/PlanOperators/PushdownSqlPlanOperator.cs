@@ -41,11 +41,11 @@ public class PushdownSqlPlanOperator : PushdownPlanOperator
         return HashCode.Combine(DataSource, SqlStatement);
     }
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object? other)
     {
-        if (obj is not PushdownSqlPlanOperator other) return false;
+        if (other is not PushdownSqlPlanOperator pushdown) return false;
 
-        return other.DataSource.Equals(DataSource) && other.SqlStatement.Equals(SqlStatement);
+        return pushdown.DataSource.Equals(DataSource) && pushdown.SqlStatement.Equals(SqlStatement);
     }
     
     public override bool IsEquivalentTo(PlanOperator? other)

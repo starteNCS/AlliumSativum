@@ -13,13 +13,8 @@ public sealed class AttributeEntity
     public double? Max { get; set; }
     public double Mean { get; set; }
     public double MeanBinHeight { get; set; }
-    public double Variance { get; set; }
     public double StandardDeviation { get; set; }
     public double Range { get; set; }
-    public double? Skewness { get; set; }
-    public double KellySkewness { get; set; }
-    public double? Kurtosis { get; set; }
-    public DistributionType DistributionType { get; set; }
     public string DataType { get; set; } = string.Empty;
 
     public bool IsNumeric =>

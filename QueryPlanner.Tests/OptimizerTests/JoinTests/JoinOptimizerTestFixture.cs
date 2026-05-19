@@ -53,7 +53,6 @@ public sealed class JoinOptimizerTestFixture
                     {
                         attributeDistributionData.Add(attribute, new PlanOperatorDistributionData
                         {
-                            DistributionType = DistributionType.Constant,
                             Max = random.Next(50, 100),
                             Min = random.Next(0, 10),
                             Mean = random.Next(10, 20),
@@ -86,7 +85,6 @@ public sealed class JoinOptimizerTestFixture
             {
                 attributeDistributionData.Add(attribute, new PlanOperatorDistributionData
                 {
-                    DistributionType = DistributionType.Constant,
                     Max = random.Next(50, 100),
                     Min = random.Next(0, 10),
                     Mean = random.Next(10, 20),

@@ -110,4 +110,9 @@ public sealed class SelectDto
                ((Where == null && model.Where == null) || (Where != null && Where.Equals(model.Where))) &&
                Join.SequenceEqual(model.Join);
     }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(VariableMappings, Select, From, Where, Join);
+    }
 }

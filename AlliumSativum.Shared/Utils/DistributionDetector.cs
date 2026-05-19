@@ -14,107 +14,6 @@ public enum DistributionType
 
 public static class DistributionDetector
 {
-    public static (DistributionType distributionType, List<AttributePeakEntity> peaks) Detect(
-        Dictionary<double, int> orderedBinnedValues, AttributeEntity attribute)
-    {
-        var normalized = Normalize(orderedBinnedValues);
-        var modes = FindModes(orderedBinnedValues, attribute);
-
-        if (IsConstant(normalized, modes)) return (DistributionType.Constant, modes);
-
-        if (IsPowerLaw(normalized, modes)) return (DistributionType.PowerLaw, modes);
-
-        if (IsUniModal(modes)) return (DistributionType.UniModal, modes);
-
-        if (IsMultiModal(modes, attribute)) return (DistributionType.MultiModal, modes);
-
-        return (DistributionType.Uniform, []);
-    }
-
-    /// <summary>
-    ///     Normalize the values to sum to 1
-    ///     Each bin is represented by the fraction of items it holds
-    /// </summary>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    private static Dictionary<double, double> Normalize(Dictionary<double, int> values)
-    {
-        double total = values.Sum(x => x.Value);
-        return values
-            .Select(x => new
-            {
-                x.Key,
-                Value = x.Value / total
-            }).ToDictionary(x => x.Key, x => x.Value);
-    }
-
-    /// <summary>
-    ///     Quasi constant, if one bin has more than 90% of the items
-    /// </summary>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    private static bool IsConstant(Dictionary<double, double> values, List<AttributePeakEntity> modes)
-    {
-        return modes.Count == 1 && values.Any(x => x.Value > 0.9);
-    }
-
-    /// <summary>
-    ///     First bin has most items, all other bins have less (within a certain degree or error)
-    /// </summary>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    private static bool IsPowerLaw(Dictionary<double, double> values, List<AttributePeakEntity> modes,
-        bool reverse = false)
-    {
-        if (modes.Count != 1) return false;
-
-        var items = values.OrderBy(kv => kv.Key).Select(kv => kv.Value).ToList();
-        if (reverse)
-        {
-            items = [..items.ToList()];
-            items.Reverse();
-        }
-
-        if (values.First().Value < 0.4) return !reverse && IsPowerLaw(values, modes, true);
-
-        var wasPreviousHigher = false;
-        var previous = items[0];
-        foreach (var value in items.Skip(1))
-        {
-            // the next item may be a little higher than the previous one, but if it is way more than 10% higher, then it is not a power law distribution
-            if (value > previous * 1.1) return !reverse && IsPowerLaw(values, modes, true);
-
-            if (value > previous && value < previous * 1.1)
-            {
-                if (wasPreviousHigher)
-                    // if we have already seen a value that is higher than the previous one, and we see another one, then it is not a power law distribution
-                    return !reverse && IsPowerLaw(values, modes, true);
-                wasPreviousHigher = true;
-            }
-            else
-            {
-                wasPreviousHigher = false;
-            }
-
-            previous = value;
-        }
-
-        // if we've seen all items and all checks passed - it is powerlaw
-        return true;
-    }
-
-    private static bool IsUniModal(List<AttributePeakEntity> peaks)
-    {
-        return peaks.Count == 1;
-    }
-
-    private static bool IsMultiModal(List<AttributePeakEntity> peaks, AttributeEntity attribute)
-    {
-        var coefficientOfVariance = attribute.StandardDeviation / attribute.Mean;
-        var peakRatio = (double)peaks.Count / attribute.DistinctCardinality;
-        return peaks.Count > 1 && coefficientOfVariance > 0.2 && peakRatio < 0.15;
-    }
-
     /// <summary>
     /// Calculate the modes of the distribution using Kernel Density Estimation (KDE) and find the peaks in the density curve.
     ///
@@ -123,7 +22,7 @@ public static class DistributionDetector
     /// <param name="data">The histogram to find the modes of</param>
     /// <param name="attribute">Attribute base information</param>
     /// <returns>List of modes</returns>
-    private static List<AttributePeakEntity> FindModes(Dictionary<double, int> data, AttributeEntity attribute)
+    public static List<AttributePeakEntity> FindModes(Dictionary<double, int> data, AttributeEntity attribute)
     {
         if (data.Count == 0) return [];
 

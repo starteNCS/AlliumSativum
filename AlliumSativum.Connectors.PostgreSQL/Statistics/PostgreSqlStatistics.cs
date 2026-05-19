@@ -79,8 +79,8 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                             """, relationMetrics);
 
         await _catalogDatabase.ExecuteAsync("""
-                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate, Min, Max, DataType, Mean, MeanBinHeight, Range, Variance, StandardDeviation, Skewness, Kurtosis, DistributionType)
-                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate, @Min, @Max, @DataType, @Mean, @MeanBinHeight, @Range, @Variance, @StandardDeviation, @Skewness, @Kurtosis, @DistributionType)
+                                            INSERT INTO Catalog.Attributes (Id, RelationId, Name, DistinctCardinality, MetricsDate, Min, Max, DataType, Mean, MeanBinHeight, Range, StandardDeviation)
+                                            VALUES (@Id, @RelationId, @Name, @DistinctCardinality, @MetricsDate, @Min, @Max, @DataType, @Mean, @MeanBinHeight, @Range, @StandardDeviation)
                                             ON CONFLICT (Id)
                                             DO UPDATE SET 
                                                           DistinctCardinality = EXCLUDED.DistinctCardinality,
@@ -91,11 +91,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                                           Mean = EXCLUDED.Mean,
                                                           MeanBinHeight = EXCLUDED.MeanBinHeight,
                                                           Range = EXCLUDED.Range,
-                                                          Variance = EXCLUDED.Variance,
-                                                          StandardDeviation = EXCLUDED.StandardDeviation,
-                                                          Skewness = EXCLUDED.Skewness,
-                                                          Kurtosis = EXCLUDED.Kurtosis,
-                                                          DistributionType = EXCLUDED.DistributionType
+                                                          StandardDeviation = EXCLUDED.StandardDeviation
                                             """, attributeMetrics);
 
         await CreateQueryStatsMethodAsync(dataSource);

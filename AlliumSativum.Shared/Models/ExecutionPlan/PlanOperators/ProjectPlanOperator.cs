@@ -49,11 +49,11 @@ public class ProjectPlanOperator : PlanOperator
         return HashCode.Combine(Attributes);
     }
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object? other)
     {
-        if (obj is not ProjectPlanOperator other) return false;
+        if (other is not ProjectPlanOperator project) return false;
 
-        return other.Attributes.All(x => Attributes.Contains(x));
+        return project.Attributes.All(x => Attributes.Contains(x));
     }
     
     public override bool IsEquivalentTo(PlanOperator? other)

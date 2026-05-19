@@ -45,12 +45,12 @@ public class PushdownRestCallPlanOperator : PushdownPlanOperator
         return HashCode.Combine(DataSource, HttpMethod, Url, Body);
     }
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object? other)
     {
-        if (obj is not PushdownRestCallPlanOperator other) return false;
+        if (other is not PushdownRestCallPlanOperator pushdown) return false;
 
-        return other.DataSource.Equals(DataSource) && other.HttpMethod.Equals(HttpMethod) && other.Url.Equals(Url) &&
-               (other.Body?.Equals(Body) ?? true);
+        return pushdown.DataSource.Equals(DataSource) && pushdown.HttpMethod.Equals(HttpMethod) && pushdown.Url.Equals(Url) &&
+               (pushdown.Body?.Equals(Body) ?? true);
     }
     
     public override bool IsEquivalentTo(PlanOperator? other)

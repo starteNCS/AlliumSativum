@@ -163,7 +163,6 @@ public static class ModelExtensions
         {
             var distribution = new GPlanOperatorDistributionData
             {
-                DistributionType = (int)data.Value.DistributionType,
                 Min = data.Value.Min,
                 Max = data.Value.Max,
                 Mean = data.Value.Mean,
@@ -347,7 +346,6 @@ public static class ModelExtensions
             AttributeFromString(x.Key),
             new PlanOperatorDistributionData
             {
-                DistributionType = (DistributionType)x.Value.DistributionType,
                 Min = x.Value.Min,
                 Max = x.Value.Max,
                 Mean = x.Value.Mean,

@@ -8,7 +8,7 @@ public sealed partial class DefaultCostModel
     /// <inheritdoc/>
     public Dictionary<double, double> ReconstructDistribution(PlanOperatorDistributionData distributionData)
     {
-        if (distributionData.DistributionType == DistributionType.Uniform)
+        if (distributionData.Peaks.Count == 0)
             return ReconstructUniformDistribution(distributionData);
 
         return ReconstructGaussDistribution(distributionData);
@@ -24,9 +24,9 @@ public sealed partial class DefaultCostModel
     private static Dictionary<double, double> ReconstructUniformDistribution(
         PlanOperatorDistributionData distributionData)
     {
-        if (distributionData.DistributionType != DistributionType.Uniform)
+        if (distributionData.Peaks.Count != 0)
             throw new ArgumentException(
-                $"{distributionData.DistributionType.ToString()} cannot be reconstructed using constant distribution");
+                $"Peak count = {distributionData.Peaks.Count} cannot be reconstructed using constant distribution");
 
         var dictionary = new Dictionary<double, double>();
         if (Math.Abs(distributionData.Min - distributionData.Max) < 0e-3)
@@ -50,34 +50,47 @@ public sealed partial class DefaultCostModel
     private static Dictionary<double, double> ReconstructGaussDistribution(
         PlanOperatorDistributionData distributionData)
     {
-        if (distributionData.DistributionType == DistributionType.Uniform)
-            throw new ArgumentException("Constant cannot be reconstructed using Gauss distribution");
+        if (distributionData.Peaks.Count == 0)
+            throw new ArgumentException("Uniform cannot be reconstructed using Gauss distribution");
 
-        var dictionary = new Dictionary<double, double>();
+        var histogram = new Dictionary<double, double>();
 
-        for (var i = distributionData.Min; i <= distributionData.Max; i++) dictionary[i] = 0;
+        for (var i = distributionData.Min; i <= distributionData.Max; i++) histogram[i] = 0;
 
         var isSingleBin = Math.Abs(distributionData.Min - distributionData.Max) < 0e-3;
         foreach (var peak in distributionData.Peaks)
         {
-            if (isSingleBin)
-            {
-                var value = NormalizedNormalDistribution(distributionData.Min, peak) * peak.Height;
-                if (double.IsNaN(value) || double.IsInfinity(value)) continue;
-
-                if (dictionary[distributionData.Min] < value) dictionary[distributionData.Min] = value;
-            }
-
-            for (var i = distributionData.Min; i <= distributionData.Max; i++)
-            {
-                var value = NormalizedNormalDistribution(i, peak) * peak.Height;
-                if (double.IsNaN(value) || double.IsInfinity(value)) continue;
-
-                if (dictionary[i] < value) dictionary[i] = value;
-            }
+            HandlePeakForReconstruction(distributionData, isSingleBin, peak, histogram);
         }
 
-        return dictionary;
+        return histogram;
+    }
+
+    /// <summary>
+    /// Calculates the contribution of a single peak to the histogram, and updates the histogram values if the contribution is higher than the current value
+    /// </summary>
+    /// <param name="distributionData">The distributions data</param>
+    /// <param name="isSingleBin">If the histogram consists of only one bin</param>
+    /// <param name="peak">The current peak to calcluate for</param>
+    /// <param name="histogram">The histogram</param>
+    private static void HandlePeakForReconstruction(PlanOperatorDistributionData distributionData, bool isSingleBin,
+        PlanOperatorDistributionData.Peak peak, Dictionary<double, double> histogram)
+    {
+        if (isSingleBin)
+        {
+            var value = NormalizedNormalDistribution(distributionData.Min, peak) * peak.Height;
+            if (double.IsNaN(value) || double.IsInfinity(value)) return;
+
+            if (histogram[distributionData.Min] < value) histogram[distributionData.Min] = value;
+        }
+
+        for (var i = distributionData.Min; i <= distributionData.Max; i++)
+        {
+            var value = NormalizedNormalDistribution(i, peak) * peak.Height;
+            if (double.IsNaN(value) || double.IsInfinity(value)) continue;
+
+            if (histogram[i] < value) histogram[i] = value;
+        }
     }
 
     /// <summary>

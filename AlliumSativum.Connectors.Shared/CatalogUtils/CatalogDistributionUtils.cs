@@ -65,7 +65,6 @@ public sealed class CatalogDistributionUtils
             var attributePeaks = peaks.Where(p => p.AttributeId == attributeEntity.Id).ToList();
             distributions.Add(attribute, new PlanOperatorDistributionData
             {
-                DistributionType = attributeEntity.DistributionType,
                 Min = attributeEntity.Min ?? double.NaN,
                 Max = attributeEntity.Max ?? double.NaN,
                 Mean = attributeEntity.MeanBinHeight,

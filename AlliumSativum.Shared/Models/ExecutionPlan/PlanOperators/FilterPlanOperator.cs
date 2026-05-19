@@ -38,11 +38,11 @@ public class FilterPlanOperator : PlanOperator
         return HashCode.Combine(Expression);
     }
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object? other)
     {
-        if (obj is not FilterPlanOperator other) return false;
+        if (other is not FilterPlanOperator filter) return false;
 
-        return other.Expression.Equals(Expression);
+        return filter.Expression.Equals(Expression);
     }
     
     public override bool IsEquivalentTo(PlanOperator? other)
