@@ -24,6 +24,7 @@ public sealed class JsonServerPlanner : IPlanner
         _distributionUtils = distributionUtils;
     }
 
+    /// <inheritdoc/>
     public async Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanAsync(Guid dataSourceId,
         SelectDto selectModel)
     {

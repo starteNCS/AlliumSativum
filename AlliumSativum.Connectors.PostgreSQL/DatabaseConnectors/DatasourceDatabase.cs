@@ -23,6 +23,15 @@ public sealed class DatasourceDatabase
         _logger = logger;
     }
 
+    /// <summary>
+    /// Loads the data source connection details and queries that data source
+    /// </summary>
+    /// <param name="dataSource">Id of the target data source</param>
+    /// <param name="query">Query to execute</param>
+    /// <param name="parameters">optional query parameters</param>
+    /// <typeparam name="T">Return type</typeparam>
+    /// <returns>All rows matching that query</returns>
+    /// <exception cref="ArgumentException">Execution failed</exception>
     public async Task<List<T>> QueryAsync<T>(Guid dataSource, string query, object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
@@ -47,6 +56,15 @@ public sealed class DatasourceDatabase
         }
     }
 
+    
+    /// <summary>
+    /// Loads the data source connection details and queries that data source as anonymous objects
+    /// </summary>
+    /// <param name="dataSource">Id of the target data source</param>
+    /// <param name="query">Query to execute</param>
+    /// <param name="parameters">optional query parameters</param>
+    /// <returns>All rows matching that query</returns>
+    /// <exception cref="ArgumentException">Execution failed</exception>
     public async Task<List<Dictionary<string, object>>> QueryAsync(Guid dataSource, string query,
         object? parameters = null)
     {
@@ -75,6 +93,14 @@ public sealed class DatasourceDatabase
         }
     }
 
+    /// <summary>
+    /// Loads the data source connection details, queries that data and measures the time it took 
+    /// </summary>
+    /// <param name="dataSource">Id of the target data source</param>
+    /// <param name="query">Query to execute</param>
+    /// <param name="parameters">optional query parameters</param>
+    /// <returns>Milliseconds how long it took</returns>
+    /// <exception cref="ArgumentException">Execution failed</exception>
     public async Task<long> TimeQueryAsync(Guid dataSource, string query, object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
@@ -100,6 +126,14 @@ public sealed class DatasourceDatabase
         }
     }
 
+    /// <summary>
+    /// Executes a command (e.g. INSERT, UPDATE, DELETE) against the data source and measures the time it took
+    /// </summary>
+    /// <param name="dataSource">Id of the target data source</param>
+    /// <param name="query">Statement to execute</param>
+    /// <param name="parameters">optional query parameters</param>
+    /// <returns>Number of affected rows</returns>
+    /// <exception cref="ArgumentException">Execution failed</exception>
     public async Task<int> ExecuteAsync(Guid dataSource, string query, object? parameters = null)
     {
         var connection = await GetConnectionStringForDataSource(dataSource);
@@ -124,6 +158,11 @@ public sealed class DatasourceDatabase
         }
     }
 
+    /// <summary>
+    /// Loads the connection string for a given data source from the catalog
+    /// </summary>
+    /// <param name="dataSource">Data source id</param>
+    /// <returns>Not yet opened connection</returns>
     private async Task<NpgsqlConnection?> GetConnectionStringForDataSource(Guid dataSource)
     {
         await _semaphoreSlim.WaitAsync();

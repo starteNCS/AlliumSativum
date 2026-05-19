@@ -16,6 +16,12 @@ public sealed class ExecutorStrategy
         _jsonServerExecutor = jsonServerExecutor;
     }
 
+    /// <summary>
+    /// Based on the connector type, it returns the appropriate worker executor
+    /// </summary>
+    /// <param name="connectorType">The connector type needed for the data source</param>
+    /// <returns>The correct executor</returns>
+    /// <exception cref="ArgumentException">Invlaid connector type</exception>
     public IWorkerExecutor GetPlannerOfConnector(ConnectorType connectorType)
     {
         return connectorType switch

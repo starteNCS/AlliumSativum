@@ -18,6 +18,12 @@ public sealed class StatisticsStrategy
         _jsonServerStatistics = jsonServerStatistics;
     }
 
+    /// <summary>
+    /// Based on the connector type, it returns the appropriate statistics scraper
+    /// </summary>
+    /// <param name="connectorType">The connector type needed for the data source</param>
+    /// <returns>The correct statistics scraper</returns>
+    /// <exception cref="ArgumentException">Invlaid connector type</exception>
     public IDataSourceStatistics GetStatisticsOfConnector(ConnectorType connectorType)
     {
         return connectorType switch

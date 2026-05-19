@@ -12,9 +12,12 @@ public interface IPlanner
     ///     When multiple plans are returned, the unplanned.Select MUST contain all attributes needed for the join and filters
     ///     as a hidden attribute (IsHidden = true)
     /// </summary>
-    /// <param name="dataSourceId"></param>
-    /// <param name="selectModel"></param>
-    /// <returns></returns>
+    /// <param name="dataSourceId">Target data source</param>
+    /// <param name="selectModel">The dto to plan</param>
+    /// <returns>
+    ///     proposal: List of pops for selectModel
+    ///     unplanned: Everything, that the planner could not plan
+    /// </returns>
     Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanAsync(Guid dataSourceId,
         SelectDto selectModel);
 }

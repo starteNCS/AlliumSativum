@@ -28,6 +28,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         _logger = logger;
     }
 
+    /// <inheritdoc/>
     public async Task ScrapeStatisticsAsync(Guid dataSource)
     {
         var tables = await _dataSource.QueryAsync<PostgresTablesModel>(dataSource,

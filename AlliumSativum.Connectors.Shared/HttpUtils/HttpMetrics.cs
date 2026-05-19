@@ -25,6 +25,13 @@ public sealed class HttpMetrics<T> where T : new()
 
 public static class HttpMetricsScraper
 {
+    /// <summary>
+    /// Utility method to measure detailed HTTP request metrics including
+    /// DNS resolution, TCP connection, TLS handshake, and request time
+    /// </summary>
+    /// <param name="url">Url to measure</param>
+    /// <typeparam name="T">Response type</typeparam>
+    /// <returns>Response and metrics</returns>
     public static async Task<HttpMetrics<T>> MeasureRequestAsync<T>(string url) where T : new()
     {
         var metrics = new HttpMetrics<T>();

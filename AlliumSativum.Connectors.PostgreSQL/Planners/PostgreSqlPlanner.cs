@@ -25,6 +25,7 @@ public sealed class PostgreSqlPlanner : IPlanner
         _datasource = datasource;
     }
 
+    /// <inheritdoc/>
     public async Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanAsync(Guid dataSourceId,
         SelectDto selectModel)
     {

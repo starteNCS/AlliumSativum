@@ -5,6 +5,9 @@ using Grpc.Core;
 
 namespace AlliumSativum.Worker.Services;
 
+/// <summary>
+/// gRPC endpoint for metric scraping a data source
+/// </summary>
 public sealed class MetricsService : Metrics.MetricsBase
 {
     private readonly CatalogDatabase _catalog;

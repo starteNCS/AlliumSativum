@@ -6,6 +6,9 @@ using Grpc.Core;
 
 namespace AlliumSativum.Worker.Services;
 
+/// <summary>
+/// gRPC endpoint for planning
+/// </summary>
 public sealed class PlannerService : Planner.PlannerBase
 {
     private readonly CatalogDatabase _catalogDatabase;

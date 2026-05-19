@@ -18,6 +18,7 @@ public sealed class PostgreSqlExecutor : IWorkerExecutor
         _dataSource = dataSource;
     }
 
+    /// <inheritdoc/>
     public async Task<ExecutorWrapper> ExecuteAsync(PlanOperator @operator)
     {
         if (@operator is not PushdownSqlPlanOperator pushdown)

@@ -14,6 +14,11 @@ public sealed class CatalogDistributionUtils
         _catalog = catalog;
     }
 
+    /// <summary>
+    /// Get distribution data for a list of attributes
+    /// </summary>
+    /// <param name="attributes">Attributes to load distribution data of</param>
+    /// <returns>Map containing distribution data and attribute as key</returns>
     public async Task<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>> GetAttributeDistributionsAsync(
         List<AttributeSpecifier> attributes)
     {

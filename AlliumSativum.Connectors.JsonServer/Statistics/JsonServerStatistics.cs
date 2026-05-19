@@ -20,6 +20,7 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
         _catalog = catalog;
     }
 
+    /// <inheritdoc/>
     public async Task ScrapeStatisticsAsync(Guid dataSource)
     {
         var dataSourceEntity = await _catalog.GetDataSourceAsync(dataSource);

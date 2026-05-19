@@ -18,6 +18,12 @@ public sealed class PlannerStrategy
         _jsonServerPlanner = jsonServerPlanner;
     }
 
+    /// <summary>
+    /// Based on the connector type, it returns the appropriate planner
+    /// </summary>
+    /// <param name="connectorType">The connector type needed for the data source</param>
+    /// <returns>The correct planner</returns>
+    /// <exception cref="ArgumentException">Invlaid connector type</exception>
     public IPlanner GetPlannerOfConnector(ConnectorType connectorType)
     {
         return connectorType switch
