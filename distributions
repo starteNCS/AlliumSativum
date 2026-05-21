@@ -1,7 +1,0 @@
-experiment_run -> algorithm: skewed
-
-benchmark -> dataset_id: bi modal
-benchmark -> task_type: powerlaw
-
-user_study -> algorithm_id: uniform
-user_study -> instrument_id: uniform
