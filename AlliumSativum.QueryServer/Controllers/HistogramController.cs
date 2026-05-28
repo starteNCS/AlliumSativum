@@ -32,7 +32,7 @@ public class HistogramController : Controller
     }
 
     [HttpPost("reconstructed")]
-    public async Task<IResult> GetReconstructedHistogram([FromBody] CompileInput query)
+    public async Task<IResult> GetReconstructedHistogram([FromBody] CompileInput query, [FromQuery] bool download = false)
     {
         var plt = new Plot();
         IColormap colormap = new ScottPlot.Colormaps.Viridis();
@@ -41,14 +41,15 @@ public class HistogramController : Controller
 
         var parsed = await _dataUtils.LoadDataAsync(plan);
         var map = parsed
+            .Where(x => !double.IsNaN(x))
             .GroupBy(x => x)
             .OrderBy(x => x.Key)
             .ToDictionary(g => g.Key, g => g.Count());
         var barWidth = 0.4;
         var offset = barWidth / 2;
 
-        var originalPlotPositions = map.Keys.Select(k => k - offset).ToArray();
-        var originalPlotHeights = map.Values.Select(x => (double)x).ToArray();
+        var originalPlotPositions = map.Keys.Select(k => k - offset).Take(100).ToArray();
+        var originalPlotHeights = map.Values.Select(x => (double)x).Take(100).ToArray();
         var originalPlot = plt.Add.Bars(originalPlotPositions, originalPlotHeights);
         originalPlot.Color = colormap.GetColor(0);
         originalPlot.LegendText = "Original";
@@ -63,8 +64,8 @@ public class HistogramController : Controller
         var distributionData = plan.RootOperator.DistributionData.Single().Value;
         var reconstructed = _costModel.ReconstructDistribution(distributionData);
 
-        var reconstructedPlotPositions = reconstructed.Keys.Select(k => k + offset).ToArray();
-        var reconstructedPlotHeights = reconstructed.Values.ToArray();
+        var reconstructedPlotPositions = reconstructed.Keys.Select(k => k + offset).Take(900).ToArray();
+        var reconstructedPlotHeights = reconstructed.Values.Take(900).ToArray();
         var reconstructedPlot = plt.Add.Bars(reconstructedPlotPositions, reconstructedPlotHeights);
         reconstructedPlot.Color = colormap.GetColor(1);
         reconstructedPlot.LegendText = "Reconstructed";
@@ -75,13 +76,21 @@ public class HistogramController : Controller
             bar.LineStyle = LineStyle.None;
             bar.LineWidth = 0;
         }
-
+        
         plt.Axes.Margins(bottom: 0);
         plt.Title("Original vs Reconstructed Distribution");
+        plt.Axes.AutoScale();
         var legend = plt.ShowLegend();
         legend.Alignment = Alignment.UpperLeft;
         legend.FontName = "Arial";
         legend.FontSize = 14;
+
+        if (download)
+        {
+            var imageBytes = plt.GetImageBytes(1200, 600, ScottPlot.ImageFormat.Png);
+            return Results.File(imageBytes, "image/png", "reconstructed-histogram.png");
+        }
+        
 
         var svg = plt.GetSvgXml(1200, 800);
         var stringBuilder = new StringBuilder();

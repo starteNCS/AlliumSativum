@@ -12,14 +12,14 @@ public sealed class SelectOptimizerTestFixture
     public readonly ICostModel CostModel = Substitute.For<ICostModel>();
 
     public readonly SelectOptimizer SelectOptimizer;
-    
+
     public SelectOptimizerTestFixture()
     {
         SelectOptimizer = new SelectOptimizer(CostModel);
     }
 
     public PushdownSqlPlanOperator ExamplePop =>
-        new PushdownSqlPlanOperator(Guid.NewGuid(), "SELECT a.type FROM algorithm a")
+        new(Guid.NewGuid(), "SELECT a.type FROM algorithm a")
         {
             Self = new TableSpecifier("cs", "algorithm"),
             Width = 1

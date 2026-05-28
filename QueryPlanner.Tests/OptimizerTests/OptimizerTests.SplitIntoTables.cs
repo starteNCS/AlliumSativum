@@ -1,14 +1,13 @@
-using AlliumSativum.Shared.Models.ExecutionPlan;
-using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
-using AlliumSativum.Shared.Models.IntermediateModels;
+using AlliumSativum.Optimize;
+using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using FluentAssertions;
 using NSubstitute;
-using QueryPlanner.Tests.Helpers;
+using Test.Shared.Helpers;
 
 namespace QueryPlanner.Tests.OptimizerTests;
 
-public sealed partial class SplitIntoTablesTests
+public sealed class SplitIntoTablesTests
 {
     private OptimizerTestFixture _fixture = null!;
 
@@ -58,13 +57,13 @@ public sealed partial class SplitIntoTablesTests
         // Use real ExpressionNodeOptimizer for this test by forwarding to actual impl
         var fixture = new OptimizerTestFixture();
         fixture.ExpressionNodeOptimizer
-            .ExtractExpression(Arg.Any<AlliumSativum.Shared.Models.IntermediateModels.Expressions.ExpressionNode?>(),
+            .ExtractExpression(Arg.Any<ExpressionNode?>(),
                 Arg.Any<TableSpecifier>())
             .Returns(call =>
             {
-                var realOptimizer = new AlliumSativum.Optimize.ExpressionNodeOptimizer();
+                var realOptimizer = new ExpressionNodeOptimizer();
                 return realOptimizer.ExtractExpression(
-                    call.ArgAt<AlliumSativum.Shared.Models.IntermediateModels.Expressions.ExpressionNode?>(0),
+                    call.ArgAt<ExpressionNode?>(0),
                     call.ArgAt<TableSpecifier>(1));
             });
 

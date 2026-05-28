@@ -1,7 +1,7 @@
 using AlliumSativum.Shared.Exceptions;
 using FluentAssertions;
 
-namespace QueryPlanner.Tests.Helpers;
+namespace Test.Shared.Helpers;
 
 public static class ShouldThrowHelper
 {

@@ -8,7 +8,7 @@ using AlliumSativum.Token;
 using FluentAssertions;
 using FluentAssertions.Primitives;
 
-namespace QueryPlanner.Tests.Helpers;
+namespace Test.Shared.Helpers;
 
 public static class SelectBaseModelHelper
 {

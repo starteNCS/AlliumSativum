@@ -16,7 +16,7 @@ public sealed class OptimizerTestFixture
     public readonly IWhereOptimizer WhereOptimizer = Substitute.For<IWhereOptimizer>();
 
     public Optimizer Optimizer;
-    
+
     public OptimizerTestFixture()
     {
         Optimizer = new Optimizer(

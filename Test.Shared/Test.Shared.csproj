@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentAssertions" Version="8.8.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AlliumSativum.QueryPlanner\AlliumSativum.QueryPlanner.csproj" />
+      <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

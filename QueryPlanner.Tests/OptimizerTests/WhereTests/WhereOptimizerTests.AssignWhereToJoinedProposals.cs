@@ -2,20 +2,20 @@ using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using FluentAssertions;
 using NSubstitute;
-using QueryPlanner.Tests.Helpers;
+using Test.Shared.Helpers;
 
 namespace QueryPlanner.Tests.OptimizerTests.WhereTests;
 
 public class AssignWhereToJoinedProposalsTests
 {
     private readonly WhereOptimizerTestFixture _fixture = new();
-    
+
     [SetUp]
     public void Setup()
     {
         _fixture.ExpressionNodeOptimizer.ClearReceivedCalls();
     }
-    
+
     [Test]
     public void Should_Not_Assign_Null_Input()
     {
@@ -28,7 +28,7 @@ public class AssignWhereToJoinedProposalsTests
             .DidNotReceive()
             .GetCnfSubTrees(Arg.Any<ExpressionNode>());
     }
-    
+
     [Test]
     public void Should_Not_Assign_Mixed_Clause()
     {
@@ -39,36 +39,36 @@ public class AssignWhereToJoinedProposalsTests
                     WHERE a.name = 'test' OR er.peak_memory_mb > 10000
                     """;
         _fixture.UseGetCnfSubTrees();
-        
+
         var input = query.ToSelectDto();
         _fixture.WhereOptimizer.AssignWhereToJoinedProposals(input, new List<SelectDto>());
 
         _fixture.ExpressionNodeOptimizer
             .Received(1)
             .GetCnfSubTrees(Arg.Any<ExpressionNode>());
-        
+
         input.Should().BeSelectDto(query.ToSelectDto());
     }
-    
+
     [Test]
     public void Should_Assign_Expression()
     {
         _fixture.UseGetCnfSubTrees();
         _fixture.UseMergeCnfExpressions();
         _fixture.UseRemoveCnfExpression();
-        
+
         var query = """
                     SELECT a.id 
                     FROM cs->algorithm a 
                         INNER JOIN cs->experiment_run er ON er.algorithm_id = a.id
                     WHERE a.name = 'test'
                     """;
-        
+
         var proposalQuery = """
-                    SELECT a.id 
-                    FROM cs->algorithm a 
-                    """;
-        
+                            SELECT a.id 
+                            FROM cs->algorithm a 
+                            """;
+
         var input = query.ToSelectDto();
         var proposal = proposalQuery.ToSelectDto();
         _fixture.WhereOptimizer.AssignWhereToJoinedProposals(input, [proposal]);

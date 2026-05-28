@@ -3,7 +3,7 @@ using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using FluentAssertions;
 using FluentAssertions.Primitives;
 
-namespace QueryPlanner.Tests.Helpers;
+namespace Test.Shared.Helpers;
 
 public static class TreeHelpers
 {

@@ -16,7 +16,7 @@ public sealed class WhereOptimizerTestFixture
     public readonly IExpressionNodeOptimizer ExpressionNodeOptimizer = Substitute.For<IExpressionNodeOptimizer>();
 
     public readonly WhereOptimizer WhereOptimizer;
-    
+
     public WhereOptimizerTestFixture()
     {
         WhereOptimizer = new WhereOptimizer(ExpressionNodeOptimizer, CostModel);
@@ -24,36 +24,37 @@ public sealed class WhereOptimizerTestFixture
 
     #region Mocking methods
 
-    public void MockGetDistributionOfExpressionAsync(double selectivity, long cardinality, Dictionary<AttributeSpecifier,PlanOperatorDistributionData> distribution)
+    public void MockGetDistributionOfExpressionAsync(double selectivity, long cardinality,
+        Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distribution)
     {
         CostModel
             .GetDistributionOfExpressionAsync(
                 Arg.Any<BinaryOperatorExpressionNode>(),
-                Arg.Any<Dictionary<AttributeSpecifier,PlanOperatorDistributionData>>(),
+                Arg.Any<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>(),
                 Arg.Any<List<PlanOperator>>())
-            .Returns(new PlanOperatorDistributionCost()
+            .Returns(new PlanOperatorDistributionCost
             {
                 Selectivity = selectivity,
                 Cardinality = cardinality,
                 Distribution = distribution
             });
     }
-    
+
     public void MockCalculateCost(double cost)
     {
         CostModel.CalculateCost(Arg.Any<PlanOperator>()).Returns(cost);
     }
-    
+
     #endregion
-    
-    #region Forwarding methods 
+
+    #region Forwarding methods
 
     public void UseGetCnfSubTrees()
     {
         ExpressionNodeOptimizer.GetCnfSubTrees(Arg.Any<ExpressionNode>())
             .Returns(callInfo => new ExpressionNodeOptimizer().GetCnfSubTrees(callInfo[0] as ExpressionNode));
     }
-    
+
     public void UseExtractExpression()
     {
         ExpressionNodeOptimizer.ExtractExpression(Arg.Any<ExpressionNode>(), Arg.Any<List<TableSpecifier>>())
@@ -75,7 +76,7 @@ public sealed class WhereOptimizerTestFixture
                 return new ExpressionNodeOptimizer().MergeCnfExpressions(left, right);
             });
     }
-    
+
     public void UseRemoveCnfExpression()
     {
         ExpressionNodeOptimizer.RemoveCnfExpression(Arg.Any<ExpressionNode>(), Arg.Any<ExpressionNode>())
@@ -88,6 +89,4 @@ public sealed class WhereOptimizerTestFixture
     }
 
     #endregion
-
-    
 }

@@ -3,7 +3,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using AlliumSativum.Token;
 using FluentAssertions;
-using QueryPlanner.Tests.Helpers;
+using Test.Shared.Helpers;
 
 namespace QueryPlanner.Tests.Algorithms;
 

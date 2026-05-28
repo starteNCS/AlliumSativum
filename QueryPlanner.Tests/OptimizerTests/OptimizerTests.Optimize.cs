@@ -1,9 +1,11 @@
+using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Models.ExecutionPlan;
+using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using FluentAssertions;
 using NSubstitute;
-using QueryPlanner.Tests.Helpers;
+using Test.Shared.Helpers;
 
 namespace QueryPlanner.Tests.OptimizerTests;
 
@@ -16,7 +18,7 @@ public sealed class OptimizeTests
     {
         _fixture = new OptimizerTestFixture();
     }
-    
+
     [Test]
     public async Task Should_Optimize_SingleTable()
     {
@@ -24,7 +26,7 @@ public sealed class OptimizeTests
         var table = new TableSpecifier("cs", "algorithm");
         var attr = new AttributeSpecifier("cs", "algorithm", "id");
 
-        var pushdownPop = new AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.PushdownSqlPlanOperator(
+        var pushdownPop = new PushdownSqlPlanOperator(
             Guid.NewGuid(), "SELECT * FROM algorithm")
         {
             Self = table,
@@ -115,6 +117,6 @@ public sealed class OptimizeTests
             .Returns(Task.FromResult<(List<PlanContainer>, SelectDto?)>(([], null)));
 
         var act = async () => await _fixture.Optimizer.OptimizeAsync(model);
-        await act.Should().ThrowAsync<AlliumSativum.Shared.Exceptions.AsSqlOptimizeException>();
+        await act.Should().ThrowAsync<AsSqlOptimizeException>();
     }
 }

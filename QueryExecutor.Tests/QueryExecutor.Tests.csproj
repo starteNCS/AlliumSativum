@@ -2,10 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
-        <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,12 +17,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="NUnit.Framework"/>
+      <ProjectReference Include="..\AlliumSativum.QueryExecutor\AlliumSativum.QueryExecutor.csproj" />
+      <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj" />
+      <ProjectReference Include="..\Test.Shared\Test.Shared.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\AlliumSativum.QueryPlanner\AlliumSativum.QueryPlanner.csproj"/>
-        <ProjectReference Include="..\Test.Shared\Test.Shared.csproj"/>
-    </ItemGroup>
-
+    
 </Project>

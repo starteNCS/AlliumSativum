@@ -1,7 +1,7 @@
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using FluentAssertions;
 
-namespace QueryPlanner.Tests.Helpers;
+namespace Test.Shared.Helpers;
 
 public static partial class ShouldBeHelper
 {
