@@ -2,9 +2,9 @@ using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 
 namespace QueryExecutor.Tests.Utils.Provider;
 
-public sealed class AlgorithmDataProvider : DataProviderPop
+public sealed class AlgorithmDataProviderPop : DataProviderPop
 {
-    public AlgorithmDataProvider()
+    public AlgorithmDataProviderPop()
     {
         ExecutionData = new PlanOperatorExecutionData
         {

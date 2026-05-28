@@ -16,7 +16,7 @@ public sealed class FilterPlanOperatorExecutorTest
         var expression = "SELECT FROM cs->algorithm a WHERE a.id = 2".ToSelectDto().Where!;
         var pop = new FilterPlanOperator(expression)
         {
-            Children = [new AlgorithmDataProvider()]
+            Children = [new AlgorithmDataProviderPop()]
         };
 
         var result = await new FilterPlanOperatorExecutor().ExecuteAsync(pop);
@@ -32,7 +32,7 @@ public sealed class FilterPlanOperatorExecutorTest
         var expression = "SELECT FROM cs->algorithm a WHERE a.id != 2".ToSelectDto().Where!;
         var pop = new FilterPlanOperator(expression)
         {
-            Children = [new AlgorithmDataProvider()]
+            Children = [new AlgorithmDataProviderPop()]
         };
 
         var result = await new FilterPlanOperatorExecutor().ExecuteAsync(pop);
@@ -48,7 +48,7 @@ public sealed class FilterPlanOperatorExecutorTest
         var expression = "SELECT FROM cs->algorithm a WHERE a.id > 2".ToSelectDto().Where!;
         var pop = new FilterPlanOperator(expression)
         {
-            Children = [new AlgorithmDataProvider()]
+            Children = [new AlgorithmDataProviderPop()]
         };
 
         var result = await new FilterPlanOperatorExecutor().ExecuteAsync(pop);
@@ -65,7 +65,7 @@ public sealed class FilterPlanOperatorExecutorTest
         var expression = "SELECT FROM cs->algorithm a WHERE a.id >= 2".ToSelectDto().Where!;
         var pop = new FilterPlanOperator(expression)
         {
-            Children = [new AlgorithmDataProvider()]
+            Children = [new AlgorithmDataProviderPop()]
         };
 
         var result = await new FilterPlanOperatorExecutor().ExecuteAsync(pop);
@@ -82,7 +82,7 @@ public sealed class FilterPlanOperatorExecutorTest
         var expression = "SELECT FROM cs->algorithm a WHERE a.id = 2 AND a.name = 'Dynamic Programming Bushy Join Tree Enumeration'".ToSelectDto().Where!;
         var pop = new FilterPlanOperator(expression)
         {
-            Children = [new AlgorithmDataProvider()]
+            Children = [new AlgorithmDataProviderPop()]
         };
 
         var result = await new FilterPlanOperatorExecutor().ExecuteAsync(pop);
@@ -99,7 +99,7 @@ public sealed class FilterPlanOperatorExecutorTest
         var expression = "SELECT FROM cs->algorithm a WHERE a.id = 2 OR a.id = 3".ToSelectDto().Where!;
         var pop = new FilterPlanOperator(expression)
         {
-            Children = [new AlgorithmDataProvider()]
+            Children = [new AlgorithmDataProviderPop()]
         };
 
         var result = await new FilterPlanOperatorExecutor().ExecuteAsync(pop);

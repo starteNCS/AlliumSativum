@@ -14,7 +14,7 @@ public sealed class ProjectPlanOperatorExecutorTest
     {
         var pop = new ProjectPlanOperator([new AttributeSpecifier("cs", "algorithm", "id")])
         {
-            Children = [new AlgorithmDataProvider()]
+            Children = [new AlgorithmDataProviderPop()]
         };
 
         var result = await new ProjectPlanOperatorExecutor().ExecuteAsync(pop);
