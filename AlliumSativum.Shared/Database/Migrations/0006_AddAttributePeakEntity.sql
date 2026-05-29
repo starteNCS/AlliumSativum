@@ -1,4 +1,4 @@
-CREATE TABLE Catalog.AttributePeaks
+CREATE TABLE IF NOT EXISTS Catalog.AttributePeaks
 (
     Id          uuid PRIMARY KEY,
     AttributeId uuid REFERENCES Catalog.Attributes (Id),

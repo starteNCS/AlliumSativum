@@ -1,6 +1,6 @@
-CREATE SCHEMA Catalog;
+CREATE SCHEMA IF NOT EXISTS Catalog;
 
-CREATE TABLE Catalog.DataSources
+CREATE TABLE IF NOT EXISTS Catalog.DataSources
 (
     Id               uuid PRIMARY KEY,
     Name             varchar(25)   NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE Catalog.DataSources
     ConnectionString varchar(1000) NULL
 );
 
-CREATE TABLE Catalog.Relations
+CREATE TABLE IF NOT EXISTS Catalog.Relations
 (
     Id               uuid PRIMARY KEY,
     DataSourceId     uuid REFERENCES Catalog.DataSources (Id),
@@ -20,7 +20,7 @@ CREATE TABLE Catalog.Relations
     MetricsDate      timestamp    NOT NULL
 );
 
-CREATE TABLE Catalog.Attributes
+CREATE TABLE IF NOT EXISTS Catalog.Attributes
 (
     Id                  uuid PRIMARY KEY,
     RelationId          uuid REFERENCES Catalog.Relations (Id),

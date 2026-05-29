@@ -1,0 +1,76 @@
+﻿services:
+  query-server:
+    image: philipphonsel1/allium-sativum.query-server:latest
+    depends_on:
+      - catalog
+      - worker
+    ports:
+      - 55000:8080
+    environment:
+      - ConnectionStrings__catalog-database=Host=catalog;Port=5432;Database=catalog;Username=catalog-user;Password=pw123!
+      - WorkerUrl=http://host.docker.internal:55001
+# COST MODEL SETTINGS. CHANGE AT WILL, MAY RESULT IN WORSE PERFORMANCE
+      - CostModel__Project__BaseCost=0
+      - CostModel__Project__PerRowCost=0.004674
+      - CostModel__Project__PerAttributeCost=0.003451
+      - CostModel__Filter__BaseCost=0.01
+      - CostModel__Filter__PerAttributeCostNumeric=0.000169
+      - CostModel__Filter__PerAttributeCostString=0.000002
+      - CostModel__Join__NestedLoop__BaseCost=0.0001
+      - CostModel__Join__Hash__BaseCost=0.0001
+      - CostModel__Join__Hash__PerAttributeHashTableInitiation=0.000046
+      - CostModel__Join__Hash__PerAttributeHashTableLookup=0.000003
+      - CostModel__Join__Hash__PerPropertyCloneCost=0.0003
+# END COST MODEL SETTINGS
+
+  worker:
+    image: philipphonsel1/allium-sativum.worker:latest
+    ports:
+      - 55001:8080
+    depends_on:
+      - catalog
+    environment:
+      - ConnectionStrings__catalog-database=Host=catalog;Port=5432;Database=catalog;Username=catalog-user;Password=pw123!
+
+  catalog:
+    image: postgres:17.6
+    environment:
+      POSTGRES_USER: catalog-user
+      POSTGRES_PASSWORD: pw123!
+      POSTGRES_DB: catalog
+    ports:
+      - 5432:5432
+    volumes:
+      - catalog-data:/var/lib/postgresql/data
+
+  business:
+    image: postgres:17.6
+    environment:
+      POSTGRES_USER: business-user
+      POSTGRES_PASSWORD: pw123!
+      POSTGRES_DB: business
+    ports:
+      - 60000:5432
+    volumes:
+      - ./docker-init/init-business.sql:/docker-entrypoint-initdb.d/init.sql
+        
+  shared:
+    image: postgres:17.6
+    environment:
+      POSTGRES_USER: shared-user
+      POSTGRES_PASSWORD: pw123!
+      POSTGRES_DB: shared
+    ports:
+      - 60001:5432
+    volumes:
+      - ./docker-init/init-shared.sql:/docker-entrypoint-initdb.d/init.sql
+  
+  cs:
+    image: clue/json-server:latest
+    ports:
+      - 60002:80
+    volumes:
+      - ./docker-init/cs_db.json:/data/db.json
+
+volumes:
+  catalog-data:

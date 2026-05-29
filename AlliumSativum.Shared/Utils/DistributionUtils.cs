@@ -31,7 +31,6 @@ public static class DistributionUtils
                              nonNullValues.Select(value => Math.Pow(value - attribute.Mean, 2)).Sum();
         attribute.StandardDeviation = Math.Sqrt(variance);
 
-        double n = nonNullValues.Count;
         var modes = DistributionDetector.FindModes(binnedDistribution, attribute);
 
         return (attribute, modes);

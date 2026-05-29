@@ -57,14 +57,16 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
 
         var relationMetrics = new List<RelationEntity>();
         var attributeMetrics = new List<AttributeEntity>();
+        var attributePeakMetrics = new List<AttributePeakEntity>();
 
         var tasks = tables.Select(table =>
             GetTableMetricsAsync(dataSource, columns, table, existingRelations, existingAttributes));
         var results = await Task.WhenAll(tasks);
-        foreach (var (relMetrics, attrMetrics) in results)
+        foreach (var (relMetrics, attrMetrics, modeMetrics) in results)
         {
             relationMetrics.AddRange(relMetrics);
             attributeMetrics.AddRange(attrMetrics);
+            attributePeakMetrics.AddRange(modeMetrics);
         }
 
         await _catalogDatabase.ExecuteAsync("""
@@ -94,10 +96,30 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                                                           StandardDeviation = EXCLUDED.StandardDeviation
                                             """, attributeMetrics);
 
+        foreach (var group in attributePeakMetrics.GroupBy(x => x.AttributeId))
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                await _catalogDatabase.ExecuteAsync(
+                    "DELETE FROM Catalog.AttributePeaks WHERE AttributeId = @AttributeId",
+                    new { AttributeId = group.Key });
+                foreach (var mode in group)
+                    await _catalogDatabase.ExecuteAsync("""
+                                                        INSERT INTO Catalog.AttributePeaks (Id, AttributeId, Position, Height, StandardDeviation, Mean)
+                                                        VALUES (@Id, @AttributeId, @Position, @Height, @StandardDeviation, @Mean)
+                                                        """, mode);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
         await CreateQueryStatsMethodAsync(dataSource);
     }
 
-    private async Task<(List<RelationEntity> relationEntities, List<AttributeEntity> attributeEntities)>
+    private async Task<(List<RelationEntity> relationEntities, List<AttributeEntity> attributeEntities, List<AttributePeakEntity> attributePeakEntities)>
         GetTableMetricsAsync(
             Guid dataSource,
             IList<PostgresColumnsModel> columns,
@@ -109,6 +131,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
             table.TableName);
         var relationMetrics = new List<RelationEntity>();
         var attributeMetrics = new List<AttributeEntity>();
+        var attributePeakMetrics = new List<AttributePeakEntity>();
 
         // ReSharper disable once UnusedVariable
         var warumUp = await _dataSource.TimeQueryAsync(dataSource, "SELECT 1");
@@ -192,30 +215,13 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                         .ToList();
                     (attributeEntity, modes) = DistributionUtils.CalculateDistribution(items, attributeEntity);
                 }
-
-                await _semaphore.WaitAsync();
-                try
-                {
-                    attributeMetrics.Add(attributeEntity);
-                    _logger.LogWarning("Get lock for {Relation} {Attribute}", relationId, attributeEntity.Name);
-                    await _catalogDatabase.ExecuteAsync(
-                        "DELETE FROM Catalog.AttributePeaks WHERE AttributeId = @AttributeId",
-                        new { AttributeId = attributeId });
-                    foreach (var mode in modes)
-                        await _catalogDatabase.ExecuteAsync("""
-                                                            INSERT INTO Catalog.AttributePeaks (Id, AttributeId, Position, Height, StandardDeviation, Mean)
-                                                            VALUES (@Id, @AttributeId, @Position, @Height, @StandardDeviation, @Mean)
-                                                            """, mode);
-                }
-                finally
-                {
-                    _semaphore.Release();
-                    _logger.LogWarning("Lock released from {Relation} {Attribute}", relationId, attributeEntity.Name);
-                }
+                
+                attributeMetrics.Add(attributeEntity);
+                attributePeakMetrics.AddRange(modes);
             }
         }
 
-        return (relationMetrics, attributeMetrics);
+        return (relationMetrics, attributeMetrics, attributePeakMetrics);
     }
 
     private async Task CreateQueryStatsMethodAsync(Guid datasourceId)

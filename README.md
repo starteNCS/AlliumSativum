@@ -6,6 +6,8 @@ developed as the artifact for the thesis _"Optimizing Distributed Query Executio
 
 Please make sure to first read the thesis for a better understanding of the system, its design, and its components.
 
+Refer to `Getting started` to try AlliumSativum yourself.
+
 ---
 
 ## Overview
@@ -16,6 +18,41 @@ AlliumSativum is a federated query processing system designed to:
 - execute it across heterogeneous data sources via workers and connectors.
 
 The code is organized into multiple projects, each serving a specific purpose in the overall architecture of the AlliumSativum system.
+
+---
+
+## Prerequisites
+
+Before running the system, ensure you have:
+
+- **Docker / Docker Compose** (for optional Presto and related infrastructure)
+- Thesis document for conceptual and algorithmic background (recommended)
+
+---
+
+## Getting started (local development)
+
+This docker compose not only contains the AlliumSativum query server and worker, but also a seeded catalog and three data sources.
+These data sources are exactly the same as those used in the thesis evaluation, so this environment allows you to reproduce the evaluation results and experiment with the system on a known dataset.
+The queries are already provided in the appendix.
+
+Typical local setup sequence:
+
+1. Start the docker compose environment:
+   ```bash
+   docker compose -f compose.yml up
+   ```
+2. Restart the query-server and worker services to ensure they connect to the now-available catalog
+3. Execute the `docker-init/init-catalog.sql` script against the catalog database to seed initial metadata (data sources, relations, attributes).
+6. Trigger a metrics scrape so the cost model has statistics:
+   ```
+   GET /metrics/all
+   ```
+7. Submit a test query:
+   ```
+   POST /execute
+   { "query": "SELECT ..." }
+   ```
 
 ---
 
@@ -296,10 +333,10 @@ Provides interfaces and helpers shared across connectors:
 
 ## Testing
 
-| Project | Description |
-|---------|-------------|
-| `QueryPlanner.Tests` | Unit and integration tests for the query planner pipeline stages (tokenizer, parser, semantic transformer, optimizer). |
-| `AlgorithmTests` | Tests for internal algorithms used in plan enumeration and cost estimation. |
+| Project               | Description                                                                                       |
+|-----------------------|---------------------------------------------------------------------------------------------------|
+| `QueryPlanner.Tests`  | Tests for the query planner pipeline stages (tokenizer, parser, semantic transformer, optimizer). |
+| `QueryExecutor.Tests` | Tests for the query execution engine (executors, parallel stacks)                                 |
 
 Run all tests with:
 
@@ -307,43 +344,6 @@ Run all tests with:
 dotnet test
 ```
 
----
-
-## Prerequisites
-
-Before running the system, ensure you have:
-
-- **.NET SDK** (version required by the solution/projects)
-- **Docker / Docker Compose** (for optional Presto and related infrastructure)
-- **PostgreSQL** instance for the catalog database
-- **Redis** instance for the worker catalog cache
-- Access to at least one supported data source (e.g., PostgreSQL, JsonServer)
-- Thesis document for conceptual and algorithmic background (recommended)
-
----
-
-## Getting started (local development)
-
-Typical local setup sequence:
-
-1. Restore the solution:
-   ```bash
-   dotnet restore
-   ```
-2. Start the Aspire.NET AppHost:
-   ```bash
-   dotnet run --project AlliumSativum.AppHost
-   ```
-6. Trigger a metrics scrape so the cost model has statistics:
-   ```
-   GET /metrics/all
-   ```
-7. Submit a test query:
-   ```
-   POST /execute
-   { "query": "SELECT ..." }
-   ```
-   
 ---
 
 ## Configuration notes
