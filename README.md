@@ -110,8 +110,13 @@ AlliumSativum
 │   │   Also contains docker-compose.yml for local Presto startup.
 │
 └─── data_analysis
-    │   Analysis scripts used to derive statistics for the cost model.
-    │   Also contains code for generating evaluation visualizations.
+│   │   Analysis scripts used to derive statistics for the cost model.
+│   │   Also contains code for generating evaluation visualizations.
+│   
+└─── docker-init
+    │   SQL scripts for initializing the catalog database with metadata about data sources, relations, and attributes.
+    |   SQL scripts for seeding the data sources with initial data.
+    |   JSON file for JSON Server
 ```
 
 ---
@@ -138,7 +143,7 @@ The tokenizer recognises the following token classes via regex:
 
 | Token class    | Examples                        |
 |----------------|---------------------------------|
-| Literals       | `'hello'`, `'world'`, 1, 0.94   |
+| Literals       | `'hello world'`, 1, 0.94        |
 | Operators      | `=`, `!=`, `<`, `>`, `<=`, `>=` |
 | Arrow operator | `->`                            |
 | Punctuation    | `(`, `)`, `,`, `.`              |
