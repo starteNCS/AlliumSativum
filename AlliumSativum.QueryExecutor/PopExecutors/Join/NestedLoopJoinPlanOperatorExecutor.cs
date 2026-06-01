@@ -8,7 +8,8 @@ namespace AlliumSativum.QueryExecutor.PopExecutors.Join;
 public sealed class NestedLoopJoinPlanOperatorExecutor : IPlanOperatorExecutor<NestedLoopJoinPlanOperator>
 {
     /// <summary>
-    /// Joins both child data sets by using a nested loop join, and applying the specified expression as a predicate to the merged rows.
+    ///     Joins both child data sets by using a nested loop join, and applying the specified expression as a predicate to the
+    ///     merged rows.
     /// </summary>
     /// <param name="pop">The POP to execute</param>
     /// <returns>"pop", containing their results in the data field</returns>
@@ -20,12 +21,10 @@ public sealed class NestedLoopJoinPlanOperatorExecutor : IPlanOperatorExecutor<N
 
         var result = new List<Dictionary<string, object>>();
         foreach (var leftRow in left)
+        foreach (var rightRow in right)
         {
-            foreach (var rightRow in right)
-            {
-                var merged = Merge(leftRow, rightRow);
-                if (pop.Expression.EvaluatePredicate(merged)) result.Add(merged);
-            }
+            var merged = Merge(leftRow, rightRow);
+            if (pop.Expression.EvaluatePredicate(merged)) result.Add(merged);
         }
 
         stopwatch.Stop();
@@ -42,7 +41,7 @@ public sealed class NestedLoopJoinPlanOperatorExecutor : IPlanOperatorExecutor<N
     }
 
     /// <summary>
-    /// Merges two rows into one by concatenating their key-value pairs
+    ///     Merges two rows into one by concatenating their key-value pairs
     /// </summary>
     /// <remarks>In case of key collisions, the value from the right row will be used.</remarks>
     /// <param name="left">The first row</param>

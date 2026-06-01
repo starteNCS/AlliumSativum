@@ -22,8 +22,9 @@ public interface ICostModel
     double TotalCost(PlanOperator? planOperator, bool fromActualCost = false);
 
     /// <summary>
-    /// Calculates the new distribution of the attributes after applying the given expression node as a filter on the children operators.
-    /// May recursively call itself for sub-expressions in case of AND/OR expressions.
+    ///     Calculates the new distribution of the attributes after applying the given expression node as a filter on the
+    ///     children operators.
+    ///     May recursively call itself for sub-expressions in case of AND/OR expressions.
     /// </summary>
     /// <param name="node">The node to calculate distribution for</param>
     /// <param name="distributionData">The children distribution data</param>
@@ -33,9 +34,9 @@ public interface ICostModel
     /// <exception cref="ArgumentException">An unsupported expression was used</exception>
     Task<PlanOperatorDistributionCost> GetDistributionOfExpressionAsync(BinaryOperatorExpressionNode node,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData, List<PlanOperator> children);
-    
+
     /// <summary>
-    /// Reconstructs a distribution from the given distribution data
+    ///     Reconstructs a distribution from the given distribution data
     /// </summary>
     /// <param name="distributionData">The attribtues distribution data</param>
     /// <returns>The histogram of the attribute</returns>

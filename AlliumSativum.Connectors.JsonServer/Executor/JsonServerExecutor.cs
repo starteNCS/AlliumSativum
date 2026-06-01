@@ -24,7 +24,7 @@ public sealed class JsonServerExecutor : IWorkerExecutor
         _httpClientFactory = httpClientFactory;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task<ExecutorWrapper> ExecuteAsync(PlanOperator @operator)
     {
         if (@operator is not PushdownRestCallPlanOperator pushdown)

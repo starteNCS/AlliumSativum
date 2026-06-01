@@ -4,7 +4,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 /// <summary>
-/// Abstract class for all expression nodes
+///     Abstract class for all expression nodes
 /// </summary>
 // fix empty output for ASP.NET endpoints
 [JsonPolymorphic(IgnoreUnrecognizedTypeDiscriminators = true)]
@@ -17,9 +17,9 @@ public abstract class ExpressionNode
 {
     public abstract string ToSqlQueryString();
     public abstract bool Equals(object? obj);
-    
+
     /// <summary>
-    /// Recursively checks if all tables in this expression are in "table"
+    ///     Recursively checks if all tables in this expression are in "table"
     /// </summary>
     /// <param name="table">Tables which should only be in the expression</param>
     /// <returns>True, when all expression tables in "tables"</returns>
@@ -37,7 +37,7 @@ public abstract class ExpressionNode
     }
 
     /// <summary>
-    /// Get all attributes used in this expression
+    ///     Get all attributes used in this expression
     /// </summary>
     /// <returns>All attribtues used</returns>
     /// <exception cref="ArgumentException">A variable mapping was found</exception>
@@ -73,7 +73,7 @@ public abstract class ExpressionNode
     }
 
     /// <summary>
-    /// Get all tables used in this expression
+    ///     Get all tables used in this expression
     /// </summary>
     /// <returns>All tables</returns>
     public List<TableSpecifier> GetTablesOfExpression()
@@ -118,14 +118,14 @@ public abstract class ExpressionNode
     }
 
     /// <summary>
-    /// Unpack the value of this expression for a given row of data
+    ///     Unpack the value of this expression for a given row of data
     /// </summary>
     /// <param name="row">The row</param>
     /// <returns>The value</returns>
     public abstract object? ResolveValue(Dictionary<string, object> row);
-    
+
     /// <summary>
-    /// Evaluate a row against this expression
+    ///     Evaluate a row against this expression
     /// </summary>
     /// <param name="row">The row</param>
     /// <returns>True, if expression evaluated to true</returns>

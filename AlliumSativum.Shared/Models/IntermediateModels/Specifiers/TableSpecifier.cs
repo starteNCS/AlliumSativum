@@ -3,7 +3,7 @@ using AlliumSativum.Shared.Constants;
 namespace AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 /// <summary>
-/// Specifier containing data source and table information
+///     Specifier containing data source and table information
 /// </summary>
 public class TableSpecifier : DataSourceSpecifier, IEquatable<TableSpecifier>
 {
@@ -23,10 +23,7 @@ public class TableSpecifier : DataSourceSpecifier, IEquatable<TableSpecifier>
 
     public override bool Equals(object? obj)
     {
-        if (obj is TableSpecifier other)
-        {
-            return Equals(other);
-        }
+        if (obj is TableSpecifier other) return Equals(other);
 
         return false;
     }

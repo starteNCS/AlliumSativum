@@ -12,8 +12,8 @@ namespace AlliumSativum.Connectors.PostgreSQL.Planners;
 public sealed class PostgreSqlPlanner : IPlanner
 {
     private readonly CatalogDatabase _catalogDatabase;
-    private readonly CatalogDistributionUtils _distributionUtils;
     private readonly DatasourceDatabase _datasource;
+    private readonly CatalogDistributionUtils _distributionUtils;
 
     public PostgreSqlPlanner(
         CatalogDatabase catalogDatabase,
@@ -25,7 +25,7 @@ public sealed class PostgreSqlPlanner : IPlanner
         _datasource = datasource;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanAsync(Guid dataSourceId,
         SelectDto selectModel)
     {
@@ -39,14 +39,14 @@ public sealed class PostgreSqlPlanner : IPlanner
         });
 
         var estimate = estimations.Single();
-        if(!estimate.TryGetValue("cardinality", out object cardinalityObj))
+        if (!estimate.TryGetValue("cardinality", out var cardinalityObj))
             return ([], null);
         var cardinality = Convert.ToInt64(cardinalityObj);
-        
-        if(!estimate.TryGetValue("execution_time_ms", out object executionTimeMs))
+
+        if (!estimate.TryGetValue("execution_time_ms", out var executionTimeMs))
             return ([], null);
         var cost = Convert.ToDouble(executionTimeMs) + relation.ConnectionOpenMs + relation.Transfer100Ms;
-        
+
         var distribution =
             await _distributionUtils.GetAttributeDistributionsAsync(selectModel.Select
                 .Select(x => (AttributeSpecifier)x).ToList());

@@ -1,6 +1,4 @@
 using AlliumSativum.Shared.Database.Entities;
-using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
-using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using Dapper;
 using Npgsql;
 
@@ -119,6 +117,7 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
 
         return dataSources.SingleOrDefault();
     }
+
     public async Task<RelationEntity> GetRelationAsync(Guid dataSource, string tableName)
     {
         var relations = await QueryAsync<RelationEntity>(
@@ -182,7 +181,7 @@ public sealed class CatalogDatabase : IDisposable, IAsyncDisposable
 
         return attributes;
     }
-    
+
     public Task<List<AttributeEntity>> GetAttributesOfRelationAsync(Guid relationId)
     {
         return QueryAsync<AttributeEntity>(

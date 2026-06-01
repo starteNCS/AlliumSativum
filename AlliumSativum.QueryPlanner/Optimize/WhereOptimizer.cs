@@ -20,7 +20,7 @@ public sealed class WhereOptimizer : IWhereOptimizer
         _costModel = costModel;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void AssignWhereToJoinedProposals(SelectDto onPremise, List<SelectDto> joinedTableProposals)
     {
         if (onPremise.Where is null) return;
@@ -41,7 +41,7 @@ public sealed class WhereOptimizer : IWhereOptimizer
         }
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task<PlanOperator> DistributeWhereToProposalsAsync(PlanContainer scan, SelectDto onPremise,
         SelectDto? unplanned)
     {

@@ -25,18 +25,15 @@ public sealed class MergeSortJoinPlanOperator : JoinPlanOperator
     {
         throw new NotImplementedException();
     }
-    
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Left, Expression, Right);
     }
-    
+
     public override bool Equals(object? obj)
     {
-        if (obj is not MergeSortJoinPlanOperator other)
-        {
-            return false;
-        }
+        if (obj is not MergeSortJoinPlanOperator other) return false;
 
         return other.Left.Equals(Left) && other.Right.Equals(Right) && other.Expression.Equals(Expression);
     }

@@ -6,24 +6,27 @@ public sealed class AlliumSativumTimingResult
     public TimeSpan Parse { get; set; }
     public TimeSpan SemanticTransform { get; set; }
     public TimeSpan Optimize { get; set; }
-        
+
     public TimeSpan PlanningTotal => Tokenize + Parse + SemanticTransform + Optimize;
 
     public TimeSpan Execute { get; set; }
-    
+
     public TimeSpan Total => PlanningTotal + Execute;
 
-    public object ToMilliSeconds() => new
+    public object ToMilliSeconds()
     {
-        Plan = new
+        return new
         {
-            Tokenize = Tokenize.TotalMilliseconds,
-            Parse = Parse.TotalMilliseconds,
-            SemanticTransform = SemanticTransform.TotalMilliseconds,
-            Optimize = Optimize.TotalMilliseconds,
-            Total = PlanningTotal.TotalMilliseconds,
-        },
-        Execute = Execute.TotalMilliseconds,
-        Total = Total.TotalMilliseconds,
-    };
+            Plan = new
+            {
+                Tokenize = Tokenize.TotalMilliseconds,
+                Parse = Parse.TotalMilliseconds,
+                SemanticTransform = SemanticTransform.TotalMilliseconds,
+                Optimize = Optimize.TotalMilliseconds,
+                Total = PlanningTotal.TotalMilliseconds
+            },
+            Execute = Execute.TotalMilliseconds,
+            Total = Total.TotalMilliseconds
+        };
+    }
 }

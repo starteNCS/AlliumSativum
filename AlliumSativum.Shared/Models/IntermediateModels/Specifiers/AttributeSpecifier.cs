@@ -4,7 +4,7 @@ using AlliumSativum.Shared.Constants;
 namespace AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 /// <summary>
-/// Specifier for the full attribute
+///     Specifier for the full attribute
 /// </summary>
 public sealed class AttributeSpecifier : TableSpecifier, IEquatable<AttributeSpecifier>
 {
@@ -23,7 +23,7 @@ public sealed class AttributeSpecifier : TableSpecifier, IEquatable<AttributeSpe
     public bool IsHidden { get; set; }
 
     public TableSpecifier Table => new(DataSourceName, TableName);
-    
+
     public bool Equals(AttributeSpecifier? other)
     {
         return other != null &&
@@ -34,10 +34,7 @@ public sealed class AttributeSpecifier : TableSpecifier, IEquatable<AttributeSpe
 
     public override bool Equals(object? obj)
     {
-        if (obj is AttributeSpecifier other)
-        {
-            return Equals(other);
-        }
+        if (obj is AttributeSpecifier other) return Equals(other);
         return false;
     }
 

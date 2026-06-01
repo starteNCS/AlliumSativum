@@ -17,10 +17,10 @@ public static class TreeHelpers
     public static void BeSemanticallyCorrect(this ObjectAssertions assertions)
     {
         var pop = assertions.Subject as PlanOperator;
-        
+
         NodesShouldBeCorrect(pop);
     }
-    
+
     private static int CountNodes(PlanOperator? pop)
     {
         if (pop == null)
@@ -28,31 +28,21 @@ public static class TreeHelpers
 
         var count = 1;
 
-        foreach (var planOperator in pop.Children)
-        {
-            count += CountNodes(planOperator);
-        }
+        foreach (var planOperator in pop.Children) count += CountNodes(planOperator);
 
         return count;
     }
-    
+
     private static void NodesShouldBeCorrect(PlanOperator? pops)
     {
         if (pops == null)
             return;
 
         if (pops.Children.Count == 0)
-        {
             pops.Should().BeAssignableTo<PushdownPlanOperator>();
-        }
         else
-        {
             pops.Should().NotBeAssignableTo<PushdownPlanOperator>();
-        }
 
-        foreach (var planOperator in pops.Children)
-        {
-            NodesShouldBeCorrect(planOperator);
-        }
+        foreach (var planOperator in pops.Children) NodesShouldBeCorrect(planOperator);
     }
 }

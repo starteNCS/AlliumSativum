@@ -6,7 +6,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 namespace AlliumSativum.Shared.Models.IntermediateModels;
 
 /// <summary>
-/// DTO for the select statement, containing all necessary information to execute the query
+///     DTO for the select statement, containing all necessary information to execute the query
 /// </summary>
 public sealed class SelectDto
 {

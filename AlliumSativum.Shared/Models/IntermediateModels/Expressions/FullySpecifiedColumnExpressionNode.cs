@@ -4,7 +4,7 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 /// <summary>
-/// A attribute specifier containing data source, table and attribute information.
+///     A attribute specifier containing data source, table and attribute information.
 /// </summary>
 public class FullySpecifiedColumnExpressionNode : ExpressionNode
 {
@@ -28,29 +28,29 @@ public class FullySpecifiedColumnExpressionNode : ExpressionNode
 
         return other.Attribute.Equals(Attribute);
     }
-    
+
     public override int GetHashCode()
     {
         return Attribute.GetHashCode();
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override object? ResolveValue(Dictionary<string, object> row)
     {
         return row.GetValueOrDefault(Attribute.ToDictKey())?.ToString();
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override bool EvaluatePredicate(Dictionary<string, object> row)
     {
         return row.TryGetValue(Attribute.ToDictKey(), out var val) && val is not null;
     }
-    
+
     public static FullySpecifiedColumnExpressionNode FromValues(string dataSource, string table, string attribute)
     {
         return new FullySpecifiedColumnExpressionNode
         {
-            Attribute = new AttributeSpecifier(dataSource, table, attribute),
+            Attribute = new AttributeSpecifier(dataSource, table, attribute)
         };
     }
 }

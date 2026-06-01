@@ -15,11 +15,12 @@ public static class SelectBaseModelHelper
     private static readonly Tokenizer Tokenizer = new();
     private static readonly TokenQueryParser TokenQueryParser = new();
     private static readonly SemanticTransformer SemanticTransformer = new();
-    
+
     /// <summary>
-    /// Returns a SelectBaseModel for the provided query.
+    ///     Returns a SelectBaseModel for the provided query.
     /// </summary>
-    /// /// <remarks>The validity of the model is shown in the respective tests</remarks>
+    /// ///
+    /// <remarks>The validity of the model is shown in the respective tests</remarks>
     /// <param name="query"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
@@ -27,50 +28,10 @@ public static class SelectBaseModelHelper
     {
         var tokens = Tokenizer.Tokenize(query);
         var parsed = TokenQueryParser.Parse(tokens);
-        if(parsed is null) throw new Exception("Failed to parse query");
-        
+        if (parsed is null) throw new Exception("Failed to parse query");
+
         SemanticTransformer.Transform(parsed);
         return parsed;
-    }
-    
-    extension(ObjectAssertions assertions)
-    {
-        public void BeSelectDto(SelectDto selectDto)
-        {
-            assertions.Subject.ToString().Should().Be(selectDto.ToString());
-        }
-
-        public void NotBeSelectDto(SelectDto selectDto)
-        {
-            assertions.Subject.ToString().Should().NotBe(selectDto.ToString());
-        }
-
-        public void BeExpressionNode(ExpressionNode? expected)
-        {
-            if(assertions.Subject == null && expected == null) return;
-            assertions.Subject.Should().NotBeNull();
-            
-            var subject = assertions.Subject as ExpressionNode;
-            subject.ToSqlQueryString().Should().Be(expected?.ToSqlQueryString());
-        }
-        
-        public void NotBeExpressionNode(ExpressionNode? expected)
-        {
-            assertions.Subject?.ToString().Should().NotBe(expected?.ToString());
-        }
-
-        public void BePop(PlanOperator? other)
-        {
-            assertions.Subject?.GetType().Should().Be(other?.GetType());
-            var pop = (PlanOperator) assertions.Subject;
-            pop?.IsEquivalentTo(other).Should().BeTrue();
-        }
-        
-        public void NotBePop(PlanOperator? other)
-        {
-            var pop = (PlanOperator) assertions.Subject;
-            pop?.IsEquivalentTo(other).Should().BeFalse();
-        }
     }
 
 
@@ -140,5 +101,45 @@ public static class SelectBaseModelHelper
         onPremise.Join.Should().BeEmpty();
         onPremise.Select.Should().BeEmpty();
         onPremise.Where.Should().BeNull();
+    }
+
+    extension(ObjectAssertions assertions)
+    {
+        public void BeSelectDto(SelectDto selectDto)
+        {
+            assertions.Subject.ToString().Should().Be(selectDto.ToString());
+        }
+
+        public void NotBeSelectDto(SelectDto selectDto)
+        {
+            assertions.Subject.ToString().Should().NotBe(selectDto.ToString());
+        }
+
+        public void BeExpressionNode(ExpressionNode? expected)
+        {
+            if (assertions.Subject == null && expected == null) return;
+            assertions.Subject.Should().NotBeNull();
+
+            var subject = assertions.Subject as ExpressionNode;
+            subject.ToSqlQueryString().Should().Be(expected?.ToSqlQueryString());
+        }
+
+        public void NotBeExpressionNode(ExpressionNode? expected)
+        {
+            assertions.Subject?.ToString().Should().NotBe(expected?.ToString());
+        }
+
+        public void BePop(PlanOperator? other)
+        {
+            assertions.Subject?.GetType().Should().Be(other?.GetType());
+            var pop = (PlanOperator)assertions.Subject;
+            pop?.IsEquivalentTo(other).Should().BeTrue();
+        }
+
+        public void NotBePop(PlanOperator? other)
+        {
+            var pop = (PlanOperator)assertions.Subject;
+            pop?.IsEquivalentTo(other).Should().BeFalse();
+        }
     }
 }

@@ -1,7 +1,7 @@
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 /// <summary>
-/// Node containing a plain value
+///     Node containing a plain value
 /// </summary>
 public class ValueExpressionNode : ExpressionNode
 {
@@ -35,13 +35,13 @@ public class ValueExpressionNode : ExpressionNode
 
         return other.Value.Equals(Value) && other.Type.Equals(Type);
     }
-    
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Value, Type);
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override object? ResolveValue(Dictionary<string, object> row)
     {
         return Type switch
@@ -52,12 +52,12 @@ public class ValueExpressionNode : ExpressionNode
         };
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override bool EvaluatePredicate(Dictionary<string, object> row)
     {
         return false;
     }
-    
+
     public static ValueExpressionNode FromValues(ValueExpressionType type, string value)
     {
         return new ValueExpressionNode

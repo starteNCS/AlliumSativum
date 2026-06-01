@@ -5,7 +5,7 @@ namespace AlliumSativum.Shared.Utils;
 public static class ListExtensions
 {
     /// <summary>
-    /// Extension method to append attributes as hidden
+    ///     Extension method to append attributes as hidden
     /// </summary>
     /// <param name="list">base list</param>
     /// <param name="hiddenAttributes">new hidden attributes</param>

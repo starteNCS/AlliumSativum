@@ -17,7 +17,7 @@ public sealed class ExecutorStrategy
     }
 
     /// <summary>
-    /// Based on the connector type, it returns the appropriate worker executor
+    ///     Based on the connector type, it returns the appropriate worker executor
     /// </summary>
     /// <param name="connectorType">The connector type needed for the data source</param>
     /// <returns>The correct executor</returns>

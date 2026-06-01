@@ -9,22 +9,22 @@ namespace QueryExecutor.Tests.Utils;
 
 public sealed class ExampleQExP
 {
-    public static PlanOperator QExP => new ProjectPlanOperator([new AttributeSpecifier("cs", "algorithm", "name")])
+    public static PlanOperator QExP => new ProjectPlanOperator(new AttributeSpecifier("cs", "algorithm", "name"))
     {
         Children =
         [
-            new FilterPlanOperator(new BinaryOperatorExpressionNode()
+            new FilterPlanOperator(new BinaryOperatorExpressionNode
             {
                 Left = FullySpecifiedColumnExpressionNode.FromValues("cs", "algorithm", "id"),
                 Operation = "=",
-                Right = ValueExpressionNode.FromValues(ValueExpressionNode.ValueExpressionType.Numeric, "1"),
+                Right = ValueExpressionNode.FromValues(ValueExpressionNode.ValueExpressionType.Numeric, "1")
             })
             {
                 Children =
                 [
                     new HashJoinPlanOperator(
                         new ExperimentRunDataProviderPop(),
-                        new BinaryOperatorExpressionNode()
+                        new BinaryOperatorExpressionNode
                         {
                             Left = FullySpecifiedColumnExpressionNode.FromValues("cs", "algorithm", "id"),
                             Operation = "=",

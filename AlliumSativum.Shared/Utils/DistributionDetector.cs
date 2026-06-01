@@ -15,9 +15,9 @@ public enum DistributionType
 public static class DistributionDetector
 {
     /// <summary>
-    /// Calculate the modes of the distribution using Kernel Density Estimation (KDE) and find the peaks in the density curve.
-    ///
-    /// 🤖 Developed iteratively with the help of Google Gemini
+    ///     Calculate the modes of the distribution using Kernel Density Estimation (KDE) and find the peaks in the density
+    ///     curve.
+    ///     🤖 Developed iteratively with the help of Google Gemini
     /// </summary>
     /// <param name="data">The histogram to find the modes of</param>
     /// <param name="attribute">Attribute base information</param>
@@ -68,9 +68,9 @@ public static class DistributionDetector
     }
 
     /// <summary>
-    /// Calculate the minimum gap between consecutive data points in the histogram to determine a reasonable bandwidth for KDE.
-    /// 
-    /// 🤖 Developed iteratively with the help of Google Gemini
+    ///     Calculate the minimum gap between consecutive data points in the histogram to determine a reasonable bandwidth for
+    ///     KDE.
+    ///     🤖 Developed iteratively with the help of Google Gemini
     /// </summary>
     /// <param name="data">The histogram</param>
     /// <returns>Minimum gap between two bins</returns>
@@ -89,9 +89,8 @@ public static class DistributionDetector
     }
 
     /// <summary>
-    /// Get density curve using Gaussian Kernel Density Estimation (KDE) for the given data and bandwidth h.
-    /// 
-    /// 🤖 Developed iteratively with the help of Google Gemini
+    ///     Get density curve using Gaussian Kernel Density Estimation (KDE) for the given data and bandwidth h.
+    ///     🤖 Developed iteratively with the help of Google Gemini
     /// </summary>
     /// <param name="data">The histogram</param>
     /// <param name="h">Density configuration parameter</param>
@@ -130,7 +129,7 @@ public static class DistributionDetector
     }
 
     /// <summary>
-    /// Get local minima from the density curve, i.e. valleys between peaks
+    ///     Get local minima from the density curve, i.e. valleys between peaks
     /// </summary>
     /// <param name="curve">Density curve candidates</param>
     /// <returns>Mimimas</returns>
@@ -144,9 +143,9 @@ public static class DistributionDetector
         return minima;
     }
 
-    
+
     /// <summary>
-    /// Get local maxima from the density curve, i.e. peaks between hills
+    ///     Get local maxima from the density curve, i.e. peaks between hills
     /// </summary>
     /// <param name="curve">Density curve candidates</param>
     /// <returns>Maximas</returns>
@@ -161,7 +160,7 @@ public static class DistributionDetector
     }
 
     /// <summary>
-    /// Calculate the mean and standard deviation of the data points within a peak
+    ///     Calculate the mean and standard deviation of the data points within a peak
     /// </summary>
     /// <param name="dataSlice"></param>
     /// <returns>The mean and stdev of a peak</returns>

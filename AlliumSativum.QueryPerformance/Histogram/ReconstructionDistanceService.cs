@@ -9,9 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace AlliumSativum.QueryPerformance.Histogram;
 
-
 /// <summary>
-/// Performance Utility to calculate the distance between the original distribution of a query result and the distribution reconstructed by the cost model.
+///     Performance Utility to calculate the distance between the original distribution of a query result and the
+///     distribution reconstructed by the cost model.
 /// </summary>
 public sealed class ReconstructionDistanceService
 {
@@ -36,7 +36,7 @@ public sealed class ReconstructionDistanceService
     }
 
     /// <summary>
-    /// Calculate the average nEMD across all attributes of a given datasource
+    ///     Calculate the average nEMD across all attributes of a given datasource
     /// </summary>
     /// <param name="datasourceId">Target datasource</param>
     /// <param name="ignoreAttributes">If set, ignores the provided attributes</param>
@@ -62,7 +62,7 @@ public sealed class ReconstructionDistanceService
 
             var relationSplits = ((string)attribute["relationname"]).Split('.');
             var relationName = relationSplits.Length > 1 ? relationSplits.Last() : (string)attribute["relationname"];
-            
+
             var query =
                 $"SELECT x.{attribute["attributename"]} FROM {attribute["datasourcename"]}->{relationName} x";
             queries.Add(query);
@@ -70,13 +70,14 @@ public sealed class ReconstructionDistanceService
 
         return await ReconstructionSimilarityAsync(queries);
     }
-    
+
     /// <summary>
-    /// Calculate the average nEMD across all attributes of all datasources
+    ///     Calculate the average nEMD across all attributes of all datasources
     /// </summary>
     /// <param name="ignoreAttributes">If set, ignores the provided attributes</param>
     /// <returns>The average nEMD</returns>
-    public async Task<ReconstructionSimilarityResult> ReconstructionSimilarityOfAllDatasourcesAsync(List<string> ignoreAttributes)
+    public async Task<ReconstructionSimilarityResult> ReconstructionSimilarityOfAllDatasourcesAsync(
+        List<string> ignoreAttributes)
     {
         var attributes = await _catalog.QueryAsync("""
                                                    SELECT a.name as AttributeName, r.name as RelationName, d.Name as DataSourceName
@@ -93,7 +94,7 @@ public sealed class ReconstructionDistanceService
 
             var relationSplits = ((string)attribute["relationname"]).Split('.');
             var relationName = relationSplits.Length > 1 ? relationSplits.Last() : (string)attribute["relationname"];
-            
+
             var query =
                 $"SELECT x.{attribute["attributename"]} FROM {attribute["datasourcename"]}->{relationName} x";
             queries.Add(query);
@@ -103,7 +104,8 @@ public sealed class ReconstructionDistanceService
     }
 
     /// <summary>
-    /// Calculates the overall Earth Movers Distance between the original and reconstructed distributions for a list of queries
+    ///     Calculates the overall Earth Movers Distance between the original and reconstructed distributions for a list of
+    ///     queries
     /// </summary>
     /// <param name="queries">All queries to test</param>
     /// <returns>DTO containing the average nEMD and each item</returns>
@@ -154,7 +156,7 @@ public sealed class ReconstructionDistanceService
     }
 
     /// <summary>
-    /// Given two histograms, calculates the Earth Mover's Distance (EMD) between them, normalized by the range of the data
+    ///     Given two histograms, calculates the Earth Mover's Distance (EMD) between them, normalized by the range of the data
     /// </summary>
     /// <param name="original">The original histogram</param>
     /// <param name="reconstructed">The reconstructed histogram</param>

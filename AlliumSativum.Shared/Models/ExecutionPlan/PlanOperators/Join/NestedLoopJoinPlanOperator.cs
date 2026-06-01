@@ -25,22 +25,19 @@ public sealed class NestedLoopJoinPlanOperator : JoinPlanOperator
     {
         return $"NESTED LOOP JOIN ({Left.ToJoinPlanString()}, {Right.ToJoinPlanString()})";
     }
-    
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Left, Expression, Right);
     }
-    
+
     public override bool Equals(object? obj)
     {
-        if (obj is not NestedLoopJoinPlanOperator other)
-        {
-            return false;
-        }
+        if (obj is not NestedLoopJoinPlanOperator other) return false;
 
         return other.Left.Equals(Left) && other.Right.Equals(Right) && other.Expression.Equals(Expression);
     }
-    
+
     public override bool IsEquivalentTo(PlanOperator? other)
     {
         if (!base.IsEquivalentTo(other)) return false;

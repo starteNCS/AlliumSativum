@@ -13,10 +13,10 @@ public sealed class DataUtils
     }
 
     /// <summary>
-    /// Executes the given query execution plan and extracts the resulting data as a list of doubles.
+    ///     Executes the given query execution plan and extracts the resulting data as a list of doubles.
     /// </summary>
     /// <remarks>
-    /// If a value cannot be parsed as a double, it is represented as NaN in the resulting list.
+    ///     If a value cannot be parsed as a double, it is represented as NaN in the resulting list.
     /// </remarks>
     /// <param name="plan">The plan to execute</param>
     /// <returns>List of parsed doubles</returns>

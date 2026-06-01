@@ -4,7 +4,8 @@ using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 /// <summary>
-/// Expression node representing the mapping between a variable and the attribute it represents. Used exclusively in the semantic transformation.
+///     Expression node representing the mapping between a variable and the attribute it represents. Used exclusively in
+///     the semantic transformation.
 /// </summary>
 public class VariableMappingExpressionNode : ExpressionNode
 {
@@ -23,10 +24,7 @@ public class VariableMappingExpressionNode : ExpressionNode
 
     public override bool Equals(object? obj)
     {
-        if (obj is VariableMappingExpressionNode other)
-        {
-            return other.VariableMapping.Equals(VariableMapping);
-        }
+        if (obj is VariableMappingExpressionNode other) return other.VariableMapping.Equals(VariableMapping);
 
         return false;
     }

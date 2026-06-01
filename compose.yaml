@@ -9,7 +9,7 @@
     environment:
       - ConnectionStrings__catalog-database=Host=catalog;Port=5432;Database=catalog;Username=catalog-user;Password=pw123!
       - WorkerUrl=http://host.docker.internal:55001
-# COST MODEL SETTINGS. CHANGE AT WILL, MAY RESULT IN WORSE PERFORMANCE
+      # COST MODEL SETTINGS. CHANGE AT WILL, MAY RESULT IN WORSE PERFORMANCE
       - CostModel__Project__BaseCost=0
       - CostModel__Project__PerRowCost=0.004674
       - CostModel__Project__PerAttributeCost=0.003451
@@ -21,7 +21,7 @@
       - CostModel__Join__Hash__PerAttributeHashTableInitiation=0.000046
       - CostModel__Join__Hash__PerAttributeHashTableLookup=0.000003
       - CostModel__Join__Hash__PerPropertyCloneCost=0.0003
-# END COST MODEL SETTINGS
+  # END COST MODEL SETTINGS
 
   worker:
     image: philipphonsel1/allium-sativum.worker:latest
@@ -53,7 +53,7 @@
       - 60000:5432
     volumes:
       - ./docker-init/init-business.sql:/docker-entrypoint-initdb.d/init.sql
-        
+  
   shared:
     image: postgres:17.6
     environment:

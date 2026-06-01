@@ -20,9 +20,9 @@ public sealed class PushdownSqlPlanOperatorExecutor : IPlanOperatorExecutor<Push
         _logger = logger;
     }
 
-    
+
     /// <summary>
-    /// Hands the pushdown SQL plan operator to the worker's execution API
+    ///     Hands the pushdown SQL plan operator to the worker's execution API
     /// </summary>
     /// <param name="pop">The POP to execute</param>
     /// <returns>"pop", containing their results in the data field</returns>

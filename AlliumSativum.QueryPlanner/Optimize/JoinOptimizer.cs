@@ -24,8 +24,8 @@ public sealed class JoinOptimizer : IJoinOptimizer
         _costModel = costModel;
     }
 
-    
-    /// <inheritdoc/>
+
+    /// <inheritdoc />
     public async Task<List<PlanOperator>> EnumerateBushyJoinsAsync(List<JoinBaseModel> joins,
         PopLookupTable popLookupTable, bool prune = true)
     {
@@ -38,11 +38,58 @@ public sealed class JoinOptimizer : IJoinOptimizer
         return await BuildSubtreesAsync((1 << allTables.Count) - 1, allTables, joins, memo, popLookupTable, prune);
     }
 
+    /// <inheritdoc />
+    public (List<JoinBaseModel> joinsLeft, List<SelectDto> joinedTablePlans) CombineTableSplitsByJoinPushDown(
+        List<JoinBaseModel> joins, List<SelectDto> tableSplits)
+    {
+        var joinsLeft = new List<JoinBaseModel>();
+
+        foreach (var join in joins)
+        {
+            var joinSelects = tableSplits
+                .Where(x => join.AffectedTables.Any(at => x.AffectedTables.Contains(at)))
+                .ToList();
+
+            if (joinSelects.Exists(x => x.From!.DataSourceName != joinSelects[0].From!.DataSourceName))
+            {
+                // At least one of the plans used for the join stems from another data source
+                joinsLeft.Add(join);
+                continue;
+            }
+
+            if (join.AffectedTables.Count != 2)
+                throw new AsSqlOptimizeException(
+                    "Currently, only joins with parameters from exactly two tables are supported");
+
+            if (joinSelects.Count != 2) throw new AsSqlOptimizeException("At least one of the join plans are missing");
+
+            var proposal = new SelectDto
+            {
+                From = GetFromForJoin(join, joinSelects),
+                Where = _expressionNodeOptimizer.MergeCnfExpressions(joinSelects[0].Where, joinSelects[1].Where),
+                Select = [..joinSelects[0].Select, ..joinSelects[1].Select],
+                Join = [..joinSelects[0].Join, ..joinSelects[1].Join, join]
+            };
+            tableSplits.Remove(joinSelects[0]);
+            tableSplits.Remove(joinSelects[1]);
+            tableSplits.Add(proposal);
+        }
+
+        return (joinsLeft, tableSplits);
+    }
+
+    /// <inheritdoc />
+    public (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) ExtractOnPremiseJoins(
+        SelectDto select)
+    {
+        var mixedJoins = GetOnlyMixedJoins(select);
+        return (mixedJoins, mixedJoins.SelectMany(x => x.Expression.GetAttributesOfExpression()).ToList());
+    }
+
     /// <summary>
-    /// Dynamic programming approach to build all possible join trees for a given set of tables and joins.
-    /// Using a bitmask to represent subsets of tables and memoization to avoid redundant calculations.
-    ///
-    /// 🤖 Developed iteratively with the help of Google Gemini
+    ///     Dynamic programming approach to build all possible join trees for a given set of tables and joins.
+    ///     Using a bitmask to represent subsets of tables and memoization to avoid redundant calculations.
+    ///     🤖 Developed iteratively with the help of Google Gemini
     /// </summary>
     /// <param name="mask">The mask of the current subtree</param>
     /// <param name="tables">All tables of the selectDto</param>
@@ -83,62 +130,60 @@ public sealed class JoinOptimizer : IJoinOptimizer
             var rightPlans = await BuildSubtreesAsync(rightMask, tables, joins, memo, popLookupTable, prune);
 
             foreach (var left in leftPlans)
+            foreach (var right in rightPlans)
             {
-                foreach (var right in rightPlans)
+                // Find the expression that connects the 'left' set and 'right' set
+                var expression = FindExpressionForSets(leftMask, rightMask, tables, joins);
+
+                if (expression == null) continue;
+
+                // Merge distribution data
+                var distributions = ((List<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>)
+                        [left.DistributionData, right.DistributionData])
+                    .SelectMany(d => d)
+                    .ToDictionary(kv => kv.Key, kv => kv.Value);
+
+                var costData =
+                    await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)expression,
+                        distributions,
+                        [left, right]);
+
+                // Local helper to cleanly handle the pruning logic for all join types
+                void ProcessPlan(PlanOperator plan)
                 {
-                    // Find the expression that connects the 'left' set and 'right' set
-                    var expression = FindExpressionForSets(leftMask, rightMask, tables, joins);
-
-                    if (expression == null) continue;
-                    
-                    // Merge distribution data
-                    var distributions = ((List<Dictionary<AttributeSpecifier, PlanOperatorDistributionData>>)
-                            [left.DistributionData, right.DistributionData])
-                        .SelectMany(d => d)
-                        .ToDictionary(kv => kv.Key, kv => kv.Value);
-
-                    var costData =
-                        await _costModel.GetDistributionOfExpressionAsync((BinaryOperatorExpressionNode)expression,
-                            distributions,
-                            [left, right]);
-
-                    // Local helper to cleanly handle the pruning logic for all join types
-                    void ProcessPlan(PlanOperator plan)
+                    plan.Cost = _costModel.CalculateCost(plan);
+                    if (!prune)
                     {
-                        plan.Cost = _costModel.CalculateCost(plan);
-                        if (!prune)
-                        {
-                            results.Add(plan);
-                        }
-                        else if (plan.Cost < minCost)
-                        {
-                            minCost = plan.Cost;
-                            cheapestPlanForMask = plan;
-                        }
+                        results.Add(plan);
                     }
+                    else if (plan.Cost < minCost)
+                    {
+                        minCost = plan.Cost;
+                        cheapestPlanForMask = plan;
+                    }
+                }
 
-                    // --- Evaluate Nested Loop Join ---
-                    var nlj = new NestedLoopJoinPlanOperator(left, expression, right)
+                // --- Evaluate Nested Loop Join ---
+                var nlj = new NestedLoopJoinPlanOperator(left, expression, right)
+                {
+                    DistributionData = costData.Distribution,
+                    Selectivity = costData.Selectivity,
+                    ExpectedCardinality = costData.Cardinality,
+                    Width = left.Width + right.Width - expression.GetAttributesOfExpression().Count
+                };
+                ProcessPlan(nlj);
+
+                if (expression.IsEquiJoin())
+                {
+                    // --- Evaluate Hash Join ---
+                    var hj = new HashJoinPlanOperator(left, expression, right)
                     {
                         DistributionData = costData.Distribution,
                         Selectivity = costData.Selectivity,
                         ExpectedCardinality = costData.Cardinality,
-                        Width = (left.Width + right.Width) - expression.GetAttributesOfExpression().Count
+                        Width = left.Width + right.Width - expression.GetAttributesOfExpression().Count
                     };
-                    ProcessPlan(nlj);
-
-                    if (expression.IsEquiJoin())
-                    {
-                        // --- Evaluate Hash Join ---
-                        var hj = new HashJoinPlanOperator(left, expression, right)
-                        {
-                            DistributionData = costData.Distribution,
-                            Selectivity = costData.Selectivity,
-                            ExpectedCardinality = costData.Cardinality,
-                            Width = (left.Width + right.Width) - expression.GetAttributesOfExpression().Count
-                        };
-                        ProcessPlan(hj);
-                    }
+                    ProcessPlan(hj);
                 }
             }
         }
@@ -152,7 +197,7 @@ public sealed class JoinOptimizer : IJoinOptimizer
     }
 
     /// <summary>
-    /// Finds an expression (join), that could join the two masks (table sets)
+    ///     Finds an expression (join), that could join the two masks (table sets)
     /// </summary>
     /// <param name="mask1">First mask</param>
     /// <param name="mask2">Second mask</param>
@@ -169,8 +214,8 @@ public sealed class JoinOptimizer : IJoinOptimizer
     }
 
     /// <summary>
-    /// Checks if a table is part of the mask, by identifying the index of the table in the list of all tables
-    /// and checking if the corresponding bit is set in the mask.
+    ///     Checks if a table is part of the mask, by identifying the index of the table in the list of all tables
+    ///     and checking if the corresponding bit is set in the mask.
     /// </summary>
     /// <param name="table">The table to look for</param>
     /// <param name="mask">The mask to check</param>
@@ -183,72 +228,21 @@ public sealed class JoinOptimizer : IJoinOptimizer
         return (mask & (1 << index)) != 0;
     }
 
-    /// <inheritdoc/> 
-    public (List<JoinBaseModel> joinsLeft, List<SelectDto> joinedTablePlans) CombineTableSplitsByJoinPushDown(
-        List<JoinBaseModel> joins, List<SelectDto> tableSplits)
-    {
-        var joinsLeft = new List<JoinBaseModel>();
-
-        foreach (var join in joins)
-        {
-            var joinSelects = tableSplits
-                .Where(x => join.AffectedTables.Any(at => x.AffectedTables.Contains(at)))
-                .ToList();
-
-            if (joinSelects.Exists(x => x.From!.DataSourceName != joinSelects[0].From!.DataSourceName))
-            {
-                // At least one of the plans used for the join stems from another data source
-                joinsLeft.Add(join);
-                continue;
-            }
-
-            if (join.AffectedTables.Count != 2)
-                throw new AsSqlOptimizeException(
-                    "Currently, only joins with parameters from exactly two tables are supported");
-
-            if (joinSelects.Count != 2) throw new AsSqlOptimizeException("At least one of the join plans are missing");
-
-            var proposal = new SelectDto
-            {
-                From = GetFromForJoin(join, joinSelects),
-                Where = _expressionNodeOptimizer.MergeCnfExpressions(joinSelects[0].Where, joinSelects[1].Where),
-                Select = [..joinSelects[0].Select, ..joinSelects[1].Select],
-                Join = [..joinSelects[0].Join, ..joinSelects[1].Join, join]
-            };
-            tableSplits.Remove(joinSelects[0]);
-            tableSplits.Remove(joinSelects[1]);
-            tableSplits.Add(proposal);
-        }
-
-        return (joinsLeft, tableSplits);
-    }
-
     /// <summary>
-    /// Get the "FROM" for the join, that is the newly joined table ("INNER JOIN table ON ...")
+    ///     Get the "FROM" for the join, that is the newly joined table ("INNER JOIN table ON ...")
     /// </summary>
     /// <param name="join">The join to load the FROM from</param>
     /// <param name="joinSelects">Both sides of the join as a select dto</param>
     /// <returns>The FROM table specifier </returns>
     private static TableSpecifier GetFromForJoin(JoinBaseModel join, List<SelectDto> joinSelects)
     {
-        if (join.Inner == joinSelects[0].From)
-        {
-            return joinSelects[1].From;
-        }
+        if (join.Inner == joinSelects[0].From) return joinSelects[1].From;
 
         return joinSelects[0].From;
     }
-    
-    /// <inheritdoc/>
-    public (List<JoinBaseModel> onPremiseJoins, List<AttributeSpecifier> selectNeeded) ExtractOnPremiseJoins(
-        SelectDto select)
-    {
-        var mixedJoins = GetOnlyMixedJoins(select);
-        return (mixedJoins, mixedJoins.SelectMany(x => x.Expression.GetAttributesOfExpression()).ToList());
-    }
 
     /// <summary>
-    /// Returns a list of all joins, where the tables reside in different data sources
+    ///     Returns a list of all joins, where the tables reside in different data sources
     /// </summary>
     /// <param name="select">The select dto to check the joins of</param>
     /// <returns>All of those joins, that cross data source borders</returns>

@@ -19,7 +19,7 @@ public sealed class StatisticsStrategy
     }
 
     /// <summary>
-    /// Based on the connector type, it returns the appropriate statistics scraper
+    ///     Based on the connector type, it returns the appropriate statistics scraper
     /// </summary>
     /// <param name="connectorType">The connector type needed for the data source</param>
     /// <returns>The correct statistics scraper</returns>

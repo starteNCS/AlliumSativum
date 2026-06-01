@@ -10,26 +10,26 @@ public sealed class AlgorithmDataProviderPop : DataProviderPop
         {
             Data =
             [
-                new()
+                new Dictionary<string, object>
                 {
                     { "cs->algorithm.id", 1 },
                     { "cs->algorithm.name", "Shunting-Yard" }
                 },
-                new()
+                new Dictionary<string, object>
                 {
                     { "cs->algorithm.id", 2 },
                     { "cs->algorithm.name", "Dynamic Programming Bushy Join Tree Enumeration" }
                 },
-                new()
+                new Dictionary<string, object>
                 {
                     { "cs->algorithm.id", 3 },
                     { "cs->algorithm.name", "Djikstra's Algorithm" }
                 },
-                new()
+                new Dictionary<string, object>
                 {
                     { "cs->algorithm.id", 4 },
                     { "cs->algorithm.name", "CNF Transformation" }
-                },
+                }
             ]
         };
     }

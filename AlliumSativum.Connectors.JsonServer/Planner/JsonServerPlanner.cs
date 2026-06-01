@@ -24,7 +24,7 @@ public sealed class JsonServerPlanner : IPlanner
         _distributionUtils = distributionUtils;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanAsync(Guid dataSourceId,
         SelectDto selectModel)
     {
@@ -54,9 +54,9 @@ public sealed class JsonServerPlanner : IPlanner
         {
             var joinRelation = await _catalogDatabase.GetRelationAsync(dataSourceId, join.Inner.TableName);
             if (joinRelation is null) return ([], null);
-            
+
             var joinRelationAttributes = await _catalogDatabase.GetAttributesOfRelationAsync(joinRelation.Id);
-            
+
 
             planOperators.Add(
                 BuildPushDown(
@@ -81,7 +81,8 @@ public sealed class JsonServerPlanner : IPlanner
             unplanned);
     }
 
-    private PlanContainer BuildPushDown(DataSourceEntity dataSource, RelationEntity relation, List<AttributeEntity> attributes, TableSpecifier from,
+    private PlanContainer BuildPushDown(DataSourceEntity dataSource, RelationEntity relation,
+        List<AttributeEntity> attributes, TableSpecifier from,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData)
     {
         var urlBuilder = new StringBuilder();

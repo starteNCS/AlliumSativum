@@ -12,8 +12,10 @@ public sealed class NestedLoopJoinPlanOperatorExecutorTest
     [Test]
     public async Task Should_Hash_Join()
     {
-        var expression = "SELECT FROM cs->experiment_run er INNER JOIN cs->algorithm a ON er.algorithm_id = a.id".ToSelectDto().Join.Single().Expression;
-        var pop = new NestedLoopJoinPlanOperator(new ExperimentRunDataProviderPop(), expression, new AlgorithmDataProviderPop());
+        var expression = "SELECT FROM cs->experiment_run er INNER JOIN cs->algorithm a ON er.algorithm_id = a.id"
+            .ToSelectDto().Join.Single().Expression;
+        var pop = new NestedLoopJoinPlanOperator(new ExperimentRunDataProviderPop(), expression,
+            new AlgorithmDataProviderPop());
 
         var result = await new NestedLoopJoinPlanOperatorExecutor().ExecuteAsync(pop);
 
@@ -28,6 +30,7 @@ public sealed class NestedLoopJoinPlanOperatorExecutorTest
             .ContainKey("cs->algorithm.id")
             .And
             .ContainKey("cs->algorithm.name"));
-        result.ExecutionData.Data.Should().AllSatisfy(e => e["cs->experiment_run.algorithm_id"].Should().Be(e["cs->algorithm.id"]));
+        result.ExecutionData.Data.Should()
+            .AllSatisfy(e => e["cs->experiment_run.algorithm_id"].Should().Be(e["cs->algorithm.id"]));
     }
 }

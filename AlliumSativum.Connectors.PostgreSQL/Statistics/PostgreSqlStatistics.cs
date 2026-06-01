@@ -1,7 +1,6 @@
 using System.Text;
 using AlliumSativum.Connectors.PostgreSQL.DatabaseConnectors;
 using AlliumSativum.Connectors.PostgreSQL.Models.ORM;
-using AlliumSativum.Connectors.Shared;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Utils;
@@ -28,7 +27,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         _logger = logger;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task ScrapeStatisticsAsync(Guid dataSource)
     {
         var tables = await _dataSource.QueryAsync<PostgresTablesModel>(dataSource,
@@ -119,7 +118,8 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
         await CreateQueryStatsMethodAsync(dataSource);
     }
 
-    private async Task<(List<RelationEntity> relationEntities, List<AttributeEntity> attributeEntities, List<AttributePeakEntity> attributePeakEntities)>
+    private async Task<(List<RelationEntity> relationEntities, List<AttributeEntity> attributeEntities,
+            List<AttributePeakEntity> attributePeakEntities)>
         GetTableMetricsAsync(
             Guid dataSource,
             IList<PostgresColumnsModel> columns,
@@ -215,7 +215,7 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
                         .ToList();
                     (attributeEntity, modes) = DistributionUtils.CalculateDistribution(items, attributeEntity);
                 }
-                
+
                 attributeMetrics.Add(attributeEntity);
                 attributePeakMetrics.AddRange(modes);
             }
@@ -228,23 +228,23 @@ public sealed class PostgreSqlStatistics : IDataSourceStatistics
     {
         // this method was developed with help of google's gemini pro 3.5
         await _dataSource.ExecuteAsync(datasourceId, """
-                                 CREATE OR REPLACE FUNCTION query_stats(q text)
-                                 RETURNS TABLE(execution_time_ms numeric, cardinality bigint)
-                                 LANGUAGE plpgsql AS $$
-                                 DECLARE
-                                   j json;
-                                   r record;
-                                 BEGIN
-                                   -- Capture EXPLAIN ANALYZE JSON output row by row
-                                   FOR r IN EXECUTE format('EXPLAIN (ANALYZE, FORMAT JSON) %s', q) LOOP
-                                     j := r."QUERY PLAN";
-                                   END LOOP;
+                                                     CREATE OR REPLACE FUNCTION query_stats(q text)
+                                                     RETURNS TABLE(execution_time_ms numeric, cardinality bigint)
+                                                     LANGUAGE plpgsql AS $$
+                                                     DECLARE
+                                                       j json;
+                                                       r record;
+                                                     BEGIN
+                                                       -- Capture EXPLAIN ANALYZE JSON output row by row
+                                                       FOR r IN EXECUTE format('EXPLAIN (ANALYZE, FORMAT JSON) %s', q) LOOP
+                                                         j := r."QUERY PLAN";
+                                                       END LOOP;
 
-                                   RETURN QUERY SELECT
-                                     (j -> 0 ->> 'Execution Time')::numeric,
-                                     (j -> 0 -> 'Plan' ->> 'Actual Rows')::bigint;
-                                 END;
-                                 $$;
-                                 """);
+                                                       RETURN QUERY SELECT
+                                                         (j -> 0 ->> 'Execution Time')::numeric,
+                                                         (j -> 0 -> 'Plan' ->> 'Actual Rows')::bigint;
+                                                     END;
+                                                     $$;
+                                                     """);
     }
 }

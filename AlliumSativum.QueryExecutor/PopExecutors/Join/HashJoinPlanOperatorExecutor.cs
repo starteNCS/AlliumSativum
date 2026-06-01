@@ -10,7 +10,8 @@ namespace AlliumSativum.QueryExecutor.PopExecutors.Join;
 public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoinPlanOperator>
 {
     /// <summary>
-    /// Joins both child data sets by using a hash join, and applying the specified expression as a predicate to the merged rows
+    ///     Joins both child data sets by using a hash join, and applying the specified expression as a predicate to the merged
+    ///     rows
     /// </summary>
     /// <param name="pop">The POP to execute</param>
     /// <returns>"pop", containing their results in the data field</returns>
@@ -19,8 +20,8 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
         var stopwatch = Stopwatch.StartNew();
         var left = pop.Left.ExecutionData.Data;
         var right = pop.Right.ExecutionData.Data;
-        
-        
+
+
         if (left.Count == 0 || right.Count == 0)
         {
             stopwatch.Stop();
@@ -93,7 +94,7 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
     }
 
     /// <summary>
-    /// Merges two rows into one by concatenating their key-value pairs
+    ///     Merges two rows into one by concatenating their key-value pairs
     /// </summary>
     /// <remarks>In case of key collisions, the value from the right row will be used.</remarks>
     /// <param name="left">The first row</param>
@@ -107,24 +108,19 @@ public sealed class HashJoinPlanOperatorExecutor : IPlanOperatorExecutor<HashJoi
         return merged;
     }
 
-    
+
     /// <summary>
-    /// Unwraps the C# object from a JSON element.
-    /// If the JSON element is a number, it will be converted to a double. Otherwise, the JSON element will be converted to a string.
+    ///     Unwraps the C# object from a JSON element.
+    ///     If the JSON element is a number, it will be converted to a double. Otherwise, the JSON element will be converted to
+    ///     a string.
     /// </summary>
     /// <param name="obj">The input json object</param>
     /// <returns>The unwrapped value</returns>
     private static object GetJsonContent(object obj)
     {
-        if (obj is not JsonElement json)
-        {
-            return obj;
-        }
+        if (obj is not JsonElement json) return obj;
 
-        if (json.ValueKind == JsonValueKind.Number)
-        {
-            return json.GetDouble();
-        }
+        if (json.ValueKind == JsonValueKind.Number) return json.GetDouble();
 
         return json.ToString();
     }

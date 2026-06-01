@@ -12,7 +12,7 @@ public sealed class ProjectPlanOperatorExecutorTest
     [Test]
     public async Task Should_Project_Plan_Operator()
     {
-        var pop = new ProjectPlanOperator([new AttributeSpecifier("cs", "algorithm", "id")])
+        var pop = new ProjectPlanOperator(new AttributeSpecifier("cs", "algorithm", "id"))
         {
             Children = [new AlgorithmDataProviderPop()]
         };

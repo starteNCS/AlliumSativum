@@ -37,17 +37,17 @@ public class JoinPlanOperator : PlanOperator
         return (double)ExecutionData.ActualCardinality /
                (Left.ExecutionData.ActualCardinality * Right.ExecutionData.ActualCardinality);
     }
-    
+
     public override string ToJoinPlanString()
     {
         return "Invalid, no join type selected";
     }
-    
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Left, Expression, Right);
     }
-    
+
     public override bool Equals(object? other)
     {
         if (other is not JoinPlanOperator join) return false;

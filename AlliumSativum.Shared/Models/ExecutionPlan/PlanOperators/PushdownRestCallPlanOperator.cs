@@ -49,10 +49,11 @@ public class PushdownRestCallPlanOperator : PushdownPlanOperator
     {
         if (other is not PushdownRestCallPlanOperator pushdown) return false;
 
-        return pushdown.DataSource.Equals(DataSource) && pushdown.HttpMethod.Equals(HttpMethod) && pushdown.Url.Equals(Url) &&
+        return pushdown.DataSource.Equals(DataSource) && pushdown.HttpMethod.Equals(HttpMethod) &&
+               pushdown.Url.Equals(Url) &&
                (pushdown.Body?.Equals(Body) ?? true);
     }
-    
+
     public override bool IsEquivalentTo(PlanOperator? other)
     {
         if (!base.IsEquivalentTo(other)) return false;

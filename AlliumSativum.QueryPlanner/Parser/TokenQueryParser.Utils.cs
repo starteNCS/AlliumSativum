@@ -5,9 +5,9 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser
 {
-    
     /// <summary>
-    /// Reads the stack of tokens until the next token matches a keyword, and returns the concatenated string of the read tokens.
+    ///     Reads the stack of tokens until the next token matches a keyword, and returns the concatenated string of the read
+    ///     tokens.
     /// </summary>
     /// <param name="tokens">Stack of tokens</param>
     /// <returns>Full string up until next keyword (excluding the keyword)</returns>
@@ -25,7 +25,7 @@ public partial class TokenQueryParser
     }
 
     /// <summary>
-    /// Readsthe stack of tokens until the next token matches a keyword, and returns the read tokens as a stack.
+    ///     Readsthe stack of tokens until the next token matches a keyword, and returns the read tokens as a stack.
     /// </summary>
     /// <param name="tokens">Stack of tokens</param>
     /// <returns>Stack of tokens until next keyword (excluding the keyword)</returns>
@@ -34,9 +34,7 @@ public partial class TokenQueryParser
         var intermediateStack = new List<string>();
 
         while (tokens.TryPeek(out var token) && !AsSqlKeywords.Keywords.Contains(token))
-        {
             intermediateStack.Add(tokens.Pop());
-        }
 
         intermediateStack.Reverse();
         return new Stack<string>(intermediateStack);

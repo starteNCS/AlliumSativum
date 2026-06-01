@@ -1,11 +1,9 @@
-using System.Dynamic;
-
 namespace AlliumSativum.Shared.Utils;
 
 public static class DictionaryHelper
 {
     /// <summary>
-    /// Prefixes the keys of a dictionary with a specified string.
+    ///     Prefixes the keys of a dictionary with a specified string.
     /// </summary>
     /// <param name="source">The dictionary to prefix</param>
     /// <param name="prefix">The prefix</param>

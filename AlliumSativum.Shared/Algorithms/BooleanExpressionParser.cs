@@ -23,7 +23,8 @@ public static class BooleanExpressionParser
     }
 
     /// <summary>
-    /// Parses a list of tokens representing a boolean expression into an expression tree using the Shunting Yard Algorithm.
+    ///     Parses a list of tokens representing a boolean expression into an expression tree using the Shunting Yard
+    ///     Algorithm.
     /// </summary>
     /// <param name="tokens">Token stack containing only the tokens of the boolean expression</param>
     /// <returns>ExpressionNode tree</returns>
@@ -46,7 +47,7 @@ public static class BooleanExpressionParser
     }
 
     /// <summary>
-    /// Handles the topmost token of the token stack using the shunting yard algorithm
+    ///     Handles the topmost token of the token stack using the shunting yard algorithm
     /// </summary>
     /// <param name="token">Topmost token</param>
     /// <param name="operatorStack">The operator stack</param>
@@ -87,10 +88,11 @@ public static class BooleanExpressionParser
     }
 
     /// <summary>
-    /// Transforms any given boolean expression tree into Conjunctive Normal Form (CNF) using the distributive property of OR over AND.
+    ///     Transforms any given boolean expression tree into Conjunctive Normal Form (CNF) using the distributive property of
+    ///     OR over AND.
     /// </summary>
     /// <remarks>
-    /// Returns the same tree if it's already in CNF or cannot be transformed
+    ///     Returns the same tree if it's already in CNF or cannot be transformed
     /// </remarks>
     /// <param name="node">Starting node</param>
     /// <returns>Transformed node</returns>
@@ -128,7 +130,7 @@ public static class BooleanExpressionParser
     }
 
     /// <summary>
-    /// Building binary operator node, that is a node with an operator and two children
+    ///     Building binary operator node, that is a node with an operator and two children
     /// </summary>
     /// <param name="operators">The operator stack</param>
     /// <param name="operands">The operand stack</param>
@@ -142,7 +144,8 @@ public static class BooleanExpressionParser
     }
 
     /// <summary>
-    /// Loading the top-most full node from the operand stack, which can be either a ValueExpressionNode, a BinaryOperatorExpressionNode, a FullySpecifiedColumnExpressionNode or a VariableMappingExpressionNode
+    ///     Loading the top-most full node from the operand stack, which can be either a ValueExpressionNode, a
+    ///     BinaryOperatorExpressionNode, a FullySpecifiedColumnExpressionNode or a VariableMappingExpressionNode
     /// </summary>
     /// <param name="operands">Operand stack</param>
     /// <returns>Topmost full expression node</returns>
@@ -192,18 +195,19 @@ public static class BooleanExpressionParser
     }
 
     /// <summary>
-    /// Load a expression node from the topmost token, which can be either a ValueExpressionNode or a PartialColumnExpressionNode, depending on the token format
+    ///     Load a expression node from the topmost token, which can be either a ValueExpressionNode or a
+    ///     PartialColumnExpressionNode, depending on the token format
     /// </summary>
     /// <remarks>
-    /// Simple heuristic: if it starts with single quote or is a number, it's a value.
-    /// Otherwise, treat as column.
+    ///     Simple heuristic: if it starts with single quote or is a number, it's a value.
+    ///     Otherwise, treat as column.
     /// </remarks>
     /// <param name="token">The topmost token</param>
     /// <returns>Expression node</returns>
     private static ExpressionNode CreateOperandNode(string token)
     {
         var isTokenString = token.StartsWith('\'');
-        var isTokenDecimal = decimal.TryParse(token, out var _);
+        var isTokenDecimal = decimal.TryParse(token, out _);
         if (isTokenString || isTokenDecimal)
             return new ValueExpressionNode
             {

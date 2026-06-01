@@ -6,12 +6,11 @@ namespace AlliumSativum.Parser;
 
 public partial class TokenQueryParser
 {
-    
     /// <summary>
-    /// Reads the next tokens as a FROM statement and updates the model accordingly.
+    ///     Reads the next tokens as a FROM statement and updates the model accordingly.
     /// </summary>
     /// <remarks>
-    /// Expects the next tokens to be in the format: "FROM" "dataSourceName"->"tableName" ["variableName"]
+    ///     Expects the next tokens to be in the format: "FROM" "dataSourceName"->"tableName" ["variableName"]
     /// </remarks>
     /// <param name="tokens">Stack of tokens</param>
     /// <param name="model">Current select dto</param>

@@ -1,7 +1,7 @@
 namespace AlliumSativum.Worker.Sdk;
 
 /// <summary>
-/// Wrapper for calling the grpc metrics endpoints
+///     Wrapper for calling the grpc metrics endpoints
 /// </summary>
 public sealed class MetricsApi
 {
@@ -13,7 +13,7 @@ public sealed class MetricsApi
     }
 
     /// <summary>
-    /// Triggert he metrics scraping for a given data source
+    ///     Triggert he metrics scraping for a given data source
     /// </summary>
     /// <param name="dataSource">Data source to scrape metrics of</param>
     public async Task TriggerMetricsScrapeAsync(Guid dataSource)

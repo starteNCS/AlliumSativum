@@ -17,9 +17,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AlliumSativum.QueryExecutor\AlliumSativum.QueryExecutor.csproj" />
-      <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj" />
-      <ProjectReference Include="..\Test.Shared\Test.Shared.csproj" />
+        <ProjectReference Include="..\AlliumSativum.QueryExecutor\AlliumSativum.QueryExecutor.csproj"/>
+        <ProjectReference Include="..\AlliumSativum.Shared\AlliumSativum.Shared.csproj"/>
+        <ProjectReference Include="..\Test.Shared\Test.Shared.csproj"/>
     </ItemGroup>
-    
+
 </Project>

@@ -24,7 +24,7 @@ public sealed class DatasourceDatabase
     }
 
     /// <summary>
-    /// Loads the data source connection details and queries that data source
+    ///     Loads the data source connection details and queries that data source
     /// </summary>
     /// <param name="dataSource">Id of the target data source</param>
     /// <param name="query">Query to execute</param>
@@ -56,9 +56,9 @@ public sealed class DatasourceDatabase
         }
     }
 
-    
+
     /// <summary>
-    /// Loads the data source connection details and queries that data source as anonymous objects
+    ///     Loads the data source connection details and queries that data source as anonymous objects
     /// </summary>
     /// <param name="dataSource">Id of the target data source</param>
     /// <param name="query">Query to execute</param>
@@ -94,7 +94,7 @@ public sealed class DatasourceDatabase
     }
 
     /// <summary>
-    /// Loads the data source connection details, queries that data and measures the time it took 
+    ///     Loads the data source connection details, queries that data and measures the time it took
     /// </summary>
     /// <param name="dataSource">Id of the target data source</param>
     /// <param name="query">Query to execute</param>
@@ -127,7 +127,7 @@ public sealed class DatasourceDatabase
     }
 
     /// <summary>
-    /// Executes a command (e.g. INSERT, UPDATE, DELETE) against the data source and measures the time it took
+    ///     Executes a command (e.g. INSERT, UPDATE, DELETE) against the data source and measures the time it took
     /// </summary>
     /// <param name="dataSource">Id of the target data source</param>
     /// <param name="query">Statement to execute</param>
@@ -159,7 +159,7 @@ public sealed class DatasourceDatabase
     }
 
     /// <summary>
-    /// Loads the connection string for a given data source from the catalog
+    ///     Loads the connection string for a given data source from the catalog
     /// </summary>
     /// <param name="dataSource">Data source id</param>
     /// <returns>Not yet opened connection</returns>

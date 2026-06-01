@@ -3,13 +3,12 @@ using AlliumSativum.Shared.Models.ExecutionPlan;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
-using AlliumSativum.Shared.Utils;
 
 namespace AlliumSativum.Shared.Costs;
 
 public sealed partial class DefaultCostModel
 {
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task<PlanOperatorDistributionCost> GetDistributionOfExpressionAsync(BinaryOperatorExpressionNode node,
         Dictionary<AttributeSpecifier, PlanOperatorDistributionData> distributionData, List<PlanOperator> children)
     {
@@ -42,7 +41,7 @@ public sealed partial class DefaultCostModel
     }
 
     /// <summary>
-    /// Recursively calculates the new distribution of attributes for and expressions
+    ///     Recursively calculates the new distribution of attributes for and expressions
     /// </summary>
     /// <param name="node">The node to calculate distribution for</param>
     /// <param name="distributionData">The children distribution data</param>
@@ -67,9 +66,9 @@ public sealed partial class DefaultCostModel
         };
     }
 
-    
+
     /// <summary>
-    /// Calculates the new distributions for and expressions
+    ///     Calculates the new distributions for and expressions
     /// </summary>
     /// <remarks>Using Lemma 3.3.8, Cases 1</remarks>
     /// <param name="left">Left child</param>
@@ -108,7 +107,7 @@ public sealed partial class DefaultCostModel
     }
 
     /// <summary>
-    /// Recursively calculates the new distribution of attributes for or expressions
+    ///     Recursively calculates the new distribution of attributes for or expressions
     /// </summary>
     /// <param name="node">The node to calculate distribution for</param>
     /// <param name="distributionData">The children distribution data</param>
@@ -134,7 +133,7 @@ public sealed partial class DefaultCostModel
     }
 
     /// <summary>
-    /// Calculates the new distributions for and expressions
+    ///     Calculates the new distributions for and expressions
     /// </summary>
     /// <remarks>Using Lemma 3.3.8, Cases 2</remarks>
     /// <param name="left">Left child</param>
@@ -171,7 +170,7 @@ public sealed partial class DefaultCostModel
     }
 
     /// <summary>
-    /// Calculates distribution for equality predicates between two attributes
+    ///     Calculates distribution for equality predicates between two attributes
     /// </summary>
     /// <param name="node">The node to calculate distribution for</param>
     /// <param name="distributionData">The children distribution data</param>
@@ -206,7 +205,7 @@ public sealed partial class DefaultCostModel
             Min = joinMin,
             Max = joinMax,
             Peaks = peaks,
-            MeanBinHeight = GetMeanBinHeight([leftData, rightData]),
+            MeanBinHeight = GetMeanBinHeight([leftData, rightData])
         };
 
         var distribution = ReconstructDistribution(distributionData[leftAttribute]);
@@ -271,7 +270,7 @@ public sealed partial class DefaultCostModel
     }
 
     /// <summary>
-    /// Calculate distribution for predicates with >, <, >=, <= between an attribute and a value
+    ///     Calculate distribution for predicates with >, <, >=, <= between an attribute and a value
     /// </summary>
     /// <remarks>Using Lemma 3.3.6, Cases 3 & 4</remarks>
     /// <param name="node">The node to calculate distribution for</param>
@@ -312,7 +311,7 @@ public sealed partial class DefaultCostModel
             Min = min,
             Max = max,
             Peaks = peaksLeft,
-            MeanBinHeight = GetMeanBinHeight([distributionData[attribute]]),
+            MeanBinHeight = GetMeanBinHeight([distributionData[attribute]])
         };
 
         var nowIntegral = ReconstructDistribution(distributionData[attribute]).Values.Sum();
@@ -330,7 +329,7 @@ public sealed partial class DefaultCostModel
     }
 
     /// <summary>
-    /// Calculates the mean height of the bins in the histogram by reconstruction those histograms
+    ///     Calculates the mean height of the bins in the histogram by reconstruction those histograms
     /// </summary>
     /// <param name="distributionData">The distribution data</param>
     /// <returns>The mean bin height</returns>
@@ -349,7 +348,7 @@ public sealed partial class DefaultCostModel
     }
 
     /// <summary>
-    /// Calculates the new min and max values for an attribute after applying a filter with the given operation and value.
+    ///     Calculates the new min and max values for an attribute after applying a filter with the given operation and value.
     /// </summary>
     /// <param name="data">Distribution data as base</param>
     /// <param name="operation">The operation applied</param>
@@ -396,7 +395,7 @@ public sealed partial class DefaultCostModel
     }
 
     /// <summary>
-    /// Checks if  a peak lies relative to a value according to the given operation
+    ///     Checks if  a peak lies relative to a value according to the given operation
     /// </summary>
     /// <param name="peak">The peak</param>
     /// <param name="operation">The operation</param>

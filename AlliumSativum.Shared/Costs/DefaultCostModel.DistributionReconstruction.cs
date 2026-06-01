@@ -1,11 +1,10 @@
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
-using AlliumSativum.Shared.Utils;
 
 namespace AlliumSativum.Shared.Costs;
 
 public sealed partial class DefaultCostModel
 {
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public Dictionary<double, double> ReconstructDistribution(PlanOperatorDistributionData distributionData)
     {
         if (distributionData.Peaks.Count == 0)
@@ -15,8 +14,8 @@ public sealed partial class DefaultCostModel
     }
 
     /// <summary>
-    /// Reconstructing a uniform distribution from the given distribution data,
-    /// by filling the histogram with the mean bin height for each bin
+    ///     Reconstructing a uniform distribution from the given distribution data,
+    ///     by filling the histogram with the mean bin height for each bin
     /// </summary>
     /// <param name="distributionData">The attributes distribution data</param>
     /// <returns>The histogram</returns>
@@ -42,7 +41,7 @@ public sealed partial class DefaultCostModel
     }
 
     /// <summary>
-    /// Reconstructing any other distribution using multiple overlapping Gaussians
+    ///     Reconstructing any other distribution using multiple overlapping Gaussians
     /// </summary>
     /// <param name="distributionData">The attribtue distribution data</param>
     /// <returns>The histogram</returns>
@@ -59,15 +58,14 @@ public sealed partial class DefaultCostModel
 
         var isSingleBin = Math.Abs(distributionData.Min - distributionData.Max) < 0e-3;
         foreach (var peak in distributionData.Peaks)
-        {
             HandlePeakForReconstruction(distributionData, isSingleBin, peak, histogram);
-        }
 
         return histogram;
     }
 
     /// <summary>
-    /// Calculates the contribution of a single peak to the histogram, and updates the histogram values if the contribution is higher than the current value
+    ///     Calculates the contribution of a single peak to the histogram, and updates the histogram values if the contribution
+    ///     is higher than the current value
     /// </summary>
     /// <param name="distributionData">The distributions data</param>
     /// <param name="isSingleBin">If the histogram consists of only one bin</param>
@@ -94,7 +92,8 @@ public sealed partial class DefaultCostModel
     }
 
     /// <summary>
-    /// Calculates the normalized normal distribution value for the given position and peak parameters, so that the maximum value of the distribution is 1
+    ///     Calculates the normalized normal distribution value for the given position and peak parameters, so that the maximum
+    ///     value of the distribution is 1
     /// </summary>
     /// <param name="x">The position to calculate for</param>
     /// <param name="peak">The current peak to calculate for</param>

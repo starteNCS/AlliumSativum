@@ -98,7 +98,8 @@ app.MapPost("execute-return-plan",
         stopwatch.Stop();
 
         var pretty = executionPlan.RootOperator.ToPrettyString(true, true);
-        return $"<span>{HtmlClasses.Bold("Total Execution Time")}: {stopwatch.Elapsed.TotalMilliseconds}ms</span><hr>" + pretty;
+        return $"<span>{HtmlClasses.Bold("Total Execution Time")}: {stopwatch.Elapsed.TotalMilliseconds}ms</span><hr>" +
+               pretty;
     });
 
 await app.RunAsync();

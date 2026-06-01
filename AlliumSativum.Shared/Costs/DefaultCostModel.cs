@@ -24,7 +24,7 @@ public sealed partial class DefaultCostModel : ICostModel
         _settings = settings.Value;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public double TotalCost(PlanOperator? planOperator, bool fromActualCost = false)
     {
         if (planOperator == null) return 0;
@@ -68,7 +68,7 @@ public sealed partial class DefaultCostModel : ICostModel
     }
 
     /// <summary>
-    /// Calculates the cost for a project operator
+    ///     Calculates the cost for a project operator
     /// </summary>
     /// <param name="project">The operator</param>
     /// <returns>The cost</returns>
@@ -80,7 +80,7 @@ public sealed partial class DefaultCostModel : ICostModel
     }
 
     /// <summary>
-    /// Calculates the cost for a filter operator
+    ///     Calculates the cost for a filter operator
     /// </summary>
     /// <param name="filter">The operator</param>
     /// <returns>The cost</returns>
@@ -101,9 +101,9 @@ public sealed partial class DefaultCostModel : ICostModel
                + filter.ExpectedCardinality * costPerRow;
     }
 
-    
+
     /// <summary>
-    /// Calculates the cost for any join operator
+    ///     Calculates the cost for any join operator
     /// </summary>
     /// <param name="join">Any join POP</param>
     /// <returns>The cost</returns>
@@ -118,8 +118,9 @@ public sealed partial class DefaultCostModel : ICostModel
                 _settings.Filter.PerAttributeCostNumeric,
             HashJoinPlanOperator hj =>
                 _settings.Join.Hash.BaseCost
-                + hj.Left.ExpectedCardinality * (_settings.Join.Hash.PerAttributeHashTableInitiation)
-                + hj.Right.ExpectedCardinality *  (_settings.Join.Hash.PerAttributeHashTableLookup + _settings.Filter.PerAttributeCostNumeric)
+                + hj.Left.ExpectedCardinality * _settings.Join.Hash.PerAttributeHashTableInitiation
+                + hj.Right.ExpectedCardinality * (_settings.Join.Hash.PerAttributeHashTableLookup +
+                                                  _settings.Filter.PerAttributeCostNumeric)
                 + hj.ExpectedCardinality * (hj.Right.Width * _settings.Join.Hash.PerPropertyCloneCost),
             _ => throw new ArgumentException("Unsupported join in cost calculation")
         };

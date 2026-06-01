@@ -1,5 +1,3 @@
-using AlliumSativum.Shared.Utils;
-
 namespace AlliumSativum.Shared.Database.Entities;
 
 public sealed class AttributeEntity

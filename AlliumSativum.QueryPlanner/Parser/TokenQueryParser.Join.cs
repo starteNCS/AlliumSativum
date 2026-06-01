@@ -11,7 +11,7 @@ public partial class TokenQueryParser
     ///     Expects token of format INNER JOIN tableSpec varName ON expr
     /// </summary>
     /// <remarks>
-    /// Expects the next tokens to be in the format: "INNER JOIN" "dataSourceName"->"tableName" ON "boolean expression"
+    ///     Expects the next tokens to be in the format: "INNER JOIN" "dataSourceName"->"tableName" ON "boolean expression"
     /// </remarks>
     /// <param name="tokens">Stack of tokens</param>
     /// <param name="model">Current select dto</param>

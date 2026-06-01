@@ -8,7 +8,7 @@ using Grpc.Core;
 namespace AlliumSativum.Worker.Services;
 
 /// <summary>
-/// gRPC endpoint for executing a POP
+///     gRPC endpoint for executing a POP
 /// </summary>
 public sealed class ExecutorService : Executor.ExecutorBase
 {

@@ -1,5 +1,3 @@
-using AlliumSativum.Shared.Utils;
-
 namespace AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 
 public sealed class PlanOperatorDistributionData

@@ -7,9 +7,8 @@ namespace AlliumSativum.QueryExecutor.PopExecutors;
 
 public sealed class FilterPlanOperatorExecutor : IPlanOperatorExecutor<FilterPlanOperator>
 {
-    
     /// <summary>
-    /// Filters the input data by the specified expression
+    ///     Filters the input data by the specified expression
     /// </summary>
     /// <param name="pop">The POP to execute</param>
     /// <returns>"pop", containing their results in the data field</returns>

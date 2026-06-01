@@ -4,8 +4,6 @@ using AlliumSativum.Compiler;
 using AlliumSativum.QueryPerformance.Histogram;
 using AlliumSativum.QueryPerformance.Selectivity;
 using AlliumSativum.Shared.Costs;
-using AlliumSativum.Shared.Models;
-using AlliumSativum.Shared.Models.ExecutionPlan;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlliumSativum.QueryServer.Controllers;
@@ -35,7 +33,7 @@ public sealed class BenchmarkController
     }
 
     /// <summary>
-    /// Calcualtes the proximity of the winning plan to all enumerated contestant plans for a given set of queries
+    ///     Calcualtes the proximity of the winning plan to all enumerated contestant plans for a given set of queries
     /// </summary>
     /// <param name="queries">All queries to test</param>
     /// <returns>For each query, all run times for all QExP's and if it was the winning plan</returns>
@@ -56,7 +54,8 @@ public sealed class BenchmarkController
             var chunked = plans.Chunk(pageSize).ToList();
             foreach (var chunk in chunked)
             {
-                _logger.LogInformation("Begin batch no. {Page} (of {TotalPages}) for query: {JoinPlan}.", page++, chunked.Count, query);
+                _logger.LogInformation("Begin batch no. {Page} (of {TotalPages}) for query: {JoinPlan}.", page++,
+                    chunked.Count, query);
                 var tasks = chunk.Select(async plan =>
                 {
                     await _queryExecutor.ExecuteAsync(plan.RootOperator);
@@ -70,7 +69,8 @@ public sealed class BenchmarkController
                         WasWinningPlan = plan.RootOperator.IsEquivalentTo(generatedWinningPlan.RootOperator)
                     });
 
-                    _logger.LogInformation("Handled plan no. {PlanNumber} (of {TotalCount}) for query: {Query}.", index++,
+                    _logger.LogInformation("Handled plan no. {PlanNumber} (of {TotalCount}) for query: {Query}.",
+                        index++,
                         plans.Count, plan.RootOperator.ToJoinPlanString());
                 }).ToList();
                 await Task.WhenAll(tasks);
@@ -100,8 +100,8 @@ public sealed class BenchmarkController
     }
 
     /// <summary>
-    /// Returns the Earth Mover's Distance between the original and reconstructed histograms for a given set of queries
-    /// as well as the individual distances for each query.
+    ///     Returns the Earth Mover's Distance between the original and reconstructed histograms for a given set of queries
+    ///     as well as the individual distances for each query.
     /// </summary>
     /// <param name="queries">Queries to test</param>
     /// <returns>The nEMD</returns>
@@ -110,9 +110,10 @@ public sealed class BenchmarkController
     {
         return _reconstructionDistanceService.ReconstructionSimilarityAsync(queries);
     }
-    
+
     /// <summary>
-    /// Returns the Earth Mover's Distance between the original and reconstructed histograms for all attributes of a given data source
+    ///     Returns the Earth Mover's Distance between the original and reconstructed histograms for all attributes of a given
+    ///     data source
     /// </summary>
     /// <param name="dataSourceId">Id of the data source</param>
     /// <param name="ignore">Which attributes to ignore</param>
@@ -121,22 +122,25 @@ public sealed class BenchmarkController
     public Task<ReconstructionSimilarityResult> GetReconstructedHistograms([FromRoute] Guid dataSourceId,
         [FromQuery] string? ignore)
     {
-        return _reconstructionDistanceService.ReconstructionSimilarityOfDatasourceAsync(dataSourceId, ignore?.Split(',').ToList() ?? []);
+        return _reconstructionDistanceService.ReconstructionSimilarityOfDatasourceAsync(dataSourceId,
+            ignore?.Split(',').ToList() ?? []);
     }
-    
+
     /// <summary>
-    /// Returns the Earth Mover's Distance between the original and reconstructed histograms for all attributes in the catalog
+    ///     Returns the Earth Mover's Distance between the original and reconstructed histograms for all attributes in the
+    ///     catalog
     /// </summary>
     /// <param name="ignore">Which attributes to ignore</param>
     /// <returns>The nEMD</returns>
     [HttpGet("reconstructed-histograms/all")]
     public Task<ReconstructionSimilarityResult> GetReconstructedHistograms([FromQuery] string? ignore)
     {
-        return _reconstructionDistanceService.ReconstructionSimilarityOfAllDatasourcesAsync(ignore?.Split(',').ToList() ?? []);
+        return _reconstructionDistanceService.ReconstructionSimilarityOfAllDatasourcesAsync(
+            ignore?.Split(',').ToList() ?? []);
     }
-    
+
     /// <summary>
-    /// Gets all exact timings for all steps in the compiling and execution
+    ///     Gets all exact timings for all steps in the compiling and execution
     /// </summary>
     /// <param name="queries">Queries to test</param>
     /// <returns>The timings</returns>
@@ -144,37 +148,40 @@ public sealed class BenchmarkController
     public async Task<object> GetCompileTiming([FromBody] List<string> queries)
     {
         var (plan, timingResult) = await _compiler.TimedCompileAsync(queries.Single());
-        
+
         var stopwatch = Stopwatch.StartNew();
         await _queryExecutor.ExecuteAsync(plan.RootOperator);
         timingResult.Execute = stopwatch.Elapsed;
 
         return timingResult.ToMilliSeconds();
     }
-    
+
     /// <summary>
-    /// For a given set of queries, executes the winning plan and evaluates the predicted selectivity vs. the actual selectivity for each operator in the execution tree.
+    ///     For a given set of queries, executes the winning plan and evaluates the predicted selectivity vs. the actual
+    ///     selectivity for each operator in the execution tree.
     /// </summary>
     /// <param name="queries">Queries to test</param>
     /// <param name="excludeOnes">Whether to include selectivities, that are set to "1"</param>
     /// <returns>The selectivities per stage</returns>
     [HttpPost("selectivity-per-stage")]
-    public async Task<object> GetSelectivityPerStage([FromBody] Dictionary<string, string> queries, [FromQuery] bool excludeOnes = false)
+    public async Task<object> GetSelectivityPerStage([FromBody] Dictionary<string, string> queries,
+        [FromQuery] bool excludeOnes = false)
     {
         var results = new List<object>();
-        
+
         foreach (var query in queries)
         {
             var compiled = await _compiler.CompileAsync(query.Value);
             await _queryExecutor.ExecuteAsync(compiled.RootOperator);
-            
+
             results.Add(new
             {
                 Query = query.Key,
-                SelectivityPerStage = SelectivityEvaluationService.EvaluateExecutedTree(compiled.RootOperator, excludeOnes),
+                SelectivityPerStage =
+                    SelectivityEvaluationService.EvaluateExecutedTree(compiled.RootOperator, excludeOnes)
             });
         }
-        
+
         return results;
     }
 }

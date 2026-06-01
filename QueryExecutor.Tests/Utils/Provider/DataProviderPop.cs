@@ -7,17 +7,16 @@ public abstract class DataProviderPop : PlanOperator
 {
     public DataProviderPop()
     {
-        
     }
-    
+
     public DataProviderPop(List<Dictionary<string, object>> data)
     {
-        ExecutionData = new PlanOperatorExecutionData()
+        ExecutionData = new PlanOperatorExecutionData
         {
             Data = data
         };
     }
-    
+
     protected override string GetNodeInfo()
     {
         throw new NotImplementedException();

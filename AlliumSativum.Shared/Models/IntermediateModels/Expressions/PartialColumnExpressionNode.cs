@@ -1,7 +1,7 @@
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 /// <summary>
-/// Node type is only used in parsing, when the full node was not yet read from the stack
+///     Node type is only used in parsing, when the full node was not yet read from the stack
 /// </summary>
 public class PartialColumnExpressionNode : ExpressionNode
 {

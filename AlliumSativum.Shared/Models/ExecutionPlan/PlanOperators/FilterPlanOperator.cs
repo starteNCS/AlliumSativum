@@ -44,7 +44,7 @@ public class FilterPlanOperator : PlanOperator
 
         return filter.Expression.Equals(Expression);
     }
-    
+
     public override bool IsEquivalentTo(PlanOperator? other)
     {
         if (!base.IsEquivalentTo(other)) return false;

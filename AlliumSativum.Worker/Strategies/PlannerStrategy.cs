@@ -19,7 +19,7 @@ public sealed class PlannerStrategy
     }
 
     /// <summary>
-    /// Based on the connector type, it returns the appropriate planner
+    ///     Based on the connector type, it returns the appropriate planner
     /// </summary>
     /// <param name="connectorType">The connector type needed for the data source</param>
     /// <returns>The correct planner</returns>

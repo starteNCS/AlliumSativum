@@ -1,12 +1,9 @@
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Join;
-using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
-using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 using FluentAssertions;
 using NUnit.Framework;
 using QueryExecutor.Tests.Utils;
 using QueryExecutor.Tests.Utils.Provider;
-using Test.Shared.Helpers;
 
 namespace QueryExecutor.Tests.QueryExecutors;
 

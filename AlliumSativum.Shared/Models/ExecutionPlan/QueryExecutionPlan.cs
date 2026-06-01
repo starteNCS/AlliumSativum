@@ -59,7 +59,7 @@ public sealed class QueryExecutionPlan
             stringBuilder.AppendLine(costValueString);
         }
 
-        stringBuilder.Append(RootOperator.ToPrettyString(html, false));
+        stringBuilder.Append(RootOperator.ToPrettyString(html));
 
         return stringBuilder.ToString();
     }

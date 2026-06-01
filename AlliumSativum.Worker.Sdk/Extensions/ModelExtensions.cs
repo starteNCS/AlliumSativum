@@ -7,7 +7,6 @@ using AlliumSativum.Shared.Models.Executor;
 using AlliumSativum.Shared.Models.IntermediateModels;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
-using AlliumSativum.Shared.Utils;
 using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 
@@ -137,7 +136,7 @@ public static class ModelExtensions
                 },
                 Cost = planOperator.Cost,
                 ExpectedCardinality = planOperator.ExpectedCardinality,
-                Width = planOperator.Width,
+                Width = planOperator.Width
             },
             PushdownRestCallPlanOperator prest => new GPlanOperator
             {
@@ -154,7 +153,7 @@ public static class ModelExtensions
                 },
                 Cost = planOperator.Cost,
                 ExpectedCardinality = planOperator.ExpectedCardinality,
-                Width = planOperator.Width,
+                Width = planOperator.Width
             },
             _ => new GPlanOperator()
         };

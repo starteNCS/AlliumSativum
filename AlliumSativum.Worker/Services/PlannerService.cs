@@ -7,7 +7,7 @@ using Grpc.Core;
 namespace AlliumSativum.Worker.Services;
 
 /// <summary>
-/// gRPC endpoint for planning
+///     gRPC endpoint for planning
 /// </summary>
 public sealed class PlannerService : Planner.PlannerBase
 {

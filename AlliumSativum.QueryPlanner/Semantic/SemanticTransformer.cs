@@ -20,8 +20,8 @@ public class SemanticTransformer : ISemanticTransformer
     }
 
     /// <summary>
-    /// Collapses variable mappings of the given specifiers by replacing all VariableMappingSpecifiers
-    /// with AttributeSpecifiers based on the given variable mappings.
+    ///     Collapses variable mappings of the given specifiers by replacing all VariableMappingSpecifiers
+    ///     with AttributeSpecifiers based on the given variable mappings.
     /// </summary>
     /// <param name="variableMappings">All variable mappings of a query</param>
     /// <param name="specifiers">All projections of a query</param>
@@ -48,8 +48,8 @@ public class SemanticTransformer : ISemanticTransformer
     }
 
     /// <summary>
-    /// Collapses variable mappings of the given expression by replacing all VariableMappingExpressionNodes
-    /// with FullySpecifiedColumnExpressionNodes based on the given variable mappings.
+    ///     Collapses variable mappings of the given expression by replacing all VariableMappingExpressionNodes
+    ///     with FullySpecifiedColumnExpressionNodes based on the given variable mappings.
     /// </summary>
     /// <param name="variableMappings">All variable mappings of a query</param>
     /// <param name="expression">The root node of an expression</param>
@@ -69,8 +69,9 @@ public class SemanticTransformer : ISemanticTransformer
     }
 
     /// <summary>
-    /// Hands over the expression as a ref parameter and collapses all variable mappings of the given expression by replacing all VariableMappingExpressionNodes
-    /// with FullySpecifiedColumnExpressionNodes based on the given variable mappings.
+    ///     Hands over the expression as a ref parameter and collapses all variable mappings of the given expression by
+    ///     replacing all VariableMappingExpressionNodes
+    ///     with FullySpecifiedColumnExpressionNodes based on the given variable mappings.
     /// </summary>
     /// <param name="variableMappings">All variable mappings of a query</param>
     /// <param name="expression">The root node of an expression</param>

@@ -1,11 +1,10 @@
-using AlliumSativum.Shared.Constants;
 using AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 using AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 namespace AlliumSativum.Shared.Models.IntermediateModels;
 
 /// <summary>
-/// DTO for a join statement, containing all necessary information to execute the query
+///     DTO for a join statement, containing all necessary information to execute the query
 /// </summary>
 public sealed class JoinBaseModel
 {
@@ -23,7 +22,7 @@ public sealed class JoinBaseModel
                && Inner.Equals(join.Inner)
                && Expression.Equals(join.Expression);
     }
-    
+
     public override int GetHashCode()
     {
         return HashCode.Combine(JoinType, Inner, Expression);

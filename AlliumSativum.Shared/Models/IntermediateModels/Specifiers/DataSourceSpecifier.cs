@@ -1,7 +1,7 @@
 namespace AlliumSativum.Shared.Models.IntermediateModels.Specifiers;
 
 /// <summary>
-/// Specifier containing only data source information
+///     Specifier containing only data source information
 /// </summary>
 public class DataSourceSpecifier : ISpecifier, IEquatable<DataSourceSpecifier>
 {
@@ -20,13 +20,10 @@ public class DataSourceSpecifier : ISpecifier, IEquatable<DataSourceSpecifier>
 
     public override bool Equals(object? obj)
     {
-        if (obj is DataSourceSpecifier other)
-        {
-            return Equals(other);
-        }
+        if (obj is DataSourceSpecifier other) return Equals(other);
         return false;
     }
-    
+
     public override string ToString()
     {
         return DataSourceName;
@@ -36,7 +33,7 @@ public class DataSourceSpecifier : ISpecifier, IEquatable<DataSourceSpecifier>
     {
         return new TableSpecifier(DataSourceName, tableName);
     }
-    
+
     public override int GetHashCode()
     {
         return DataSourceName.GetHashCode();

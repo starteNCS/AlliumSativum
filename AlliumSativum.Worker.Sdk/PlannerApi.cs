@@ -5,17 +5,17 @@ using AlliumSativum.Worker.Sdk.Extensions;
 namespace AlliumSativum.Worker.Sdk;
 
 /// <summary>
-/// Wrapper for calling the grpc planner endpoints
+///     Wrapper for calling the grpc planner endpoints
 /// </summary>
 public interface IPlannerApi
 {
     /// <summary>
-    /// Plan a pushdown pop for the given sDTO
+    ///     Plan a pushdown pop for the given sDTO
     /// </summary>
     /// <param name="model">Input sDTO</param>
     /// <returns>
-    /// proposal: One or more pushdown proposals, depending on source capabilities
-    /// unplanned: Everything that was not planned, i.e. everything that needs to be executed on premises
+    ///     proposal: One or more pushdown proposals, depending on source capabilities
+    ///     unplanned: Everything that was not planned, i.e. everything that needs to be executed on premises
     /// </returns>
     Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanQueryAsync(SelectDto model);
 }
@@ -29,7 +29,7 @@ public class PlannerApi : IPlannerApi
         _client = client;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task<(List<PlanContainer> proposal, SelectDto? unplanned)> PlanQueryAsync(SelectDto model)
     {
         var response = await _client.PlanAsync(model.ToGrpcModel());

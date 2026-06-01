@@ -5,7 +5,8 @@ namespace AlliumSativum.Shared.Utils;
 public static class DistributionUtils
 {
     /// <summary>
-    /// Calculate the distribution of a list of values and update the provided attribute entity with the calculated statistics.
+    ///     Calculate the distribution of a list of values and update the provided attribute entity with the calculated
+    ///     statistics.
     /// </summary>
     /// <param name="values">The raw values</param>
     /// <param name="attribute">The attribute of the values</param>
@@ -28,7 +29,7 @@ public static class DistributionUtils
         attribute.MeanBinHeight = binnedDistribution.Values.Average();
         attribute.Range = nonNullValues.Max() - nonNullValues.Min();
         var variance = 1.0 / nonNullValues.Count *
-                             nonNullValues.Select(value => Math.Pow(value - attribute.Mean, 2)).Sum();
+                       nonNullValues.Select(value => Math.Pow(value - attribute.Mean, 2)).Sum();
         attribute.StandardDeviation = Math.Sqrt(variance);
 
         var modes = DistributionDetector.FindModes(binnedDistribution, attribute);

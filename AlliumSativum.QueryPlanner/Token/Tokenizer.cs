@@ -5,9 +5,6 @@ namespace AlliumSativum.Token;
 
 public partial class Tokenizer : ITokenizer
 {
-    [GeneratedRegex(@"('[^']*')|(,|\.|->|!=|>=|<=|=|<|>)|(\(|\))|(\w+)")]
-    private static partial Regex JoinTokens();
-
     // ReSharper disable once MemberCanBeMadeStatic.Global
     public Stack<string> Tokenize(string query)
     {
@@ -20,4 +17,7 @@ public partial class Tokenizer : ITokenizer
         tokens.Reverse();
         return new Stack<string>(tokens);
     }
+
+    [GeneratedRegex(@"('[^']*')|(,|\.|->|!=|>=|<=|=|<|>)|(\(|\))|(\w+)")]
+    private static partial Regex JoinTokens();
 }

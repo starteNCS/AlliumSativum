@@ -2,14 +2,12 @@ using System.Text;
 using AlliumSativum.Compiler;
 using AlliumSativum.QueryPerformance.Utils;
 using AlliumSativum.Shared.Costs;
-using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
-using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators;
 using AlliumSativum.Shared.Models.ExecutionPlan.PlanOperators.Models;
 using AlliumSativum.Shared.Utils;
 using Microsoft.AspNetCore.Mvc;
 using ScottPlot;
-using ScottPlot.Statistics;
+using ScottPlot.Colormaps;
 
 namespace AlliumSativum.QueryServer.Controllers;
 
@@ -32,10 +30,11 @@ public class HistogramController : Controller
     }
 
     [HttpPost("reconstructed")]
-    public async Task<IResult> GetReconstructedHistogram([FromBody] CompileInput query, [FromQuery] bool download = false)
+    public async Task<IResult> GetReconstructedHistogram([FromBody] CompileInput query,
+        [FromQuery] bool download = false)
     {
         var plt = new Plot();
-        IColormap colormap = new ScottPlot.Colormaps.Viridis();
+        IColormap colormap = new Viridis();
 
         var plan = await _compiler.CompileAsync(query.Query);
 
@@ -76,7 +75,7 @@ public class HistogramController : Controller
             bar.LineStyle = LineStyle.None;
             bar.LineWidth = 0;
         }
-        
+
         plt.Axes.Margins(bottom: 0);
         plt.Title("Original vs Reconstructed Distribution");
         plt.Axes.AutoScale();
@@ -87,10 +86,10 @@ public class HistogramController : Controller
 
         if (download)
         {
-            var imageBytes = plt.GetImageBytes(1200, 600, ScottPlot.ImageFormat.Png);
+            var imageBytes = plt.GetImageBytes(1200, 600, ImageFormat.Png);
             return Results.File(imageBytes, "image/png", "reconstructed-histogram.png");
         }
-        
+
 
         var svg = plt.GetSvgXml(1200, 800);
         var stringBuilder = new StringBuilder();
@@ -105,7 +104,7 @@ public class HistogramController : Controller
     public async Task<IResult> GetHistogram([FromBody] List<HistogramInput> queries, [FromQuery] bool download = false)
     {
         var plt = new Plot();
-        IColormap colormap = new ScottPlot.Colormaps.Viridis();
+        IColormap colormap = new Viridis();
 
         List<AttributeEntity> attributes = [];
         List<Dictionary<double, int>> maps = [];
@@ -129,7 +128,7 @@ public class HistogramController : Controller
             min = map.Keys.Min() < min ? map.Keys.Min() : min;
             max = map.Keys.Max() > max ? map.Keys.Max() : max;
             maps.Add(map);
-            
+
             var color = colormap.GetColor((double)index / queries.Count);
             PlotHistogram(plt, map, color, query.LegendText);
             index++;
@@ -138,7 +137,7 @@ public class HistogramController : Controller
         var reconstructed = GenerateHistogram(min, max, 700);
         var reconstructedColor = colormap.GetColor((double)index / queries.Count);
         PlotHistogram(plt, reconstructed, reconstructedColor, "Outer");
-        
+
 
         plt.Axes.Margins(bottom: 0);
         plt.Axes.Bottom.Min = min;
@@ -148,7 +147,7 @@ public class HistogramController : Controller
 
         plt.Axes.Left.Label.Text = "Count";
         plt.Axes.Left.Label.Bold = false;
-        
+
         var legend = plt.ShowLegend();
         legend.Alignment = Alignment.UpperLeft;
         legend.FontName = "Arial";
@@ -156,10 +155,10 @@ public class HistogramController : Controller
 
         if (download)
         {
-            var imageBytes = plt.GetImageBytes(1200, 600, ScottPlot.ImageFormat.Png);
+            var imageBytes = plt.GetImageBytes(1200, 600, ImageFormat.Png);
             return Results.File(imageBytes, "image/png", "histogram.png");
         }
-        
+
         var svg = plt.GetSvgXml(600, 400);
         var stringBuilder = new StringBuilder();
         stringBuilder.Append("<html><body>")
@@ -214,7 +213,7 @@ public class HistogramController : Controller
             MeanBinHeight = 0,
             Peaks =
             [
-                new PlanOperatorDistributionData.Peak()
+                new PlanOperatorDistributionData.Peak
                 {
                     Height = maxHeight,
                     StandardDeviation = 2,

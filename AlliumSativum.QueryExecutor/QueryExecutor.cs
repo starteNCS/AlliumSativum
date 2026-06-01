@@ -32,7 +32,7 @@ public sealed class QueryExecutor
     }
 
     /// <summary>
-    /// Executes a parallel query execution stack, based on its root operator
+    ///     Executes a parallel query execution stack, based on its root operator
     /// </summary>
     /// <param name="root">The root of parallel plan</param>
     /// <returns>The results of this query</returns>
@@ -63,10 +63,10 @@ public sealed class QueryExecutor
         return latestPop?.ExecutionData.Data ?? [];
     }
 
-    
+
     /// <summary>
-    /// Executes a query execution plan, based on its root operator
-    /// Parallelized as much as possible by identifying independent branches of the execution plan
+    ///     Executes a query execution plan, based on its root operator
+    ///     Parallelized as much as possible by identifying independent branches of the execution plan
     /// </summary>
     /// <param name="root">The root node of the QExP</param>
     /// <returns>The result of the query plan</returns>
@@ -76,9 +76,9 @@ public sealed class QueryExecutor
         return ExecuteAsync(parallelStacks);
     }
 
-    
+
     /// <summary>
-    /// Transforms a query execution plan into a parallel execution plan
+    ///     Transforms a query execution plan into a parallel execution plan
     /// </summary>
     /// <param name="root">The root plan operator of the tree</param>
     /// <returns>The corresponding parallel stack plan</returns>

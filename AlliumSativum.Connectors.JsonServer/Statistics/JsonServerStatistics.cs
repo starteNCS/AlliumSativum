@@ -1,12 +1,10 @@
 using System.Text.Json;
-using AlliumSativum.Connectors.Shared;
 using AlliumSativum.Connectors.Shared.HttpUtils;
 using AlliumSativum.Shared.Database;
 using AlliumSativum.Shared.Database.Entities;
 using AlliumSativum.Shared.Exceptions;
 using AlliumSativum.Shared.Utils;
 using AlliumSavitum.Connectors.Shared.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace AlliumSativum.Connectors.JsonServer.Statistics;
 
@@ -20,7 +18,7 @@ public sealed class JsonServerStatistics : IDataSourceStatistics
         _catalog = catalog;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task ScrapeStatisticsAsync(Guid dataSource)
     {
         var dataSourceEntity = await _catalog.GetDataSourceAsync(dataSource);

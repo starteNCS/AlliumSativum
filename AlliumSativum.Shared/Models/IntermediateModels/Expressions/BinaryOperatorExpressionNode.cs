@@ -1,7 +1,7 @@
 namespace AlliumSativum.Shared.Models.IntermediateModels.Expressions;
 
 /// <summary>
-/// Expression node representing a binary operator (e.g., AND, OR, =, >, <, etc.)
+///     Expression node representing a binary operator (e.g., AND, OR, =, >, <, etc.)
 /// </summary>
 public class BinaryOperatorExpressionNode : ExpressionNode
 {
@@ -30,14 +30,14 @@ public class BinaryOperatorExpressionNode : ExpressionNode
     {
         return HashCode.Combine(Operation, Left, Right);
     }
-    
-    /// <inheritdoc/>
+
+    /// <inheritdoc />
     public override object? ResolveValue(Dictionary<string, object> row)
     {
         return null;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override bool EvaluatePredicate(Dictionary<string, object> row)
     {
         return Operation switch

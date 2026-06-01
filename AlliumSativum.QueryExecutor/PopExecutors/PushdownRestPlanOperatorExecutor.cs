@@ -19,9 +19,9 @@ public sealed class PushdownRestPlanOperatorExecutor : IPlanOperatorExecutor<Pus
         _executorApi = executorApi;
         _logger = logger;
     }
-    
+
     /// <summary>
-    /// Hands the pushdown REST plan operator to the worker's execution API
+    ///     Hands the pushdown REST plan operator to the worker's execution API
     /// </summary>
     /// <param name="pop">The POP to execute</param>
     /// <returns>"pop", containing their results in the data field</returns>

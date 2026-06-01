@@ -17,8 +17,9 @@ public sealed class SelectOptimizer : ISelectOptimizer
         _costModel = costModel;
     }
 
-    /// <inheritdoc/>
-    public List<SelectDto> AppendComputationalSelects(List<SelectDto> tableSplits, List<AttributeSpecifier> hiddenAttributes)
+    /// <inheritdoc />
+    public List<SelectDto> AppendComputationalSelects(List<SelectDto> tableSplits,
+        List<AttributeSpecifier> hiddenAttributes)
     {
         foreach (var attribute in hiddenAttributes)
         {
@@ -37,7 +38,7 @@ public sealed class SelectOptimizer : ISelectOptimizer
         return tableSplits;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public PlanOperator HandleProjection(PlanOperator pop, TableSpecifier forTable, SelectDto? unplanned)
     {
         if (unplanned is null || unplanned.Select.Count == 0) return pop;

@@ -35,7 +35,7 @@ public interface IExpressionNodeOptimizer
     ///     Merges two expressions into a new singular expression (which also is in CNF)
     /// </summary>
     /// <remarks>
-    /// Both expressions need to be in CNF
+    ///     Both expressions need to be in CNF
     /// </remarks>
     /// <param name="left">Left expression</param>
     /// <param name="right">Right expression</param>
@@ -46,16 +46,15 @@ public interface IExpressionNodeOptimizer
     ///     Get the sub-trees (all AND combined clauses) of an expression that already is in CNF
     /// </summary>
     /// <remarks>
-    /// Root must be in CNF
+    ///     Root must be in CNF
     /// </remarks>
     /// <param name="root">The root of the expression to get the subtrees of</param>
     /// <returns>A list of all subtrees</returns>
     List<ExpressionNode> GetCnfSubTrees(ExpressionNode? root);
 
     /// <summary>
-    /// Removes a specific expression from a tree
+    ///     Removes a specific expression from a tree
     /// </summary>
-    /// 
     /// <param name="fromNode"></param>
     /// <param name="remove"></param>
     /// <returns></returns>
