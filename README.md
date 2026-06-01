@@ -46,11 +46,11 @@ Typical local setup sequence:
 3. Execute the `docker-init/init-catalog.sql` script against the catalog database to seed initial metadata (data sources, relations, attributes).
 6. Trigger a metrics scrape so the cost model has statistics:
    ```
-   GET /metrics/all
+   GET http://localhost:55000/metrics/all
    ```
 7. Submit a test query:
    ```
-   POST /execute
+   POST http://localhost:55000/execute
    { "query": "SELECT ..." }
    ```
 
